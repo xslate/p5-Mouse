@@ -1,0 +1,45 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Test::More tests => 10;
+use Test::Exception;
+
+my @trigger;
+
+do {
+    package Class;
+    use Mouse;
+
+    has attr => (
+        is => 'rw',
+        default => 10,
+        trigger => sub {
+            my ($self, $value, $attr) = @_;
+            push @trigger, [$self, $value, $attr];
+        },
+    );
+
+    ::throws_ok {
+        has error => (
+            is => 'ro',
+            trigger => sub { },
+        );
+    } qr/Trigger is not allowed on read-only attribute 'error'/;
+};
+
+can_ok(Class => 'attr');
+
+my $object = Class->new;
+is(@trigger, 0, "trigger not called yet");
+
+is($object->attr, 10, "default value");
+is(@trigger, 0, "trigger not called on read");
+
+is($object->attr(50), 50, "setting the value");
+is(@trigger, 1, "trigger was called on read");
+is_deeply(shift(@trigger), [$object, 50, $object->meta->get_attribute('attr')], "correct arguments to trigger in the accessor");
+
+my $object2 = Class->new(attr => 100);
+is(@trigger, 1, "trigger was called on new with the attribute specified");
+is_deeply(shift(@trigger), [$object2, 100, $object2->meta->get_attribute('attr')], "correct arguments to trigger in the constructor");
+
