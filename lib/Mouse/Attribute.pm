@@ -9,7 +9,8 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
-    $args{init_arg} ||= $args{name};
+    $args{init_arg} = $args{name}
+        unless exists $args{init_arg};
     $args{is} ||= '';
 
     bless \%args, $class;
