@@ -12,6 +12,7 @@ use Scalar::Util 'blessed';
 use Mouse::Attribute;
 use Mouse::Class;
 use Mouse::Object;
+use Mouse::TypeRegistry;
 
 do {
     my $CALLER;
