@@ -26,6 +26,16 @@ sub weak_ref        { $_[0]->{weak_ref}        }
 sub init_arg        { $_[0]->{init_arg}        }
 sub type_constraint { $_[0]->{type_constraint} }
 
+sub has_name            { exists $_[0]->{name}            }
+sub has_class           { exists $_[0]->{class}           }
+sub has_default         { exists $_[0]->{default}         }
+sub has_predicate       { exists $_[0]->{predicate}       }
+sub has_clearer         { exists $_[0]->{clearer}         }
+sub has_handles         { exists $_[0]->{handles}         }
+sub has_weak_ref        { exists $_[0]->{weak_ref}        }
+sub has_init_arg        { exists $_[0]->{init_arg}        }
+sub has_type_constraint { exists $_[0]->{type_constraint} }
+
 sub generate_accessor {
     my $attribute = shift;
 
