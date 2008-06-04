@@ -29,23 +29,40 @@ sub type_constraint { $_[0]->{type_constraint} }
 sub generate_accessor {
     my $attribute = shift;
 
-    my $key     = $attribute->{init_arg};
-    my $default = $attribute->{default};
-    my $trigger = $attribute->{trigger};
+    my $name       = $attribute->{name};
+    my $key        = $attribute->{init_arg};
+    my $default    = $attribute->{default};
+    my $trigger    = $attribute->{trigger};
+    my $type       = $attribute->{type_constraint};
+
+    my $constraint = sub {
+        return unless $type;
+
+        my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
+        return $checker if $checker;
+
+        confess "Unable to parse type constraint '$type'";
+    }->();
 
     my $accessor = 'sub {
         my $self = shift;';
 
     if ($attribute->{is} eq 'rw') {
         $accessor .= 'if (@_) {
-            $self->{$key} = $_[0];';
+            local $_ = $_[0];';
+
+        if ($constraint) {
+            $accessor .= 'Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_") unless $constraint->();'
+        }
+
+        $accessor .= '$self->{$key} = $_;';
 
         if ($attribute->{weak_ref}) {
             $accessor .= 'Scalar::Util::weaken($self->{$key});';
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->($self, $_[0], $attribute);';
+            $accessor .= '$trigger->($self, $_, $attribute);';
         }
 
         $accessor .= '}';
