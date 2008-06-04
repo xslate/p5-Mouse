@@ -127,14 +127,14 @@ sub create {
     my $attribute = $self->new(%args, name => $name, class => $class);
     my $meta = $class->meta;
 
+    $meta->add_attribute($attribute);
+
     # install an accessor
     if ($attribute->{is} eq 'rw' || $attribute->{is} eq 'ro') {
         my $accessor = $attribute->generate_accessor;
         no strict 'refs';
         *{ $class . '::' . $name } = $accessor;
     }
-
-    $meta->add_attribute($attribute);
 
     for my $method (qw/predicate clearer/) {
         if (exists $attribute->{$method}) {
