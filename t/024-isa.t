@@ -28,8 +28,8 @@ my %values_for_type = (
     },
 
     Bool => {
-        valid   => [],
-        invalid => [],
+        valid   => [undef, "", 1, 0, "1", "0"],
+        invalid => [1.5, "true", "false", "t", "f", ],
     },
 
     Undef => {
@@ -155,13 +155,13 @@ for my $type (keys %values_for_type) {
         my $via_new;
         throws_ok {
             $via_new = Class->new($type => $value);
-        } qr/(?!)/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$value\E/;
         is($via_new, undef, "no object created");
 
         my $via_set = Class->new;
         throws_ok {
             $via_set->$type($value);
-        } qr/(?!)/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$value\E/;
 
         is($via_set->$type, undef, "value for $type not set");
     }
