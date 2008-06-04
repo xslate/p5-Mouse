@@ -1,17 +1,29 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More;
 use Test::Exception;
 
 my %values_for_type = (
     Any => {
-        valid   => ["foo"],
+        valid   => [
+            undef,
+            \undef,
+            1.0,
+            "foo",
+            \"foo",
+            sub { die },
+            qr/^1?$|^(11+?)\1+$/,
+            [],
+            {},
+            \do { my $v },
+            Test::Builder->new,
+        ],
         invalid => [],
     },
 
     Item => {
-        valid   => [],
+        #valid   => [], # populated later with the values from Any
         invalid => [],
     },
 
@@ -100,6 +112,15 @@ my %values_for_type = (
         invalid => [],
     },
 );
+
+$values_for_type{Item}{valid} = $values_for_type{Any}{valid};
+
+my $plan = 0;
+$plan += 5 * @{ $values_for_type{$_}{valid} }   for keys %values_for_type;
+$plan += 4 * @{ $values_for_type{$_}{invalid} } for keys %values_for_type;
+$plan++; # can_ok
+
+plan tests => $plan;
 
 do {
     package Class;
