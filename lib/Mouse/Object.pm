@@ -19,16 +19,17 @@ sub new {
         if (!exists($args{$key})) {
             if (exists($attribute->{default})) {
                 unless ($attribute->{lazy}) {
-                    if (ref($attribute->{default}) eq 'CODE') {
-                        $instance->{$key} = $attribute->{default}->();
-                        Scalar::Util::weaken($instance->{$key})
-                            if $attribute->{weak_ref};
-                    }
-                    else {
-                        $instance->{$key} = $attribute->{default};
-                        Scalar::Util::weaken($instance->{$key})
-                            if $attribute->{weak_ref};
-                    }
+                    my $default = ref($attribute->{default}) eq 'CODE'
+                                ? $attribute->{default}->()
+                                : $attribute->{default};
+
+                    $attribute->verify_type_constraint($default)
+                        if $attribute->has_type_constraint;
+
+                    $instance->{$key} = $default;
+
+                    Scalar::Util::weaken($instance->{$key})
+                        if $attribute->{weak_ref};
                 }
             }
             else {
@@ -39,7 +40,11 @@ sub new {
         }
 
         if (exists($args{$key})) {
+            $attribute->verify_type_constraint($args{$key})
+                if $attribute->has_type_constraint;
+
             $instance->{$key} = $args{$key};
+
             Scalar::Util::weaken($instance->{$key})
                 if $attribute->{weak_ref};
 

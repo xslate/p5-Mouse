@@ -44,15 +44,7 @@ sub generate_accessor {
     my $default    = $attribute->{default};
     my $trigger    = $attribute->{trigger};
     my $type       = $attribute->{type_constraint};
-
-    my $constraint = sub {
-        return unless $type;
-
-        my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
-        return $checker if $checker;
-
-        confess "Unable to parse type constraint '$type'";
-    }->();
+    my $constraint = $attribute->find_type_constraint;
 
     my $accessor = 'sub {
         my $self = shift;';
@@ -185,6 +177,33 @@ sub create {
     }
 
     return $attribute;
+}
+
+sub find_type_constraint {
+    my $self = shift;
+    my $type = $self->type_constraint;
+
+    return unless $type;
+
+    my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
+    return $checker if $checker;
+
+    confess "Unable to parse type constraint '$type'";
+}
+
+sub verify_type_constraint {
+    my $self = shift;
+    local $_ = shift;
+
+    my $type = $self->type_constraint
+        or return 1;
+    my $constraint = $self->find_type_constraint
+        or return 1;
+
+    return 1 if $constraint->($_);
+
+    my $name = $self->name;
+    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_");
 }
 
 1;
