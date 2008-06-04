@@ -17,11 +17,14 @@ sub new {
         my $default;
 
         if (!exists($args{$key})) {
-            if (exists($attribute->{default})) {
+            if (exists($attribute->{default}) || exists($attribute->{builder})) {
                 unless ($attribute->{lazy}) {
-                    my $default = ref($attribute->{default}) eq 'CODE'
-                                ? $attribute->{default}->()
-                                : $attribute->{default};
+                    my $builder = $attribute->{builder};
+                    my $default = exists($attribute->{builder})
+                                ? $instance->$builder
+                                : ref($attribute->{default}) eq 'CODE'
+                                    ? $attribute->{default}->()
+                                    : $attribute->{default};
 
                     $attribute->verify_type_constraint($default)
                         if $attribute->has_type_constraint;
