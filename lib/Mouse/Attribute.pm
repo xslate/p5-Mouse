@@ -16,14 +16,15 @@ sub new {
     bless \%args, $class;
 }
 
-sub name      { $_[0]->{name} }
-sub class     { $_[0]->{class} }
-sub default   { $_[0]->{default} }
-sub predicate { $_[0]->{predicate} }
-sub clearer   { $_[0]->{clearer} }
-sub handles   { $_[0]->{handles} }
-sub weak_ref  { $_[0]->{weak_ref} }
-sub init_arg  { $_[0]->{init_arg} }
+sub name            { $_[0]->{name}            }
+sub class           { $_[0]->{class}           }
+sub default         { $_[0]->{default}         }
+sub predicate       { $_[0]->{predicate}       }
+sub clearer         { $_[0]->{clearer}         }
+sub handles         { $_[0]->{handles}         }
+sub weak_ref        { $_[0]->{weak_ref}        }
+sub init_arg        { $_[0]->{init_arg}        }
+sub type_constraint { $_[0]->{type_constraint} }
 
 sub generate_accessor {
     my $attribute = shift;
@@ -124,6 +125,8 @@ sub create {
     confess "You must pass a HASH or ARRAY to handles"
         if exists($args{handles})
         && ref($args{handles}) ne 'HASH';
+
+    $args{type_constraint} = delete $args{isa};
 
     my $attribute = $self->new(%args, name => $name, class => $class);
     my $meta = $class->meta;
