@@ -54,7 +54,10 @@ sub generate_accessor {
             local $_ = $_[0];';
 
         if ($constraint) {
-            $accessor .= 'Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_") unless $constraint->();'
+            $accessor .= 'do {
+                my $display = defined($_) ? $_ : "undef";
+                Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display") unless $constraint->();
+            };'
         }
 
         $accessor .= '$self->{$key} = $_;';
@@ -203,6 +206,7 @@ sub verify_type_constraint {
     return 1 if $constraint->($_);
 
     my $name = $self->name;
+    local $_ = "undef" unless defined($_);
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_");
 }
 
