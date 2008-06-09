@@ -9,7 +9,7 @@ my %values_for_type = (
         valid   => [
             undef,
             \undef,
-            1.0,
+            1.3,
             "foo",
             \"foo",
             sub { die },
@@ -29,17 +29,45 @@ my %values_for_type = (
 
     Bool => {
         valid   => [undef, "", 1, 0, "1", "0"],
-        invalid => [1.5, "true", "false", "t", "f", ],
+        invalid => [
+            \undef,
+            1.5,
+            "true",
+            "false",
+            "t",
+            "f",
+            \"foo",
+            sub { die },
+            qr/^1?$|^(11+?)\1+$/,
+            [],
+            {},
+            \do { my $v = 1 },
+            Test::Builder->new,
+        ],
     },
 
     Undef => {
-        valid   => [],
-        invalid => [],
+        valid   => [undef],
+        invalid => [
+            \undef,
+            0,
+            '',
+            1.5,
+            "undef",
+            \"undef",
+            sub { die },
+            qr/^1?$|^(11+?)\1+$/,
+            [],
+            {},
+            \do { my $v = undef },
+            Test::Builder->new,
+        ],
     },
 
     Defined => {
-        valid   => [],
-        invalid => [],
+        # populated later with the values from Undef
+        #valid   => [],
+        #invalid => [],
     },
 
     Value => {
@@ -114,6 +142,8 @@ my %values_for_type = (
 );
 
 $values_for_type{Item}{valid} = $values_for_type{Any}{valid};
+$values_for_type{Defined}{valid} = $values_for_type{Undef}{invalid};
+$values_for_type{Defined}{invalid} = $values_for_type{Undef}{valid};
 
 my $plan = 0;
 $plan += 5 * @{ $values_for_type{$_}{valid} }   for keys %values_for_type;
@@ -152,16 +182,17 @@ for my $type (keys %values_for_type) {
     }
 
     for my $value (@{ $values_for_type{$type}{invalid} }) {
+        my $display = defined($value) ? $value : 'undef';
         my $via_new;
         throws_ok {
             $via_new = Class->new($type => $value);
-        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$value\E/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$display\E/;
         is($via_new, undef, "no object created");
 
         my $via_set = Class->new;
         throws_ok {
             $via_set->$type($value);
-        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$value\E/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$display\E/;
 
         is($via_set->$type, undef, "value for $type not set");
     }

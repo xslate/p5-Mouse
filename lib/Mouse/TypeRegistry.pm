@@ -10,8 +10,8 @@ sub optimized_constraints {
         Bool       => sub {
             !defined($_) || $_ eq "" || "$_" eq '1' || "$_" eq '0'
         },
-        Undef      => sub { 1 },
-        Defined    => sub { 1 },
+        Undef      => sub { !defined($_) },
+        Defined    => sub { defined($_) },
         Value      => sub { 1 },
         Num        => sub { 1 },
         Int        => sub { 1 },
