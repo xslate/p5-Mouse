@@ -100,12 +100,28 @@ sub is_class_loaded {
 
     return 0 if ref($class) || !defined($class) || !length($class);
 
-    no strict 'refs';
-    return 1 if defined ${"${class}::VERSION"} || defined @{"${class}::ISA"};
-    foreach my $symbol (keys %{"${class}::"}) {
-            next if substr($symbol, -2, 2) eq '::';
-            return 1 if defined &{"${class}::${symbol}"};
+    # walk the symbol table tree to avoid autovififying
+    # \*{${main::}{"Foo::"}} == \*main::Foo::
+
+    my $pack = \*::;
+    foreach my $part (split('::', $class)) {
+        return 0 unless exists ${$$pack}{"${part}::"};
+        $pack = \*{${$$pack}{"${part}::"}};
     }
+
+    # check for $VERSION or @ISA
+    return 1 if exists ${$$pack}{VERSION}
+             && defined *{${$$pack}{VERSION}}{SCALAR};
+    return 1 if exists ${$$pack}{ISA}
+             && defined *{${$$pack}{ISA}}{ARRAY};
+
+    # check for any method
+    foreach ( keys %{$$pack} ) {
+        next if substr($_, -2, 2) eq '::';
+        return 1 if defined *{${$$pack}{$_}}{CODE};
+    }
+
+    # fail
     return 0;
 }
 
