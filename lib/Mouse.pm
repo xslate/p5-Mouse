@@ -82,8 +82,8 @@ do {
 
 sub load_class {
     my $class = shift;
-    return if ref($class);
-    return unless defined($class) && length($class);
+
+    return 0 if ref($class) || !defined($class) || !length($class);
 
     return 1 if is_class_loaded($class);
 
@@ -209,6 +209,12 @@ L</extends>) it will break loudly instead breaking subtly.
 This will load a given C<Class::Name> (or die if it's not loadable).
 This function can be used in place of tricks like
 C<eval "use $module"> or using C<require>.
+
+=head2 is_class_loaded Class::Name -> Bool
+
+Returns whether this class is actually loaded or not. It uses a heuristic which
+involves checking for the existence of C<$VERSION>, C<@ISA>, and any
+locally-defined method.
 
 =head1 AUTHOR
 
