@@ -27,7 +27,7 @@ do {
             is   => 'rw',
             lazy => 1,
         );
-    } qr/You must specify a default for lazy attribute 'lazy_no_default'/;
+    } qr/You cannot have lazy attribute \(lazy_no_default\) without specifying a default value for it/;
 };
 
 my $object = Class->new;

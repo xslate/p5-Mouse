@@ -140,7 +140,7 @@ sub generate_handles {
 sub create {
     my ($self, $class, $name, %args) = @_;
 
-    confess "You must specify a default for lazy attribute '$name'"
+    confess "You cannot have lazy attribute ($name) without specifying a default value for it"
         if $args{lazy} && !exists($args{default}) && !exists($args{builder});
 
     confess "Trigger is not allowed on read-only attribute '$name'"
