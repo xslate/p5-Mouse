@@ -307,6 +307,8 @@ installed. Some error checking is done.
 
 =head2 has_builder -> Bool
 
+=head2 should_auto_deref -> Bool
+
 Informational methods.
 
 =head2 generate_accessor -> CODE

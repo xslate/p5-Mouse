@@ -134,7 +134,7 @@ __END__
 
 =head1 NAME
 
-Mouse - Moose minus antlers
+Mouse - Moose minus the antlers
 
 =head1 VERSION
 
@@ -161,6 +161,7 @@ Version 0.01 released ???
 
     has 'z' => (is => 'rw', isa => 'Int');
 
+    # not implemented yet :)
     #after 'clear' => sub {
     #    my $self = shift;
     #    $self->z(0);
@@ -168,9 +169,58 @@ Version 0.01 released ???
 
 =head1 DESCRIPTION
 
-Moose.
+L<Moose> is wonderful.
 
-=head1 INTERFACE
+Unfortunately, it's a little slow. Though significant progress has been made
+over the years, the compile time penalty is a non-starter for some
+applications.
+
+Mouse aims to alleviate this by providing a subset of Moose's
+functionality, faster. In particular, L<Moose/has> is missing only a few
+expert-level features.
+
+=head2 MOOSE COMPAT
+
+Compatibility with Moose has been the utmost concern. Fewer than 1% of the
+tests fail when run against Moose instead of Mouse. Mouse code coverage is also
+over 99%. Even the error messages are taken from Moose.
+
+The idea is that, if you need the extra power, you should be able to run
+C<s/Mouse/Moose/g> on your codebase and have nothing break.
+
+Mouse also has the blessings of Moose's author, stevan.
+
+=head2 MISSING FEATURES
+
+=head3 Method modifiers
+
+Fixing this one soon, with a reimplementation of L<Class::Method::Modifiers>.
+
+=head3 Roles
+
+Fixing this one slightly less soon. stevan has suggested an implementation
+strategy. Mouse currently mostly ignores methods.
+
+=head3 Complex types
+
+User-defined type constraints and parameterized types may be implemented. Type
+coercions probably not (patches welcome).
+
+=head3 Bootstrapped meta world
+
+Very handy for extensions to the MOP. Not pressing, but would be nice to have.
+
+=head3 Modification of attribute metaclass
+
+When you declare an attribute with L</has>, you get the inlined accessors
+installed immediately. Modifying the attribute metaclass, even if possible,
+does nothing.
+
+=head3 Lots more..
+
+MouseX?
+
+=head1 KEYWORDS
 
 =head2 meta -> Mouse::Meta::Class
 
@@ -183,7 +233,87 @@ Sets this class' superclasses.
 =head2 has (name|names) => parameters
 
 Adds an attribute (or if passed an arrayref of names, multiple attributes) to
-this class.
+this class. Options:
+
+=over 4
+
+=item is => ro|rw
+
+If specified, inlines a read-only/read-write accessor with the same name as
+the attribute.
+
+=item isa => TypeConstraint
+
+Provides basic type checking in the constructor and accessor. Basic types such
+as C<Int>, C<ArrayRef>, C<Defined> are supported. Any unknown type is taken to
+be a class check (e.g. isa => 'DateTime' would accept only L<DateTime>
+objects).
+
+=item required => 0|1
+
+Whether this attribute is required to have a value. If the attribute is lazy or
+has a builder, then providing a value for the attribute in the constructor is
+optional.
+
+=item init_arg => Str
+
+Allows you to use a different key name in the constructor.
+
+=item default => Value | CodeRef
+
+Sets the default value of the attribute. If the default is a coderef, it will
+be invoked to get the default value. Due to quirks of Perl, any bare reference
+is forbidden, you must wrap the reference in a coderef. Otherwise, all
+instances will share the same reference.
+
+=item lazy => 0|1
+
+If specified, the default is calculated on demand instead of in the
+constructor.
+
+=item predicate => Str
+
+Lets you specify a method name for installing a predicate method, which checks
+that the attribute has a value. It will not invoke a lazy default or builder
+method.
+
+=item clearer => Str
+
+Lets you specify a method name for installing a clearer method, which clears
+the attribute's value from the instance. On the next read, lazy or builder will
+be invoked.
+
+=item handles => HashRef|ArrayRef
+
+Lets you specify methods to delegate to the attribute. ArrayRef forwards the
+given method names to method calls on the attribute. HashRef maps local method
+names to remote method names called on the attribute. Other forms of
+L</handles>, such as regular expression and coderef, are not yet supported.
+
+=item weak_ref => 0|1
+
+Lets you automatically weaken any reference stored in the attribute.
+
+=item trigger => Coderef
+
+Any time the attribute's value is set (either through the accessor or the
+constructor), the trigger is called on it. The trigger receives as arguments
+the instance, the new value, and the attribute instance.
+
+=item builder => Str
+
+Defines a method name to be called to provide the default value of the
+attribute. C<< builder => 'build_foo' >> is mostly equivalent to
+C<< default => sub { $_[0]->build_foo } >>.
+
+=item auto_deref => 0|1
+
+Allows you to automatically dereference ArrayRef and HashRef attributes in list
+context. In scalar context, the reference is returned (NOT the list length or
+bucket status). You must specify an appropriate type constraint to use
+auto_deref.
+
+=back
 
 =head2 confess error -> BOOM
 
@@ -202,8 +332,8 @@ You may use L</extends> to replace the superclass list.
 
 =head2 unimport
 
-Please unimport Mouse so that if someone calls one of the keywords (such as
-L</extends>) it will break loudly instead breaking subtly.
+Please unimport Mouse (C<no Mouse>) so that if someone calls one of the
+keywords (such as L</extends>) it will break loudly instead breaking subtly.
 
 =head1 FUNCTIONS
 
@@ -222,6 +352,8 @@ locally-defined method.
 =head1 AUTHOR
 
 Shawn M Moore, C<< <sartak at gmail.com> >>
+
+with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
 
