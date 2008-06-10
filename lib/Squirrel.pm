@@ -65,7 +65,8 @@ When your own code doesn't actually care whether or not you use L<Moose> or
 L<Mouse> you can use either, and let your users decide for you.
 
 This lets you run with minimal dependencies and have a faster startup, but if
-L<Moose> is already in use you get all the benefits of using that.
+L<Moose> is already in use you get all the benefits of using that
+(transformability, introspection, more opportunities for code reuse, etc).
 
 =cut
 
