@@ -10,9 +10,9 @@ my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
 
 my @type_values = (
     undef              ,  [qw/Any Item Undef Bool/],
-    0                  => [qw/Any Item Defined Bool Value Num Int/],
-    1                  => [qw/Any Item Defined Bool Value Num Int/],
-    1.5                => [qw/Any Item Defined Value Num/],
+    0                  => [qw/Any Item Defined Bool Value Num Int Str/],
+    1                  => [qw/Any Item Defined Bool Value Num Int Str/],
+    1.5                => [qw/Any Item Defined Value Num Str/],
     ''                 => [qw/Any Item Defined Bool Value Str/],
     't'                => [qw/Any Item Defined Value Str/],
     'f'                => [qw/Any Item Defined Value Str/],
