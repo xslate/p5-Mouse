@@ -207,8 +207,8 @@ sub verify_type_constraint {
     return 1 if $constraint->($_);
 
     my $name = $self->name;
-    local $_ = "undef" unless defined($_);
-    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_");
+    my $display = defined($_) ? overload::StrVal($_) : 'undef';
+    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
 }
 
 sub _canonicalize_handles {
