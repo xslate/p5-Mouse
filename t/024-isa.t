@@ -4,150 +4,49 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-my %values_for_type = (
-    Any => {
-        valid   => [
-            undef,
-            \undef,
-            1.3,
-            "foo",
-            \"foo",
-            sub { die },
-            qr/^1?$|^(11+?)\1+$/,
-            [],
-            {},
-            \do { my $v },
-            Test::Builder->new,
-        ],
-        invalid => [],
-    },
+my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
+               Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
+               FileHandle Object/;
 
-    Item => {
-        #valid   => [], # populated later with the values from Any
-        invalid => [],
-    },
-
-    Bool => {
-        valid   => [undef, "", 1, 0, "1", "0"],
-        invalid => [
-            \undef,
-            1.5,
-            "true",
-            "false",
-            "t",
-            "f",
-            \"foo",
-            sub { die },
-            qr/^1?$|^(11+?)\1+$/,
-            [],
-            {},
-            \do { my $v = 1 },
-            Test::Builder->new,
-        ],
-    },
-
-    Undef => {
-        valid   => [undef],
-        invalid => [
-            \undef,
-            0,
-            '',
-            1.5,
-            "undef",
-            \"undef",
-            sub { die },
-            qr/^1?$|^(11+?)\1+$/,
-            [],
-            {},
-            \do { my $v = undef },
-            Test::Builder->new,
-        ],
-    },
-
-    Defined => {
-        # populated later with the values from Undef
-        #valid   => [],
-        #invalid => [],
-    },
-
-    Value => {
-        valid   => [],
-        invalid => [],
-    },
-
-    Num => {
-        valid   => [],
-        invalid => [],
-    },
-
-    Int => {
-        valid   => [],
-        invalid => [],
-    },
-
-    Str => {
-        valid   => [],
-        invalid => [],
-    },
-
-    ClassName => {
-        valid   => [],
-        invalid => [],
-    },
-
-    Ref => {
-        valid   => [],
-        invalid => [],
-    },
-
-    ScalarRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    ArrayRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    HashRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    CodeRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    RegexpRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    GlobRef => {
-        valid   => [],
-        invalid => [],
-    },
-
-    FileHandle => {
-        valid   => [],
-        invalid => [],
-    },
-
-    Object => {
-        valid   => [],
-        invalid => [],
-    },
+my @type_values = (
+    undef              ,  [qw/Any Item Undef Bool/],
+    0                  => [qw/Any Item Defined Bool Value Num Int/],
+    1                  => [qw/Any Item Defined Bool Value Num Int/],
+    1.5                => [qw/Any Item Defined Value Num/],
+    ''                 => [qw/Any Item Defined Bool Value Str/],
+    't'                => [qw/Any Item Defined Value Str/],
+    'f'                => [qw/Any Item Defined Value Str/],
+    'undef'            => [qw/Any Item Defined Value Str/],
+    'Test::More'       => [qw/Any Item Defined Value Str ClassName/],
+    \undef             => [qw/Any Item Defined Ref ScalarRef/],
+    \1                 => [qw/Any Item Defined Ref ScalarRef/],
+    \"foo"             => [qw/Any Item Defined Ref ScalarRef/],
+    [],                => [qw/Any Item Defined Ref ArrayRef/],
+    [undef, \1]        => [qw/Any Item Defined Ref ArrayRef/],
+    {}                 => [qw/Any Item Defined Ref HashRef/],
+    sub { die }        => [qw/Any Item Defined Ref CodeRef/],
+    qr/.*/             => [qw/Any Item Defined Ref RegexpRef/],
+    \*STDOUT           => [qw/Any Item Defined Ref GlobRef FileHandle/],
+    Test::Builder->new => [qw/Any Item Defined Ref Object/],
 );
 
-$values_for_type{Item}{valid} = $values_for_type{Any}{valid};
-$values_for_type{Defined}{valid} = $values_for_type{Undef}{invalid};
-$values_for_type{Defined}{invalid} = $values_for_type{Undef}{valid};
+my %values_for_type;
+
+for (my $i = 1; $i < @type_values; $i += 2) {
+    my ($value, $valid_types) = @type_values[$i-1, $i];
+    my %is_invalid = map { $_ => 1 } @types;
+    delete @is_invalid{@$valid_types};
+
+    push @{ $values_for_type{$_}{invalid} }, $value
+        for grep { $is_invalid{$_} } @types;
+
+    push @{ $values_for_type{$_}{valid} }, $value
+        for grep { !$is_invalid{$_} } @types;
+}
 
 my $plan = 0;
-$plan += 5 * @{ $values_for_type{$_}{valid} }   for keys %values_for_type;
-$plan += 4 * @{ $values_for_type{$_}{invalid} } for keys %values_for_type;
+$plan += 5 * @{ $values_for_type{$_}{valid} || [] }   for @types;
+$plan += 4 * @{ $values_for_type{$_}{invalid} || [] } for @types;
 $plan++; # can_ok
 
 plan tests => $plan;
@@ -156,7 +55,7 @@ do {
     package Class;
     use Mouse;
 
-    for my $type (keys %values_for_type) {
+    for my $type (@types) {
         has $type => (
             is  => 'rw',
             isa => $type,
@@ -164,9 +63,9 @@ do {
     }
 };
 
-can_ok(Class => keys %values_for_type);
+can_ok(Class => @types);
 
-for my $type (keys %values_for_type) {
+for my $type (@types) {
     for my $value (@{ $values_for_type{$type}{valid} }) {
         lives_ok {
             my $via_new = Class->new($type => $value);
