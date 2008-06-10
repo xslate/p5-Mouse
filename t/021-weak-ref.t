@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 21;
 use Test::Exception;
 use Scalar::Util 'isweak';
 
@@ -44,22 +44,33 @@ is($destroyed{accessor}, 1, "destroyed from the accessor");
 is($destroyed{constructor}, 1, "destroyed from the constructor");
 is($destroyed{middle}, 1, "casuality of war");
 
-ok(!Class->meta->get_attribute('type')->weak_ref, "type is not a weakref");
-ok(Class->meta->get_attribute('self')->weak_ref, "self IS a weakref");
+ok(!Class->meta->get_attribute('type')->is_weak_ref, "type is not a weakref");
+ok(Class->meta->get_attribute('self')->is_weak_ref, "self IS a weakref");
 
 do {
     package Class2;
     use Mouse;
 
     has value => (
-        is => 'ro',
+        is => 'rw',
         default => 10,
         weak_ref => 1,
     );
 };
 
-throws_ok { Class2->new } qr/Can't weaken a nonreference/;
-ok(Class2->meta->get_attribute('value')->weak_ref, "value IS a weakref");
+ok(Class2->meta->get_attribute('value')->is_weak_ref, "value IS a weakref");
+
+lives_ok {
+    my $obj = Class2->new;
+    is($obj->value, 10, "weak_ref doesn't apply to non-refs");
+};
+
+my $obj2 = Class2->new;
+lives_ok {
+    $obj2->value({});
+};
+
+is_deeply($obj2->value, undef, "weakened the reference even with a nonref default");
 
 do {
     package Class3;
@@ -81,4 +92,4 @@ $obj->hashref({1 => 1});
 is($obj->hashref, undef, "hashref collected between set and get because refcount=0");
 ok($obj->has_hashref, 'attribute is turned into undef, not deleted from instance');
 
-ok(Class3->meta->get_attribute('hashref')->weak_ref, "hashref IS a weakref");
+ok(Class3->meta->get_attribute('hashref')->is_weak_ref, "hashref IS a weakref");

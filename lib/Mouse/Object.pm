@@ -33,7 +33,7 @@ sub new {
                     $instance->{$key} = $value;
 
                     weaken($instance->{$key})
-                        if $attribute->weak_ref;
+                        if ref($instance->{$key}) && $attribute->is_weak_ref;
                 }
             }
             else {
@@ -50,7 +50,7 @@ sub new {
             $instance->{$key} = $args{$key};
 
             weaken($instance->{$key})
-                if $attribute->weak_ref;
+                if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
                 $attribute->trigger->($instance, $args{$key}, $attribute);

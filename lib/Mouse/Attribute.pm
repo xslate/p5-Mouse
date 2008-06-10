@@ -26,7 +26,7 @@ sub is_lazy         { $_[0]->{lazy}            }
 sub predicate       { $_[0]->{predicate}       }
 sub clearer         { $_[0]->{clearer}         }
 sub handles         { $_[0]->{handles}         }
-sub weak_ref        { $_[0]->{weak_ref}        }
+sub is_weak_ref     { $_[0]->{weak_ref}        }
 sub init_arg        { $_[0]->{init_arg}        }
 sub type_constraint { $_[0]->{type_constraint} }
 sub trigger         { $_[0]->{trigger}         }
@@ -67,8 +67,8 @@ sub generate_accessor {
 
         $accessor .= '$self->{$key} = $_;';
 
-        if ($attribute->weak_ref) {
-            $accessor .= 'Scalar::Util::weaken($self->{$key});';
+        if ($attribute->is_weak_ref) {
+            $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
         }
 
         if ($trigger) {
@@ -269,7 +269,7 @@ installed. Some error checking is done.
 
 =head2 has_handles -> Bool
 
-=head2 weak_ref -> Bool
+=head2 is_weak_ref -> Bool
 
 =head2 init_arg -> Str
 
