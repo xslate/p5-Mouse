@@ -7,12 +7,13 @@ use Test::Exception;
 require Mouse;
 use lib 't/lib';
 
-for my $method ('load_class', 'is_class_loaded') {
-    my $code = Mouse->can($method);
-    ok(!$code->(), "$method with no argument returns false");
-    ok(!$code->(''), "can't load the empty class");
-    ok(!$code->(\"foo"), "can't load a class name reference??");
-}
+ok(!Mouse::is_class_loaded(), "is_class_loaded with no argument returns false");
+ok(!Mouse::is_class_loaded(''), "can't load the empty class");
+ok(!Mouse::is_class_loaded(\"foo"), "can't load a class name reference??");
+
+throws_ok { Mouse::load_class()       } qr/Invalid class name \(undef\)/;
+throws_ok { Mouse::load_class('')     } qr/Invalid class name \(\)/;
+throws_ok { Mouse::load_class(\"foo") } qr/Invalid class name \(SCALAR\(\w+\)\)/;
 
 ok(Mouse::load_class('Anti::Mouse'));
 can_ok('Anti::Mouse' => 'antimouse');

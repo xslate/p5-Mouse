@@ -83,7 +83,10 @@ do {
 sub load_class {
     my $class = shift;
 
-    return 0 if ref($class) || !defined($class) || !length($class);
+    if (ref($class) || !defined($class) || !length($class)) {
+        my $display = defined($class) ? $class : 'undef';
+        confess "Invalid class name ($display)";
+    }
 
     return 1 if is_class_loaded($class);
 
