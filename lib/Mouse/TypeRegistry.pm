@@ -2,7 +2,9 @@
 package Mouse::TypeRegistry;
 use strict;
 use warnings;
+use Scalar::Util qw/looks_like_number blessed openhandle/;
 
+no warnings 'uninitialized';
 sub optimized_constraints {
     return {
         Any        => sub { 1 },
@@ -12,20 +14,29 @@ sub optimized_constraints {
         },
         Undef      => sub { !defined($_) },
         Defined    => sub { defined($_) },
-        Value      => sub { 1 },
-        Num        => sub { 1 },
-        Int        => sub { 1 },
-        Str        => sub { 1 },
+        Value      => sub { defined($_) && !ref($_) },
+        Num        => sub { !ref($_) && looks_like_number($_) },
+        Int        => sub { defined($_) && !ref($_) && /^-?[0-9]+$/ },
+        Str        => sub { defined($_) && !ref($_) },
         ClassName  => sub { 1 },
-        Ref        => sub { 1 },
-        ScalarRef  => sub { 1 },
-        ArrayRef   => sub { 1 },
-        HashRef    => sub { 1 },
-        CodeRef    => sub { 1 },
-        RegexpRef  => sub { 1 },
-        GlobRef    => sub { 1 },
-        FileHandle => sub { 1 },
-        Object     => sub { 1 },
+        Ref        => sub { ref($_) },
+
+        ScalarRef  => sub { ref($_) eq 'SCALAR' },
+        ArrayRef   => sub { ref($_) eq 'ARRAY'  },
+        HashRef    => sub { ref($_) eq 'HASH'   },
+        CodeRef    => sub { ref($_) eq 'CODE'   },
+        RegexpRef  => sub { ref($_) eq 'Regexp' },
+        GlobRef    => sub { ref($_) eq 'GLOB'   },
+
+        FileHandle => sub {
+                ref($_) eq 'GLOB'
+                && openhandle($_)
+            or
+                blessed($_)
+                && $_->isa("IO::Handle")
+        },
+
+        Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     };
 }
 
