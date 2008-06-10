@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 9;
 use Test::Exception;
 
 do {
@@ -38,4 +38,22 @@ throws_ok {
 throws_ok {
     Class->new(tb => Class->new);
 } qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' failed with value Class=HASH\(\w+\)/;
+
+do {
+    package Other;
+    use Mouse;
+
+    has oops => (
+        isa     => 'Int',
+        default => "yikes",
+    );
+};
+
+throws_ok {
+    Other->new;
+} qr/Attribute \(oops\) does not pass the type constraint because: Validation failed for 'Int' failed with value yikes/;
+
+lives_ok {
+    Other->new(oops => 10);
+};
 
