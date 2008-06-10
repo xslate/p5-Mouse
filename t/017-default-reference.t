@@ -39,7 +39,7 @@ do {
     ::throws_ok {
         has d => (
             is => 'rw',
-            default => meta(),
+            default => Test::Builder->new,
         );
     } qr/References are not allowed as default values/;
 };
