@@ -30,7 +30,7 @@ do {
     );
 };
 
-throws_ok { Class->new } qr/Attribute 'foo' is required/, "required attribute is required";
+throws_ok { Class->new } qr/Attribute \(foo\) is required/, "required attribute is required";
 lives_ok { Class->new(foo => 5) } "foo is the only required but unfulfilled attribute";
 lives_ok { Class->new(foo => 1, bar => 1, baz => 1, quux => 1) } "all attributes specified";
 

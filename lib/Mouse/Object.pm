@@ -38,7 +38,7 @@ sub new {
             }
             else {
                 if ($attribute->is_required) {
-                    confess "Attribute '".$attribute->name."' is required";
+                    confess "Attribute (".$attribute->name.") is required";
                 }
             }
         }
