@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 our $VERSION = '0.01';
+use 5.6.0;
 
 use Sub::Exporter;
 use Carp 'confess';
@@ -138,7 +139,7 @@ Mouse - Moose minus the antlers
 
 =head1 VERSION
 
-Version 0.01 released ???
+Version 0.01 released 10 Jun 08
 
 =head1 SYNOPSIS
 
@@ -194,7 +195,7 @@ Mouse also has the blessings of Moose's author, stevan.
 
 =head3 Method modifiers
 
-Fixing this one soon, with a reimplementation of L<Class::Method::Modifiers>.
+Fixing this one next, with a reimplementation of L<Class::Method::Modifiers>.
 
 =head3 Roles
 
