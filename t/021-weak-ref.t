@@ -66,7 +66,7 @@ do {
     use Mouse;
 
     has hashref => (
-        is        => 'ro',
+        is        => 'rw',
         default   => sub { {} },
         weak_ref  => 1,
         predicate => 'has_hashref',
