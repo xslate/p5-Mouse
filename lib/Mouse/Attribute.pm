@@ -60,7 +60,7 @@ sub generate_accessor {
 
         if ($constraint) {
             $accessor .= 'do {
-                my $display = defined($_) ? $_ : "undef";
+                my $display = defined($_) ? overload::StrVal($_) : "undef";
                 Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display") unless $constraint->();
             };'
         }

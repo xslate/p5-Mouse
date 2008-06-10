@@ -84,7 +84,7 @@ for my $type (@types) {
     }
 
     for my $value (@{ $values_for_type{$type}{invalid} }) {
-        my $display = defined($value) ? $value : 'undef';
+        my $display = defined($value) ? overload::StrVal($value) : 'undef';
         my $via_new;
         throws_ok {
             $via_new = Class->new($type => $value);
