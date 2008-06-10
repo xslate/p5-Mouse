@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
+use IO::Handle;
 
 my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
                Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
@@ -26,7 +27,9 @@ my @type_values = (
     {}                 => [qw/Any Item Defined Ref HashRef/],
     sub { die }        => [qw/Any Item Defined Ref CodeRef/],
     qr/.*/             => [qw/Any Item Defined Ref RegexpRef/],
+    \*main::ok         => [qw/Any Item Defined Ref GlobRef/],
     \*STDOUT           => [qw/Any Item Defined Ref GlobRef FileHandle/],
+    IO::Handle->new    => [qw/Any Item Defined Ref Object FileHandle/],
     Test::Builder->new => [qw/Any Item Defined Ref Object/],
 );
 
