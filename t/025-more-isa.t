@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 23;
+use Test::More tests => 29;
 use Test::Exception;
 
 do {
@@ -61,20 +61,26 @@ lives_ok {
 
 do {
     package A;
-    our $VERSION = 1;
+    our @VERSION;
 
     package B;
-    our @ISA = 'Mouse::Object';
+    our $VERSION = 1;
 
     package C;
-    sub foo {}
+    our %ISA;
 
-    package D::Child;
-    sub bar {}
+    package D;
+    our @ISA = 'Mouse::Object';
 
     package E;
+    sub foo {}
 
     package F;
+
+    package G::H;
+    sub bar {}
+
+    package I;
     our $NOT_CODE = 1;
 };
 
@@ -88,7 +94,7 @@ do {
     );
 };
 
-for ('A'..'C', 'D::Child') {
+for ('A'..'E', 'G::H') {
     lives_ok {
         ClassNameTests->new(class => $_);
     };
@@ -99,7 +105,7 @@ for ('A'..'C', 'D::Child') {
     };
 }
 
-for ('E'..'F', 'NonExistentClass') {
+for ('F', 'G', 'I', 'Z') {
     throws_ok {
         ClassNameTests->new(class => $_);
     } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value $_/;
