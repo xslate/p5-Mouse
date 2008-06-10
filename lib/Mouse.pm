@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 our $VERSION = '0.01';
-use 5.6.0;
+use 5.006;
 
 use Sub::Exporter;
 use Carp 'confess';
