@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 30;
+use Test::More tests => 34;
 
 my $builder_called = 0;
 my $lazy_builder_called = 0;
@@ -15,6 +15,7 @@ do {
         isa       => 'Str',
         builder   => '_build_name',
         predicate => 'has_name',
+        clearer   => 'clear_name',
     );
 
     sub _build_name {
@@ -49,6 +50,13 @@ is($object->name, "Bob", "builder doesn't matter when we just set the value in c
 $object->name("Bill");
 is($object->name, "Bill", "builder doesn't matter when we just set the value in writer");
 is($builder_called, 0, "builder not called in the setter");
+$builder_called = 0;
+
+$object->clear_name;
+ok(!$object->has_name, "predicate: no value after clear");
+is($object->name, undef, "eager builder does NOT swoop in after clear");
+ok(!$object->has_name, "predicate: no value after clear and get");
+is($builder_called, 0, "builder not called in the getter, even after clear");
 $builder_called = 0;
 
 my $object2 = Class->new;
