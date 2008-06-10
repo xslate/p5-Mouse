@@ -49,7 +49,6 @@ sub add_attribute {
     $self->{'attributes'}{$attr->name} = $attr;
 }
 
-sub attributes        { values %{ $_[0]->{'attributes'} } }
 sub get_attribute_map { $_[0]->{attributes} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
 
@@ -85,10 +84,6 @@ Gets (or sets) the list of superclasses of the owner class.
 =head2 add_attribute Mouse::Attribute
 
 Begins keeping track of the existing L<Mouse::Attribute> for the owner class.
-
-=head2 attributes -> [Mouse::Attribute]
-
-Returns a list of L<Mouse::Attribute> objects.
 
 =head2 get_attribute_map -> { name => Mouse::Attribute }
 

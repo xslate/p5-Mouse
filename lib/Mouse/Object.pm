@@ -12,7 +12,7 @@ sub new {
     my %args  = @_;
     my $instance = bless {}, $class;
 
-    for my $attribute ($class->meta->attributes) {
+    for my $attribute (values %{ $class->meta->get_attribute_map }) {
         my $key = $attribute->init_arg;
         my $default;
 

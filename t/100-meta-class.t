@@ -23,7 +23,7 @@ is_deeply([$meta->superclasses], ['Mouse::Object'], "correctly inherting from Mo
 my $meta2 = Class->meta;
 is($meta, $meta2, "same metaclass instance");
 
-can_ok($meta, 'name', 'attributes', 'get_attribute_map');
+can_ok($meta, 'name', 'get_attribute_map');
 
 my $attr = $meta->get_attribute('pawn');
 isa_ok($attr, 'Mouse::Attribute');
