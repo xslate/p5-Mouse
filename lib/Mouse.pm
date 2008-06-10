@@ -99,7 +99,7 @@ __END__
 
 =head1 NAME
 
-Mouse - miniature Moose near the speed of light
+Mouse - Moose minus antlers
 
 =head1 VERSION
 
@@ -108,18 +108,28 @@ Version 0.01 released ???
 =head1 SYNOPSIS
 
     package Point;
+    use Mouse; # automatically turns on strict and warnings
+
+    has 'x' => (is => 'rw', isa => 'Int');
+    has 'y' => (is => 'rw', isa => 'Int');
+
+    sub clear {
+        my $self = shift;
+        $self->x(0);
+        $self->y(0);
+    }
+
+    package Point3D;
     use Mouse;
 
-    has x => (
-        is => 'rw',
-    );
+    extends 'Point';
 
-    has y => (
-        is        => 'rw',
-        default   => 0,
-        predicate => 'has_y',
-        clearer   => 'clear_y',
-    );
+    has 'z' => (is => 'rw', isa => 'Int');
+
+    #after 'clear' => sub {
+    #    my $self = shift;
+    #    $self->z(0);
+    #};
 
 =head1 DESCRIPTION
 
@@ -152,7 +162,7 @@ L<Scalar::Util/blessed> for your convenience.
 
 =head2 import
 
-Importing Mouse will set your class' superclass list to L<Mouse::Object>.
+Importing Mouse will default your class' superclass list to L<Mouse::Object>.
 You may use L</extends> to replace the superclass list.
 
 =head2 unimport
@@ -164,7 +174,7 @@ L</extends>) it will break loudly instead breaking subtly.
 
 =head2 load_class Class::Name
 
-This will load a given Class::Name> (or die if it's not loadable).
+This will load a given C<Class::Name> (or die if it's not loadable).
 This function can be used in place of tricks like
 C<eval "use $module"> or using C<require>.
 
