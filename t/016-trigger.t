@@ -19,12 +19,12 @@ do {
         },
     );
 
-    ::throws_ok {
+    ::lives_ok {
         has error => (
             is => 'ro',
             trigger => sub { },
         );
-    } qr/Trigger is not allowed on read-only attribute 'error'/;
+    } "it's no longer an error to have trigger on a readonly attribute";
 };
 
 can_ok(Class => 'attr');

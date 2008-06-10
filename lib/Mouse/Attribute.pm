@@ -143,9 +143,6 @@ sub create {
     confess "You cannot have lazy attribute ($name) without specifying a default value for it"
         if $args{lazy} && !exists($args{default}) && !exists($args{builder});
 
-    confess "Trigger is not allowed on read-only attribute '$name'"
-        if $args{trigger} && $args{is} ne 'rw';
-
     confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
         if ref($args{default})
         && ref($args{default}) ne 'CODE';
