@@ -144,13 +144,8 @@ sub create {
         if ref($args{default})
         && ref($args{default}) ne 'CODE';
 
-    $args{handles} = { map { $_ => $_ } @{ $args{handles} } }
-        if $args{handles}
-        && ref($args{handles}) eq 'ARRAY';
-
-    confess "You must pass a HASH or ARRAY to handles"
-        if exists($args{handles})
-        && ref($args{handles}) ne 'HASH';
+    $args{handles} = { $self->_canonicalize_handles($args{handles}) }
+        if $args{handles};
 
     $args{type_constraint} = delete $args{isa};
 
@@ -205,14 +200,28 @@ sub verify_type_constraint {
 
     my $type = $self->type_constraint
         or return 1;
-    my $constraint = $self->find_type_constraint
-        or return 1;
+    my $constraint = $self->find_type_constraint;
 
     return 1 if $constraint->($_);
 
     my $name = $self->name;
     local $_ = "undef" unless defined($_);
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $_");
+}
+
+sub _canonicalize_handles {
+    my $self    = shift;
+    my $handles = shift;
+
+    if (ref($handles) eq 'HASH') {
+        return %$handles;
+    }
+    elsif (ref($handles) eq 'ARRAY') {
+        return map { $_ => $_ } @$handles;
+    }
+    else {
+        confess "Unable to canonicalize the 'handles' option with $handles";
+    }
 }
 
 1;

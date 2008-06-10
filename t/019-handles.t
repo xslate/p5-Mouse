@@ -42,25 +42,25 @@ do {
         has error => (
             handles => "string",
         );
-    } qr/You must pass a HASH or ARRAY to handles/;
+    } qr/Unable to canonicalize the 'handles' option with string/;
 
     ::throws_ok {
         has error2 => (
             handles => \"ref_to_string",
         );
-    } qr/You must pass a HASH or ARRAY to handles/;
+    } qr/Unable to canonicalize the 'handles' option with SCALAR\(\w+\)/;
 
     ::throws_ok {
         has error3 => (
             handles => qr/regex/,
         );
-    } qr/You must pass a HASH or ARRAY to handles/;
+    } qr/Unable to canonicalize the 'handles' option with \(\?-xism:regex\)/;
 
     ::throws_ok {
         has error4 => (
             handles => sub { "code" },
         );
-    } qr/You must pass a HASH or ARRAY to handles/;
+    } qr/Unable to canonicalize the 'handles' option with CODE\(\w+\)/;
 };
 
 can_ok(Class => qw(person has_person person_name person_age name age quid));
