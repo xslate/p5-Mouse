@@ -83,14 +83,26 @@ do {
 sub load_class {
     my $class = shift;
 
+    return 1 if is_class_loaded($class);
+
     (my $file = "$class.pm") =~ s{::}{/}g;
 
     eval { CORE::require($file) };
-    confess "Could not load class ($class) because : $@"
-        if $@
-        && $@ !~ /^Can't locate .*? at /;
+    confess "Could not load class ($class) because : $@" if $@;
 
     return 1;
+}
+
+sub is_class_loaded {
+    my $class = shift;
+
+    no strict 'refs';
+    return 1 if defined ${"${class}::VERSION"} || defined @{"${class}::ISA"};
+    foreach my $symbol (keys %{"${class}::"}) {
+            next if substr($symbol, -2, 2) eq '::';
+            return 1 if defined &{"${class}::${symbol}"};
+    }
+    return 0;
 }
 
 1;
