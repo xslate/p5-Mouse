@@ -98,6 +98,8 @@ sub load_class {
 sub is_class_loaded {
     my $class = shift;
 
+    return 0 if ref($class) || !defined($class) || !length($class);
+
     no strict 'refs';
     return 1 if defined ${"${class}::VERSION"} || defined @{"${class}::ISA"};
     foreach my $symbol (keys %{"${class}::"}) {
