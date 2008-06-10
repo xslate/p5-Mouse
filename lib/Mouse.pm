@@ -62,8 +62,9 @@ do {
         strict->import;
         warnings->import;
 
-        no strict 'refs';
-        @{ $CALLER . '::ISA' } = 'Mouse::Object';
+        my $meta = Mouse::Class->initialize($CALLER);
+        $meta->superclasses('Mouse::Object')
+            unless $meta->superclasses;
 
         goto $exporter;
     }
