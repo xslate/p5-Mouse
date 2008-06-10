@@ -59,7 +59,7 @@ Squirrel - Use L<Mouse>, unless L<Moose> is already loaded.
 =head1 DESCRIPTION
 
 L<Moose> and L<Squirrel> are TEH BEST FRENDS, but if L<Moose> isn't there
-L<Squirrel> will hang out with L<Mouse> as too.
+L<Squirrel> will hang out with L<Mouse> as well.
 
 When your own code doesn't actually care whether or not you use L<Moose> or
 L<Mouse> you can use either, and let your users decide for you.
