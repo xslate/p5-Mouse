@@ -18,10 +18,10 @@ do {
 };
 
 my $meta = Class->meta;
-isa_ok($meta, 'Mouse::Class');
+isa_ok($meta, 'Mouse::Meta::Class');
 
 my $attr = $meta->get_attribute('pawn');
-isa_ok($attr, 'Mouse::Attribute');
+isa_ok($attr, 'Mouse::Meta::Attribute');
 
 can_ok($attr, qw(name class predicate clearer));
 is($attr->name, 'pawn', 'attribute name');

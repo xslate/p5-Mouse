@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package Mouse::Class;
+package Mouse::Meta::Class;
 use strict;
 use warnings;
 
@@ -60,18 +60,18 @@ __END__
 
 =head1 NAME
 
-Mouse::Class - hook into the Mouse MOP
+Mouse::Meta::Class - hook into the Mouse MOP
 
 =head1 METHODS
 
-=head2 initialize ClassName -> Mouse::Class
+=head2 initialize ClassName -> Mouse::Meta::Class
 
-Finds or creates a Mouse::Class instance for the given ClassName. Only one
-instance should exist for a given class.
+Finds or creates a Mouse::Meta::Class instance for the given ClassName. Only
+one instance should exist for a given class.
 
-=head2 new %args -> Mouse::Class
+=head2 new %args -> Mouse::Meta::Class
 
-Creates a new Mouse::Class. Don't call this directly.
+Creates a new Mouse::Meta::Class. Don't call this directly.
 
 =head2 name -> ClassName
 
@@ -81,18 +81,19 @@ Returns the name of the owner class.
 
 Gets (or sets) the list of superclasses of the owner class.
 
-=head2 add_attribute Mouse::Attribute
+=head2 add_attribute Mouse::Meta::Attribute
 
-Begins keeping track of the existing L<Mouse::Attribute> for the owner class.
+Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
+class.
 
-=head2 get_attribute_map -> { name => Mouse::Attribute }
+=head2 get_attribute_map -> { name => Mouse::Meta::Attribute }
 
 Returns a mapping of attribute names to their corresponding
-L<Mouse::Attribute> objects.
+L<Mouse::Meta::Attribute> objects.
 
-=head2 get_attribute Name -> Mouse::Attribute | undef
+=head2 get_attribute Name -> Mouse::Meta::Attribute | undef
 
-Returns the L<Mouse::Attribute> with the given name.
+Returns the L<Mouse::Meta::Attribute> with the given name.
 
 =head2 linearized_isa -> [ClassNames]
 

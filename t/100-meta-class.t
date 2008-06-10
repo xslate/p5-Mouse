@@ -16,7 +16,7 @@ do {
 };
 
 my $meta = Class->meta;
-isa_ok($meta, 'Mouse::Class');
+isa_ok($meta, 'Mouse::Meta::Class');
 
 is_deeply([$meta->superclasses], ['Mouse::Object'], "correctly inherting from Mouse::Object");
 
@@ -26,7 +26,7 @@ is($meta, $meta2, "same metaclass instance");
 can_ok($meta, 'name', 'get_attribute_map');
 
 my $attr = $meta->get_attribute('pawn');
-isa_ok($attr, 'Mouse::Attribute');
+isa_ok($attr, 'Mouse::Meta::Attribute');
 is($attr->name, 'pawn', 'got the correct attribute');
 
 my $map = $meta->get_attribute_map;
@@ -50,7 +50,7 @@ do {
 };
 
 my $child_meta = Child->meta;
-isa_ok($child_meta, 'Mouse::Class');
+isa_ok($child_meta, 'Mouse::Meta::Class');
 
 isnt($meta, $child_meta, "different metaclass instances for the two classes");
 

@@ -9,8 +9,8 @@ use Sub::Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
-use Mouse::Attribute;
-use Mouse::Class;
+use Mouse::Meta::Attribute;
+use Mouse::Meta::Class;
 use Mouse::Object;
 use Mouse::TypeRegistry;
 
@@ -19,7 +19,7 @@ do {
 
     my %exports = (
         meta => sub {
-            my $meta = Mouse::Class->initialize($CALLER);
+            my $meta = Mouse::Meta::Class->initialize($CALLER);
             return sub { $meta };
         },
 
@@ -37,7 +37,7 @@ do {
                 $names = [$names] if !ref($names);
 
                 for my $name (@$names) {
-                    Mouse::Attribute->create($package, $name, @_);
+                    Mouse::Meta::Attribute->create($package, $name, @_);
                 }
             };
         },
@@ -62,7 +62,7 @@ do {
         strict->import;
         warnings->import;
 
-        my $meta = Mouse::Class->initialize($CALLER);
+        my $meta = Mouse::Meta::Class->initialize($CALLER);
         $meta->superclasses('Mouse::Object')
             unless $meta->superclasses;
 
@@ -149,7 +149,7 @@ Moose.
 
 =head1 INTERFACE
 
-=head2 meta -> Mouse::Class
+=head2 meta -> Mouse::Meta::Class
 
 Returns this class' metaclass instance.
 

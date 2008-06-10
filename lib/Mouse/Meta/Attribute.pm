@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package Mouse::Attribute;
+package Mouse::Meta::Attribute;
 use strict;
 use warnings;
 
@@ -232,15 +232,15 @@ __END__
 
 =head1 NAME
 
-Mouse::Attribute - attribute metaclass
+Mouse::Meta::Attribute - attribute metaclass
 
 =head1 METHODS
 
-=head2 new %args -> Mouse::Attribute
+=head2 new %args -> Mouse::Meta::Attribute
 
-Instantiates a new Mouse::Attribute. Does nothing else.
+Instantiates a new Mouse::Meta::Attribute. Does nothing else.
 
-=head2 create OwnerClass, AttributeName, %args -> Mouse::Attribute
+=head2 create OwnerClass, AttributeName, %args -> Mouse::Meta::Attribute
 
 Creates a new attribute in OwnerClass. Accessors and helper methods are
 installed. Some error checking is done.
