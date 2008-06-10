@@ -36,8 +36,6 @@ sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
 sub has_clearer         { exists $_[0]->{clearer}         }
 sub has_handles         { exists $_[0]->{handles}         }
-sub has_weak_ref        { exists $_[0]->{weak_ref}        }
-sub has_init_arg        { exists $_[0]->{init_arg}        }
 sub has_type_constraint { exists $_[0]->{type_constraint} }
 sub has_trigger         { exists $_[0]->{trigger}         }
 sub has_builder         { exists $_[0]->{builder}         }
@@ -240,17 +238,41 @@ installed. Some error checking is done.
 
 =head2 class -> OwnerClass
 
-=head2 default -> Value
+=head2 is_required -> Bool
 
-=head2 predicate -> MethodName
+=head2 default -> Item
 
-=head2 clearer -> MethodName
+=head2 has_default -> Bool
+
+=head2 is_lazy -> Bool
+
+=head2 predicate -> MethodName | Undef
+
+=head2 has_predicate -> Bool
+
+=head2 clearer -> MethodName | Undef
+
+=head2 has_clearer -> Bool
 
 =head2 handles -> { LocalName => RemoteName }
+
+=head2 has_handles -> Bool
 
 =head2 weak_ref -> Bool
 
 =head2 init_arg -> Str
+
+=head2 type_constraint -> Str
+
+=head2 has_type_constraint -> Bool
+
+=head2 trigger => CODE | Undef
+
+=head2 has_trigger -> Bool
+
+=head2 builder => MethodName | Undef
+
+=head2 has_builder -> Bool
 
 Informational methods.
 
