@@ -13,7 +13,7 @@ sub new {
     my $instance = bless {}, $class;
 
     for my $attribute (values %{ $class->meta->get_attribute_map }) {
-        my $key = $attribute->init_arg;
+        my $key = $attribute->name;
         my $default;
 
         if (!exists($args{$key})) {

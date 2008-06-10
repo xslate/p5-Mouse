@@ -16,13 +16,13 @@ do {
 
 my $object = Class->new;
 is($object->name, 'default', 'accessor uses attribute name');
-is($object->{name}, undef, 'nothing in object->{attribute name}!');
-is($object->{key}, 'default', 'value is in object->{init_arg}');
+is($object->{key}, undef, 'nothing in object->{init_arg}!');
+is($object->{name}, 'default', 'value is in object->{name}');
 
 my $object2 = Class->new(name => 'name', key => 'key');
-is($object2->name, 'key', 'attribute value is from init_arg');
-is($object2->{name}, undef, 'no value for the attribute name');
-is($object2->{key}, 'key', 'value is from init_arg parameter');
+is($object2->name, 'name', 'attribute value is from name');
+is($object2->{key}, undef, 'no value for the init_arg');
+is($object2->{name}, 'name', 'value is in key from name');
 
 my $attr = $object2->meta->get_attribute('name');
 ok($attr, 'got the attribute object by name (not init_arg)');

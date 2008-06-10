@@ -44,7 +44,7 @@ sub generate_accessor {
     my $attribute = shift;
 
     my $name       = $attribute->name;
-    my $key        = $attribute->init_arg;
+    my $key        = $name;
     my $default    = $attribute->default;
     my $trigger    = $attribute->trigger;
     my $type       = $attribute->type_constraint;
@@ -101,7 +101,7 @@ sub generate_accessor {
 
 sub generate_predicate {
     my $attribute = shift;
-    my $key = $attribute->init_arg;
+    my $key = $attribute->name;
 
     my $predicate = 'sub { exists($_[0]->{$key}) }';
 
@@ -110,7 +110,7 @@ sub generate_predicate {
 
 sub generate_clearer {
     my $attribute = shift;
-    my $key = $attribute->init_arg;
+    my $key = $attribute->name;
 
     my $predicate = 'sub { delete($_[0]->{$key}) }';
 
