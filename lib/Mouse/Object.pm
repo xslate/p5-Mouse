@@ -20,7 +20,7 @@ sub new {
             if ($attribute->has_default || $attribute->has_builder) {
                 my $default = $attribute->default;
 
-                unless ($attribute->lazy) {
+                unless ($attribute->is_lazy) {
                     my $builder = $attribute->builder;
                     my $value = $attribute->has_builder
                               ? $instance->$builder
@@ -38,7 +38,7 @@ sub new {
                 }
             }
             else {
-                if ($attribute->required) {
+                if ($attribute->is_required) {
                     confess "Attribute '".$attribute->name."' is required";
                 }
             }

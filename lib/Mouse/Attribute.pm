@@ -18,9 +18,10 @@ sub new {
 
 sub name            { $_[0]->{name}            }
 sub class           { $_[0]->{class}           }
-sub required        { $_[0]->{required}        }
+sub _is_metadata    { $_[0]->{is}              }
+sub is_required     { $_[0]->{required}        }
 sub default         { $_[0]->{default}         }
-sub lazy            { $_[0]->{lazy}            }
+sub is_lazy         { $_[0]->{lazy}            }
 sub predicate       { $_[0]->{predicate}       }
 sub clearer         { $_[0]->{clearer}         }
 sub handles         { $_[0]->{handles}         }
@@ -43,17 +44,17 @@ sub has_builder         { exists $_[0]->{builder}         }
 sub generate_accessor {
     my $attribute = shift;
 
-    my $name       = $attribute->{name};
-    my $key        = $attribute->{init_arg};
-    my $default    = $attribute->{default};
-    my $trigger    = $attribute->{trigger};
-    my $type       = $attribute->{type_constraint};
+    my $name       = $attribute->name;
+    my $key        = $attribute->init_arg;
+    my $default    = $attribute->default;
+    my $trigger    = $attribute->trigger;
+    my $type       = $attribute->type_constraint;
     my $constraint = $attribute->find_type_constraint;
 
     my $accessor = 'sub {
         my $self = shift;';
 
-    if ($attribute->{is} eq 'rw') {
+    if ($attribute->_is_metadata eq 'rw') {
         $accessor .= 'if (@_) {
             local $_ = $_[0];';
 
@@ -66,7 +67,7 @@ sub generate_accessor {
 
         $accessor .= '$self->{$key} = $_;';
 
-        if ($attribute->{weak_ref}) {
+        if ($attribute->weak_ref) {
             $accessor .= 'Scalar::Util::weaken($self->{$key});';
         }
 
@@ -79,9 +80,9 @@ sub generate_accessor {
     else {
     }
 
-    if ($attribute->{lazy}) {
+    if ($attribute->is_lazy) {
         $accessor .= '$self->{$key} = ';
-        $accessor .= ref($attribute->{default}) eq 'CODE'
+        $accessor .= ref($default) eq 'CODE'
                    ? '$default->($self)'
                    : '$default';
         $accessor .= ' if !exists($self->{$key});';
@@ -95,7 +96,7 @@ sub generate_accessor {
 
 sub generate_predicate {
     my $attribute = shift;
-    my $key = $attribute->{init_arg};
+    my $key = $attribute->init_arg;
 
     my $predicate = 'sub { exists($_[0]->{$key}) }';
 
@@ -104,7 +105,7 @@ sub generate_predicate {
 
 sub generate_clearer {
     my $attribute = shift;
-    my $key = $attribute->{init_arg};
+    my $key = $attribute->init_arg;
 
     my $predicate = 'sub { delete($_[0]->{$key}) }';
 
@@ -113,12 +114,12 @@ sub generate_clearer {
 
 sub generate_handles {
     my $attribute = shift;
-    my $reader = $attribute->{name};
+    my $reader = $attribute->name;
 
     my %method_map;
 
-    for my $local_method (keys %{ $attribute->{handles} }) {
-        my $remote_method = $attribute->{handles}{$local_method};
+    for my $local_method (keys %{ $attribute->handles }) {
+        my $remote_method = $attribute->handles->{$local_method};
 
         my $method = 'sub {
             my $self = shift;
@@ -160,22 +161,23 @@ sub create {
     $meta->add_attribute($attribute);
 
     # install an accessor
-    if ($attribute->{is} eq 'rw' || $attribute->{is} eq 'ro') {
+    if ($attribute->_is_metadata eq 'rw' || $attribute->_is_metadata eq 'ro') {
         my $accessor = $attribute->generate_accessor;
         no strict 'refs';
         *{ $class . '::' . $name } = $accessor;
     }
 
     for my $method (qw/predicate clearer/) {
-        if (exists $attribute->{$method}) {
+        my $predicate = "has_$method";
+        if ($attribute->$predicate) {
             my $generator = "generate_$method";
             my $coderef = $attribute->$generator;
             no strict 'refs';
-            *{ $class . '::' . $attribute->{$method} } = $coderef;
+            *{ $class . '::' . $attribute->$method } = $coderef;
         }
     }
 
-    if ($attribute->{handles}) {
+    if ($attribute->has_handles) {
         my $method_map = $attribute->generate_handles;
         for my $method_name (keys %$method_map) {
             no strict 'refs';
