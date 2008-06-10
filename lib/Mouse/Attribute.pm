@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Carp 'confess';
+use Scalar::Util 'blessed';
 
 sub new {
     my $class = shift;
@@ -197,7 +198,7 @@ sub find_type_constraint {
     my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
     return $checker if $checker;
 
-    confess "Unable to parse type constraint '$type'";
+    return sub { blessed($_) && blessed($_) eq $type };
 }
 
 sub verify_type_constraint {
