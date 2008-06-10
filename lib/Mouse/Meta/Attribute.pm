@@ -17,20 +17,21 @@ sub new {
     bless \%args, $class;
 }
 
-sub name            { $_[0]->{name}            }
-sub class           { $_[0]->{class}           }
-sub _is_metadata    { $_[0]->{is}              }
-sub is_required     { $_[0]->{required}        }
-sub default         { $_[0]->{default}         }
-sub is_lazy         { $_[0]->{lazy}            }
-sub predicate       { $_[0]->{predicate}       }
-sub clearer         { $_[0]->{clearer}         }
-sub handles         { $_[0]->{handles}         }
-sub is_weak_ref     { $_[0]->{weak_ref}        }
-sub init_arg        { $_[0]->{init_arg}        }
-sub type_constraint { $_[0]->{type_constraint} }
-sub trigger         { $_[0]->{trigger}         }
-sub builder         { $_[0]->{builder}         }
+sub name              { $_[0]->{name}            }
+sub class             { $_[0]->{class}           }
+sub _is_metadata      { $_[0]->{is}              }
+sub is_required       { $_[0]->{required}        }
+sub default           { $_[0]->{default}         }
+sub is_lazy           { $_[0]->{lazy}            }
+sub predicate         { $_[0]->{predicate}       }
+sub clearer           { $_[0]->{clearer}         }
+sub handles           { $_[0]->{handles}         }
+sub is_weak_ref       { $_[0]->{weak_ref}        }
+sub init_arg          { $_[0]->{init_arg}        }
+sub type_constraint   { $_[0]->{type_constraint} }
+sub trigger           { $_[0]->{trigger}         }
+sub builder           { $_[0]->{builder}         }
+sub should_auto_deref { $_[0]->{auto_deref}      }
 
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
@@ -93,7 +94,20 @@ sub generate_accessor {
         $accessor .= ' if !exists($self->{$key});';
     }
 
-    $accessor .= 'return $self->{$key}
+    if ($attribute->should_auto_deref) {
+        if ($attribute->type_constraint eq 'ArrayRef') {
+            $accessor .= 'if (wantarray) {
+                return @{ $self->{$key} || [] };
+            }';
+        }
+        else {
+            $accessor .= 'if (wantarray) {
+                return %{ $self->{$key} || {} };
+            }';
+        }
+    }
+
+    $accessor .= 'return $self->{$key};
     }';
 
     return eval $accessor;
