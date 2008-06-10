@@ -82,6 +82,8 @@ do {
 
 sub load_class {
     my $class = shift;
+    return if ref($class);
+    return unless defined($class) && length($class);
 
     return 1 if is_class_loaded($class);
 
