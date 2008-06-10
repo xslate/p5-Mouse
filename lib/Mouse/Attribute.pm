@@ -49,6 +49,7 @@ sub generate_accessor {
     my $trigger    = $attribute->trigger;
     my $type       = $attribute->type_constraint;
     my $constraint = $attribute->find_type_constraint;
+    my $builder    = $attribute->builder;
 
     my $accessor = 'sub {
         my $self = shift;';
@@ -81,9 +82,13 @@ sub generate_accessor {
 
     if ($attribute->is_lazy) {
         $accessor .= '$self->{$key} = ';
-        $accessor .= ref($default) eq 'CODE'
-                   ? '$default->($self)'
-                   : '$default';
+
+        $accessor .= $attribute->has_builder
+                   ? '$self->$builder'
+                     : ref($default) eq 'CODE'
+                     ? '$default->($self)'
+                     : '$default';
+
         $accessor .= ' if !exists($self->{$key});';
     }
 
@@ -135,7 +140,7 @@ sub create {
     my ($self, $class, $name, %args) = @_;
 
     confess "You must specify a default for lazy attribute '$name'"
-        if $args{lazy} && !exists($args{default});
+        if $args{lazy} && !exists($args{default}) && !exists($args{builder});
 
     confess "Trigger is not allowed on read-only attribute '$name'"
         if $args{trigger} && $args{is} ne 'rw';
