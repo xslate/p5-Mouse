@@ -70,3 +70,18 @@ sub optimized_constraints {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Mouse::TypeRegistry - simple type constraints
+
+=head1 METHODS
+
+=head2 optimized_constraints -> HashRef[CODE]
+
+Returns the simple type constraints that Mouse understands.
+
+=cut
+
+
