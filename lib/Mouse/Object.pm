@@ -74,7 +74,7 @@ sub BUILDALL {
 
     no strict 'refs';
 
-    for my $class ($self->meta->linearized_isa) {
+    for my $class (reverse $self->meta->linearized_isa) {
         my $code = *{ $class . '::BUILD' }{CODE}
             or next;
         $code->($self, @_);
