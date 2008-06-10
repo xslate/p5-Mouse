@@ -120,11 +120,12 @@ sub generate_clearer {
 sub generate_handles {
     my $attribute = shift;
     my $reader = $attribute->name;
+    my %handles = $attribute->_canonicalize_handles($attribute->handles);
 
     my %method_map;
 
-    for my $local_method (keys %{ $attribute->handles }) {
-        my $remote_method = $attribute->handles->{$local_method};
+    for my $local_method (keys %handles) {
+        my $remote_method = $handles{$local_method};
 
         my $method = 'sub {
             my $self = shift;
@@ -146,9 +147,6 @@ sub create {
     confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
         if ref($args{default})
         && ref($args{default}) ne 'CODE';
-
-    $args{handles} = { $self->_canonicalize_handles($args{handles}) }
-        if $args{handles};
 
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};

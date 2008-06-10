@@ -92,7 +92,7 @@ is($object->me->age, 21, "me->age");
 
 is_deeply(
     $object->meta->get_attribute('me')->handles,
-    { name => 'name', age => 'age' },
+    [ 'name', 'age' ],
     "correct handles layout for 'me'",
 );
 
