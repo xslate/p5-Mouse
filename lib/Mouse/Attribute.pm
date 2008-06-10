@@ -18,16 +18,18 @@ sub new {
 
 sub name            { $_[0]->{name}            }
 sub class           { $_[0]->{class}           }
+sub required        { $_[0]->{required}        }
 sub default         { $_[0]->{default}         }
+sub lazy            { $_[0]->{lazy}            }
 sub predicate       { $_[0]->{predicate}       }
 sub clearer         { $_[0]->{clearer}         }
 sub handles         { $_[0]->{handles}         }
 sub weak_ref        { $_[0]->{weak_ref}        }
 sub init_arg        { $_[0]->{init_arg}        }
 sub type_constraint { $_[0]->{type_constraint} }
+sub trigger         { $_[0]->{trigger}         }
+sub builder         { $_[0]->{builder}         }
 
-sub has_name            { exists $_[0]->{name}            }
-sub has_class           { exists $_[0]->{class}           }
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
 sub has_clearer         { exists $_[0]->{clearer}         }
@@ -35,6 +37,8 @@ sub has_handles         { exists $_[0]->{handles}         }
 sub has_weak_ref        { exists $_[0]->{weak_ref}        }
 sub has_init_arg        { exists $_[0]->{init_arg}        }
 sub has_type_constraint { exists $_[0]->{type_constraint} }
+sub has_trigger         { exists $_[0]->{trigger}         }
+sub has_builder         { exists $_[0]->{builder}         }
 
 sub generate_accessor {
     my $attribute = shift;

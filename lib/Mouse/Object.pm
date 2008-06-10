@@ -17,27 +17,29 @@ sub new {
         my $default;
 
         if (!exists($args{$key})) {
-            if (exists($attribute->{default}) || exists($attribute->{builder})) {
-                unless ($attribute->{lazy}) {
-                    my $builder = $attribute->{builder};
-                    my $default = exists($attribute->{builder})
-                                ? $instance->$builder
-                                : ref($attribute->{default}) eq 'CODE'
-                                    ? $attribute->{default}->()
-                                    : $attribute->{default};
+            if ($attribute->has_default || $attribute->has_builder) {
+                my $default = $attribute->default;
 
-                    $attribute->verify_type_constraint($default)
+                unless ($attribute->lazy) {
+                    my $builder = $attribute->builder;
+                    my $value = $attribute->has_builder
+                              ? $instance->$builder
+                              : ref($default) eq 'CODE'
+                                  ? $default->()
+                                  : $default;
+
+                    $attribute->verify_type_constraint($value)
                         if $attribute->has_type_constraint;
 
-                    $instance->{$key} = $default;
+                    $instance->{$key} = $value;
 
                     Scalar::Util::weaken($instance->{$key})
-                        if $attribute->{weak_ref};
+                        if $attribute->weak_ref;
                 }
             }
             else {
-                if ($attribute->{required}) {
-                    confess "Attribute '$attribute->{name}' is required";
+                if ($attribute->required) {
+                    confess "Attribute '".$attribute->name."' is required";
                 }
             }
         }
@@ -49,10 +51,10 @@ sub new {
             $instance->{$key} = $args{$key};
 
             Scalar::Util::weaken($instance->{$key})
-                if $attribute->{weak_ref};
+                if $attribute->weak_ref;
 
-            if ($attribute->{trigger}) {
-                $attribute->{trigger}->($instance, $args{$key}, $attribute);
+            if ($attribute->has_trigger) {
+                $attribute->trigger->($instance, $args{$key}, $attribute);
             }
         }
     }
