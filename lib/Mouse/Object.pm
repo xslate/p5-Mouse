@@ -13,10 +13,11 @@ sub new {
     my $instance = bless {}, $class;
 
     for my $attribute (values %{ $class->meta->get_attribute_map }) {
-        my $key = $attribute->name;
+        my $from = $attribute->init_arg;
+        my $key  = $attribute->name;
         my $default;
 
-        if (!exists($args{$key})) {
+        if (!exists($args{$from})) {
             if ($attribute->has_default || $attribute->has_builder) {
                 unless ($attribute->is_lazy) {
                     my $default = $attribute->default;
@@ -43,17 +44,17 @@ sub new {
             }
         }
 
-        if (exists($args{$key})) {
-            $attribute->verify_type_constraint($args{$key})
+        if (exists($args{$from})) {
+            $attribute->verify_type_constraint($args{$from})
                 if $attribute->has_type_constraint;
 
-            $instance->{$key} = $args{$key};
+            $instance->{$key} = $args{$from};
 
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args{$key}, $attribute);
+                $attribute->trigger->($instance, $args{$from}, $attribute);
             }
         }
     }

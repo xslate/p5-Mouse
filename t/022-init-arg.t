@@ -20,9 +20,9 @@ is($object->{key}, undef, 'nothing in object->{init_arg}!');
 is($object->{name}, 'default', 'value is in object->{name}');
 
 my $object2 = Class->new(name => 'name', key => 'key');
-is($object2->name, 'name', 'attribute value is from name');
+is($object2->name, 'key', 'attribute value is from name');
 is($object2->{key}, undef, 'no value for the init_arg');
-is($object2->{name}, 'name', 'value is in key from name');
+is($object2->{name}, 'key', 'value is in key from name');
 
 my $attr = $object2->meta->get_attribute('name');
 ok($attr, 'got the attribute object by name (not init_arg)');
