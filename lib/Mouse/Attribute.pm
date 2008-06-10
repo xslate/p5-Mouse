@@ -147,7 +147,8 @@ sub create {
     $args{handles} = { $self->_canonicalize_handles($args{handles}) }
         if $args{handles};
 
-    $args{type_constraint} = delete $args{isa};
+    $args{type_constraint} = delete $args{isa}
+        if exists $args{isa};
 
     my $attribute = $self->new(%args, name => $name, class => $class);
     my $meta = $class->meta;
