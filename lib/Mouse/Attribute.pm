@@ -302,5 +302,15 @@ Creates a new code reference for the attribute's clearer.
 
 Creates a new code reference for each of the attribute's handles methods.
 
+=head2 find_type_constraint -> CODE
+
+Returns a code reference which can be used to check that a given value passes
+this attribute's type constraint;
+
+=head2 verify_type_constraint Item -> 1 | ERROR
+
+Checks that the given value passes this attribute's type constraint. Returns 1
+on success, otherwise C<confess>es.
+
 =cut
 

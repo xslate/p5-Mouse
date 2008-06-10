@@ -29,4 +29,4 @@ is($attr->class, 'Class', 'attached class');
 is($attr->predicate, 'has_pawn', 'predicate');
 is($attr->clearer, 'clear_pawn', 'clearer');
 is(ref($attr->default), 'CODE', 'default is a coderef');
-
+ok($attr->verify_type_constraint(1), 'verify_type_constraint works even without isa');

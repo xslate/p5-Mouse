@@ -18,9 +18,8 @@ sub new {
 
         if (!exists($args{$key})) {
             if ($attribute->has_default || $attribute->has_builder) {
-                my $default = $attribute->default;
-
                 unless ($attribute->is_lazy) {
+                    my $default = $attribute->default;
                     my $builder = $attribute->builder;
                     my $value = $attribute->has_builder
                               ? $instance->$builder
