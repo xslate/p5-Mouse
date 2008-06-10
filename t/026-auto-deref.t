@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More tests => 15;
 use Test::Exception;
 
 do {
@@ -19,6 +19,21 @@ do {
         isa        => 'HashRef',
         auto_deref => 1,
     );
+
+    ::throws_ok {
+        has any => (
+            is         => 'rw',
+            auto_deref => 1,
+        );
+    } qr/You cannot auto-dereference without specifying a type constraint on attribute any/;
+
+    ::throws_ok {
+        has scalar => (
+            is         => 'rw',
+            isa        => 'Value',
+            auto_deref => 1,
+        );
+    } qr/You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute scalar/;
 };
 
 my $obj;

@@ -162,6 +162,14 @@ sub create {
         if ref($args{default})
         && ref($args{default}) ne 'CODE';
 
+    confess "You cannot auto-dereference without specifying a type constraint on attribute $name"
+        if $args{auto_deref} && !exists($args{isa});
+
+    confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute $name"
+        if $args{auto_deref}
+        && $args{isa} ne 'ArrayRef'
+        && $args{isa} ne 'HashRef';
+
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};
 
