@@ -43,11 +43,11 @@ do {
         },
 
         confess => sub {
-            return \&Carp::confess;
+            return \&confess;
         },
 
         blessed => sub {
-            return \&Scalar::Util::blessed;
+            return \&blessed;
         },
     );
 

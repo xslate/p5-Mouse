@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use MRO::Compat;
 
-use Scalar::Util 'blessed';
+use Scalar::Util qw/blessed weaken/;
 use Carp 'confess';
 
 sub new {
@@ -33,7 +33,7 @@ sub new {
 
                     $instance->{$key} = $value;
 
-                    Scalar::Util::weaken($instance->{$key})
+                    weaken($instance->{$key})
                         if $attribute->weak_ref;
                 }
             }
@@ -50,7 +50,7 @@ sub new {
 
             $instance->{$key} = $args{$key};
 
-            Scalar::Util::weaken($instance->{$key})
+            weaken($instance->{$key})
                 if $attribute->weak_ref;
 
             if ($attribute->has_trigger) {
