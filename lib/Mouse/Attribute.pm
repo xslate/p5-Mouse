@@ -78,6 +78,7 @@ sub generate_accessor {
         $accessor .= '}';
     }
     else {
+        $accessor .= 'confess "Cannot assign a value to a read-only accessor" if @_;';
     }
 
     if ($attribute->is_lazy) {
