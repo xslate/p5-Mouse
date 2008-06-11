@@ -3,7 +3,7 @@ package Mouse;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use 5.006;
 
 use Sub::Exporter;
@@ -139,7 +139,7 @@ Mouse - Moose minus the antlers
 
 =head1 VERSION
 
-Version 0.01 released 10 Jun 08
+Version 0.02 released 11 Jun 08
 
 =head1 SYNOPSIS
 
