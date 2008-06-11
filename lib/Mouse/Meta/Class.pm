@@ -3,10 +3,21 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
+use Scalar::Util 'blessed';
+
 use MRO::Compat;
 
 do {
     my %METACLASS_CACHE;
+
+    # because Mouse doesn't introspect existing classes, we're forced to
+    # only pay attention to other Mouse classes
+    sub _metaclass_cache {
+        my $class = shift;
+        my $name  = shift;
+        return $METACLASS_CACHE{$name};
+    }
+
     sub initialize {
         my $class = shift;
         my $name  = shift;
@@ -49,6 +60,23 @@ sub add_attribute {
     $self->{'attributes'}{$attr->name} = $attr;
 }
 
+sub compute_all_applicable_attributes {
+    my $self = shift;
+    my (@attr, %seen);
+
+    for my $class ($self->linearized_isa) {
+        my $meta = $self->_metaclass_cache($class)
+            or next;
+
+        for my $name (keys %{ $meta->get_attribute_map }) {
+            next if $seen{$name}++;
+            push @attr, $meta->get_attribute($name);
+        }
+    }
+
+    return @attr;
+}
+
 sub get_attribute_map { $_[0]->{attributes} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
 
@@ -85,6 +113,11 @@ Gets (or sets) the list of superclasses of the owner class.
 
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
+
+=head2 compute_all_applicable_attributes -> (Mouse::Meta::Attribute)
+
+Returns the list of all L<Mouse::Meta::Attribute> instances associated with
+this class and its superclasses.
 
 =head2 get_attribute_map -> { name => Mouse::Meta::Attribute }
 
