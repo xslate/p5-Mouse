@@ -7,7 +7,7 @@ my @called;
 
 do {
     package Class;
-    use Moose;
+    use Mouse;
 
     sub BUILD {
         push @called, 'Class::BUILD';
@@ -20,7 +20,7 @@ do {
     }
 
     package Child;
-    use Moose;
+    use Mouse;
     extends 'Class';
 
     sub BUILD {
