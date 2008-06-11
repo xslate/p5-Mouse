@@ -208,10 +208,6 @@ Mouse also has the blessings of Moose's author, stevan.
 
 =head2 MISSING FEATURES
 
-=head3 Method modifiers
-
-Fixing this one next, with a reimplementation of L<Class::Method::Modifiers>.
-
 =head3 Roles
 
 Fixing this one slightly less soon. stevan has suggested an implementation
@@ -245,6 +241,21 @@ Returns this class' metaclass instance.
 =head2 extends superclasses
 
 Sets this class' superclasses.
+
+=head2 before (method|methods) => Code
+
+Installs a "before" method modifier. See L<Moose/before> or
+L<Class::Method::Modifiers/before>.
+
+=head2 after (method|methods) => Code
+
+Installs an "after" method modifier. See L<Moose/after> or
+L<Class::Method::Modifiers/after>.
+
+=head2 around (method|methods) => Code
+
+Installs an "around" method modifier. See L<Moose/around> or
+L<Class::Method::Modifiers/around>.
 
 =head2 has (name|names) => parameters
 
