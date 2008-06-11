@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.02
+        Add Squirrel which acts as Moose if it's already loaded, otherwise
+            Mouse (thanks nothingmuch)
+        Fix the order in which BUILD methods are called (thanks Robert Boone)
+
 0.01    Tue Jun 10 02:13:21 2008
         Initial release.
 
