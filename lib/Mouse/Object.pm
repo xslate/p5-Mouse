@@ -9,7 +9,18 @@ use Carp 'confess';
 
 sub new {
     my $class = shift;
-    my %args  = @_;
+    my %args;
+    if (scalar @_ == 1) {
+        if (defined $_[0]) {
+            (ref($_[0]) eq 'HASH')
+                || confess "Single parameters to new() must be a HASH ref";
+            %args = %{$_[0]};
+        }
+    }
+    else {
+        %args = @_;
+    }
+
     my $instance = bless {}, $class;
 
     for my $attribute (values %{ $class->meta->get_attribute_map }) {
