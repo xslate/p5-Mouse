@@ -9,6 +9,7 @@ use 5.006;
 use Sub::Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
+use Class::Method::Modifiers ();
 
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Class;
@@ -49,6 +50,18 @@ do {
 
         blessed => sub {
             return \&blessed;
+        },
+
+        before => sub {
+            return \&Class::Method::Modifiers::before;
+        },
+
+        after => sub {
+            return \&Class::Method::Modifiers::after;
+        },
+
+        around => sub {
+            return \&Class::Method::Modifiers::around;
         },
     );
 
@@ -162,11 +175,10 @@ Version 0.02 released 11 Jun 08
 
     has 'z' => (is => 'rw', isa => 'Int');
 
-    # not implemented yet :)
-    #after 'clear' => sub {
-    #    my $self = shift;
-    #    $self->z(0);
-    #};
+    after 'clear' => sub {
+        my $self = shift;
+        $self->z(0);
+    };
 
 =head1 DESCRIPTION
 
