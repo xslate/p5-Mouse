@@ -23,7 +23,7 @@ sub new {
 
     my $instance = bless {}, $class;
 
-    for my $attribute (values %{ $class->meta->get_attribute_map }) {
+    for my $attribute ($class->meta->compute_all_applicable_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
         my $default;
