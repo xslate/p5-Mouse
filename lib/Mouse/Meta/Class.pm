@@ -78,6 +78,7 @@ sub compute_all_applicable_attributes {
 }
 
 sub get_attribute_map { $_[0]->{attributes} }
+sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
 
 sub linearized_isa { @{ mro::get_linear_isa($_[0]->name) } }
@@ -123,6 +124,10 @@ this class and its superclasses.
 
 Returns a mapping of attribute names to their corresponding
 L<Mouse::Meta::Attribute> objects.
+
+=head2 has_attribute Name -> Boool
+
+Returns whether we have a L<Mouse::Meta::Attribute> with the given name.
 
 =head2 get_attribute Name -> Mouse::Meta::Attribute | undef
 

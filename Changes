@@ -1,14 +1,26 @@
 Revision history for Mouse
 
 0.03
-        Add before/after/around, courtesy of Class::Method::Modifiers
-        Add support for ->new({...})
+     * Mouse:
+       - Add before/after/around, courtesy of Class::Method::Modifiers
 
-0.02    Wed Jun 11 01:56:44 2008
-        Add Squirrel which acts as Moose if it's already loaded, otherwise
-            Mouse (thanks nothingmuch)
-        Fix the order in which BUILD methods are called (thanks Robert Boone)
+     * Mouse::Object:
+       - Add support for ->new({...})
+       - Use compute_all_applicable_attributes in the constructor to get the
+         attributes of superclasses
 
-0.01    Tue Jun 10 02:13:21 2008
-        Initial release.
+     * Mouse::Meta::Class:
+       - More methods: compute_all_applicable_attributes, has_attribute
+
+0.02 Wed Jun 11 01:56:44 2008
+     * Squirrel:
+       - Add Squirrel which acts as Moose if it's already loaded, otherwise
+         Mouse (thanks nothingmuch)
+
+     * Mouse::Meta::Object:
+       - Fix the order in which BUILD methods are called (thanks Robert
+         Boone)
+
+0.01 Tue Jun 10 02:13:21 2008
+     * Initial release.
 
