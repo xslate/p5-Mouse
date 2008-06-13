@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.03
+0.03 Thu Jun 12 21:54:07 2008
      * Mouse:
        - Add before/after/around, courtesy of Class::Method::Modifiers
 
