@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Test::Exception;
 
 do {
@@ -27,4 +27,8 @@ is($object->z, 3);
 throws_ok {
     Class->new('non-hashref scalar');
 } qr/Single parameters to new\(\) must be a HASH ref/;
+
+lives_ok {
+    Class->new(undef);
+} "Class->new(undef) specifically doesn't throw an error. weird"
 
