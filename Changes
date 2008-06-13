@@ -8,6 +8,7 @@ Revision history for Mouse
        - Add support for ->new({...})
        - Use compute_all_applicable_attributes in the constructor to get the
          attributes of superclasses
+       - Add better support for undef init_arg
 
      * Mouse::Meta::Class:
        - More methods: compute_all_applicable_attributes, has_attribute

@@ -28,7 +28,20 @@ sub new {
         my $key  = $attribute->name;
         my $default;
 
-        if (!exists($args{$from})) {
+        if (defined($from) && exists($args{$from})) {
+            $attribute->verify_type_constraint($args{$from})
+                if $attribute->has_type_constraint;
+
+            $instance->{$key} = $args{$from};
+
+            weaken($instance->{$key})
+                if ref($instance->{$key}) && $attribute->is_weak_ref;
+
+            if ($attribute->has_trigger) {
+                $attribute->trigger->($instance, $args{$from}, $attribute);
+            }
+        }
+        else {
             if ($attribute->has_default || $attribute->has_builder) {
                 unless ($attribute->is_lazy) {
                     my $default = $attribute->default;
@@ -52,20 +65,6 @@ sub new {
                 if ($attribute->is_required) {
                     confess "Attribute (".$attribute->name.") is required";
                 }
-            }
-        }
-
-        if (exists($args{$from})) {
-            $attribute->verify_type_constraint($args{$from})
-                if $attribute->has_type_constraint;
-
-            $instance->{$key} = $args{$from};
-
-            weaken($instance->{$key})
-                if ref($instance->{$key}) && $attribute->is_weak_ref;
-
-            if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args{$from}, $attribute);
             }
         }
     }
