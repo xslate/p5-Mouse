@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 do {
     package Class;
@@ -25,12 +25,15 @@ is($meta, $meta2, "same metaclass instance");
 
 can_ok($meta, 'name', 'get_attribute_map');
 
+ok($meta->has_attribute('pawn'));
 my $attr = $meta->get_attribute('pawn');
 isa_ok($attr, 'Mouse::Meta::Attribute');
 is($attr->name, 'pawn', 'got the correct attribute');
 
 my $map = $meta->get_attribute_map;
 is_deeply($map, { pawn => $attr }, "attribute map");
+
+ok(!$meta->has_attribute('nonexistent_attribute'));
 
 eval "
     package Class;
