@@ -41,6 +41,11 @@ sub has_type_constraint { exists $_[0]->{type_constraint} }
 sub has_trigger         { exists $_[0]->{trigger}         }
 sub has_builder         { exists $_[0]->{builder}         }
 
+sub _create_args {
+    $_[0]->{_create_args} = $_[1] if @_ > 1;
+    $_[0]->{_create_args}
+}
+
 sub generate_accessor {
     my $attribute = shift;
 
@@ -155,12 +160,17 @@ sub generate_handles {
 sub create {
     my ($self, $class, $name, %args) = @_;
 
+    $args{name} = $name;
+    $args{class} = $class;
+
     $self->validate_args($name, %args);
 
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};
 
-    my $attribute = $self->new(%args, name => $name, class => $class);
+    my $attribute = $self->new(%args);
+    $attribute->_create_args(\%args);
+
     my $meta = $class->meta;
 
     $meta->add_attribute($attribute);
@@ -256,6 +266,29 @@ sub _canonicalize_handles {
     else {
         confess "Unable to canonicalize the 'handles' option with $handles";
     }
+}
+
+sub clone_parent {
+    my $self  = shift;
+    my $class = shift;
+    my $name  = shift;
+    my %args  = ($self->get_parent_args($class, $name), @_);
+
+    $self->create($class, $name, %args);
+}
+
+sub get_parent_args {
+    my $self  = shift;
+    my $class = shift;
+    my $name  = shift;
+
+    for my $super ($class->meta->linearized_isa) {
+        my $super_attr = $super->meta->get_attribute($name)
+            or next;
+        return %{ $super_attr->_create_args };
+    }
+
+    confess "Could not find an attribute by the name of '$name' to inherit from";
 }
 
 1;

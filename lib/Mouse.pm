@@ -39,7 +39,12 @@ do {
                 $names = [$names] if !ref($names);
 
                 for my $name (@$names) {
-                    Mouse::Meta::Attribute->create($package, $name, @_);
+                    if ($name =~ s/^\+//) {
+                        Mouse::Meta::Attribute->clone_parent($package, $name, @_);
+                    }
+                    else {
+                        Mouse::Meta::Attribute->create($package, $name, @_);
+                    }
                 }
             };
         },
