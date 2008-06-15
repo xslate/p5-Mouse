@@ -155,20 +155,7 @@ sub generate_handles {
 sub create {
     my ($self, $class, $name, %args) = @_;
 
-    confess "You cannot have lazy attribute ($name) without specifying a default value for it"
-        if $args{lazy} && !exists($args{default}) && !exists($args{builder});
-
-    confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
-        if ref($args{default})
-        && ref($args{default}) ne 'CODE';
-
-    confess "You cannot auto-dereference without specifying a type constraint on attribute $name"
-        if $args{auto_deref} && !exists($args{isa});
-
-    confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute $name"
-        if $args{auto_deref}
-        && $args{isa} ne 'ArrayRef'
-        && $args{isa} ne 'HashRef';
+    $self->validate_args($name, %args);
 
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};
@@ -204,6 +191,29 @@ sub create {
     }
 
     return $attribute;
+}
+
+sub validate_args {
+    my $self = shift;
+    my $name = shift;
+    my %args = @_;
+
+    confess "You cannot have lazy attribute ($name) without specifying a default value for it"
+        if $args{lazy} && !exists($args{default}) && !exists($args{builder});
+
+    confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
+        if ref($args{default})
+        && ref($args{default}) ne 'CODE';
+
+    confess "You cannot auto-dereference without specifying a type constraint on attribute $name"
+        if $args{auto_deref} && !exists($args{isa});
+
+    confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute $name"
+        if $args{auto_deref}
+        && $args{isa} ne 'ArrayRef'
+        && $args{isa} ne 'HashRef';
+
+    return 1;
 }
 
 sub find_type_constraint {
