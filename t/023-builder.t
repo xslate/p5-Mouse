@@ -25,12 +25,11 @@ do {
     };
 
     has age => (
-        is        => 'ro',
-        isa       => 'Int',
-        builder   => '_build_age',
-        lazy      => 1,
-        clearer   => 'clear_age',
-        predicate => 'has_age',
+        is         => 'ro',
+        isa        => 'Int',
+        lazy_build => 1,
+        clearer    => 'clear_age',
+        predicate  => 'has_age',
     );
 
     sub default_age { 20 }

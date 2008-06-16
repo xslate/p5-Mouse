@@ -12,7 +12,13 @@ sub new {
 
     $args{init_arg} = $args{name}
         unless exists $args{init_arg};
+
     $args{is} ||= '';
+
+    if ( $args{lazy_build} ) {
+        $args{lazy} = 1;
+        $args{builder} ||= "_build_$args{name}";
+    }
 
     bless \%args, $class;
 }
