@@ -289,7 +289,7 @@ sub get_parent_args {
     my $name  = shift;
 
     for my $super ($class->meta->linearized_isa) {
-        my $super_attr = $super->meta->get_attribute($name)
+        my $super_attr = $super->can("meta") && $super->meta->get_attribute($name)
             or next;
         return %{ $super_attr->_create_args };
     }
