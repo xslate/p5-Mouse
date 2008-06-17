@@ -42,6 +42,7 @@ sub _is_metadata      { $_[0]->{is}              }
 sub is_required       { $_[0]->{required}        }
 sub default           { $_[0]->{default}         }
 sub is_lazy           { $_[0]->{lazy}            }
+sub is_lazy_build     { $_[0]->{lazy_build}      }
 sub predicate         { $_[0]->{predicate}       }
 sub clearer           { $_[0]->{clearer}         }
 sub handles           { $_[0]->{handles}         }
