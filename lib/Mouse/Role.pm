@@ -15,6 +15,15 @@ do {
                 confess "Role does not currently support 'extends'";
             }
         },
+        before => sub {
+            return sub { }
+        },
+        after => sub {
+            return sub { }
+        },
+        around => sub {
+            return sub { }
+        },
     );
 
     my $exporter = Sub::Exporter::build_exporter({
