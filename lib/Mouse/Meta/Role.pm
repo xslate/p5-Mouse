@@ -27,24 +27,31 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
+    $args{attributes} ||= {};
+
     bless \%args, $class;
 }
 
 sub name { $_[0]->{name} }
 
-sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
-sub add_attribute { $_[0]->{attributes}->{$_[1]} = $_[2] }
-sub get_attribute_list {
+sub add_attribute {
+    my $self = shift;
+    my $name = shift;
+    $self->{attributes}->{$name} = [ @_ ];
 }
+
+sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
+sub get_attribute_list { keys %{ $_[0]->{attributes} } }
+sub get_attribute { @{ $_->[0]->{attributes}->{$_[1]} || [] } }
 
 sub apply {
     my $self  = shift;
     my $class = shift;
-    my $pkg   = shift;
+    my $pkg   = $class->name;
 
     for my $name ($self->get_attribute_list) {
-        my $attr = $self->get_attribute($name);
-        Mouse::Meta::Attribute->create($pkg, $name, $attr);
+        my @spec = $self->get_attribute($name);
+        Mouse::Meta::Attribute->create($pkg, $name, @spec);
     }
 
 }
