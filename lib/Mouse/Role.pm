@@ -7,10 +7,16 @@ use Sub::Exporter;
 use Carp 'confess';
 use Scalar::Util;
 
+use Mouse::Meta::Role;
+
 do {
     my $CALLER;
 
     my %exports = (
+        meta => sub {
+            my $meta = Mouse::Meta::Role->initialize($CALLER);
+            return sub { $meta };
+        },
         extends => sub {
             return sub {
                 confess "Role does not currently support 'extends'";
