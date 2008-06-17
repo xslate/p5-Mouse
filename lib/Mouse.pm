@@ -68,6 +68,18 @@ do {
         around => sub {
             return \&Class::Method::Modifiers::around;
         },
+
+        with => sub {
+            my $caller = $CALLER;
+
+            return sub {
+                my $role  = shift;
+                my $class = $caller->meta;
+
+                Mouse::load_class($role);
+                $role->apply_to_class($class);
+            };
+        },
     );
 
     my $exporter = Sub::Exporter::build_exporter({
