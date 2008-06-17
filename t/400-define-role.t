@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Test::Exception;
 
 lives_ok {
@@ -25,6 +25,8 @@ lives_ok {
     use Mouse::Role;
 
     sub foo {}
+
+    no Mouse::Role;
 };
 
 lives_ok {
@@ -34,5 +36,16 @@ lives_ok {
     before foo => sub {};
     after foo  => sub {};
     around foo => sub {};
+
+    no Mouse::Role;
+};
+
+lives_ok {
+    package Role;
+    use Mouse::Role;
+
+    has 'foo';
+
+    no Mouse::Role;
 };
 

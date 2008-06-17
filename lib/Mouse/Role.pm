@@ -24,6 +24,9 @@ do {
         around => sub {
             return sub { }
         },
+        has => sub {
+            return sub { }
+        },
     );
 
     my $exporter = Sub::Exporter::build_exporter({
