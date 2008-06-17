@@ -27,6 +27,9 @@ do {
         has => sub {
             return sub { }
         },
+        with => sub {
+            return sub { }
+        },
     );
 
     my $exporter = Sub::Exporter::build_exporter({
