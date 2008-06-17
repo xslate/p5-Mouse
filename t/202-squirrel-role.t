@@ -22,7 +22,7 @@ do {
 # affecting its definition
 
 BEGIN {
-    plan skip_all => "Moose required for this test" unless eval { require Moose };
+    plan skip_all => "Moose required for this test" unless eval { require Moose::Role };
     plan tests => 12;
 }
 
@@ -53,9 +53,9 @@ eval "
     has bar => (is => 'rw');
 ";
 
-isa_ok(blessed(Foo::Role->meta), 'Mouse::Meta::Role');
-isa_ok(blessed(Foo::Role->meta), 'Mouse::Meta::Role', 'Squirrel::Role is consistent if Moose was loaded between imports');
+isa_ok(Foo::Role->meta, 'Mouse::Meta::Role');
+isa_ok(Foo::Role->meta, 'Mouse::Meta::Role');
 
-isa_ok(blessed(Bar::Role->meta), 'Moose::Meta::Role');
-isa_ok(blessed(Bar::Role->meta), 'Moose::Meta::Role');
+isa_ok(Bar::Role->meta, 'Moose::Meta::Role');
+isa_ok(Bar::Role->meta, 'Moose::Meta::Role');
 
