@@ -10,14 +10,27 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
-    $args{init_arg} = $args{name}
+    my $name = $args{name};
+
+    $args{init_arg} = $name
         unless exists $args{init_arg};
 
     $args{is} ||= '';
 
-    if ( $args{lazy_build} ) {
-        $args{lazy} = 1;
-        $args{builder} ||= "_build_$args{name}";
+    if ($args{lazy_build}) {
+        confess("You can not use lazy_build and default for the same attribute $name")
+            if exists $args{default};
+        $args{lazy}      = 1;
+        $args{required}  = 1;
+        $args{builder} ||= "_build_${name}";
+        if ($name =~ /^_/) {
+            $args{clearer}   ||= "_clear${name}";
+            $args{predicate} ||= "_has${name}";
+        } 
+        else {
+            $args{clearer}   ||= "clear_${name}";
+            $args{predicate} ||= "has_${name}";
+        }
     }
 
     bless \%args, $class;
