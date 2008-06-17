@@ -4,6 +4,7 @@ Revision history for Mouse
     * Mouse
       Mouse::Meta::Attribute
       - Add support for has '+name'
+      - Add lazy_build
 
 0.03 Thu Jun 12 21:54:07 2008
     * Mouse
