@@ -23,7 +23,7 @@ do {
 
 BEGIN {
     plan skip_all => "Moose required for this test" unless eval { require Moose::Role };
-    plan tests => 12;
+    plan tests => 6;
 }
 
 do {
