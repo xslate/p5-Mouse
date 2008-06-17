@@ -76,7 +76,7 @@ do {
                 my $role  = shift;
                 my $class = $caller->meta;
 
-                confess "Mouse::Role only supports 'with' on individual roles at a time";
+                confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
 
                 Mouse::load_class($role);
                 $role->meta->apply_to_class($class);
