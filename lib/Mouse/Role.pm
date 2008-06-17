@@ -30,6 +30,12 @@ do {
         with => sub {
             return sub { }
         },
+        requires => sub {
+            return sub { }
+        },
+        excludes => sub {
+            return sub { }
+        },
     );
 
     my $exporter = Sub::Exporter::build_exporter({
