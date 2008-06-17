@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Test::Exception;
 
 lives_ok {
@@ -10,4 +10,11 @@ lives_ok {
 
     no Mouse::Role;
 };
+
+throws_ok {
+    package Role;
+    use Mouse::Role;
+
+    extends 'Role::Parent';
+} qr/Mouse::Role does not currently support 'extends'/;
 
