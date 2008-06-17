@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.04
+0.04 Tue Jun 17 04:56:36 2008
     * Mouse
       Mouse::Meta::Attribute
       - Add support for has '+name'
