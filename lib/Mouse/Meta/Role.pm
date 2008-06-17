@@ -30,5 +30,7 @@ sub new {
     bless \%args, $class;
 }
 
+sub name { $_[0]->{name} }
+
 1;
 
