@@ -16,5 +16,7 @@ throws_ok {
     use Mouse::Role;
 
     extends 'Role::Parent';
-} qr/Mouse::Role does not currently support 'extends'/;
+
+    no Mouse::Role;
+} qr/Role does not currently support 'extends'/;
 

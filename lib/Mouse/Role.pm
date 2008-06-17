@@ -12,7 +12,7 @@ do {
     my %exports = (
         extends => sub {
             return sub {
-                confess "Mouse::Role does not currently support 'extends'";
+                confess "Role does not currently support 'extends'";
             }
         },
     );
