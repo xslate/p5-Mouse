@@ -32,5 +32,11 @@ sub new {
 
 sub name { $_[0]->{name} }
 
+sub has_attribute { }
+
+sub add_attribute {
+    $_[0]->{attributes}->{$_[1]} = $_[2];
+}
+
 1;
 
