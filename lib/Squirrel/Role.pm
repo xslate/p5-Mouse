@@ -9,7 +9,7 @@ sub _choose_backend {
     if ( $INC{"Moose/Role.pm"} ) {
         return {
             import   => \&Moose::Role::import,
-            unimport => \&Moose::Role::unimport,
+            unimport => defined &Moose::Role::unimport ? \&Moose::Role::unimport : sub {},
         }
     } else {
         require Mouse::Role;

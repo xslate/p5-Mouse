@@ -39,7 +39,10 @@ do {
 };
 
 ok(!Foo::Role->can('has'), "Mouse::Role::has was unimported");
-ok(!Bar::Role->can('has'), "Moose::Role::has was unimported");
+SKIP: {
+    skip "ancient moose", 1 if $Moose::VERSION <= 0.50;
+    ok(!Bar::Role->can('has'), "Moose::Role::has was unimported");
+}
 
 eval "
     package Foo::Role;
