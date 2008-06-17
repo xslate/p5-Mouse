@@ -72,6 +72,13 @@ do {
     }
 
     sub unimport {
+        my $caller = caller;
+
+        no strict 'refs';
+        for my $keyword (keys %exports) {
+            next if $keyword eq 'meta'; # we don't delete this one
+            delete ${ $caller . '::' }{$keyword};
+        }
     }
 };
 
