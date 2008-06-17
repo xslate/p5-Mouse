@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 10;
 use Test::Exception;
 
 lives_ok {
@@ -72,5 +72,21 @@ lives_ok {
     excludes 'excluded';
 
     no Mouse::Role;
+};
+
+throws_ok {
+    package Role;
+    use Mouse::Role;
+
+    confess "Mouse::Role exports confess";
+
+} qr/^Mouse::Role exports confess/;
+
+lives_ok {
+    package Role;
+    use Mouse::Role;
+
+    my $obj = bless {} => "Impromptu::Class";
+    ::is(blessed($obj), "Impromptu::Class");
 };
 

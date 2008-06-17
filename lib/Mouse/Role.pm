@@ -5,6 +5,7 @@ use warnings;
 
 use Sub::Exporter;
 use Carp 'confess';
+use Scalar::Util;
 
 do {
     my $CALLER;
@@ -35,6 +36,12 @@ do {
         },
         excludes => sub {
             return sub { }
+        },
+        blessed => sub {
+            return \&Scalar::Util::blessed;
+        },
+        confess => sub {
+            return \&Carp::confess;
         },
     );
 
