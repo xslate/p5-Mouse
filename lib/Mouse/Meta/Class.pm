@@ -29,7 +29,7 @@ do {
 
 sub new {
     my $class = shift;
-    my %args = @_;
+    my %args  = @_;
 
     $args{attributes} = {};
     $args{superclasses} = do {
