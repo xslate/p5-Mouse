@@ -34,6 +34,20 @@ sub name { $_[0]->{name} }
 
 sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
 sub add_attribute { $_[0]->{attributes}->{$_[1]} = $_[2] }
+sub get_attribute_list {
+}
+
+sub apply {
+    my $self  = shift;
+    my $class = shift;
+    my $pkg   = shift;
+
+    for my $name ($self->get_attribute_list) {
+        my $attr = $self->get_attribute($name);
+        Mouse::Meta::Attribute->create($pkg, $name, $attr);
+    }
+
+}
 
 1;
 

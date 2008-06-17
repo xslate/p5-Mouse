@@ -79,7 +79,7 @@ do {
                 confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
 
                 Mouse::load_class($role);
-                $role->meta->apply_to_class($class);
+                $role->meta->apply($class);
             };
         },
     );
