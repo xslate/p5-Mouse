@@ -42,7 +42,7 @@ sub add_attribute {
 
 sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
 sub get_attribute_list { keys %{ $_[0]->{attributes} } }
-sub get_attribute { @{ $_->[0]->{attributes}->{$_[1]} || [] } }
+sub get_attribute { $_->[0]->{attributes}->{$_[1]} }
 
 sub apply {
     my $self  = shift;
@@ -50,8 +50,8 @@ sub apply {
     my $pkg   = $class->name;
 
     for my $name ($self->get_attribute_list) {
-        my @spec = $self->get_attribute($name);
-        Mouse::Meta::Attribute->create($pkg, $name, @spec);
+        my $spec = $self->get_attribute($name);
+        Mouse::Meta::Attribute->create($pkg, $name, @$spec);
     }
 }
 
