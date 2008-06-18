@@ -41,7 +41,9 @@ do {
             }
         },
         with => sub {
-            return sub { }
+            return sub {
+                confess "Role does not currently support 'with'";
+            }
         },
         requires => sub {
             return sub { }

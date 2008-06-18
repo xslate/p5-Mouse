@@ -53,7 +53,6 @@ sub apply {
         my @spec = $self->get_attribute($name);
         Mouse::Meta::Attribute->create($pkg, $name, @spec);
     }
-
 }
 
 1;

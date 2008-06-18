@@ -55,14 +55,14 @@ do {
     no Mouse::Role;
 };
 
-lives_ok {
+throws_ok {
     package Role;
     use Mouse::Role;
 
     with 'Other::Role';
 
     no Mouse::Role;
-};
+} qr/Role does not currently support 'with'/;
 
 lives_ok {
     package Role;
