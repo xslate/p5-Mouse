@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Scalar::Util 'blessed';
+use Carp 'confess';
 
 use MRO::Compat;
 
@@ -82,6 +83,37 @@ sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
 
 sub linearized_isa { @{ mro::get_linear_isa($_[0]->name) } }
+
+sub clone_object {
+    my $class    = shift;
+    my $instance = shift;
+
+    (blessed($instance) && $instance->isa($class->name))
+        || confess "You must pass an instance ($instance) of the metaclass (" . $class->name . ")";
+
+    $class->clone_instance($instance, @_);
+}
+
+sub clone_instance {
+    my ($class, $instance, %params) = @_;
+
+    (blessed($instance))
+        || confess "You can only clone instances, \$self is not a blessed instance";
+
+    my $clone = bless { %$instance }, ref $instance;
+
+    foreach my $attr ($class->compute_all_applicable_attributes()) {
+        if ( defined( my $init_arg = $attr->init_arg ) ) {
+            if (exists $params{$init_arg}) {
+                $clone->{ $attr->name } = $params{$init_arg};
+            }
+        }
+    }
+
+    return $clone;
+
+}
+
 
 1;
 
