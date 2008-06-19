@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 11;
 use Test::Exception;
 
 do {
@@ -48,3 +48,37 @@ lives_ok {
 
 is(Class2->meta->get_attribute('attr')->default, 'Role');
 
+lives_ok {
+    package Class3;
+    use Mouse;
+
+    with 'Role';
+
+    has attr => (
+        default => 'Class3',
+    );
+};
+
+is(Class3->meta->get_attribute('attr')->default, 'Class3');
+
+lives_ok {
+    package Class::Parent;
+    use Mouse;
+
+    has attr => (
+        default => 'Class::Parent',
+    );
+};
+
+is(Class::Parent->meta->get_attribute('attr')->default, 'Class::Parent', 'local class wins over the role');
+
+lives_ok {
+    package Class::Child;
+    use Mouse;
+
+    extends 'Class::Parent';
+
+    with 'Role';
+};
+
+is(Class::Child->meta->get_attribute('attr')->default, 'Role', 'role wins over the parent method');
