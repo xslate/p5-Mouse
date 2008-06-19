@@ -35,9 +35,9 @@ do {
             my $caller = $CALLER;
             return sub {
                 my $name = shift;
-                my @opts = @_;
+                my %opts = @_;
 
-                $caller->meta->add_attribute($name => \@opts);
+                $caller->meta->add_attribute($name => \%opts);
             }
         },
         with => sub {
