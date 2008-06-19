@@ -46,8 +46,5 @@ lives_ok {
     with 'Role2';
 };
 
-TODO: {
-    local $TODO = "Moose prefers first definition, Mouse the last";
-    is(Class2->meta->get_attribute('attr')->default, 'Role');
-};
+is(Class2->meta->get_attribute('attr')->default, 'Role');
 

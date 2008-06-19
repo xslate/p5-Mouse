@@ -51,6 +51,7 @@ sub apply {
     my $pkg   = $class->name;
 
     for my $name ($self->get_attribute_list) {
+        next if $class->has_attribute($name);
         my $spec = $self->get_attribute($name);
         Mouse::Meta::Attribute->create($pkg, $name, %$spec);
     }
