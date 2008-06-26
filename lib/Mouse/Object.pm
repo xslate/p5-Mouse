@@ -9,17 +9,8 @@ use Carp 'confess';
 
 sub new {
     my $class = shift;
-    my %args;
-    if (scalar @_ == 1) {
-        if (defined $_[0]) {
-            (ref($_[0]) eq 'HASH')
-                || confess "Single parameters to new() must be a HASH ref";
-            %args = %{$_[0]};
-        }
-    }
-    else {
-        %args = @_;
-    }
+
+    my $args = $class->BUILDARGS(@_);
 
     my $instance = bless {}, $class;
 
@@ -28,17 +19,17 @@ sub new {
         my $key  = $attribute->name;
         my $default;
 
-        if (defined($from) && exists($args{$from})) {
-            $attribute->verify_type_constraint($args{$from})
+        if (defined($from) && exists($args->{$from})) {
+            $attribute->verify_type_constraint($args->{$from})
                 if $attribute->has_type_constraint;
 
-            $instance->{$key} = $args{$from};
+            $instance->{$key} = $args->{$from};
 
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args{$from}, $attribute);
+                $attribute->trigger->($instance, $args->{$from}, $attribute);
             }
         }
         else {
@@ -69,9 +60,26 @@ sub new {
         }
     }
 
-    $instance->BUILDALL(\%args);
+    $instance->BUILDALL($args);
 
     return $instance;
+}
+
+sub BUILDARGS {
+    my $class = shift;
+
+    if (scalar @_ == 1) {
+        if (defined $_[0]) {
+            (ref($_[0]) eq 'HASH')
+                || confess "Single parameters to new() must be a HASH ref";
+            return {%{$_[0]}};
+        } else {
+            return {};
+        }
+    }
+    else {
+        return {@_};
+    }
 }
 
 sub DESTROY { shift->DEMOLISHALL }
