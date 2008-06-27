@@ -403,5 +403,15 @@ this attribute's type constraint;
 Checks that the given value passes this attribute's type constraint. Returns 1
 on success, otherwise C<confess>es.
 
+=head2 clone_parent OwnerClass, AttributeName, %args -> Mouse::Meta::Attribute
+
+Creates a new attribute in OwnerClass, inheriting options from parent classes.
+Accessors and helper methods are installed. Some error checking is done.
+
+=head2 get_parent_args OwnerClass, AttributeName -> Hash
+
+Returns the options that the parent class of C<OwnerClass> used for attribute
+C<AttributeName>.
+
 =cut
 

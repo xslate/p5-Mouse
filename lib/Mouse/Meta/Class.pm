@@ -169,5 +169,14 @@ Returns the L<Mouse::Meta::Attribute> with the given name.
 
 Returns the list of classes in method dispatch order, with duplicates removed.
 
+=head2 clone_object Instance -> Instance
+
+Clones the given C<Instance> which must be an instance governed by this
+metaclass.
+
+=head2 clone_instance Instance, Parameters -> Instance
+
+Clones the given C<Instance> and sets any additional parameters.
+
 =cut
 
