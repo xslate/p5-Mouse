@@ -1,11 +1,10 @@
-#!/usr/bin/perl
-
+#!/usr/bin/env perl
 use strict;
 use warnings;
+use Test::More tests => 6;
+use Test::Exception;
 
-use Test::More 'no_plan';
-
-{
+do {
     package Foo;
     use Mouse;
 
@@ -21,18 +20,26 @@ use Test::More 'no_plan';
     );
 
     sub clone {
-        my ( $self, @args ) = @_;
-        $self->meta->clone_object( $self, @args );
+        my ($self, @args) = @_;
+        $self->meta->clone_object($self, @args);
     }
-}
+};
 
-my $foo = Foo->new( bar => [ 1, 2, 3 ] );
+my $foo = Foo->new(bar => [ 1, 2, 3 ]);
 
-is( $foo->foo, "foo", "attr 1", );
-is_deeply( $foo->bar, [ 1 .. 3 ], "attr 2" );
+is($foo->foo, "foo", "attr 1",);
+is_deeply($foo->bar, [ 1 .. 3 ], "attr 2");
 
-my $clone = $foo->clone( foo => "dancing" );
+my $clone = $foo->clone(foo => "dancing");
 
-is( $clone->foo, "dancing", "overridden attr" );
-is_deeply( $clone->bar, [ 1 .. 3 ], "clone attr" );
+is($clone->foo, "dancing", "overridden attr");
+is_deeply($clone->bar, [ 1 .. 3 ], "clone attr");
+
+throws_ok {
+    Foo->meta->clone_object("constant");
+} qr/You must pass an instance of the metaclass \(Foo\), not \(constant\)/;
+
+throws_ok {
+    Foo->meta->clone_object(Foo->meta)
+} qr/You must pass an instance of the metaclass \(Foo\), not \(Mo.se::Meta::Class=HASH\(\w+\)\)/;
 

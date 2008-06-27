@@ -89,7 +89,7 @@ sub clone_object {
     my $instance = shift;
 
     (blessed($instance) && $instance->isa($class->name))
-        || confess "You must pass an instance ($instance) of the metaclass (" . $class->name . ")";
+        || confess "You must pass an instance of the metaclass (" . $class->name . "), not ($instance)";
 
     $class->clone_instance($instance, @_);
 }
