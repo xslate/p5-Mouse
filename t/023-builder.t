@@ -106,7 +106,7 @@ do {
             lazy_build => 1,
             default => 1,
         );
-    } qr/You can not use lazy_build and default for the same attribute error/;
+    } qr/You can not use lazy_build and default for the same attribute \(error\)/;
 };
 
 my @calls;
@@ -120,7 +120,6 @@ do {
         builder    => 'build_my_customs',
         predicate  => 'has_my_customs',
         clearer    => 'clear_my_customs',
-
     );
 
     sub build_my_customs {
@@ -128,7 +127,6 @@ do {
         return 'yo';
     }
 };
-
 
 my $cb = Class::CustomBuilder->new;
 ok(!$cb->has_my_customs, "correct predicate");
@@ -160,3 +158,4 @@ is_deeply([splice @calls], ['_build__attr']);
 ok($cub->_has_attr, "correct predicate");
 ok($cub->_clear_attr, "correct clearer");
 ok(!$cub->_has_attr, "correct predicate");
+

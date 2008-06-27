@@ -17,23 +17,6 @@ sub new {
 
     $args{is} ||= '';
 
-    if ($args{lazy_build}) {
-        confess("You can not use lazy_build and default for the same attribute $name")
-            if exists $args{default};
-        $args{lazy}      = 1;
-        $args{required}  = 1;
-        $args{builder}   = "_build_${name}"
-            if !exists($args{builder});
-        if ($name =~ /^_/) {
-            $args{clearer}   = "_clear${name}" if !exists($args{clearer});
-            $args{predicate} = "_has${name}" if !exists($args{predicate});
-        }
-        else {
-            $args{clearer}   = "clear_${name}" if !exists($args{clearer});
-            $args{predicate} = "has_${name}" if !exists($args{predicate});
-        }
-    }
-
     bless \%args, $class;
 }
 
@@ -184,6 +167,7 @@ sub create {
     $args{name} = $name;
     $args{class} = $class;
 
+    %args = $self->canonicalize_args($name, %args);
     $self->validate_args($name, %args);
 
     $args{type_constraint} = delete $args{isa}
@@ -224,10 +208,36 @@ sub create {
     return $attribute;
 }
 
+sub canonicalize_args {
+    my $self = shift;
+    my $name = shift;
+    my %args = @_;
+
+    if ($args{lazy_build}) {
+        $args{lazy}      = 1;
+        $args{required}  = 1;
+        $args{builder}   = "_build_${name}"
+            if !exists($args{builder});
+        if ($name =~ /^_/) {
+            $args{clearer}   = "_clear${name}" if !exists($args{clearer});
+            $args{predicate} = "_has${name}" if !exists($args{predicate});
+        }
+        else {
+            $args{clearer}   = "clear_${name}" if !exists($args{clearer});
+            $args{predicate} = "has_${name}" if !exists($args{predicate});
+        }
+    }
+
+    return %args;
+}
+
 sub validate_args {
     my $self = shift;
     my $name = shift;
     my %args = @_;
+
+    confess "You can not use lazy_build and default for the same attribute ($name)"
+        if $args{lazy_build} && exists $args{default};
 
     confess "You cannot have lazy attribute ($name) without specifying a default value for it"
         if $args{lazy} && !exists($args{default}) && !exists($args{builder});
@@ -402,6 +412,16 @@ this attribute's type constraint;
 
 Checks that the given value passes this attribute's type constraint. Returns 1
 on success, otherwise C<confess>es.
+
+=head2 canonicalize_args Name, %args -> %args
+
+Canonicalizes some arguments to create. In particular, C<lazy_build> is
+canonicalized into C<lazy>, C<builder>, etc.
+
+=head2 validate_args Name, %args -> 1 | ERROR
+
+Checks that the arguments to create the attribute (ie those specified by
+C<has>) are valid.
 
 =head2 clone_parent OwnerClass, AttributeName, %args -> Mouse::Meta::Attribute
 
