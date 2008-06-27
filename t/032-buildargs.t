@@ -3,9 +3,7 @@ use strict;
 use warnings;
 use Test::More tests => 3;
 
-use lib 't/lib';
-
-{
+do {
     package Foo;
     use Mouse;
 
@@ -15,9 +13,9 @@ use lib 't/lib';
         my ( $self, @args ) = @_;
         return { @args % 2 ? ( foo => @args ) : @args };
     }
-}
+};
 
-is( Foo->new->foo, undef, "no value" );
-is( Foo->new("bar")->foo, "bar", "single arg" );
-is( Foo->new(foo => "bar")->foo, "bar", "twoargs" );
+is(Foo->new->foo, undef, "no value");
+is(Foo->new("bar")->foo, "bar", "single arg");
+is(Foo->new(foo => "bar")->foo, "bar", "twoargs");
 
