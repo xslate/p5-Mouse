@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 37;
+use Test::More tests => 47;
 use Test::Exception;
 
 my $builder_called = 0;
@@ -117,7 +117,10 @@ do {
     has custom => (
         is => 'ro',
         lazy_build => 1,
-        builder => 'build_my_customs',
+        builder    => 'build_my_customs',
+        predicate  => 'has_my_customs',
+        clearer    => 'clear_my_customs',
+
     );
 
     sub build_my_customs {
@@ -128,5 +131,32 @@ do {
 
 
 my $cb = Class::CustomBuilder->new;
+ok(!$cb->has_my_customs, "correct predicate");
 is($cb->custom, 'yo');
-is_deeply(\@calls, ['build_my_customs']);
+is_deeply([splice @calls], ['build_my_customs']);
+ok($cb->has_my_customs, "correct predicate");
+ok($cb->clear_my_customs, "correct clearer");
+ok(!$cb->has_my_customs, "correct predicate");
+
+do {
+    package Class::UnderscoreBuilder;
+    use Mouse;
+
+    has _attr => (
+        is => 'ro',
+        lazy_build => 1,
+    );
+
+    sub _build__attr {
+        push @calls, '_build__attr';
+        return 'ping';
+    }
+};
+
+my $cub = Class::UnderscoreBuilder->new;
+ok(!$cub->_has_attr, "correct predicate");
+is($cub->_attr, 'ping');
+is_deeply([splice @calls], ['_build__attr']);
+ok($cub->_has_attr, "correct predicate");
+ok($cub->_clear_attr, "correct clearer");
+ok(!$cub->_has_attr, "correct predicate");
