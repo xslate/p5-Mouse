@@ -138,6 +138,11 @@ end of L</new>.
 You may put any business logic initialization in BUILD methods. You don't
 need to redispatch or return any specific value.
 
+=head2 BUILDARGS
+
+Lets you override the arguments that C<new> takes. Return a hashref of
+parameters.
+
 =head2 DEMOLISHALL
 
 Calls L</DEMOLISH> on each class in the class hierarchy. This is called at
