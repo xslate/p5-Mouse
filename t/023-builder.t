@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 34;
+use Test::More tests => 37;
+use Test::Exception;
 
 my $builder_called = 0;
 my $lazy_builder_called = 0;
@@ -95,3 +96,37 @@ is($lazy_builder_called, 0, "lazy builder not called on clear");
 is($object4->age, 20, "lazy builder value");
 ok($object4->has_age, "predicate: have value after clear and get");
 is($lazy_builder_called, 1, "lazy builder called on get after clear");
+
+do {
+    package Class::Error;
+    use Mouse;
+
+    ::throws_ok {
+        has error => (
+            lazy_build => 1,
+            default => 1,
+        );
+    } qr/You can not use lazy_build and default for the same attribute error/;
+};
+
+my @calls;
+do {
+    package Class::CustomBuilder;
+    use Mouse;
+
+    has custom => (
+        is => 'ro',
+        lazy_build => 1,
+        builder => 'build_my_customs',
+    );
+
+    sub build_my_customs {
+        push @calls, 'build_my_customs';
+        return 'yo';
+    }
+};
+
+
+my $cb = Class::CustomBuilder->new;
+is($cb->custom, 'yo');
+is_deeply(\@calls, ['build_my_customs']);
