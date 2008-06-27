@@ -86,3 +86,56 @@ do {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Mouse::Role
+
+=head1 KEYWORDS
+
+=head2 meta -> Mouse::Meta::Role
+
+Returns this role's metaclass instance.
+
+=head2 before (method|methods) => Code
+
+Sets up a "before" method modifier. See L<Moose/before> or
+L<Class::Method::Modifiers/before>.
+
+=head2 after (method|methods) => Code
+
+Sets up an "after" method modifier. See L<Moose/after> or
+L<Class::Method::Modifiers/after>.
+
+=head2 around (method|methods) => Code
+
+Sets up an "around" method modifier. See L<Moose/around> or
+L<Class::Method::Modifiers/around>.
+
+=head2 has (name|names) => parameters
+
+Sets up an attribute (or if passed an arrayref of names, multiple attributes) to
+this role. See L<Mouse/has>.
+
+=head2 confess error -> BOOM
+
+L<Carp/confess> for your convenience.
+
+=head2 blessed value -> ClassName | undef
+
+L<Scalar::Util/blessed> for your convenience.
+
+=head1 MISC
+
+=head2 import
+
+Importing Mouse::Role will give you sugar.
+
+=head2 unimport
+
+Please unimport Mouse (C<no Mouse::Role>) so that if someone calls one of the
+keywords (such as L</has>) it will break loudly instead breaking subtly.
+
+=cut
+
