@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Test::Exception;
 
 lives_ok {
@@ -89,4 +89,11 @@ lives_ok {
     my $obj = bless {} => "Impromptu::Class";
     ::is(blessed($obj), "Impromptu::Class");
 };
+
+throws_ok {
+    package Class;
+    use Mouse;
+
+    with 'Role', 'Other::Role';
+} qr/Mouse::Role only supports 'with' on individual roles at a time/;
 
