@@ -98,7 +98,7 @@ sub clone_instance {
     my ($class, $instance, %params) = @_;
 
     (blessed($instance))
-        || confess "You can only clone instances, \$self is not a blessed instance";
+        || confess "You can only clone instances, ($instance) is not a blessed instance";
 
     my $clone = bless { %$instance }, ref $instance;
 
