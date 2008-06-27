@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 do {
     package Class;
@@ -28,5 +28,6 @@ is($attr->name, 'pawn', 'attribute name');
 is($attr->class, 'Class', 'attached class');
 is($attr->predicate, 'has_pawn', 'predicate');
 is($attr->clearer, 'clear_pawn', 'clearer');
+ok(!$attr->is_lazy_build, "not lazy_build");
 is(ref($attr->default), 'CODE', 'default is a coderef');
 ok($attr->verify_type_constraint(1), 'verify_type_constraint works even without isa');

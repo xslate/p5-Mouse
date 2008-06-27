@@ -370,6 +370,8 @@ installed. Some error checking is done.
 
 =head2 has_builder -> Bool
 
+=head2 is_lazy_build => Bool
+
 =head2 should_auto_deref -> Bool
 
 Informational methods.
