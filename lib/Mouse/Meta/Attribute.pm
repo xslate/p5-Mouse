@@ -22,14 +22,15 @@ sub new {
             if exists $args{default};
         $args{lazy}      = 1;
         $args{required}  = 1;
-        $args{builder} ||= "_build_${name}";
+        $args{builder}   = "_build_${name}"
+            if !exists($args{builder});
         if ($name =~ /^_/) {
-            $args{clearer}   ||= "_clear${name}";
-            $args{predicate} ||= "_has${name}";
-        } 
+            $args{clearer}   = "_clear${name}" if !exists($args{clearer});
+            $args{predicate} = "_has${name}" if !exists($args{predicate});
+        }
         else {
-            $args{clearer}   ||= "clear_${name}";
-            $args{predicate} ||= "has_${name}";
+            $args{clearer}   = "clear_${name}" if !exists($args{clearer});
+            $args{predicate} = "has_${name}" if !exists($args{predicate});
         }
     }
 
