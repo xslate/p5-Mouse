@@ -90,9 +90,9 @@ sub BUILDALL {
     # short circuit
     return unless $self->can('BUILD');
 
-    no strict 'refs';
-
     for my $class (reverse $self->meta->linearized_isa) {
+        no strict 'refs';
+        no warnings 'once';
         my $code = *{ $class . '::BUILD' }{CODE}
             or next;
         $code->($self, @_);
