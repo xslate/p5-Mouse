@@ -20,22 +20,22 @@ sub new {
     bless \%args, $class;
 }
 
-sub name              { $_[0]->{name}            }
-sub class             { $_[0]->{class}           }
-sub _is_metadata      { $_[0]->{is}              }
-sub is_required       { $_[0]->{required}        }
-sub default           { $_[0]->{default}         }
-sub is_lazy           { $_[0]->{lazy}            }
-sub is_lazy_build     { $_[0]->{lazy_build}      }
-sub predicate         { $_[0]->{predicate}       }
-sub clearer           { $_[0]->{clearer}         }
-sub handles           { $_[0]->{handles}         }
-sub is_weak_ref       { $_[0]->{weak_ref}        }
-sub init_arg          { $_[0]->{init_arg}        }
-sub type_constraint   { $_[0]->{type_constraint} }
-sub trigger           { $_[0]->{trigger}         }
-sub builder           { $_[0]->{builder}         }
-sub should_auto_deref { $_[0]->{auto_deref}      }
+sub name              { $_[0]->{name}             }
+sub associated_class  { $_[0]->{associated_class} }
+sub _is_metadata      { $_[0]->{is}               }
+sub is_required       { $_[0]->{required}         }
+sub default           { $_[0]->{default}          }
+sub is_lazy           { $_[0]->{lazy}             }
+sub is_lazy_build     { $_[0]->{lazy_build}       }
+sub predicate         { $_[0]->{predicate}        }
+sub clearer           { $_[0]->{clearer}          }
+sub handles           { $_[0]->{handles}          }
+sub is_weak_ref       { $_[0]->{weak_ref}         }
+sub init_arg          { $_[0]->{init_arg}         }
+sub type_constraint   { $_[0]->{type_constraint}  }
+sub trigger           { $_[0]->{trigger}          }
+sub builder           { $_[0]->{builder}          }
+sub should_auto_deref { $_[0]->{auto_deref}       }
 
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
@@ -184,7 +184,7 @@ sub create {
     my ($self, $class, $name, %args) = @_;
 
     $args{name} = $name;
-    $args{class} = $class;
+    $args{associated_class} = $class;
 
     %args = $self->canonicalize_args($name, %args);
     $self->validate_args($name, \%args);
@@ -375,7 +375,7 @@ installed. Some error checking is done.
 
 =head2 name -> AttributeName
 
-=head2 class -> OwnerClass
+=head2 associated_class -> OwnerClass
 
 =head2 is_required -> Bool
 
