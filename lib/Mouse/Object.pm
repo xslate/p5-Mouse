@@ -20,6 +20,10 @@ sub new {
         my $default;
 
         if (defined($from) && exists($args->{$from})) {
+            if ($attribute->has_trigger && $attribute->trigger->{before}) {
+                $attribute->trigger->{before}->($instance, $args->{$from}, $attribute);
+            }
+
             $attribute->verify_type_constraint($args->{$from})
                 if $attribute->has_type_constraint;
 
@@ -28,8 +32,8 @@ sub new {
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
-            if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args->{$from}, $attribute);
+            if ($attribute->has_trigger && $attribute->trigger->{after}) {
+                $attribute->trigger->{after}->($instance, $args->{$from}, $attribute);
             }
         }
         else {
