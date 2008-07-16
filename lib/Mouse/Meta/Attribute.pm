@@ -56,10 +56,14 @@ sub generate_accessor {
     my $name       = $attribute->name;
     my $key        = $name;
     my $default    = $attribute->default;
-    my $trigger    = $attribute->trigger;
     my $type       = $attribute->type_constraint;
     my $constraint = $attribute->find_type_constraint;
     my $builder    = $attribute->builder;
+
+    my $trigger = $attribute->trigger;
+    my $before  = $trigger->{before};
+    my $after   = $trigger->{after};
+    my $around  = $trigger->{around};
 
     my $accessor = 'sub {
         my $self = shift;';
@@ -67,6 +71,10 @@ sub generate_accessor {
     if ($attribute->_is_metadata eq 'rw') {
         $accessor .= 'if (@_) {
             local $_ = $_[0];';
+
+        if ($before) {
+            $accessor .= '$before->($self, $_, $attribute);';
+        }
 
         if ($constraint) {
             $accessor .= 'do {
@@ -81,8 +89,8 @@ sub generate_accessor {
             $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
         }
 
-        if ($trigger) {
-            $accessor .= '$trigger->($self, $_, $attribute);';
+        if ($after) {
+            $accessor .= '$after->($self, $_, $attribute);';
         }
 
         $accessor .= '}';
