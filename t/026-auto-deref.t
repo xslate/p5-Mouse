@@ -25,7 +25,7 @@ do {
             is         => 'rw',
             auto_deref => 1,
         );
-    } qr/You cannot auto-dereference without specifying a type constraint on attribute any/;
+    } qr/You cannot auto-dereference without specifying a type constraint on attribute \(any\)/;
 
     ::throws_ok {
         has scalar => (
@@ -33,7 +33,7 @@ do {
             isa        => 'Value',
             auto_deref => 1,
         );
-    } qr/You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute scalar/;
+    } qr/You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute \(scalar\)/;
 };
 
 my $obj;
