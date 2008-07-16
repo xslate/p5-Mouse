@@ -51,12 +51,11 @@ is(@trigger, 1, "trigger was called on new with the attribute specified");
 is_deeply([splice @trigger], [[$object2, 100, $object2->meta->get_attribute('attr')]], "correct arguments to trigger in the constructor");
 
 do {
-    package Class2;
+    package Parent;
     use Mouse;
 
     has attr => (
         is      => 'rw',
-        default => 10,
         trigger => {
             before => sub {
                 push @trigger, ['before', @_];
@@ -74,19 +73,27 @@ do {
             },
         },
     );
+
+    package Child;
+    use Mouse;
+    extends 'Parent';
+
+    has '+attr' => (
+        default => 10,
+    );
 };
 
-my $o2 = Class2->new;
+my $child = Child->new;
 is(@trigger, 0, "trigger not called on constructor with default");
 
-is($o2->attr, 10, "reader");
+is($child->attr, 10, "reader");
 is(@trigger, 0, "trigger not called on reader");
 
-is($o2->attr(5), 20, "writer");
+is($child->attr(5), 20, "writer");
 is_deeply([splice @trigger], [
-    ['before',        $o2,  5, $o2->meta->get_attribute('attr')],
-    ['around-before', $o2,  5, $o2->meta->get_attribute('attr')],
-    ['around-after',  $o2,  5, $o2->meta->get_attribute('attr')],
-    ['after',         $o2, 20, $o2->meta->get_attribute('attr')],
+    ['before',        $child,  5, Child->meta->get_attribute('attr')],
+    ['around-before', $child,  5, Child->meta->get_attribute('attr')],
+    ['around-after',  $child,  5, Child->meta->get_attribute('attr')],
+    ['after',         $child, 20, Child->meta->get_attribute('attr')],
 ]);
 
