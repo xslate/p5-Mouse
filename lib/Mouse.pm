@@ -33,17 +33,20 @@ do {
         },
 
         has => sub {
+            my $caller = $CALLER;
+
             return sub {
-                my $package = caller;
+                my $meta = $caller->meta;
+
                 my $names = shift;
                 $names = [$names] if !ref($names);
 
                 for my $name (@$names) {
                     if ($name =~ s/^\+//) {
-                        Mouse::Meta::Attribute->clone_parent($package, $name, @_);
+                        Mouse::Meta::Attribute->clone_parent($meta, $name, @_);
                     }
                     else {
-                        Mouse::Meta::Attribute->create($package, $name, @_);
+                        Mouse::Meta::Attribute->create($meta, $name, @_);
                     }
                 }
             };

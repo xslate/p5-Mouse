@@ -48,12 +48,11 @@ sub get_attribute { $_[0]->{attributes}->{$_[1]} }
 sub apply {
     my $self  = shift;
     my $class = shift;
-    my $pkg   = $class->name;
 
     for my $name ($self->get_attribute_list) {
         next if $class->has_attribute($name);
         my $spec = $self->get_attribute($name);
-        Mouse::Meta::Attribute->create($pkg, $name, %$spec);
+        Mouse::Meta::Attribute->create($class, $name, %$spec);
     }
 }
 

@@ -25,7 +25,7 @@ isa_ok($attr, 'Mouse::Meta::Attribute');
 
 can_ok($attr, qw(name associated_class predicate clearer));
 is($attr->name, 'pawn', 'attribute name');
-is($attr->associated_class, 'Class', 'associated_class');
+is($attr->associated_class, Class->meta, 'associated_class');
 is($attr->predicate, 'has_pawn', 'predicate');
 is($attr->clearer, 'clear_pawn', 'clearer');
 ok(!$attr->is_lazy_build, "not lazy_build");

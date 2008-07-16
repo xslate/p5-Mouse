@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Carp 'confess';
-use Scalar::Util 'blessed';
+use Scalar::Util qw/blessed weaken/;
 
 sub new {
     my $class = shift;
@@ -193,17 +193,15 @@ sub create {
         if exists $args{isa};
 
     my $attribute = $self->new(%args);
+
     $attribute->_create_args(\%args);
 
-    my $meta = $class->meta;
-
-    $meta->add_attribute($attribute);
+    $class->add_attribute($attribute);
 
     # install an accessor
     if ($attribute->_is_metadata eq 'rw' || $attribute->_is_metadata eq 'ro') {
         my $accessor = $attribute->generate_accessor;
-        no strict 'refs';
-        *{ $class . '::' . $name } = $accessor;
+        $class->add_method($name => $accessor);
     }
 
     for my $method (qw/predicate clearer/) {
@@ -211,16 +209,14 @@ sub create {
         if ($attribute->$predicate) {
             my $generator = "generate_$method";
             my $coderef = $attribute->$generator;
-            no strict 'refs';
-            *{ $class . '::' . $attribute->$method } = $coderef;
+            $class->add_method($attribute->$method => $coderef);
         }
     }
 
     if ($attribute->has_handles) {
         my $method_map = $attribute->generate_handles;
         for my $method_name (keys %$method_map) {
-            no strict 'refs';
-            *{ $class . '::' . $method_name } = $method_map->{$method_name};
+            $class->add_method($method_name => $method_map->{$method_name});
         }
     }
 
@@ -345,7 +341,7 @@ sub get_parent_args {
     my $class = shift;
     my $name  = shift;
 
-    for my $super ($class->meta->linearized_isa) {
+    for my $super ($class->linearized_isa) {
         my $super_attr = $super->can("meta") && $super->meta->get_attribute($name)
             or next;
         return %{ $super_attr->_create_args };
