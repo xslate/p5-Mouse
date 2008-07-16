@@ -283,8 +283,7 @@ sub validate_args {
         }
 
         confess "Trigger must be a CODE or HASH ref on attribute ($name)"
-            if $args->{trigger}
-            && ref($args->{trigger}) ne 'HASH';
+            if ref($args->{trigger}) ne 'HASH';
     }
 
     return 1;
