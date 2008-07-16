@@ -10,7 +10,6 @@ requires 'Class::Method::Modifiers' => '1.01';
 
 build_requires 'Test::More';
 build_requires 'Test::Exception';
-build_requires 'Test::Warn';
 
 WriteAll;
 
