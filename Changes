@@ -4,13 +4,25 @@ Revision history for Mouse
     * Mouse::Role
       Mouse::Meta::Role
       Mouse
-      - Begin adding roles! Attributes are mostly there.
+      Squirrel::Role
+      - Begin adding roles! Attributes are mostly there. Still experimental.
+
+    * Mouse::Meta::Class
+      Mouse::Object
+      - Add clone_object and clone_instance (nothingmuch)
+
+    * Mouse::Object
+      - Add BUILDARGS (nothingmuch)
+
+    * Mouse::Meta::Attribute
+      Mouse::Object
+      - Add "before" and "around" triggers. Moose doesn't even have them yet! :)
 
 0.04 Tue Jun 17 04:56:36 2008
     * Mouse
       Mouse::Meta::Attribute
       - Add support for has '+name'
-      - Add lazy_build
+      - Add lazy_build (nothingmuch)
 
 0.03 Thu Jun 12 21:54:07 2008
     * Mouse
