@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 16;
 use Test::Exception;
 
 my @trigger;
@@ -49,4 +49,40 @@ is_deeply([splice @trigger], [[$object, 50, $object->meta->get_attribute('attr')
 my $object2 = Class->new(attr => 100);
 is(@trigger, 1, "trigger was called on new with the attribute specified");
 is_deeply([splice @trigger], [[$object2, 100, $object2->meta->get_attribute('attr')]], "correct arguments to trigger in the constructor");
+
+do {
+    package Class2;
+    use Mouse;
+
+    has attr => (
+        is      => 'rw',
+        default => 10,
+        trigger => {
+            before => sub {
+                push @trigger, ['before', @_];
+            },
+            after => sub {
+                push @trigger, ['after', @_];
+            },
+            around => sub {
+                my $code = shift;
+                push @trigger, ['around-before', @_];
+                $code->();
+                push @trigger, ['around-after', @_];
+            },
+        },
+    );
+};
+
+my $o2 = Class2->new;
+is(@trigger, 0, "trigger not called on constructor with default");
+
+is($o2->attr, 10, "reader");
+is(@trigger, 0, "trigger not called on reader");
+
+is($o2->attr(5), 5, "writer");
+is_deeply([splice @trigger], [
+    ['before', $o2, 5, $o2->meta->get_attribute('attr')],
+    ['after',  $o2, 5, $o2->meta->get_attribute('attr')],
+]);
 
