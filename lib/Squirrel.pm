@@ -1,7 +1,5 @@
-#!/usr/bin/perl
-
+#!/usr/bin/env perl
 package Squirrel;
-
 use strict;
 use warnings;
 
