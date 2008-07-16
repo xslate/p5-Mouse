@@ -254,9 +254,9 @@ sub validate_args {
         && $args{isa} ne 'ArrayRef'
         && $args{isa} ne 'HashRef';
 
-    confess "Trigger must be a CODE ref on attribute ($name)"
+    confess "Trigger must be a CODE or HASH ref on attribute ($name)"
         if $args{trigger}
-        && ref($args{trigger}) ne 'CODE';
+        && ref($args{trigger}) ne 'CODE' && ref($args{trigger}) ne 'HASH';
 
     return 1;
 }
