@@ -168,7 +168,7 @@ sub create {
     $args{class} = $class;
 
     %args = $self->canonicalize_args($name, %args);
-    $self->validate_args($name, %args);
+    $self->validate_args($name, \%args);
 
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};
@@ -234,25 +234,27 @@ sub canonicalize_args {
 sub validate_args {
     my $self = shift;
     my $name = shift;
-    my %args = @_;
+    my $args = shift;
 
     confess "You can not use lazy_build and default for the same attribute ($name)"
-        if $args{lazy_build} && exists $args{default};
+        if $args->{lazy_build} && exists $args->{default};
 
     confess "You cannot have lazy attribute ($name) without specifying a default value for it"
-        if $args{lazy} && !exists($args{default}) && !exists($args{builder});
+        if $args->{lazy}
+        && !exists($args->{default})
+        && !exists($args->{builder});
 
     confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
-        if ref($args{default})
-        && ref($args{default}) ne 'CODE';
+        if ref($args->{default})
+        && ref($args->{default}) ne 'CODE';
 
     confess "You cannot auto-dereference without specifying a type constraint on attribute $name"
-        if $args{auto_deref} && !exists($args{isa});
+        if $args->{auto_deref} && !exists($args->{isa});
 
     confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute $name"
-        if $args{auto_deref}
-        && $args{isa} ne 'ArrayRef'
-        && $args{isa} ne 'HashRef';
+        if $args->{auto_deref}
+        && $args->{isa} ne 'ArrayRef'
+        && $args->{isa} ne 'HashRef';
 
     confess "Trigger must be a CODE or HASH ref on attribute ($name)"
         if $args{trigger}
@@ -422,7 +424,7 @@ on success, otherwise C<confess>es.
 Canonicalizes some arguments to create. In particular, C<lazy_build> is
 canonicalized into C<lazy>, C<builder>, etc.
 
-=head2 validate_args Name, %args -> 1 | ERROR
+=head2 validate_args Name, \%args -> 1 | ERROR
 
 Checks that the arguments to create the attribute (ie those specified by
 C<has>) are valid.
