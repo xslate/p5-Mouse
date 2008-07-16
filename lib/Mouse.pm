@@ -214,7 +214,7 @@ expert-level features.
 
 Compatibility with Moose has been the utmost concern. Fewer than 1% of the
 tests fail when run against Moose instead of Mouse. Mouse code coverage is also
-over 99%. Even the error messages are taken from Moose. The Mouse code just
+over 97%. Even the error messages are taken from Moose. The Mouse code just
 runs the test suite 3x-4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
@@ -228,8 +228,9 @@ Mouse also has the blessings of Moose's author, stevan.
 
 =head3 Roles
 
-Fixing this one slightly less soon. stevan has suggested an implementation
-strategy. Mouse currently mostly ignores methods.
+We're working on fixing this one! stevan has suggested an implementation
+strategy. Mouse currently ignores methods, so that needs to be fixed next.
+Roles that consist entirely of attributes may be usable in this very version.
 
 =head3 Complex types
 
