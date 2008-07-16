@@ -20,11 +20,18 @@ do {
     );
 
     ::lives_ok {
-        has error => (
+        has not_error => (
             is => 'ro',
             trigger => sub { },
         );
     } "it's no longer an error to have trigger on a readonly attribute";
+
+    ::throws_ok {
+        has error => (
+            is => 'ro',
+            trigger => [],
+        );
+    } qr/Trigger must be a CODE ref on attribute \(error\)/;
 };
 
 can_ok(Class => 'attr');
