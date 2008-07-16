@@ -54,6 +54,17 @@ sub superclasses {
     @{ $self->{superclasses} };
 }
 
+sub add_method {
+    my $self = shift;
+    my $name = shift;
+    my $code = shift;
+
+    my $pkg = $self->name;
+
+    no strict 'refs';
+    *{ $pkg . '::' . $name } = $code;
+}
+
 sub add_attribute {
     my $self = shift;
     my $attr = shift;
