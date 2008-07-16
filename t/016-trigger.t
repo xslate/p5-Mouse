@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More tests => 21;
 use Test::Exception;
 
 my @trigger;
@@ -95,5 +95,24 @@ is_deeply([splice @trigger], [
     ['around-before', $child,  5, Child->meta->get_attribute('attr')],
     ['around-after',  $child,  5, Child->meta->get_attribute('attr')],
     ['after',         $child, 20, Child->meta->get_attribute('attr')],
+]);
+
+my $parent = Parent->new(attr => 2);
+is_deeply([splice @trigger], [
+    ['before',        $parent, 2, Parent->meta->get_attribute('attr')],
+    ['around-before', $parent, 2, Parent->meta->get_attribute('attr')],
+    ['around-after',  $parent, 2, Parent->meta->get_attribute('attr')],
+    ['after',         $parent, 8, Parent->meta->get_attribute('attr')],
+]);
+
+is($parent->attr, 8, "reader");
+is(@trigger, 0, "trigger not called on reader");
+
+is($parent->attr(10), 40, "writer");
+is_deeply([splice @trigger], [
+    ['before',        $parent, 10, Parent->meta->get_attribute('attr')],
+    ['around-before', $parent, 10, Parent->meta->get_attribute('attr')],
+    ['around-after',  $parent, 10, Parent->meta->get_attribute('attr')],
+    ['after',         $parent, 40, Parent->meta->get_attribute('attr')],
 ]);
 
