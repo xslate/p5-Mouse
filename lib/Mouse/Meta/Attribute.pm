@@ -76,17 +76,28 @@ sub generate_accessor {
             $accessor .= '$before->($self, $_, $attribute);';
         }
 
-        if ($constraint) {
-            $accessor .= 'do {
-                my $display = defined($_) ? overload::StrVal($_) : "undef";
-                Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display") unless $constraint->();
-            };'
+        if ($around) {
+            $accessor .= '$around->(sub {
+                my $self = shift;
+                $_ = $_[0];
+            ';
         }
 
-        $accessor .= '$self->{$key} = $_;';
+            if ($constraint) {
+                $accessor .= 'do {
+                    my $display = defined($_) ? overload::StrVal($_) : "undef";
+                    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display") unless $constraint->();
+                };'
+            }
 
-        if ($attribute->is_weak_ref) {
-            $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
+            $accessor .= '$self->{$key} = $_;';
+
+            if ($attribute->is_weak_ref) {
+                $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
+            }
+
+        if ($around) {
+            $accessor .= '}, $self, $_, $attribute);';
         }
 
         if ($after) {

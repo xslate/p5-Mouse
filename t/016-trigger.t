@@ -66,9 +66,11 @@ do {
             },
             around => sub {
                 my $code = shift;
-                push @trigger, ['around-before', @_];
-                $code->();
-                push @trigger, ['around-after', @_];
+                my ($self, $value, $attr) = @_;
+
+                push @trigger, ['around-before', $self, $value, $attr];
+                $code->($self, 4 * $value, $attr);
+                push @trigger, ['around-after', $self, $value, $attr];
             },
         },
     );
@@ -80,9 +82,11 @@ is(@trigger, 0, "trigger not called on constructor with default");
 is($o2->attr, 10, "reader");
 is(@trigger, 0, "trigger not called on reader");
 
-is($o2->attr(5), 5, "writer");
+is($o2->attr(5), 20, "writer");
 is_deeply([splice @trigger], [
-    ['before', $o2, 5, $o2->meta->get_attribute('attr')],
-    ['after',  $o2, 5, $o2->meta->get_attribute('attr')],
+    ['before',        $o2,  5, $o2->meta->get_attribute('attr')],
+    ['around-before', $o2,  5, $o2->meta->get_attribute('attr')],
+    ['around-after',  $o2,  5, $o2->meta->get_attribute('attr')],
+    ['after',         $o2, 20, $o2->meta->get_attribute('attr')],
 ]);
 
