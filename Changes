@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.06
+    * Mouse
+      - updated trigger doc (thanks perigrin)
 
 0.05 Thu Jul 17 01:53:20 2008
     * Mouse::Role

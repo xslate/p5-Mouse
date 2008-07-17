@@ -342,18 +342,18 @@ Lets you automatically weaken any reference stored in the attribute.
 
 =item trigger => CodeRef | HashRef
 
-Triggers are like method modifiers for setting attribute values. You can have
-a "before" and an "after" trigger, each of which receive as arguments the instance, the new value, and the attribute metaclass. Historically, triggers have
-only been "after" modifiers, so if you use a coderef for the C<trigger> option,
-it will maintain that compatibility. Like method modifiers, you can't really
-affect the act of setting the attribute value, and the return values of the 
-modifiers are ignored.
+Historically, triggers have been like "after" method modifiers. They allowed
+you to run code after your attribute had been set. Passing a coderef to the
+C<trigger> option still works this way.
 
-There's also an "around" trigger which you can use to change the value that
-is being set on the attribute, or even prevent the attribute from being
-updated. The around trigger receives as arguments a code reference to invoke
-to set the attribute's value (which expects as arguments the instance and
-the new value), the instance, the new value, and the attribute metaclass.
+By passing a hashref to C<trigger>, you also get "before" and "around"
+triggers. The "before" and "after" triggers don't affect the act of setting
+the attribute value, and their return values are ignored. The "around" trigger
+can be used to change the value that is being set on the attribute, or prevent
+the attribute from being updated altogether. The "around" trigger's arguments
+are a code reference to set the attribute's value (this coderef expects the
+instance and the new value), the instance, the new value, and the attribute
+metaclass.
 
 =item builder => Str
 
