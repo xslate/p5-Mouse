@@ -1,6 +1,8 @@
 Revision history for Mouse
 
-0.05
+0.06
+
+0.05 Thu Jul 17 01:53:20 2008
     * Mouse::Role
       Mouse::Meta::Role
       Mouse
