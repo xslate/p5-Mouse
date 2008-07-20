@@ -4,6 +4,10 @@ Revision history for Mouse
     * Mouse
       - updated trigger doc (thanks perigrin)
 
+    * Mouse::Meta::Class
+      - add a make_immutable method which does nothing(!), for even more
+        Moose compat (nothingmuch's idea)
+
 0.05 Thu Jul 17 01:53:20 2008
     * Mouse::Role
       Mouse::Meta::Role

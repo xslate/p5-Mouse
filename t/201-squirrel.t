@@ -56,12 +56,15 @@ eval "
     use Squirrel;
 
     has bar => (is => 'rw');
+    __PACKAGE__->meta->make_immutable;
 
     package Bar;
     use Squirrel;
 
     has bar => (is => 'rw');
+    __PACKAGE__->meta->make_immutable;
 ";
+warn $@ if $@;
 
 is(blessed(Foo->meta->get_attribute('foo')), 'Mouse::Meta::Attribute');
 is(blessed(Foo->meta->get_attribute('bar')), 'Mouse::Meta::Attribute', 'Squirrel is consistent if Moose was loaded between imports');

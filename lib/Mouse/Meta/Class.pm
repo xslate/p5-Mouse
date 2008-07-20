@@ -125,6 +125,7 @@ sub clone_instance {
 
 }
 
+sub make_immutable {}
 
 1;
 
