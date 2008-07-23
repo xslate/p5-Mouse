@@ -340,20 +340,11 @@ L</handles>, such as regular expression and coderef, are not yet supported.
 
 Lets you automatically weaken any reference stored in the attribute.
 
-=item trigger => CodeRef | HashRef
+=item trigger => CodeRef
 
-Historically, triggers have been like "after" method modifiers. They allowed
-you to run code after your attribute had been set. Passing a coderef to the
-C<trigger> option still works this way.
+Any time the attribute's value is set (either through the accessor or the constructor), the trigger is called on it. The trigger receives as arguments the instance, the new value, and the attribute instance.
 
-By passing a hashref to C<trigger>, you also get "before" and "around"
-triggers. The "before" and "after" triggers don't affect the act of setting
-the attribute value, and their return values are ignored. The "around" trigger
-can be used to change the value that is being set on the attribute, or prevent
-the attribute from being updated altogether. The "around" trigger's arguments
-are a code reference to set the attribute's value (this coderef expects the
-instance and the new value), the instance, the new value, and the attribute
-metaclass.
+Mouse 0.05 supported more complex triggers, but this behavior is now deprecated.
 
 =item builder => Str
 

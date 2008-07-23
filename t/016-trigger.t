@@ -31,7 +31,7 @@ do {
             is => 'ro',
             trigger => [],
         );
-    } qr/Trigger must be a CODE or HASH ref on attribute \(error\)/;
+    } qr/Trigger must be a CODE ref on attribute \(error\)/;
 };
 
 can_ok(Class => 'attr');

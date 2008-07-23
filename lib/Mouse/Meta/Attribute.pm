@@ -277,8 +277,11 @@ sub validate_args {
                 after => $args->{trigger},
             };
         }
+        elsif (ref($args->{trigger}) eq 'HASH') {
+            Carp::carp "HASH-based form of trigger is deprecated. Please switch back to using the coderef form of trigger.";
+        }
 
-        confess "Trigger must be a CODE or HASH ref on attribute ($name)"
+        confess "Trigger must be a CODE ref on attribute ($name)"
             if ref($args->{trigger}) ne 'HASH';
     }
 
