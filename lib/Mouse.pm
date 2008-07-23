@@ -3,7 +3,7 @@ package Mouse;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 use 5.006;
 
 use Sub::Exporter;
