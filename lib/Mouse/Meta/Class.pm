@@ -126,6 +126,9 @@ sub clone_instance {
 }
 
 sub make_immutable {}
+sub is_immutable { 0 }
+
+sub attribute_metaclass { "Mouse::Meta::Class" }
 
 1;
 
