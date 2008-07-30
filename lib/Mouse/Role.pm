@@ -36,7 +36,7 @@ do {
             return sub {
                 my $code = pop;
                 for (@_) {
-                    $caller->meta->add_before_method_modifier($_ => $code);
+                    $caller->meta->add_after_method_modifier($_ => $code);
                 }
             }
         },
@@ -45,7 +45,7 @@ do {
             return sub {
                 my $code = pop;
                 for (@_) {
-                    $caller->meta->add_before_method_modifier($_ => $code);
+                    $caller->meta->add_around_method_modifier($_ => $code);
                 }
             }
         },
