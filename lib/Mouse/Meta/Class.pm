@@ -7,6 +7,7 @@ use Scalar::Util 'blessed';
 use Carp 'confess';
 
 use MRO::Compat;
+use Class::Method::Modifiers ();
 
 do {
     my %METACLASS_CACHE;
@@ -129,6 +130,36 @@ sub make_immutable {}
 sub is_immutable { 0 }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
+
+sub add_before_method_modifier {
+    my ($self, $name, $code) = @_;
+    Class::Method::Modifiers::_install_modifier(
+        $self->name,
+        'before',
+        $name,
+        $code,
+    );
+}
+
+sub add_around_method_modifier {
+    my ($self, $name, $code) = @_;
+    Class::Method::Modifiers::_install_modifier(
+        $self->name,
+        'around',
+        $name,
+        $code,
+    );
+}
+
+sub add_after_method_modifier {
+    my ($self, $name, $code) = @_;
+    Class::Method::Modifiers::_install_modifier(
+        $self->name,
+        'after',
+        $name,
+        $code,
+    );
+}
 
 1;
 

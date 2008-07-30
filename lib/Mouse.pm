@@ -9,7 +9,6 @@ use 5.006;
 use Sub::Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
-use Class::Method::Modifiers ();
 
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Class;
@@ -61,15 +60,42 @@ do {
         },
 
         before => sub {
-            return \&Class::Method::Modifiers::before;
+            my $caller = $CALLER;
+
+            return sub {
+                my $code = pop;
+                my $class = $caller->meta;
+
+                for (@_) {
+                    $class->add_before_method_modifier($_ => $code);
+                }
+            };
         },
 
         after => sub {
-            return \&Class::Method::Modifiers::after;
+            my $caller = $CALLER;
+
+            return sub {
+                my $code = pop;
+                my $class = $caller->meta;
+
+                for (@_) {
+                    $class->add_after_method_modifier($_ => $code);
+                }
+            };
         },
 
         around => sub {
-            return \&Class::Method::Modifiers::around;
+            my $caller = $CALLER;
+
+            return sub {
+                my $code = pop;
+                my $class = $caller->meta;
+
+                for (@_) {
+                    $class->add_around_method_modifier($_ => $code);
+                }
+            };
         },
 
         with => sub {
