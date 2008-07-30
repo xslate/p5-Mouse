@@ -58,6 +58,13 @@ sub apply {
 
 for my $modifier_type (qw/before after around/) {
     no strict 'refs';
+    *{ __PACKAGE__ . '::' . "add_${modifier_type}_method_modifier" } = sub {
+        my ($self, $method_name, $method) = @_;
+
+        push @{ $self->{"${modifier_type}_method_modifiers"}->{$method_name} },
+            $method;
+    };
+
     *{ __PACKAGE__ . '::' . "get_${modifier_type}_method_modifiers" } = sub {
         my ($self, $method_name, $method) = @_;
         @{ $self->{"${modifier_type}_method_modifiers"}->{$method_name} || [] }

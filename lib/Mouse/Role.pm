@@ -23,13 +23,31 @@ do {
             }
         },
         before => sub {
-            return sub { }
+            my $caller = $CALLER;
+            return sub {
+                my $code = pop;
+                for (@_) {
+                    $caller->meta->add_before_method_modifier($_ => $code);
+                }
+            }
         },
         after => sub {
-            return sub { }
+            my $caller = $CALLER;
+            return sub {
+                my $code = pop;
+                for (@_) {
+                    $caller->meta->add_before_method_modifier($_ => $code);
+                }
+            }
         },
         around => sub {
-            return sub { }
+            my $caller = $CALLER;
+            return sub {
+                my $code = pop;
+                for (@_) {
+                    $caller->meta->add_before_method_modifier($_ => $code);
+                }
+            }
         },
         has => sub {
             my $caller = $CALLER;
