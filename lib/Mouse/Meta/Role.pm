@@ -54,6 +54,17 @@ sub apply {
         my $spec = $self->get_attribute($name);
         Mouse::Meta::Attribute->create($class, $name, %$spec);
     }
+
+    for my $modifier_type (qw/before after around/) {
+        my $add_method = "add_${modifier_type}_method_modifier";
+        my $modified = $self->{"${modifier_type}_method_modifiers"};
+
+        for my $method_name (keys %$modified) {
+            for my $code (@{ $modified->{$method_name} }) {
+                $class->$add_method($method_name => $code);
+            }
+        }
+    }
 }
 
 for my $modifier_type (qw/before after around/) {
