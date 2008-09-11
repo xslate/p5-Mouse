@@ -3,7 +3,6 @@ package Mouse::Object;
 use strict;
 use warnings;
 
-use MRO::Compat;
 use Scalar::Util qw/blessed weaken/;
 use Carp 'confess';
 
