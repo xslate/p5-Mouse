@@ -20,35 +20,16 @@ sub new {
         my $default;
 
         if (defined($from) && exists($args->{$from})) {
-            if ($attribute->has_trigger && $attribute->trigger->{before}) {
-                $attribute->trigger->{before}->($instance, $args->{$from}, $attribute);
-            }
+            $attribute->verify_type_constraint($args->{$from})
+                if $attribute->has_type_constraint;
 
-            if ($attribute->has_trigger && $attribute->trigger->{around}) {
-                $attribute->trigger->{around}->(sub {
-                    $args->{$from} = $_[1];
+            $instance->{$key} = $args->{$from};
 
-                    $attribute->verify_type_constraint($args->{$from})
-                        if $attribute->has_type_constraint;
+            weaken($instance->{$key})
+                if ref($instance->{$key}) && $attribute->is_weak_ref;
 
-                    $instance->{$key} = $args->{$from};
-
-                    weaken($instance->{$key})
-                        if ref($instance->{$key}) && $attribute->is_weak_ref;
-                }, $instance, $args->{$from}, $attribute);
-            }
-            else {
-                $attribute->verify_type_constraint($args->{$from})
-                    if $attribute->has_type_constraint;
-
-                $instance->{$key} = $args->{$from};
-
-                weaken($instance->{$key})
-                    if ref($instance->{$key}) && $attribute->is_weak_ref;
-            }
-
-            if ($attribute->has_trigger && $attribute->trigger->{after}) {
-                $attribute->trigger->{after}->($instance, $args->{$from}, $attribute);
+            if ($attribute->has_trigger) {
+                $attribute->trigger->($instance, $args->{$from}, $attribute);
             }
         }
         else {

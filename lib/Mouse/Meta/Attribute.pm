@@ -59,11 +59,7 @@ sub generate_accessor {
     my $type       = $attribute->type_constraint;
     my $constraint = $attribute->find_type_constraint;
     my $builder    = $attribute->builder;
-
-    my $trigger = $attribute->trigger;
-    my $before  = $trigger->{before};
-    my $after   = $trigger->{after};
-    my $around  = $trigger->{around};
+    my $trigger    = $attribute->trigger;
 
     my $accessor = 'sub {
         my $self = shift;';
@@ -72,36 +68,21 @@ sub generate_accessor {
         $accessor .= 'if (@_) {
             local $_ = $_[0];';
 
-        if ($before) {
-            $accessor .= '$before->($self, $_, $attribute);';
+        if ($constraint) {
+            $accessor .= 'unless ($constraint->()) {
+                    my $display = defined($_) ? overload::StrVal($_) : "undef";
+                    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
+            }'
         }
 
-        if ($around) {
-            $accessor .= '$around->(sub {
-                my $self = shift;
-                $_ = $_[0];
-            ';
+        $accessor .= '$self->{$key} = $_;';
+
+        if ($attribute->is_weak_ref) {
+            $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
         }
 
-            if ($constraint) {
-                $accessor .= 'unless ($constraint->()) {
-                        my $display = defined($_) ? overload::StrVal($_) : "undef";
-                        Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
-                }'
-            }
-
-            $accessor .= '$self->{$key} = $_;';
-
-            if ($attribute->is_weak_ref) {
-                $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
-            }
-
-        if ($around) {
-            $accessor .= '}, $self, $_, $attribute);';
-        }
-
-        if ($after) {
-            $accessor .= '$after->($self, $_, $attribute);';
+        if ($trigger) {
+            $accessor .= '$trigger->($self, $_, $attribute);';
         }
 
         $accessor .= '}';
@@ -272,17 +253,12 @@ sub validate_args {
         && $args->{isa} ne 'HashRef';
 
     if ($args->{trigger}) {
-        if (ref($args->{trigger}) eq 'CODE') {
-            $args->{trigger} = {
-                after => $args->{trigger},
-            };
-        }
-        elsif (ref($args->{trigger}) eq 'HASH') {
-            Carp::carp "HASH-based form of trigger is deprecated. Please switch back to using the coderef form of trigger.";
+        if (ref($args->{trigger}) eq 'HASH') {
+            Carp::carp "HASH-based form of trigger has been removed. Only the coderef form of triggers are now supported.";
         }
 
         confess "Trigger must be a CODE ref on attribute ($name)"
-            if ref($args->{trigger}) ne 'HASH';
+            if ref($args->{trigger}) ne 'CODE';
     }
 
     return 1;
