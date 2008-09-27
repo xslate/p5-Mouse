@@ -2,11 +2,11 @@
 package Mouse;
 use strict;
 use warnings;
+use base 'Exporter';
 
 our $VERSION = '0.07';
 use 5.006;
 
-use Sub::Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
@@ -15,132 +15,92 @@ use Mouse::Meta::Class;
 use Mouse::Object;
 use Mouse::TypeRegistry;
 
-do {
-    my $CALLER;
+our @EXPORT = qw(extends has before after around blessed confess with);
 
-    my %exports = (
-        meta => sub {
-            my $meta = Mouse::Meta::Class->initialize($CALLER);
-            return sub { $meta };
-        },
+sub extends { Mouse::Meta::Class->initialize(caller)->superclasses(@_) }
 
-        extends => sub {
-            my $caller = $CALLER;
-            return sub {
-                $caller->meta->superclasses(@_);
-            };
-        },
+sub has {
+    my $meta = Mouse::Meta::Class->initialize(caller);
 
-        has => sub {
-            my $caller = $CALLER;
+    my $names = shift;
+    $names = [$names] if !ref($names);
 
-            return sub {
-                my $meta = $caller->meta;
-
-                my $names = shift;
-                $names = [$names] if !ref($names);
-
-                for my $name (@$names) {
-                    if ($name =~ s/^\+//) {
-                        Mouse::Meta::Attribute->clone_parent($meta, $name, @_);
-                    }
-                    else {
-                        Mouse::Meta::Attribute->create($meta, $name, @_);
-                    }
-                }
-            };
-        },
-
-        confess => sub {
-            return \&confess;
-        },
-
-        blessed => sub {
-            return \&blessed;
-        },
-
-        before => sub {
-            my $caller = $CALLER;
-
-            return sub {
-                my $code = pop;
-                my $class = $caller->meta;
-
-                for (@_) {
-                    $class->add_before_method_modifier($_ => $code);
-                }
-            };
-        },
-
-        after => sub {
-            my $caller = $CALLER;
-
-            return sub {
-                my $code = pop;
-                my $class = $caller->meta;
-
-                for (@_) {
-                    $class->add_after_method_modifier($_ => $code);
-                }
-            };
-        },
-
-        around => sub {
-            my $caller = $CALLER;
-
-            return sub {
-                my $code = pop;
-                my $class = $caller->meta;
-
-                for (@_) {
-                    $class->add_around_method_modifier($_ => $code);
-                }
-            };
-        },
-
-        with => sub {
-            my $caller = $CALLER;
-
-            return sub {
-                my $role  = shift;
-                my $class = $caller->meta;
-
-                confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
-
-                Mouse::load_class($role);
-                $role->meta->apply($class);
-            };
-        },
-    );
-
-    my $exporter = Sub::Exporter::build_exporter({
-        exports => \%exports,
-        groups  => { default => [':all'] },
-    });
-
-    sub import {
-        $CALLER = caller;
-
-        strict->import;
-        warnings->import;
-
-        my $meta = Mouse::Meta::Class->initialize($CALLER);
-        $meta->superclasses('Mouse::Object')
-            unless $meta->superclasses;
-
-        goto $exporter;
-    }
-
-    sub unimport {
-        my $caller = caller;
-
-        no strict 'refs';
-        for my $keyword (keys %exports) {
-            next if $keyword eq 'meta'; # we don't delete this one
-            delete ${ $caller . '::' }{$keyword};
+    for my $name (@$names) {
+        if ($name =~ s/^\+//) {
+            Mouse::Meta::Attribute->clone_parent($meta, $name, @_);
+        }
+        else {
+            Mouse::Meta::Attribute->create($meta, $name, @_);
         }
     }
-};
+}
+
+sub before {
+    my $meta = Mouse::Meta::Class->initialize(caller);
+
+    my $code = pop;
+
+    for (@_) {
+        $meta->add_before_method_modifier($_ => $code);
+    }
+}
+
+sub after {
+    my $meta = Mouse::Meta::Class->initialize(caller);
+
+    my $code = pop;
+
+    for (@_) {
+        $meta->add_after_method_modifier($_ => $code);
+    }
+}
+
+sub around {
+    my $meta = Mouse::Meta::Class->initialize(caller);
+
+    my $code = pop;
+
+    for (@_) {
+        $meta->add_around_method_modifier($_ => $code);
+    }
+}
+
+sub with {
+    my $meta = Mouse::Meta::Class->initialize(caller);
+
+    my $role  = shift;
+
+    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
+
+    Mouse::load_class($role);
+    $role->meta->apply($meta);
+}
+
+sub import {
+    strict->import;
+    warnings->import;
+
+    my $caller = caller;
+
+    my $meta = Mouse::Meta::Class->initialize($caller);
+    $meta->superclasses('Mouse::Object')
+        unless $meta->superclasses;
+
+    no strict 'refs';
+    no warnings 'redefine';
+    *{$caller.'::meta'} = sub { $meta };
+
+    Mouse->export_to_level(1, @_);
+}
+
+sub unimport {
+    my $caller = caller;
+
+    no strict 'refs';
+    for my $keyword (@EXPORT) {
+        delete ${ $caller . '::' }{$keyword};
+    }
+}
 
 sub load_class {
     my $class = shift;
