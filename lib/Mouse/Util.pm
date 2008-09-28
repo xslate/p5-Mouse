@@ -121,6 +121,9 @@ our %dependencies = (
     },
 #       VVVVV   CODE TAKEN FROM TEST::EXCEPTION   VVVVV
     'Test::Exception' => do {
+
+        my $Tester = Test::Builder->new;
+
         my $is_exception = sub {
             my $exception = shift;
             return ref $exception || $exception ne '';
@@ -150,16 +153,16 @@ our %dependencies = (
                     unless defined $description;
                 my $exception = $try_as_caller->($coderef);
 
-                my $regex = $Test::Builder::Tester->maybe_regex( $expecting );
+                my $regex = $Tester->maybe_regex( $expecting );
                 my $ok = $regex
                     ? ( $exception =~ m/$regex/ )
                     : eval {
                         $exception->isa( ref $expecting ? ref $expecting : $expecting )
                     };
-                $Test::Builder::Tester->ok( $ok, $description );
+                $Tester->ok( $ok, $description );
                 unless ( $ok ) {
-                    $Test::Builder::Tester->diag( $exception_as_string->( "expecting:", $expecting ) );
-                    $Test::Builder::Tester->diag( $exception_as_string->( "found:", $exception ) );
+                    $Tester->diag( $exception_as_string->( "expecting:", $expecting ) );
+                    $Tester->diag( $exception_as_string->( "found:", $exception ) );
                 };
                 $@ = $exception;
                 return $ok;
@@ -167,8 +170,8 @@ our %dependencies = (
             'lives_ok' => sub (&;$) {
                 my ( $coderef, $description ) = @_;
                 my $exception = $try_as_caller->( $coderef );
-                my $ok = $Test::Builder::Tester->ok( ! $is_exception->( $exception ), $description );
-                $Test::Builder::Tester->diag( $exception_as_string->( "died:", $exception ) ) unless $ok;
+                my $ok = $Tester->ok( ! $is_exception->( $exception ), $description );
+                $Tester->diag( $exception_as_string->( "died:", $exception ) ) unless $ok;
                 $@ = $exception;
                 return $ok;
             },
