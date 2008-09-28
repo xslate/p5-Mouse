@@ -123,7 +123,7 @@ BEGIN {
 #       VVVVV   CODE TAKEN FROM TEST::EXCEPTION   VVVVV
         'Test::Exception' => do {
 
-            my $Tester = Test::Builder->new;
+            my $Tester;
 
             my $is_exception = sub {
                 my $exception = shift;
@@ -154,6 +154,8 @@ BEGIN {
                         unless defined $description;
                     my $exception = $try_as_caller->($coderef);
 
+                    $Tester ||= Test::Builder->new;
+
                     my $regex = $Tester->maybe_regex( $expecting );
                     my $ok = $regex
                         ? ( $exception =~ m/$regex/ )
@@ -171,6 +173,9 @@ BEGIN {
                 'lives_ok' => sub (&;$) {
                     my ( $coderef, $description ) = @_;
                     my $exception = $try_as_caller->( $coderef );
+
+                    $Tester ||= Test::Builder->new;
+
                     my $ok = $Tester->ok( ! $is_exception->( $exception ), $description );
                     $Tester->diag( $exception_as_string->( "died:", $exception ) ) unless $ok;
                     $@ = $exception;
