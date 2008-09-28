@@ -258,15 +258,21 @@ Sets this class' superclasses.
 Installs a "before" method modifier. See L<Moose/before> or
 L<Class::Method::Modifiers/before>.
 
+Use of this feature requires L<Class::Method::Modifiers>!
+
 =head2 after (method|methods) => Code
 
 Installs an "after" method modifier. See L<Moose/after> or
 L<Class::Method::Modifiers/after>.
 
+Use of this feature requires L<Class::Method::Modifiers>!
+
 =head2 around (method|methods) => Code
 
 Installs an "around" method modifier. See L<Moose/around> or
 L<Class::Method::Modifiers/around>.
+
+Use of this feature requires L<Class::Method::Modifiers>!
 
 =head2 has (name|names) => parameters
 
@@ -332,11 +338,13 @@ L</handles>, such as regular expression and coderef, are not yet supported.
 
 Lets you automatically weaken any reference stored in the attribute.
 
+Use of this feature requires L<Scalar::Util>!
+
 =item trigger => CodeRef
 
 Any time the attribute's value is set (either through the accessor or the constructor), the trigger is called on it. The trigger receives as arguments the instance, the new value, and the attribute instance.
 
-Mouse 0.05 supported more complex triggers, but this behavior is now deprecated.
+Mouse 0.05 supported more complex triggers, but this behavior is now removed.
 
 =item builder => Str
 
