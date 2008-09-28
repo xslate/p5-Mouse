@@ -4,7 +4,6 @@ name     'Mouse';
 all_from 'lib/Mouse.pm';
 
 requires 'Scalar::Util';
-requires 'MRO::Compat';
 requires 'Class::Method::Modifiers' => '1.01';
 
 build_requires 'Test::More';

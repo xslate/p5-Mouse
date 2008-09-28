@@ -3,10 +3,10 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
+use Mouse::Util 'get_linear_isa';
 use Scalar::Util 'blessed';
 use Carp 'confess';
 
-use MRO::Compat;
 use Class::Method::Modifiers ();
 
 do {
@@ -94,7 +94,7 @@ sub get_attribute_map { $_[0]->{attributes} }
 sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
 
-sub linearized_isa { @{ mro::get_linear_isa($_[0]->name) } }
+sub linearized_isa { @{ get_linear_isa($_[0]->name) } }
 
 sub clone_object {
     my $class    = shift;
