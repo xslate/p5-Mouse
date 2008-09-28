@@ -37,7 +37,7 @@ sub unimport {
     goto $_[0]->_handlers->{unimport};
 }
 
-__PACKAGE__
+1;
 
 __END__
 
