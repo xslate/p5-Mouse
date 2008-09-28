@@ -6,6 +6,8 @@ use base 'Exporter';
 
 our %dependencies = (
     'Scalar::Util' => {
+
+#       VVVVV   CODE TAKEN FROM SCALAR::UTIL   VVVVV
         'blessed' => do {
             do {
                 no strict 'refs';
@@ -86,8 +88,14 @@ our %dependencies = (
             (tied(*$fh) or defined(fileno($fh)))
                 ? $fh : undef;
         },
+        weaken => {
+            loaded => \&Scalar::Util::weaken,
+            not_loaded => sub { die "Scalar::Util required for weak reference support" },
+        },
+#       ^^^^^   CODE TAKEN FROM SCALAR::UTIL   ^^^^^
     },
     'MRO::Compat' => {
+#       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
         'get_linear_isa' => {
             loaded     => \&mro::get_linear_isa,
             not_loaded => do {
@@ -112,6 +120,7 @@ our %dependencies = (
                 }
             },
         },
+#       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
     },
 );
 
@@ -145,11 +154,6 @@ for my $module_name (keys %dependencies) {
     }
 }
 
-push @EXPORT_OK, qw(weaken);
-sub weaken {
-    require Scalar::Util;
-    goto \&Scalar::Util::weaken;
-}
 
 1;
 
