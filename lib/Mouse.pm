@@ -196,6 +196,12 @@ Mouse aims to alleviate this by providing a subset of Moose's
 functionality, faster. In particular, L<Moose/has> is missing only a few
 expert-level features.
 
+We're also going as light on dependencies as possible. Most functions we use
+from L<Scalar::Util> are copied into this dist. L<Scalar::Util> is required if
+you'd like weak references; there's simply no way to do it from pure Perl.
+L<Class::Method::Modifiers> is required if you want support for L</before>,
+L</after>, and L</around>.
+
 =head2 MOOSE COMPAT
 
 Compatibility with Moose has been the utmost concern. Fewer than 1% of the
