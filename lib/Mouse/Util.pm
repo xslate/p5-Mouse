@@ -119,34 +119,36 @@ our %dependencies = (
         },
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
     },
-    'Test::Exception' => {
 #       VVVVV   CODE TAKEN FROM TEST::EXCEPTION   VVVVV
-        'throws_ok' => do {
-            my $_is_exception = sub {
-                my $exception = shift;
-                return ref $exception || $exception ne '';
-            };
+    'Test::Exception' => do {
+        my $is_exception = sub {
+            my $exception = shift;
+            return ref $exception || $exception ne '';
+        };
 
-            my $exception_as_string = sub {
-                my ( $prefix, $exception ) = @_;
-                return "$prefix normal exit" unless _is_exception( $exception );
-                my $class = ref $exception;
-                $exception = "$class ($exception)"
-                        if $class && "$exception" !~ m/^\Q$class/;
-                chomp $exception;
-                return "$prefix $exception";
-            };
+        my $exception_as_string = sub {
+            my ( $prefix, $exception ) = @_;
+            return "$prefix normal exit" unless $is_exception->( $exception );
+            my $class = ref $exception;
+            $exception = "$class ($exception)"
+                    if $class && "$exception" !~ m/^\Q$class/;
+            chomp $exception;
+            return "$prefix $exception";
+        };
+        my $try_as_caller = sub {
+            my $coderef = shift;
+            eval { $coderef->() };
+            $@;
+        };
 
-            sub (&$;$) {
+        {
+            'throws_ok' => sub (&$;$) {
                 my ( $coderef, $expecting, $description ) = @_;
                 Carp::croak "throws_ok: must pass exception class/object or regex"
                     unless defined $expecting;
                 $description = $exception_as_string->( "threw", $expecting )
                     unless defined $description;
-                my $exception = do {
-                    eval { $coderef->() };
-                    $@;
-                };
+                my $exception = $try_as_caller->($coderef);
 
                 my $regex = $Test::Builder::Tester->maybe_regex( $expecting );
                 my $ok = $regex
@@ -162,11 +164,23 @@ our %dependencies = (
                 $@ = $exception;
                 return $ok;
             },
+            'lives_ok' => sub (&;$) {
+                my ( $coderef, $description ) = @_;
+                my $exception = $try_as_caller->( $coderef );
+                my $ok = $Test::Builder::Tester->ok( ! $is_exception->( $exception ), $description );
+                $Test::Builder::Tester->diag( $exception_as_string->( "died:", $exception ) ) unless $ok;
+                $@ = $exception;
+                return $ok;
+            },
         },
     },
 );
 
 our @EXPORT_OK = map { keys %$_ } values %dependencies;
+our %EXPORT_TAGS = (
+    all  => \@EXPORT_OK,
+    test => [qw/throws_ok lives_ok/],
+);
 
 for my $module_name (keys %dependencies) {
     my $loaded = do {
