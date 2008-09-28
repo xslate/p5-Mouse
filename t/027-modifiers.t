@@ -1,7 +1,16 @@
 #!perl -T
 use strict;
 use warnings;
-use Test::More tests => 1;
+
+use Test::More;
+BEGIN {
+    if (eval "require Class::Method::Modifiers; 1") {
+        plan tests => 1;
+    }
+    else {
+        plan skip_all => "Class::Method::Modifiers required for this test";
+    }
+}
 
 my @seen;
 my @expected = ("before 4",

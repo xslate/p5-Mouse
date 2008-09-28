@@ -1,7 +1,15 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More;
+BEGIN {
+    if (eval "require Class::Method::Modifiers; 1") {
+        plan tests => 4;
+    }
+    else {
+        plan skip_all => "Class::Method::Modifiers required for this test";
+    }
+}
 use Mouse::Util ':test';
 
 my @calls;
