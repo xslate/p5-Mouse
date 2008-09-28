@@ -240,5 +240,11 @@ Mouse::Util - features, with or without their dependencies
 C<weaken> I<must> be implemented in XS. If the user tries to use C<weaken>
 without L<Scalar::Util>, an error is thrown.
 
+=head2 Test::Exception
+
+=head3 throws_ok
+
+=head3 lives_ok
+
 =cut
 
