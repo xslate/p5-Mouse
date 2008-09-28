@@ -1,6 +1,26 @@
 Revision history for Mouse
 
 0.07
+    * All runtime dependencies have been removed! The only change in
+      functionality (hopefully) is that the Sub::Exporter features can no
+      longer be used (we've backed down to regular Exporter). Scalar::Util is
+      required for "weaken" support, and Class::Method::Modifiers is required
+      for method modifier support, but only if you use these features!
+      Having Scalar::Util and MRO::Compat installed will provide only
+      performance increases.
+
+    * Tests and fixes for extending a Mouse class with Moose (nothingmuch)
+
+    * Support for adding method modifiers to a role, and composing them into
+      classes (we'll get true methods some day)
+
+    * Method modifiers now go through the metaclass instead of invoking
+      Class::Method::Modifiers directly
+
+    * Remove the deprecated before/after/around triggers
+
+    * Roles keywords 'requires' and 'excludes' now throw errors instead of
+      silently doing nothing (they aren't implemented yet)
 
 0.06 Thu Jul 23 02:10:07 2008
     * Deprecating before/after/around triggers! Switch back to coderef +
