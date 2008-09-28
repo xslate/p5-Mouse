@@ -18,7 +18,7 @@ throws_ok {
     extends 'Role::Parent';
 
     no Mouse::Role;
-} qr/Role does not currently support 'extends'/;
+} qr/Roles do not support 'extends'/;
 
 lives_ok {
     package Role;

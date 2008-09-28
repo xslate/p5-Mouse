@@ -2,105 +2,81 @@
 package Mouse::Role;
 use strict;
 use warnings;
+use base 'Exporter';
 
-use Sub::Exporter;
 use Carp 'confess';
-use Scalar::Util;
+use Scalar::Util 'blessed';
 
 use Mouse::Meta::Role;
 
-do {
-    my $CALLER;
+our @EXPORT = qw(before after around has extends with requires excludes confess blessed);
 
-    my %exports = (
-        meta => sub {
-            my $meta = Mouse::Meta::Role->initialize($CALLER);
-            return sub { $meta };
-        },
-        extends => sub {
-            return sub {
-                confess "Role does not currently support 'extends'";
-            }
-        },
-        before => sub {
-            my $caller = $CALLER;
-            return sub {
-                my $code = pop;
-                for (@_) {
-                    $caller->meta->add_before_method_modifier($_ => $code);
-                }
-            }
-        },
-        after => sub {
-            my $caller = $CALLER;
-            return sub {
-                my $code = pop;
-                for (@_) {
-                    $caller->meta->add_after_method_modifier($_ => $code);
-                }
-            }
-        },
-        around => sub {
-            my $caller = $CALLER;
-            return sub {
-                my $code = pop;
-                for (@_) {
-                    $caller->meta->add_around_method_modifier($_ => $code);
-                }
-            }
-        },
-        has => sub {
-            my $caller = $CALLER;
-            return sub {
-                my $name = shift;
-                my %opts = @_;
+sub before {
+    my $meta = Mouse::Meta::Role->initialize(caller);
 
-                $caller->meta->add_attribute($name => \%opts);
-            }
-        },
-        with => sub {
-            return sub {
-                confess "Role does not currently support 'with'";
-            }
-        },
-        requires => sub {
-            return sub { }
-        },
-        excludes => sub {
-            return sub { }
-        },
-        blessed => sub {
-            return \&Scalar::Util::blessed;
-        },
-        confess => sub {
-            return \&Carp::confess;
-        },
-    );
-
-    my $exporter = Sub::Exporter::build_exporter({
-        exports => \%exports,
-        groups  => { default => [':all'] },
-    });
-
-    sub import {
-        $CALLER = caller;
-
-        strict->import;
-        warnings->import;
-
-        goto $exporter;
+    my $code = pop;
+    for (@_) {
+        $meta->add_before_method_modifier($_ => $code);
     }
+}
 
-    sub unimport {
-        my $caller = caller;
+sub after {
+    my $meta = Mouse::Meta::Role->initialize(caller);
 
-        no strict 'refs';
-        for my $keyword (keys %exports) {
-            next if $keyword eq 'meta'; # we don't delete this one
-            delete ${ $caller . '::' }{$keyword};
-        }
+    my $code = pop;
+    for (@_) {
+        $meta->add_after_method_modifier($_ => $code);
     }
-};
+}
+
+sub around {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+
+    my $code = pop;
+    for (@_) {
+        $meta->add_around_method_modifier($_ => $code);
+    }
+}
+
+sub has {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+
+    my $name = shift;
+    my %opts = @_;
+
+    $meta->add_attribute($name => \%opts);
+}
+
+sub extends  { confess "Roles do not support 'extends'" }
+
+sub with     { confess "Mouse::Role does not currently support 'with'" }
+
+sub requires {}
+
+sub excludes {}
+
+sub import {
+    strict->import;
+    warnings->import;
+
+    my $caller = caller;
+    my $meta = Mouse::Meta::Role->initialize(caller);
+
+    no strict 'refs';
+    no warnings 'redefine';
+    *{$caller.'::meta'} = sub { $meta };
+
+    Mouse::Role->export_to_level(1, @_);
+}
+
+sub unimport {
+    my $caller = caller;
+
+    no strict 'refs';
+    for my $keyword (@EXPORT) {
+        delete ${ $caller . '::' }{$keyword};
+    }
+}
 
 1;
 
