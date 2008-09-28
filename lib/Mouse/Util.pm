@@ -145,5 +145,11 @@ for my $module_name (keys %dependencies) {
     }
 }
 
+push @EXPORT_OK, qw(weaken);
+sub weaken {
+    require Scalar::Util;
+    goto \&Scalar::Util::weaken;
+}
+
 1;
 

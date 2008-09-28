@@ -4,8 +4,7 @@ use strict;
 use warnings;
 
 use Carp 'confess';
-use Mouse::Util 'blessed';
-use Scalar::Util 'weaken';
+use Mouse::Util qw/blessed weaken/;
 
 sub new {
     my $class = shift;
@@ -79,7 +78,7 @@ sub generate_accessor {
         $accessor .= '$self->{$key} = $_;';
 
         if ($attribute->is_weak_ref) {
-            $accessor .= 'Scalar::Util::weaken($self->{$key}) if ref($self->{$key});';
+            $accessor .= 'weaken($self->{$key}) if ref($self->{$key});';
         }
 
         if ($trigger) {
