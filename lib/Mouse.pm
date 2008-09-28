@@ -8,7 +8,7 @@ our $VERSION = '0.07';
 use 5.006;
 
 use Carp 'confess';
-use Scalar::Util 'blessed';
+use Mouse::Util 'blessed';
 
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Class;
