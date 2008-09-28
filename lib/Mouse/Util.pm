@@ -119,6 +119,51 @@ our %dependencies = (
         },
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
     },
+    'Test::Exception' => {
+#       VVVVV   CODE TAKEN FROM TEST::EXCEPTION   VVVVV
+        'throws_ok' => do {
+            my $_is_exception = sub {
+                my $exception = shift;
+                return ref $exception || $exception ne '';
+            };
+
+            my $exception_as_string = sub {
+                my ( $prefix, $exception ) = @_;
+                return "$prefix normal exit" unless _is_exception( $exception );
+                my $class = ref $exception;
+                $exception = "$class ($exception)"
+                        if $class && "$exception" !~ m/^\Q$class/;
+                chomp $exception;
+                return "$prefix $exception";
+            };
+
+            sub (&$;$) {
+                my ( $coderef, $expecting, $description ) = @_;
+                Carp::croak "throws_ok: must pass exception class/object or regex"
+                    unless defined $expecting;
+                $description = $exception_as_string->( "threw", $expecting )
+                    unless defined $description;
+                my $exception = do {
+                    eval { $coderef->() };
+                    $@;
+                };
+
+                my $regex = $Test::Builder::Tester->maybe_regex( $expecting );
+                my $ok = $regex
+                    ? ( $exception =~ m/$regex/ )
+                    : eval {
+                        $exception->isa( ref $expecting ? ref $expecting : $expecting )
+                    };
+                $Test::Builder::Tester->ok( $ok, $description );
+                unless ( $ok ) {
+                    $Test::Builder::Tester->diag( $exception_as_string->( "expecting:", $expecting ) );
+                    $Test::Builder::Tester->diag( $exception_as_string->( "found:", $exception ) );
+                };
+                $@ = $exception;
+                return $ok;
+            },
+        },
+    },
 );
 
 our @EXPORT_OK = map { keys %$_ } values %dependencies;
