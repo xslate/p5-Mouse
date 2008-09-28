@@ -1,9 +1,18 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 21;
+
+use Test::More;
+BEGIN {
+    if (eval "require Scalar::Util; 1") {
+        plan tests => 21;
+    }
+    else {
+        plan skip_all => "Scalar::Util required for this test";
+    }
+}
+
 use Test::Exception;
-use Scalar::Util 'isweak';
 
 my %destroyed;
 
@@ -35,7 +44,7 @@ do {
     $self2->self($self3);
 
     for my $object ($self, $self2, $self3) {
-        ok(isweak($object->{self}), "weak reference");
+        ok(Scalar::Util::isweak($object->{self}), "weak reference");
         ok($object->self->self->self->self, "we've got circularity");
     }
 };
