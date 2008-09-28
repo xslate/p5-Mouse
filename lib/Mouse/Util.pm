@@ -41,6 +41,34 @@ our %dependencies = (
 
             0;
         },
+        'reftype' => sub {
+            local($@, $SIG{__DIE__}, $SIG{__WARN__});
+            my $r = shift;
+            my $t;
+
+            length($t = ref($r)) or return undef;
+
+            # This eval will fail if the reference is not blessed
+            eval { $r->a_sub_not_likely_to_be_here; 1 }
+            ? do {
+                $t = eval {
+                    # we have a GLOB or an IO. Stringify a GLOB gives it's name
+                    my $q = *$r;
+                    $q =~ /^\*/ ? "GLOB" : "IO";
+                }
+                or do {
+                    # OK, if we don't have a GLOB what parts of
+                    # a glob will it populate.
+                    # NOTE: A glob always has a SCALAR
+                    local *glob = $r;
+                    defined *glob{ARRAY} && "ARRAY"
+                        or defined *glob{HASH} && "HASH"
+                        or defined *glob{CODE} && "CODE"
+                        or length(ref(${$r})) ? "REF" : "SCALAR";
+                }
+            }
+            : $t
+        },
     },
     'MRO::Compat' => {
         'get_linear_isa' => {
