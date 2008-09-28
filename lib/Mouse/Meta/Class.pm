@@ -6,8 +6,6 @@ use warnings;
 use Mouse::Util qw/get_linear_isa blessed/;
 use Carp 'confess';
 
-use Class::Method::Modifiers ();
-
 do {
     my %METACLASS_CACHE;
 
@@ -132,6 +130,7 @@ sub attribute_metaclass { "Mouse::Meta::Class" }
 
 sub add_before_method_modifier {
     my ($self, $name, $code) = @_;
+    require Class::Method::Modifiers;
     Class::Method::Modifiers::_install_modifier(
         $self->name,
         'before',
@@ -142,6 +141,7 @@ sub add_before_method_modifier {
 
 sub add_around_method_modifier {
     my ($self, $name, $code) = @_;
+    require Class::Method::Modifiers;
     Class::Method::Modifiers::_install_modifier(
         $self->name,
         'around',
@@ -152,6 +152,7 @@ sub add_around_method_modifier {
 
 sub add_after_method_modifier {
     my ($self, $name, $code) = @_;
+    require Class::Method::Modifiers;
     Class::Method::Modifiers::_install_modifier(
         $self->name,
         'after',
