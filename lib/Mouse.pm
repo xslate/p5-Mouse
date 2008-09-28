@@ -391,6 +391,8 @@ locally-defined method.
 
 Shawn M Moore, C<< <sartak at gmail.com> >>
 
+Yuval Kogman, C<< <nothingmuch at woobling.org> >>
+
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
