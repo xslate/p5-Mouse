@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.08
+0.08 Sun Sep 28 12:46:07 2008
+    * ALL dependencies have been removed!
+
+    * Fixes for Class::Method::Modifiers being required for testing
 
 0.07 Sun Sep 28 00:19:07 2008
     * All runtime dependencies have been removed! The only change in
