@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 47;
-use Test::Exception;
+use Mouse::Util ':test';
 
 my $builder_called = 0;
 my $lazy_builder_called = 0;

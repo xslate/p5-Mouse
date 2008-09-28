@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 11;
-use Test::Exception;
+use Mouse::Util ':test';
 
 my @trigger;
 

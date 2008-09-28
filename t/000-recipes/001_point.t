@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 58;
-use Test::Exception;
+use Mouse::Util ':test';
 
 BEGIN {
     use_ok('Mouse');           

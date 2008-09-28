@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More 'no_plan';
-use Test::Exception;
+use Mouse::Util ':test';
 
 {
     package Foo;

@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Exception;
 use IO::Handle;
+use Mouse::Util ':test';
 
 my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
                Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef

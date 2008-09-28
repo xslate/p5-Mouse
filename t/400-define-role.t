@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 12;
-use Test::Exception;
+use Mouse::Util ':test';
 
 lives_ok {
     package Role;

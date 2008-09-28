@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Test::More tests => 1;
-use Test::Exception;
+use Mouse::Util ':test';
 
 throws_ok {
     package Class;
