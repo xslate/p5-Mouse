@@ -200,8 +200,8 @@ expert-level features.
 
 Compatibility with Moose has been the utmost concern. Fewer than 1% of the
 tests fail when run against Moose instead of Mouse. Mouse code coverage is also
-over 97%. Even the error messages are taken from Moose. The Mouse code just
-runs the test suite 3x-4x faster.
+over 96%. Even the error messages are taken from Moose. The Mouse code just
+runs the test suite 4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
