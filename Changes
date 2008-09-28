@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.08
+
 0.07 Sun Sep 28 00:19:07 2008
     * All runtime dependencies have been removed! The only change in
       functionality (hopefully) is that the Sub::Exporter features can no
