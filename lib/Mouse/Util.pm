@@ -30,6 +30,17 @@ our %dependencies = (
                     : undef;
             },
         },
+        'looks_like_number' => sub {
+            local $_ = shift;
+
+            # checks from perlfaq4
+            return 0 if !defined($_) or ref($_);
+            return 1 if (/^[+-]?\d+$/); # is a +/- integer
+            return 1 if (/^([+-]?)(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?$/); # a C float
+            return 1 if ($] >= 5.008 and /^(Inf(inity)?|NaN)$/i) or ($] >= 5.006001 and /^Inf$/i);
+
+            0;
+        },
     },
     'MRO::Compat' => {
         'get_linear_isa' => {
