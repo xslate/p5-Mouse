@@ -124,11 +124,9 @@ our %dependencies = (
 our @EXPORT_OK = map { keys %$_ } values %dependencies;
 
 for my $module_name (keys %dependencies) {
-    (my $file = "$module_name.pm") =~ s{::}{/}g;
-
     my $loaded = do {
         local $SIG{__DIE__} = 'DEFAULT';
-        eval "require '$file'; 1";
+        eval "require $module_name; 1";
     };
 
     for my $method_name (keys %{ $dependencies{ $module_name } }) {
