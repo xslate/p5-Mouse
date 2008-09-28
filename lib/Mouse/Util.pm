@@ -5,6 +5,32 @@ use warnings;
 use base 'Exporter';
 
 our %dependencies = (
+    'Scalar::Util' => {
+        'blessed' => do {
+            do {
+                no strict 'refs';
+                *UNIVERSAL::a_sub_not_likely_to_be_here = sub {
+                    my $ref = ref($_[0]);
+
+                    # deviation from Scalar::Util
+                    # XS returns undef, PP returns GLOB.
+                    # let's make that more consistent by having PP return
+                    # undef if it's a GLOB. :/
+
+                    # \*STDOUT would be allowed as an object in PP blessed
+                    # but not XS
+                    return $ref eq 'GLOB' ? undef : $ref;
+                };
+            };
+
+            sub {
+                local($@, $SIG{__DIE__}, $SIG{__WARN__});
+                length(ref($_[0]))
+                    ? eval { $_[0]->a_sub_not_likely_to_be_here }
+                    : undef;
+            },
+        },
+    },
     'MRO::Compat' => {
         'get_linear_isa' => {
             loaded     => \&mro::get_linear_isa,

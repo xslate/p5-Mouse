@@ -3,8 +3,7 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
-use Mouse::Util 'get_linear_isa';
-use Scalar::Util 'blessed';
+use Mouse::Util qw/get_linear_isa blessed/;
 use Carp 'confess';
 
 use Class::Method::Modifiers ();

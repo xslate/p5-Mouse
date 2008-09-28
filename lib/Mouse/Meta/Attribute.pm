@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Carp 'confess';
-use Scalar::Util qw/blessed weaken/;
+use Mouse::Util 'blessed';
+use Scalar::Util 'weaken';
 
 sub new {
     my $class = shift;

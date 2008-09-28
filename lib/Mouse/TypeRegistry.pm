@@ -3,7 +3,8 @@ package Mouse::TypeRegistry;
 use strict;
 use warnings;
 
-use Scalar::Util qw/looks_like_number blessed openhandle/;
+use Mouse::Util 'blessed';
+use Scalar::Util qw/looks_like_number openhandle/;
 
 no warnings 'uninitialized';
 sub optimized_constraints {

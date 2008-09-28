@@ -5,7 +5,7 @@ use warnings;
 use base 'Exporter';
 
 use Carp 'confess';
-use Scalar::Util 'blessed';
+use Mouse::Util 'blessed';
 
 use Mouse::Meta::Role;
 
