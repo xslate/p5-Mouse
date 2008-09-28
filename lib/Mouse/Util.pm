@@ -154,7 +154,6 @@ for my $module_name (keys %dependencies) {
     }
 }
 
-
 1;
 
 __END__
