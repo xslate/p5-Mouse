@@ -179,6 +179,8 @@ our %dependencies = (
     },
 );
 
+our %loaded;
+
 our @EXPORT_OK = map { keys %$_ } values %dependencies;
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
@@ -190,6 +192,8 @@ for my $module_name (keys %dependencies) {
         local $SIG{__DIE__} = 'DEFAULT';
         eval "require $module_name; 1";
     };
+
+    $loaded{$module_name} = $loaded;
 
     for my $method_name (keys %{ $dependencies{ $module_name } }) {
         my $producer = $dependencies{$module_name}{$method_name};
