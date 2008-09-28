@@ -4,7 +4,6 @@ name     'Mouse';
 all_from 'lib/Mouse.pm';
 
 build_requires 'Test::More';
-build_requires 'Test::Exception';
 
 WriteAll;
 
