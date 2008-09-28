@@ -9,20 +9,17 @@ our %dependencies = (
 
 #       VVVVV   CODE TAKEN FROM SCALAR::UTIL   VVVVV
         'blessed' => do {
-            do {
-                no strict 'refs';
-                *UNIVERSAL::a_sub_not_likely_to_be_here = sub {
-                    my $ref = ref($_[0]);
+            *UNIVERSAL::a_sub_not_likely_to_be_here = sub {
+                my $ref = ref($_[0]);
 
-                    # deviation from Scalar::Util
-                    # XS returns undef, PP returns GLOB.
-                    # let's make that more consistent by having PP return
-                    # undef if it's a GLOB. :/
+                # deviation from Scalar::Util
+                # XS returns undef, PP returns GLOB.
+                # let's make that more consistent by having PP return
+                # undef if it's a GLOB. :/
 
-                    # \*STDOUT would be allowed as an object in PP blessed
-                    # but not XS
-                    return $ref eq 'GLOB' ? undef : $ref;
-                };
+                # \*STDOUT would be allowed as an object in PP blessed
+                # but not XS
+                return $ref eq 'GLOB' ? undef : $ref;
             };
 
             sub {
