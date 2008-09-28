@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Exception;
 
 lives_ok {
@@ -62,17 +62,25 @@ throws_ok {
     with 'Other::Role';
 
     no Mouse::Role;
-} qr/Role does not currently support 'with'/;
+} qr/Mouse::Role does not currently support 'with'/;
 
-lives_ok {
+throws_ok {
     package Role;
     use Mouse::Role;
 
     requires 'required';
+
+    no Mouse::Role;
+} qr/Mouse::Role does not currently support 'requires'/;
+
+throws_ok {
+    package Role;
+    use Mouse::Role;
+
     excludes 'excluded';
 
     no Mouse::Role;
-};
+} qr/Mouse::Role does not currently support 'excludes'/;
 
 throws_ok {
     package Role;

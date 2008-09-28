@@ -51,9 +51,9 @@ sub extends  { confess "Roles do not support 'extends'" }
 
 sub with     { confess "Mouse::Role does not currently support 'with'" }
 
-sub requires {}
+sub requires { confess "Mouse::Role does not currently support 'requires'" }
 
-sub excludes {}
+sub excludes { confess "Mouse::Role does not currently support 'excludes'" }
 
 sub import {
     strict->import;
