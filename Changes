@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.09 Sun Sep 28 22:37:13 2008
+    * Initial version of Mouse::Tiny, a one-file concatenation of the Mouse
+      classes for easy embedding
+
+    * Fixes caused by test failures (Carp not being loaded, Moose being
+      required in a test)
+
 0.08 Sun Sep 28 12:46:07 2008
     * ALL dependencies have been removed!
 

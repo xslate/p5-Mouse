@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use 5.006;
 
 use Carp 'confess';
