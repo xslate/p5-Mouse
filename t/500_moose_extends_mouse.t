@@ -3,7 +3,12 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
+BEGIN {
+    plan skip_all => "Moose required for this test" unless eval { require Moose };
+    plan tests => 27;
+}
+
 use Mouse::Util ':test';
 
 {
