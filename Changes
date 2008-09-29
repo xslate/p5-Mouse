@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.10
+
 0.09 Sun Sep 28 22:37:13 2008
     * Initial version of Mouse::Tiny, a one-file concatenation of the Mouse
       classes for easy embedding
