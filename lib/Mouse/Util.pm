@@ -3,6 +3,7 @@ package Mouse::Util;
 use strict;
 use warnings;
 use base 'Exporter';
+use Carp;
 
 BEGIN {
     our %dependencies = (
