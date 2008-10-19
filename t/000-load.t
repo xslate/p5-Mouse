@@ -19,7 +19,12 @@ for my $module_name (keys %Mouse::Util::loaded) {
     diag "    $module_name: $version";
 }
 
-eval { require Moose };
 no warnings 'uninitialized';
+
+eval { require Moose };
 diag "    Class::MOP: $Class::MOP::VERSION";
 diag "    Moose: $Moose::VERSION";
+
+eval { require Class::Method::Modifiers };
+diag "    Class::Method::Modifiers: $Class::Method::Modifiers::VERSION";
+
