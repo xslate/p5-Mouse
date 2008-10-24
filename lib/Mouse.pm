@@ -299,9 +299,10 @@ Whether this attribute is required to have a value. If the attribute is lazy or
 has a builder, then providing a value for the attribute in the constructor is
 optional.
 
-=item init_arg => Str
+=item init_arg => Str | Undef
 
-Allows you to use a different key name in the constructor.
+Allows you to use a different key name in the constructor.  If undef, the
+attribue can't be passed to the constructor.
 
 =item default => Value | CodeRef
 
