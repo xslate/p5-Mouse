@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More;
 BEGIN {
-    plan skip_all => "Moose required for this test" unless eval { require Moose };
+    plan skip_all => "Moose 0.59 required for this test" unless eval { require Moose 0.59 };
     plan tests => 27;
 }
 
