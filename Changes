@@ -1,6 +1,12 @@
 Revision history for Mouse
 
-0.10
+0.10 Tue Oct 28 19:23:07 2008
+    * Require a recent Moose (which has the bugfix) for
+      t/500_moose_extends_mouse.t
+
+    * ouse.pm for perl -Mouse one-liners (thanks rjbs)
+
+    * Doc for init_arg => undef (thanks rjbs)
 
 0.09 Sun Sep 28 22:37:13 2008
     * Initial version of Mouse::Tiny, a one-file concatenation of the Mouse
