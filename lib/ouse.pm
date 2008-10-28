@@ -3,8 +3,6 @@ package ouse;
 use strict;
 use warnings;
 
-our $VERSION   = '0.59';
-
 BEGIN {
     my $package;
     sub import { 
