@@ -360,6 +360,11 @@ context. In scalar context, the reference is returned (NOT the list length or
 bucket status). You must specify an appropriate type constraint to use
 auto_deref.
 
+=item lazy_build => 0|1
+
+Automatically define lazy => 1 as well as builder => "_build_$attr", clearer =>
+"clear_$attr', predicate => 'has_$attr' unless they are already defined.
+
 =back
 
 =head2 confess error -> BOOM
