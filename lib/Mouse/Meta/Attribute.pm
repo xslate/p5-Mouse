@@ -50,6 +50,13 @@ sub _create_args {
     $_[0]->{_create_args}
 }
 
+sub inlined_name {
+    my $self = shift;
+    my $name = $self->name;
+    my $key   = "'" . $name . "'";
+    return $key;
+}
+
 sub generate_accessor {
     my $attribute = shift;
 
