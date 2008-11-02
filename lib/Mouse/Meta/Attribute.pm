@@ -134,9 +134,9 @@ sub generate_accessor {
 
 sub generate_predicate {
     my $attribute = shift;
-    my $key = $attribute->name;
+    my $key = $attribute->inlined_name;
 
-    my $predicate = 'sub { exists($_[0]->{$key}) }';
+    my $predicate = 'sub { exists($_[0]->{'.$key.'}) }';
 
     my $sub = eval $predicate;
     confess $@ if $@;
@@ -145,9 +145,9 @@ sub generate_predicate {
 
 sub generate_clearer {
     my $attribute = shift;
-    my $key = $attribute->name;
+    my $key = $attribute->inlined_name;
 
-    my $clearer = 'sub { delete($_[0]->{$key}) }';
+    my $clearer = 'sub { delete($_[0]->{'.$key.'}) }';
 
     my $sub = eval $clearer;
     confess $@ if $@;
