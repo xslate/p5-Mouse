@@ -120,7 +120,9 @@ sub generate_accessor {
     $accessor .= 'return $self->{$key};
     }';
 
-    return eval $accessor;
+    my $sub = eval $accessor;
+    confess $@ if $@;
+    return $sub;
 }
 
 sub generate_predicate {
@@ -129,16 +131,20 @@ sub generate_predicate {
 
     my $predicate = 'sub { exists($_[0]->{$key}) }';
 
-    return eval $predicate;
+    my $sub = eval $predicate;
+    confess $@ if $@;
+    return $sub;
 }
 
 sub generate_clearer {
     my $attribute = shift;
     my $key = $attribute->name;
 
-    my $predicate = 'sub { delete($_[0]->{$key}) }';
+    my $clearer = 'sub { delete($_[0]->{$key}) }';
 
-    return eval $predicate;
+    my $sub = eval $clearer;
+    confess $@ if $@;
+    return $sub;
 }
 
 sub generate_handles {
@@ -157,6 +163,7 @@ sub generate_handles {
         }';
 
         $method_map{$local_method} = eval $method;
+        confess $@ if $@;
     }
 
     return \%method_map;
