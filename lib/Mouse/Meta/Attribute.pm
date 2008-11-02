@@ -84,7 +84,10 @@ sub generate_accessor {
             }' . "\n"
         }
 
-        $accessor .= $self . '->{'.$key.'} = '. $value .';' . "\n";
+        $accessor .= 'return '
+            if !$attribute->is_weak_ref
+            && !$trigger
+            && !$attribute->should_auto_deref;
 
         if ($attribute->is_weak_ref) {
             $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
