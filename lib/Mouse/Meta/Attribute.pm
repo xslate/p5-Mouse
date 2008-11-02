@@ -66,23 +66,24 @@ sub generate_accessor {
 
     if ($attribute->_is_metadata eq 'rw') {
         $accessor .= 'if (@_) {
-            local $_ = $_[0];';
+        ';
 
         if ($constraint) {
-            $accessor .= 'unless ($constraint->()) {
+            $accessor .= 'local $_ = $_[0];
+                unless ($constraint->()) {
                     my $display = defined($_) ? overload::StrVal($_) : "undef";
                     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
             }'
         }
 
-        $accessor .= '$self->{$key} = $_;';
+        $accessor .= '$self->{$key} = $_[0];';
 
         if ($attribute->is_weak_ref) {
             $accessor .= 'weaken($self->{$key}) if ref($self->{$key});';
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->($self, $_, $attribute);';
+            $accessor .= '$trigger->($self, $_[0], $attribute);';
         }
 
         $accessor .= '}';
