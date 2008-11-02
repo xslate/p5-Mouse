@@ -68,16 +68,16 @@ sub generate_accessor {
     my $trigger    = $attribute->trigger;
 
     my $self  = '$_[0]';
-    my $value = '$_[1]';
     my $key   = $attribute->inlined_name;
 
     my $accessor = "sub {\n";
     if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 'if (scalar(@_) >= 2) {
-        ';
+        $accessor .= 'if (scalar(@_) >= 2) {' . "\n";
+
+        my $value = '$_[1]';
 
         if ($constraint) {
-            $accessor .= 'local $_ = ' . $value . ';
+            $accessor .= 'local $_ = '.$value.';
                 unless ($constraint->()) {
                     my $display = defined($_) ? overload::StrVal($_) : "undef";
                     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
@@ -88,6 +88,8 @@ sub generate_accessor {
             if !$attribute->is_weak_ref
             && !$trigger
             && !$attribute->should_auto_deref;
+
+        $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
         if ($attribute->is_weak_ref) {
             $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
@@ -118,12 +120,12 @@ sub generate_accessor {
         if ($attribute->type_constraint eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
-            }' . "\n";
+            }';
         }
         else {
             $accessor .= 'if (wantarray) {
                 return %{ '.$self.'->{'.$key.'} || {} };
-            }' . "\n";
+            }';
         }
     }
 
