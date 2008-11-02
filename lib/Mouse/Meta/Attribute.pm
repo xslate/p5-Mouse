@@ -60,12 +60,14 @@ sub inlined_name {
 sub generate_accessor {
     my $attribute = shift;
 
-    my $name       = $attribute->name;
-    my $default    = $attribute->default;
-    my $type       = $attribute->type_constraint;
-    my $constraint = $attribute->find_type_constraint;
-    my $builder    = $attribute->builder;
-    my $trigger    = $attribute->trigger;
+    my $name         = $attribute->name;
+    my $default      = $attribute->default;
+    my $type         = $attribute->type_constraint;
+    my $constraint   = $attribute->find_type_constraint;
+    my $builder      = $attribute->builder;
+    my $trigger      = $attribute->trigger;
+    my $is_weak      = $attribute->is_weak_ref;
+    my $should_deref = $attribute->should_auto_deref;
 
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
@@ -84,14 +86,13 @@ sub generate_accessor {
             }' . "\n"
         }
 
-        $accessor .= 'return '
-            if !$attribute->is_weak_ref
-            && !$trigger
-            && !$attribute->should_auto_deref;
+        # if there's nothing left to do for the attribute we can return during
+        # this setter
+        $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
         $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
-        if ($attribute->is_weak_ref) {
+        if ($is_weak) {
             $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
         }
 
@@ -116,7 +117,7 @@ sub generate_accessor {
         $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
     }
 
-    if ($attribute->should_auto_deref) {
+    if ($should_deref) {
         if ($attribute->type_constraint eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
