@@ -61,70 +61,70 @@ sub generate_accessor {
     my $attribute = shift;
 
     my $name       = $attribute->name;
-    my $key        = $name;
     my $default    = $attribute->default;
     my $type       = $attribute->type_constraint;
     my $constraint = $attribute->find_type_constraint;
     my $builder    = $attribute->builder;
     my $trigger    = $attribute->trigger;
 
-    my $accessor = 'sub {
-        my $self = shift;';
+    my $self  = '$_[0]';
+    my $value = '$_[1]';
+    my $key   = $attribute->inlined_name;
 
+    my $accessor = "sub {\n";
     if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 'if (@_) {
+        $accessor .= 'if (scalar(@_) >= 2) {
         ';
 
         if ($constraint) {
-            $accessor .= 'local $_ = $_[0];
+            $accessor .= 'local $_ = ' . $value . ';
                 unless ($constraint->()) {
                     my $display = defined($_) ? overload::StrVal($_) : "undef";
                     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
-            }'
+            }' . "\n"
         }
 
-        $accessor .= '$self->{$key} = $_[0];';
+        $accessor .= $self . '->{'.$key.'} = '. $value .';' . "\n";
 
         if ($attribute->is_weak_ref) {
-            $accessor .= 'weaken($self->{$key}) if ref($self->{$key});';
+            $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->($self, $_[0], $attribute);';
+            $accessor .= '$trigger->('.$self.', '.$value.', $attribute);' . "\n";
         }
 
-        $accessor .= '}';
+        $accessor .= "}\n";
     }
     else {
-        $accessor .= 'confess "Cannot assign a value to a read-only accessor" if @_;';
+        $accessor .= 'confess "Cannot assign a value to a read-only accessor" if scalar(@_) >= 2;' . "\n";
     }
 
     if ($attribute->is_lazy) {
-        $accessor .= '$self->{$key} = ';
+        $accessor .= $self.'->{'.$key.'} = ';
 
         $accessor .= $attribute->has_builder
-                   ? '$self->$builder'
-                     : ref($default) eq 'CODE'
-                     ? '$default->($self)'
-                     : '$default';
-
-        $accessor .= ' if !exists($self->{$key});';
+                ? $self.'->$builder'
+                    : ref($default) eq 'CODE'
+                    ? '$default->('.$self.')'
+                    : '$default';
+        $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
     }
 
     if ($attribute->should_auto_deref) {
         if ($attribute->type_constraint eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
-                return @{ $self->{$key} || [] };
-            }';
+                return @{ '.$self.'->{'.$key.'} || [] };
+            }' . "\n";
         }
         else {
             $accessor .= 'if (wantarray) {
-                return %{ $self->{$key} || {} };
-            }';
+                return %{ '.$self.'->{'.$key.'} || {} };
+            }' . "\n";
         }
     }
 
-    $accessor .= 'return $self->{$key};
+    $accessor .= 'return '.$self.'->{'.$key.'};
     }';
 
     my $sub = eval $accessor;
