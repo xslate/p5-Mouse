@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.11
+0.11 Sun Nov 2 11:35:04 2008
+    * Throw an error if accessor/predicate/clearer/handles code eval fails
+
+    * Optimizations for generated methods, they should now be on par with Moose
 
 0.10 Tue Oct 28 19:23:07 2008
     * Require a recent Moose (which has the bugfix) for
