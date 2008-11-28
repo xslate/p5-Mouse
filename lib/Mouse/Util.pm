@@ -122,7 +122,7 @@ BEGIN {
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
         },
 #       VVVVV   CODE TAKEN FROM TEST::EXCEPTION   VVVVV
-        'Test::Exception' => do {
+        'Test::Exception 0.27' => do {
 
             my $Tester;
 
@@ -194,10 +194,12 @@ BEGIN {
         test => [qw/throws_ok lives_ok/],
     );
 
-    for my $module_name (keys %dependencies) {
+    for my $module (keys %dependencies) {
+        my ($module_name, $version) = split ' ', $module;
+
         my $loaded = do {
             local $SIG{__DIE__} = 'DEFAULT';
-            eval "require $module_name; 1";
+            eval "use $module (); 1";
         };
 
         $loaded{$module_name} = $loaded;
