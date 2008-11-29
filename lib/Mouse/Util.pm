@@ -182,6 +182,16 @@ BEGIN {
                     $@ = $exception;
                     return $ok;
                 },
+                'dies_ok' => sub (&;$) {
+                    my ( $coderef, $description ) = @_;
+                    my $exception = $try_as_caller->( $coderef );
+
+                    $Tester ||= Test::Builder->new;
+
+                    my $ok = $Tester->ok( $is_exception->( $exception ), $description );
+                    $@ = $exception;
+                    return $ok;
+                },
             },
         },
     );
@@ -191,7 +201,7 @@ BEGIN {
     our @EXPORT_OK = map { keys %$_ } values %dependencies;
     our %EXPORT_TAGS = (
         all  => \@EXPORT_OK,
-        test => [qw/throws_ok lives_ok/],
+        test => [qw/throws_ok lives_ok dies_ok/],
     );
 
     for my $module (keys %dependencies) {
@@ -257,6 +267,8 @@ without L<Scalar::Util>, an error is thrown.
 =head2 Test::Exception
 
 =head3 throws_ok
+
+=head3 dies_ok
 
 =head3 lives_ok
 
