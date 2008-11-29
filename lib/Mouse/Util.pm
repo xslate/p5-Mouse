@@ -204,8 +204,8 @@ BEGIN {
 
         $loaded{$module_name} = $loaded;
 
-        for my $method_name (keys %{ $dependencies{ $module_name } }) {
-            my $producer = $dependencies{$module_name}{$method_name};
+        for my $method_name (keys %{ $dependencies{ $module } }) {
+            my $producer = $dependencies{$module}{$method_name};
             my $implementation;
 
             if (ref($producer) eq 'HASH') {
