@@ -72,10 +72,13 @@ sub apply {
     my $selfname = $self->name;
     my $class = shift;
     my $classname = $class->name;
+    my %args  = @_;
 
-    for my $name (@{$self->{required_methods}}) {
-        unless ($classname->can($name)) {
-            confess "'$selfname' requires the method '$name' to be implemented by '$classname'";
+    if ($class->isa('Mouse::Meta::Class')) {
+        for my $name (@{$self->{required_methods}}) {
+            unless ($classname->can($name)) {
+                confess "'$selfname' requires the method '$name' to be implemented by '$classname'";
+            }
         }
     }
 
@@ -83,11 +86,12 @@ sub apply {
         no strict 'refs';
         for my $name ($self->get_method_list) {
             next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
-            if ($classname->can($name)) {
+            my $dstname = $args{alias} ? ($args{alias}->{$name}||$name) : $name;
+            if ($classname->can($dstname)) {
                 # XXX what's Moose's behavior?
                 next;
             }
-            *{"${classname}::${name}"} = *{"${selfname}::${name}"};
+            *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
         }
     }
 

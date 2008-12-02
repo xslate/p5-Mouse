@@ -69,11 +69,12 @@ sub with {
     my $meta = Mouse::Meta::Class->initialize(caller);
 
     my $role  = shift;
+    my $args  = shift || {};
 
-    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
+    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_ || !ref $args;
 
     Mouse::load_class($role);
-    $role->meta->apply($meta);
+    $role->meta->apply($meta, %$args);
 }
 
 sub import {
