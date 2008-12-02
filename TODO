@@ -5,3 +5,5 @@ TODO
 * Make coercion work
 * Make delegation via handles work
 * Make TypeConstraints from Shika
+* Copy some features from Scalar::Util's XS
+
