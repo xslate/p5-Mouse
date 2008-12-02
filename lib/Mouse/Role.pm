@@ -49,7 +49,14 @@ sub has {
 
 sub extends  { confess "Roles do not support 'extends'" }
 
-sub with     { confess "Mouse::Role does not currently support 'with'" }
+sub with     {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+    my $role  = shift;
+    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_;
+
+    Mouse::load_class($role);
+    $role->meta->apply($meta);
+}
 
 sub requires {
     my $meta = Mouse::Meta::Role->initialize(caller);

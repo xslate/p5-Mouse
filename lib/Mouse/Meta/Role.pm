@@ -91,12 +91,24 @@ sub apply {
         }
     }
 
-    for my $name ($self->get_attribute_list) {
-        next if $class->has_attribute($name);
-        my $spec = $self->get_attribute($name);
-        Mouse::Meta::Attribute->create($class, $name, %$spec);
+    if ($class->isa('Mouse::Meta::Class')) {
+        # apply role to class
+        for my $name ($self->get_attribute_list) {
+            next if $class->has_attribute($name);
+            my $spec = $self->get_attribute($name);
+            Mouse::Meta::Attribute->create($class, $name, %$spec);
+        }
+    } else {
+        # apply role to role
+        # XXX Room for speed improvement
+        for my $name ($self->get_attribute_list) {
+            next if $class->has_attribute($name);
+            my $spec = $self->get_attribute($name);
+            $class->add_attribute($name, $spec);
+        }
     }
 
+    # XXX Room for speed improvement in role to role
     for my $modifier_type (qw/before after around/) {
         my $add_method = "add_${modifier_type}_method_modifier";
         my $modified = $self->{"${modifier_type}_method_modifiers"};
