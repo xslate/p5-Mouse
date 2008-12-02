@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 8;
-use Mouse::Util ':test';
+use t::Exception;
 
 do {
     package Class;

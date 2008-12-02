@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 1;
-use Mouse::Util ':test';
+use t::Exception;
 
 {
     package Foo;
