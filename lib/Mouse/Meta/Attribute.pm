@@ -36,6 +36,7 @@ sub type_constraint   { $_[0]->{type_constraint}  }
 sub trigger           { $_[0]->{trigger}          }
 sub builder           { $_[0]->{builder}          }
 sub should_auto_deref { $_[0]->{auto_deref}       }
+sub is_coerce         { $_[0]->{is_coerce}        }
 
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
@@ -68,6 +69,7 @@ sub generate_accessor {
     my $trigger      = $attribute->trigger;
     my $is_weak      = $attribute->is_weak_ref;
     my $should_deref = $attribute->should_auto_deref;
+    my $is_coerce    = $attribute->is_coerce;
 
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
@@ -79,7 +81,11 @@ sub generate_accessor {
         my $value = '$_[1]';
 
         if ($constraint) {
-            $accessor .= 'local $_ = '.$value.';
+            if ($is_coerce) {
+                $accessor .= $value.' = $attribute->coerce_constraint('.$value.');';
+            }
+            $accessor .= 'local $_ = '.$value.';';
+            $accessor .= '
                 unless ($constraint->()) {
                     my $display = defined($_) ? overload::StrVal($_) : "undef";
                     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
@@ -191,6 +197,9 @@ sub create {
     %args = $self->canonicalize_args($name, %args);
     $self->validate_args($name, \%args);
 
+    $args{is_coerce} = delete $args{coerce}
+        if exists $args{coerce};
+
     $args{type_constraint} = delete $args{isa}
         if exists $args{isa};
 
@@ -291,7 +300,7 @@ sub find_type_constraint {
 
     return unless $type;
 
-    my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
+    my $checker = Mouse::TypeRegistry->optimized_constraints($self->associated_class->name)->{$type};
     return $checker if $checker;
 
     return sub { blessed($_) && blessed($_) eq $type };
@@ -310,6 +319,13 @@ sub verify_type_constraint {
     my $name = $self->name;
     my $display = defined($_) ? overload::StrVal($_) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
+}
+
+sub coerce_constraint {
+    my($self, $value) = @_;
+    my $type = $self->type_constraint
+        or return $value;
+    return Mouse::TypeRegistry->typecast_constraints($self->associated_class->name, $type, $value);
 }
 
 sub _canonicalize_handles {
