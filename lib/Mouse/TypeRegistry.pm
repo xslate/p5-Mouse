@@ -52,7 +52,6 @@ sub _coerce {
     $COERCE->{$pkg}->{$name} = $conf;
 }
 
-use Data::Dumper;
 sub typecast_constraints {
     my($class, $pkg, $type, $value) = @_;
     return $value unless defined $COERCE->{$pkg} && defined $COERCE->{$pkg}->{$type};
@@ -66,8 +65,6 @@ sub typecast_constraints {
         }
     }
 
-
-warn Dumper($COERCE);
     return $value;
 }
 
