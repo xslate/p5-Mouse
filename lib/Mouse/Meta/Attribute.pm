@@ -36,7 +36,7 @@ sub type_constraint   { $_[0]->{type_constraint}  }
 sub trigger           { $_[0]->{trigger}          }
 sub builder           { $_[0]->{builder}          }
 sub should_auto_deref { $_[0]->{auto_deref}       }
-sub is_coerce         { $_[0]->{is_coerce}        }
+sub should_coerce     { $_[0]->{should_coerce}    }
 
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
@@ -61,15 +61,15 @@ sub inlined_name {
 sub generate_accessor {
     my $attribute = shift;
 
-    my $name         = $attribute->name;
-    my $default      = $attribute->default;
-    my $type         = $attribute->type_constraint;
-    my $constraint   = $attribute->find_type_constraint;
-    my $builder      = $attribute->builder;
-    my $trigger      = $attribute->trigger;
-    my $is_weak      = $attribute->is_weak_ref;
-    my $should_deref = $attribute->should_auto_deref;
-    my $is_coerce    = $attribute->is_coerce;
+    my $name          = $attribute->name;
+    my $default       = $attribute->default;
+    my $type          = $attribute->type_constraint;
+    my $constraint    = $attribute->find_type_constraint;
+    my $builder       = $attribute->builder;
+    my $trigger       = $attribute->trigger;
+    my $is_weak       = $attribute->is_weak_ref;
+    my $should_deref  = $attribute->should_auto_deref;
+    my $should_coerce = $attribute->should_coerce;
 
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
@@ -81,7 +81,7 @@ sub generate_accessor {
         my $value = '$_[1]';
 
         if ($constraint) {
-            if ($is_coerce) {
+            if ($should_coerce) {
                 $accessor .= $value.' = $attribute->coerce_constraint('.$value.');';
             }
             $accessor .= 'local $_ = '.$value.';';
@@ -197,7 +197,7 @@ sub create {
     %args = $self->canonicalize_args($name, %args);
     $self->validate_args($name, \%args);
 
-    $args{is_coerce} = delete $args{coerce}
+    $args{should_coerce} = delete $args{coerce}
         if exists $args{coerce};
 
     $args{type_constraint} = delete $args{isa}

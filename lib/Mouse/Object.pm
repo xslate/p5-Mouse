@@ -20,7 +20,7 @@ sub new {
 
         if (defined($from) && exists($args->{$from})) {
             $args->{$from} = $attribute->coerce_constraint($args->{$from})
-                if $attribute->is_coerce;
+                if $attribute->should_coerce;
             $attribute->verify_type_constraint($args->{$from})
                 if $attribute->has_type_constraint;
 
@@ -45,7 +45,7 @@ sub new {
                                   : $default;
 
                     $value = $attribute->coerce_constraint($value)
-                        if $attribute->is_coerce;
+                        if $attribute->should_coerce;
                     $attribute->verify_type_constraint($value)
                         if $attribute->has_type_constraint;
 
