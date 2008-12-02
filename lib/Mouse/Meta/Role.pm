@@ -2,6 +2,7 @@
 package Mouse::Meta::Role;
 use strict;
 use warnings;
+use Carp 'confess';
 
 do {
     my %METACLASS_CACHE;
@@ -27,12 +28,19 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
-    $args{attributes} ||= {};
+    $args{attributes}       ||= {};
+    $args{required_methods} ||= [];
 
     bless \%args, $class;
 }
 
 sub name { $_[0]->{name} }
+
+sub add_required_methods {
+    my $self = shift;
+    my @methods = @_;
+    push @{$self->{required_methods}}, @methods;
+}
 
 sub add_attribute {
     my $self = shift;
@@ -48,6 +56,12 @@ sub get_attribute { $_[0]->{attributes}->{$_[1]} }
 sub apply {
     my $self  = shift;
     my $class = shift;
+
+    for my $name (@{$self->{required_methods}}) {
+        unless ($class->name->can($name)) {
+            confess "'@{[ $self->name ]}' requires the method '$name' to be implemented by '@{[ $class->name ]}'";
+        }
+    }
 
     for my $name ($self->get_attribute_list) {
         next if $class->has_attribute($name);

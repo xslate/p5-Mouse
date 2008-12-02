@@ -51,7 +51,11 @@ sub extends  { confess "Roles do not support 'extends'" }
 
 sub with     { confess "Mouse::Role does not currently support 'with'" }
 
-sub requires { confess "Mouse::Role does not currently support 'requires'" }
+sub requires {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+    Carp::croak "Must specify at least one method" unless @_;
+    $meta->add_required_methods(@_);
+}
 
 sub excludes { confess "Mouse::Role does not currently support 'excludes'" }
 

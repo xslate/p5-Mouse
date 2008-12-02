@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 11;
 use Mouse::Util ':test';
 
 lives_ok {
@@ -63,15 +63,6 @@ throws_ok {
 
     no Mouse::Role;
 } qr/Mouse::Role does not currently support 'with'/;
-
-throws_ok {
-    package Role;
-    use Mouse::Role;
-
-    requires 'required';
-
-    no Mouse::Role;
-} qr/Mouse::Role does not currently support 'requires'/;
 
 throws_ok {
     package Role;
