@@ -128,7 +128,6 @@ BEGIN {
     our @EXPORT_OK = map { keys %$_ } values %dependencies;
     our %EXPORT_TAGS = (
         all  => \@EXPORT_OK,
-        test => [qw/throws_ok lives_ok/],
     );
 
     for my $module_name (keys %dependencies) {
