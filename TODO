@@ -4,3 +4,4 @@ TODO
 * Re-implement Mouse with code from Shika
 * Make coercion work
 * Make delegation via handles work
+* Make TypeConstraints from Shika
