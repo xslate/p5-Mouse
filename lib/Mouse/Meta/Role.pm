@@ -53,13 +53,41 @@ sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
 sub get_attribute_list { keys %{ $_[0]->{attributes} } }
 sub get_attribute { $_[0]->{attributes}->{$_[1]} }
 
+# copied from Class::Inspector
+sub get_method_list {
+    my $self = shift;
+    my $name = $self->name;
+
+    no strict 'refs';
+    # Get all the CODE symbol table entries
+    my @functions = grep !/^meta$/,
+      grep { /\A[^\W\d]\w*\z/o }
+      grep { defined &{"${name}::$_"} }
+      keys %{"${name}::"};
+    wantarray ? @functions : \@functions;
+}
+
 sub apply {
     my $self  = shift;
+    my $selfname = $self->name;
     my $class = shift;
+    my $classname = $class->name;
 
     for my $name (@{$self->{required_methods}}) {
-        unless ($class->name->can($name)) {
-            confess "'@{[ $self->name ]}' requires the method '$name' to be implemented by '@{[ $class->name ]}'";
+        unless ($classname->can($name)) {
+            confess "'$selfname' requires the method '$name' to be implemented by '$classname'";
+        }
+    }
+
+    {
+        no strict 'refs';
+        for my $name ($self->get_method_list) {
+            next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
+            if ($classname->can($name)) {
+                # XXX what's Moose's behavior?
+                next;
+            }
+            *{"${classname}::${name}"} = *{"${selfname}::${name}"};
         }
     }
 

@@ -223,6 +223,15 @@ BEGIN {
     }
 }
 
+sub apply_all_roles {
+    my $meta = Mouse::Meta::Class->initialize(shift);
+    my $role  = shift;
+    confess "Mouse::Util only supports 'apply_all_roles' on individual roles at a time" if @_;
+
+    Mouse::load_class($role);
+    $role->meta->apply($meta);
+}
+
 1;
 
 __END__

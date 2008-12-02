@@ -63,6 +63,20 @@ sub add_method {
     *{ $pkg . '::' . $name } = $code;
 }
 
+# copied from Class::Inspector
+sub get_method_list {
+    my $self = shift;
+    my $name = $self->name;
+
+    no strict 'refs';
+    # Get all the CODE symbol table entries
+    my @functions = grep !/^meta$/,
+      grep { /\A[^\W\d]\w*\z/o }
+      grep { defined &{"${name}::$_"} }
+      keys %{"${name}::"};
+    wantarray ? @functions : \@functions;
+}
+
 sub add_attribute {
     my $self = shift;
     my $attr = shift;
