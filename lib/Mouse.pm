@@ -101,6 +101,8 @@ sub with {
 }
 
 sub import {
+    my $class = shift;
+
     strict->import;
     warnings->import;
 
@@ -114,7 +116,15 @@ sub import {
     no warnings 'redefine';
     *{$caller.'::meta'} = sub { $meta };
 
-    __PACKAGE__->export_to_level( 1, @_);
+    if (@_) {
+        __PACKAGE__->export_to_level( 1, $class, @_);
+    } else {
+        # shortcut for the common case of no type character
+        no strict 'refs';
+        for my $keyword (@EXPORT) {
+            *{ $caller . '::' . $keyword } = *{__PACKAGE__ . '::' . $keyword};
+        }
+    }
 }
 
 sub unimport {
