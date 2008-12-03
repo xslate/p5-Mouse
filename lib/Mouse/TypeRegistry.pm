@@ -146,6 +146,7 @@ sub typecast_constraints {
 
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     };
+    sub list_all_builtin_type_constraints { keys %{ $optimized_constraints } }
     sub optimized_constraints {
         return { %{ $SUBTYPE }, %{ $optimized_constraints } };
     }
