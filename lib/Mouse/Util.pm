@@ -64,7 +64,7 @@ BEGIN {
             };
         }
 
-        if (defined &mro::get_linear_isa) {
+        if (defined &mro::get_linear_isa || eval { require MRO::Compat; 1; }) {
             *get_linear_isa = \&mro::get_linear_isa;
         } else {
             # this recurses so it isn't pretty
