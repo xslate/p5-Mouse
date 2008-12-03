@@ -65,26 +65,43 @@ sub _generate_processattrs {
 
         my $part2 = do {
             my @code;
+
             if ( $attr->has_default || $attr->has_builder ) {
                 unless ( $attr->is_lazy ) {
                     my $default = $attr->default;
                     my $builder = $attr->builder;
-                    if ($attr->has_builder) {
-                        push @code, "my \$value = \$instance->$builder;";
-                    } elsif (ref($default) eq 'CODE') {
-                        push @code, "my \$value = \$attr->default()->();";
-                    } else {
-                        push @code, "my \$value = \$attr->default();";
-                    }
+
+                    push @code, "my \$value = ";
+
                     if ($attr->should_coerce) {
-                        push @code, "\$value = \$attr->coerce_constraint(\$value);";
+                        push @code, "\$attr->coerce_constraint(";
                     }
+
+                        if ($attr->has_builder) {
+                            push @code, "\$instance->$builder";
+                        }
+                        elsif (ref($default) eq 'CODE') {
+                            push @code, "\$attr->default()->()";
+                        }
+                        else {
+                            push @code, "\$attr->default()";
+                        }
+
+                    if ($attr->should_coerce) {
+                        push @code, ");";
+                    }
+                    else {
+                        push @code, ";";
+                    }
+
                     if ($attr->has_type_constraint) {
                         push @code, "\$attr->verify_type_constraint(\$value);";
                     }
+
                     push @code, "\$instance->{'$key'} = \$value;";
+
                     if ($attr->is_weak_ref) {
-                        push @code, "weaken( \$instance->{'$key'} ) if ref( \$instance->{'$key'} );";
+                        push @code, "weaken( \$instance->{'$key'} ) if ref( \$value );";
                     }
                 }
                 join "\n", @code;
