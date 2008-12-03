@@ -2,6 +2,7 @@
 package Mouse::Meta::Attribute;
 use strict;
 use warnings;
+require overload;
 
 use Carp 'confess';
 use Mouse::Util qw/blessed weaken/;
