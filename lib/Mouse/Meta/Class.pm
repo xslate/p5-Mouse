@@ -37,6 +37,7 @@ sub new {
         no strict 'refs';
         \@{ $args{name} . '::ISA' };
     };
+    $args{roles} ||= [];
 
     bless \%args, $class;
 }
@@ -185,6 +186,18 @@ sub add_after_method_modifier {
         $name,
         $code,
     );
+}
+
+sub roles { $_[0]->{roles} }
+
+sub does_role {
+    my ($self, $role_name) = @_;
+    (defined $role_name)
+        || confess "You must supply a role name to look for";
+    for my $role (@{ $self->{roles} }) {
+        return 1 if $role->name eq $role_name;
+    }
+    return 0;
 }
 
 1;

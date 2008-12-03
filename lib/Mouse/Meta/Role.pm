@@ -30,6 +30,7 @@ sub new {
 
     $args{attributes}       ||= {};
     $args{required_methods} ||= [];
+    $args{roles}            ||= [];
 
     bless \%args, $class;
 }
@@ -123,6 +124,9 @@ sub apply {
             }
         }
     }
+
+    # append roles
+    push @{ $class->roles }, $self, @{ $self->roles };
 }
 
 for my $modifier_type (qw/before after around/) {
@@ -139,6 +143,8 @@ for my $modifier_type (qw/before after around/) {
         @{ $self->{"${modifier_type}_method_modifiers"}->{$method_name} || [] }
     };
 }
+
+sub roles { $_[0]->{roles} }
 
 1;
 

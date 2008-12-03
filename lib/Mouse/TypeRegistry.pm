@@ -25,7 +25,7 @@ sub import {
     *{"$caller\::subtype"}     = \&_subtype;
     *{"$caller\::coerce"}      = \&_coerce;
     *{"$caller\::class_type"}  = \&_class_type;
-#    *{"$caller\::role_type"}   = \&_role_type;
+    *{"$caller\::role_type"}   = \&_role_type;
 }
 
 sub _import {
@@ -59,6 +59,17 @@ sub _class_type {
     my $class = $conf->{class};
     $SUBTYPE->{$pkg}->{$name} = sub {
         defined $_ && ref($_) eq $class;
+    };
+}
+
+sub _role_type {
+    my $pkg = caller(0);
+    $SUBTYPE->{$pkg} ||= +{};
+    my($name, $conf) = @_;
+    my $role = $conf->{role};
+    $SUBTYPE->{$pkg}->{$name} = sub {
+        return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
+        $_->meta->does_role($role);
     };
 }
 
