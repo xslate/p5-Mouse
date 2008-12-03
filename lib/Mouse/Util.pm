@@ -175,7 +175,7 @@ BEGIN {
         #   weaken
         # other functions need to be loaded from our respective sources
 
-        if (defined &Scalar::Util::openhandle || eval { require Scalar::Util; 1 }) {
+        if (defined &Scalar::Util::openhandle) {
             *openhandle = \&Scalar::Util::openhandle;
         } else {
             # XXX - room for improvement
