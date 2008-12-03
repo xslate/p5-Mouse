@@ -14,7 +14,7 @@ BEGIN {
 }
 
 use Mouse::Util;
-use t::Exception;
+use Test::Exception;
 
 BEGIN {
     use_ok('Mouse');           

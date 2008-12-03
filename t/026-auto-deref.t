@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 15;
-use t::Exception;
+use Test::Exception;
 
 do {
     package Class;

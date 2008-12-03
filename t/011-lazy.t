@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 16;
-use t::Exception;
+use Test::Exception;
 
 my $lazy_run = 0;
 

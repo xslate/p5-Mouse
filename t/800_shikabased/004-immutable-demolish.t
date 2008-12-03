@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More tests => 2;
-use t::Exception;
+use Test::Exception;
 
 my $i;
 

@@ -12,7 +12,7 @@ BEGIN {
     }
 }
 
-use t::Exception;
+use Test::Exception;
 
 my %destroyed;
 

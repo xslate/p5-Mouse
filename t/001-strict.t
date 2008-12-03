@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Test::More tests => 1;
-use t::Exception;
+use Test::Exception;
 
 throws_ok {
     package Class;

@@ -4,13 +4,13 @@ use strict;
 use warnings;
 
 use Test::More;
-use t::Exception;
+use Test::Exception;
 BEGIN {
     plan skip_all => "Moose required for this test" unless eval { require Moose  && Moose->VERSION('0.59') };
     plan tests => 5;
 }
 
-use t::Exception;
+use Test::Exception;
 
 {
     package Headers;

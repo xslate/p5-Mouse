@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
-use t::Exception;
+use Test::Exception;
 
 {
     package FooRole;

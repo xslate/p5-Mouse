@@ -5,6 +5,8 @@ all_from 'lib/Mouse.pm';
 
 tests 't/*.t t/*/*.t';
 
+build_requires 'Test::Exception';
+build_requires 'Sub::Uplevel';    # required by Test::Exception
 build_requires 'Test::More';
 
 WriteAll;

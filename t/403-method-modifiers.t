@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "Class::Method::Modifiers required for this test";
     }
 }
-use t::Exception;
+use Test::Exception;
 
 my @calls;
 my ($before, $after, $around);

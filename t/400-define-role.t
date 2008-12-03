@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 11;
-use t::Exception;
+use Test::Exception;
 
 lives_ok {
     package Role;

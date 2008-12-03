@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 47;
-use t::Exception;
+use Test::Exception;
 
 my $builder_called = 0;
 my $lazy_builder_called = 0;
