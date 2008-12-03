@@ -9,15 +9,11 @@ use Mouse::Util qw/blessed looks_like_number openhandle/;
 my $SUBTYPE = +{};
 my $COERCE = +{};
 
+#find_type_constraint register_type_constraint
 sub import {
     my $class  = shift;
     my %args   = @_;
-    my $caller = caller(0);
-
-    if (defined $args{'-export'} && ref($args{'-export'}) eq 'ARRAY') {
-        no strict 'refs';
-        *{"$caller\::import"} = sub { _import(@_) };
-    }
+    my $caller = $args{callee} || caller(0);
 
     no strict 'refs';
     *{"$caller\::as"}          = \&_as;
@@ -45,14 +41,6 @@ sub _message ($) {
 sub _from { @_ }
 sub _via (&) {
     $_[0]
-}
-
-sub _import {
-    my($class, @types) = @_;
-    return unless exists $SUBTYPE->{$class} && exists $COERCE->{$class};
-    my $pkg = caller(1);
-    return unless @types;
-    copy_types($class, $pkg, @types);
 }
 
 sub _subtype {
