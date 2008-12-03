@@ -40,10 +40,11 @@ sub _generate_processattrs {
         my $part1 = do {
             my @code;
 
-            push @code, "my \$value = \$args->{'$from'};";
-
             if ($attr->should_coerce) {
-                push @code, "\$value = \$attr->coerce_constraint( \$value );";
+                push @code, "my \$value = \$attr->coerce_constraint( \$args->{'$from'});";
+            }
+            else {
+                push @code, "my \$value = \$args->{'$from'};";
             }
 
             if ($attr->has_type_constraint) {
