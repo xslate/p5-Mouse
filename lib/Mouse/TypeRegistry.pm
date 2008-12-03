@@ -3,6 +3,7 @@ package Mouse::TypeRegistry;
 use strict;
 use warnings;
 
+use Carp ();
 use Mouse::Util qw/blessed looks_like_number openhandle/;
 
 my $SUBTYPE = +{};
@@ -13,19 +14,37 @@ sub import {
     my %args   = @_;
     my $caller = caller(0);
 
-    $SUBTYPE->{$caller} ||= +{};
-    $COERCE->{$caller}  ||= +{};
-
     if (defined $args{'-export'} && ref($args{'-export'}) eq 'ARRAY') {
         no strict 'refs';
         *{"$caller\::import"} = sub { _import(@_) };
     }
 
     no strict 'refs';
+    *{"$caller\::as"}          = \&_as;
+    *{"$caller\::where"}       = \&_where;
+    *{"$caller\::message"}     = \&_message;
+    *{"$caller\::from"}        = \&_from;
+    *{"$caller\::via"}         = \&_via;
     *{"$caller\::subtype"}     = \&_subtype;
     *{"$caller\::coerce"}      = \&_coerce;
     *{"$caller\::class_type"}  = \&_class_type;
     *{"$caller\::role_type"}   = \&_role_type;
+}
+
+
+sub _as ($) {
+    as => $_[0]
+}
+sub _where (&) {
+    where => $_[0]
+}
+sub _message ($) {
+    message => $_[0]
+}
+
+sub _from { @_ }
+sub _via (&) {
+    $_[0]
 }
 
 sub _import {
@@ -38,51 +57,67 @@ sub _import {
 
 sub _subtype {
     my $pkg = caller(0);
-    my($name, $stuff) = @_;
-    if (ref $stuff eq 'HASH') {
-        my $as = $stuff->{as};
-        $stuff = optimized_constraints()->{$as};
-    }
-    $SUBTYPE->{$pkg}->{$name} = $stuff;
+    my($name, %conf) = @_;
+    if (my $type = $SUBTYPE->{$name}) {
+        Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
+    };
+    my $as = $conf{as};
+    my $stuff = $conf{where} || optimized_constraints()->{$as};
+
+    $SUBTYPE->{$name} = $stuff;
 }
 
 sub _coerce {
-    my $pkg = caller(0);
-    my($name, $conf) = @_;
-    $COERCE->{$pkg}->{$name} = $conf;
+    my($name, %conf) = @_;
+
+    Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
+        unless optimized_constraints()->{$name};
+
+    my $subtypes = optimized_constraints();
+    $COERCE->{$name} ||= {};
+    while (my($type, $code) = each %conf) {
+        Carp::croak "A coercion action already exists for '$type'"
+            if $COERCE->{$name}->{$type};
+
+        Carp::croak "Could not find the type constraint ($type) to coerce from"
+            unless $subtypes->{$type};
+
+        $COERCE->{$name}->{$type} = $code;
+    }
 }
 
 sub _class_type {
     my $pkg = caller(0);
-    $SUBTYPE->{$pkg} ||= +{};
     my($name, $conf) = @_;
     my $class = $conf->{class};
-    $SUBTYPE->{$pkg}->{$name} = sub {
-        defined $_ && ref($_) eq $class;
-    };
+    _subtype(
+        $name => where => sub {
+            defined $_ && ref($_) eq $class;
+        }
+    );
 }
 
 sub _role_type {
-    my $pkg = caller(0);
-    $SUBTYPE->{$pkg} ||= +{};
     my($name, $conf) = @_;
     my $role = $conf->{role};
-    $SUBTYPE->{$pkg}->{$name} = sub {
-        return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
-        $_->meta->does_role($role);
-    };
+    _subtype(
+        $name => where => sub {
+            return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
+            $_->meta->does_role($role);
+        }
+    );
 }
 
 sub typecast_constraints {
     my($class, $pkg, $type, $value) = @_;
-    return $value unless defined $COERCE->{$pkg} && defined $COERCE->{$pkg}->{$type};
+    return $value unless $COERCE->{$type};
 
     my $optimized_constraints = optimized_constraints();
-    for my $coerce_type (keys %{ $COERCE->{$pkg}->{$type} }) {
+    for my $coerce_type (keys %{ $COERCE->{$type} }) {
         local $_ = $value;
         if ($optimized_constraints->{$coerce_type}->()) {
             local $_ = $value;
-            return $COERCE->{$pkg}->{$type}->{$coerce_type}->();
+            return $COERCE->{$type}->{$coerce_type}->();
         }
     }
 
@@ -124,9 +159,7 @@ sub typecast_constraints {
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     };
     sub optimized_constraints {
-        my($class, $pkg) = @_;
-        my $subtypes = $SUBTYPE->{$pkg} || {};
-        return { %{ $subtypes }, %{ $optimized_constraints } };
+        return { %{ $SUBTYPE }, %{ $optimized_constraints } };
     }
 }
 

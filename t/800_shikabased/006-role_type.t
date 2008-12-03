@@ -32,11 +32,11 @@ use Test::More tests => 5;
     use Mouse::TypeRegistry;
 
     role_type Headers => { role => 'Response::Headers::Role' };
-    coerce 'Headers' => +{
-        HashRef => sub {
+    coerce 'Headers' =>
+        from 'HashRef' => via {
             Response::Headers->new(%{ $_ });
         },
-    };
+    ;
 
     has headers => (
         is     => 'rw',

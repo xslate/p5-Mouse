@@ -14,11 +14,11 @@ use Test::More tests => 4;
     use Mouse::TypeRegistry;
 
     class_type Headers => { class => 'Response::Headers' };
-    coerce 'Headers' => +{
-        HashRef => sub {
+    coerce 'Headers' =>
+        from 'HashRef' => via {
             Response::Headers->new(%{ $_ });
         },
-    };
+    ;
 
     has headers => (
         is     => 'rw',

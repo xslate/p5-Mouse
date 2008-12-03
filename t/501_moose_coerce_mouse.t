@@ -22,12 +22,12 @@ use Test::Exception;
     use Mouse;
     use Mouse::TypeRegistry;
 
-    subtype 'HeadersType' => sub { defined $_ && eval { $_->isa('Headers') } };
-    coerce 'HeadersType' => +{
-        HashRef => sub {
+    subtype 'HeadersType' => where { defined $_ && eval { $_->isa('Headers') } };
+    coerce  'HeadersType' =>
+        from 'HashRef' => via {
             Headers->new(%{ $_ });
         },
-    };
+    ;
 
     has headers => (
         is     => 'rw',

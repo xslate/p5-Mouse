@@ -13,12 +13,15 @@ use Test::More tests => 6;
     use Mouse;
     use Mouse::TypeRegistry;
 
-    subtype 'HeadersType' => sub { defined $_ && eval { $_->isa('Headers') } };
-    coerce 'HeadersType' => +{
-        HashRef => sub {
-            Headers->new(%{ $_ });
+    subtype 'HeadersType' => as 'Object' => where { defined $_ && eval { $_->isa('Headers') } };
+    coerce 'HeadersType' =>
+        from 'ScalarRef' => via {
+            Headers->new();
         },
-    };
+        from 'HashRef' => via {
+            Headers->new(%{ $_ });
+        }
+    ;
 
     has headers => (
         is     => 'rw',
