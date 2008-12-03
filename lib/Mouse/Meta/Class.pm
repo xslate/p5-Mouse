@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Mouse::Meta::Method::Constructor;
+use Mouse::Meta::Method::Destructor;
 use Mouse::Util qw/get_linear_isa blessed/;
 use Carp 'confess';
 
@@ -143,7 +144,8 @@ sub make_immutable {
     my $name = $self->name;
     $self->{is_immutable}++;
     no strict 'refs';
-    *{"$name\::new"} = Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self );
+    *{"$name\::new"}     = Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self );
+    *{"$name\::DESTROY"} = Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self );
 }
 sub make_mutable {
     Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";
