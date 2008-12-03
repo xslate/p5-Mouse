@@ -37,7 +37,7 @@ sub _generate_processattrs {
         my $from = $attr->init_arg;
         my $key  = $attr->name;
 
-        my $part1 = do {
+        my $set_value = do {
             my @code;
 
             if ($attr->should_coerce) {
@@ -64,7 +64,7 @@ sub _generate_processattrs {
             join "\n", @code;
         };
 
-        my $part2 = do {
+        my $make_default_value = do {
             my @code;
 
             if ( $attr->has_default || $attr->has_builder ) {
@@ -119,9 +119,9 @@ sub _generate_processattrs {
             {
                 my \$attr = \$attrs[$index];
                 if (exists(\$args->{'$from'})) {
-                    $part1;
+                    $set_value;
                 } else {
-                    $part2;
+                    $make_default_value;
                 }
             }
 ...
