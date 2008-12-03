@@ -5,9 +5,10 @@ use warnings;
 sub generate_constructor_method_inline {
     my ($class, $meta) = @_;
 
+    my @attrs = $meta->compute_all_applicable_attributes; # this one is using by evaled code
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS();
-    my $processattrs = $class->_generate_processattrs($meta);
+    my $processattrs = $class->_generate_processattrs($meta, \@attrs);
 
     my $code = <<"...";
     sub {
@@ -29,10 +30,10 @@ sub generate_constructor_method_inline {
 }
 
 sub _generate_processattrs {
-    my ($class, $meta, ) = @_;
-    my @attrs = $meta->compute_all_applicable_attributes;
+    my ($class, $meta, $attrs) = @_;
     my @res;
-    for my $attr (@attrs) {
+    for my $index (0..scalar(@$attrs)-1) {
+        my $attr = $attrs->[$index];
         my $from = $attr->init_arg;
         my $key  = $attr->name;
         my $part1 = do {
@@ -88,7 +89,7 @@ sub _generate_processattrs {
         };
         my $code = <<"...";
             {
-                my \$attr = \$meta->get_attribute('$key');
+                my \$attr = \$attrs[$index];
                 my \$from = '$from';
                 my \$key  = '$key';
                 if (defined(\$from) && exists(\$args->{\$from})) {
