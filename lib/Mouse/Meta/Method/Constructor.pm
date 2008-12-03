@@ -39,17 +39,17 @@ sub _generate_processattrs {
         my $part1 = do {
             my @code;
             if ($attr->should_coerce) {
-                push @code, "\$args->{\$from} = \$attr->coerce_constraint( \$args->{\$from} );";
+                push @code, "\$args->{'$from'} = \$attr->coerce_constraint( \$args->{'$from'} );";
             }
             if ($attr->has_type_constraint) {
-                push @code, "\$attr->verify_type_constraint( \$args->{\$from} );";
+                push @code, "\$attr->verify_type_constraint( \$args->{'$from'} );";
             }
-            push @code, "\$instance->{'$key'} = \$args->{\$from};";
+            push @code, "\$instance->{'$key'} = \$args->{'$from'};";
             if ($attr->is_weak_ref) {
                 push @code, "weaken( \$instance->{'$key'} ) if ref( \$instance->{'$key'} );";
             }
             if ( $attr->has_trigger ) {
-                push @code, "\$attr->trigger->( \$instance, \$args->{\$from}, \$attr );";
+                push @code, "\$attr->trigger->( \$instance, \$args->{'$from'}, \$attr );";
             }
             join "\n", @code;
         };
@@ -81,7 +81,7 @@ sub _generate_processattrs {
             }
             else {
                 if ( $attr->is_required ) {
-                    q{Carp::confess("Attribute (} . $attr->name . q{) is required");};
+                    qq{Carp::confess("Attribute ($key) is required");};
                 } else {
                     ""
                 }
@@ -90,8 +90,7 @@ sub _generate_processattrs {
         my $code = <<"...";
             {
                 my \$attr = \$attrs[$index];
-                my \$from = '$from';
-                if (defined(\$from) && exists(\$args->{\$from})) {
+                if (exists(\$args->{'$from'})) {
                     $part1;
                 } else {
                     $part2;
