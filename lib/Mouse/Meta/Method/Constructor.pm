@@ -4,26 +4,33 @@ use warnings;
 
 sub generate_constructor_method_inline {
     my ($class, $meta) = @_; 
+    my $code = $class->_generate_constructor_method_inline($meta);
+    warn $code if $ENV{DEBUG};
+
+    local $@;
+    my $res = eval $code;
+    die $@ if $@;
+    $res;
+}
+
+sub _generate_constructor_method_inline {
+    my ($class, $meta) = @_;
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS();
     my $classname = $meta->name;
     my $processattrs = $class->_generate_processattrs($meta);
 
-    my $code = <<"...";
+    return <<"...";
     sub {
         my \$class = shift;
         my \$args = $buildargs;
         my \$instance = bless {}, '$classname';
+        my \$meta = \$instance->meta;
         $processattrs;
         $buildall;
         return \$instance;
     }
 ...
-    warn $code if $ENV{DEBUG};
-
-    my $res = eval $code;
-    die $@ if $@;
-    $res;
 }
 
 sub _generate_processattrs {
@@ -42,7 +49,9 @@ sub _generate_processattrs {
                 push @code, "\$attr->verify_type_constraint( \$args->{\$from} );";
             }
             push @code, "\$instance->{\$key} = \$args->{\$from};";
-            push @code, "weaken( \$instance->{\$key} ) if ref( \$instance->{\$key} ) && \$attr->is_weak_ref;";
+            if ($attr->is_weak_ref) {
+                push @code, "weaken( \$instance->{\$key} ) if ref( \$instance->{\$key} );";
+            }
             if ( $attr->has_trigger ) {
                 push @code, "\$attr->trigger->( \$instance, \$args->{\$from}, \$attr );";
             }
@@ -84,7 +93,7 @@ sub _generate_processattrs {
         };
         my $code = <<"...";
             {
-                my \$attr = \$instance->meta->get_attribute_map->{'$key'};
+                my \$attr = \$meta->get_attribute('$key');
                 my \$from = '$from';
                 my \$key  = '$key';
                 if (defined(\$from) && exists(\$args->{\$from})) {
