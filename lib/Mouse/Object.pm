@@ -16,7 +16,6 @@ sub new {
     for my $attribute ($class->meta->compute_all_applicable_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
-        my $default;
 
         if (defined($from) && exists($args->{$from})) {
             $args->{$from} = $attribute->coerce_constraint($args->{$from})

@@ -3,6 +3,7 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
+use Mouse::Meta::Method::Constructor;
 use Mouse::Util qw/get_linear_isa blessed/;
 use Carp 'confess';
 
@@ -137,8 +138,17 @@ sub clone_instance {
 
 }
 
-sub make_immutable {}
-sub is_immutable { 0 }
+sub make_immutable {
+    my $self = shift;
+    my $name = $self->name;
+    $self->{is_immutable}++;
+    no strict 'refs';
+    *{"$name\::new"} = Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self );
+}
+sub make_mutable {
+    Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";
+}
+sub is_immutable { $_[0]->{is_immutable} }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
 
