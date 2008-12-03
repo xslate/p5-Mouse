@@ -36,23 +36,33 @@ sub _generate_processattrs {
         my $attr = $attrs->[$index];
         my $from = $attr->init_arg;
         my $key  = $attr->name;
+
         my $part1 = do {
             my @code;
+
+            push @code, "my \$value = \$args->{'$from'};";
+
             if ($attr->should_coerce) {
-                push @code, "\$args->{'$from'} = \$attr->coerce_constraint( \$args->{'$from'} );";
+                push @code, "\$value = \$attr->coerce_constraint( \$value );";
             }
+
             if ($attr->has_type_constraint) {
-                push @code, "\$attr->verify_type_constraint( \$args->{'$from'} );";
+                push @code, "\$attr->verify_type_constraint( \$value );";
             }
-            push @code, "\$instance->{'$key'} = \$args->{'$from'};";
+
+            push @code, "\$instance->{'$key'} = \$value;";
+
             if ($attr->is_weak_ref) {
-                push @code, "weaken( \$instance->{'$key'} ) if ref( \$instance->{'$key'} );";
+                push @code, "weaken( \$instance->{'$key'} ) if ref( \$value );";
             }
+
             if ( $attr->has_trigger ) {
-                push @code, "\$attr->trigger->( \$instance, \$args->{'$from'}, \$attr );";
+                push @code, "\$attr->trigger->( \$instance, \$value, \$attr );";
             }
+
             join "\n", @code;
         };
+
         my $part2 = do {
             my @code;
             if ( $attr->has_default || $attr->has_builder ) {
