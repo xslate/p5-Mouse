@@ -20,7 +20,9 @@ our %EXPORT_TAGS = (
 # We only have to do this nastiness if we haven't loaded XS version of
 # Mouse.pm, so check if we're running under PurePerl or not
 BEGIN {
-    if ($Mouse::PurePerl) {
+    # Checking for undefinedness will ensure that our functions are
+    # properly loaded without loading Mouse, but this is kind of ugly
+    if ($Mouse::PurePerl || ! defined $Mouse::PurePerl) {
         my %dependencies = (
             'Scalar::Util' => {
     #       VVVVV   CODE TAKEN FROM SCALAR::UTIL   VVVVV
