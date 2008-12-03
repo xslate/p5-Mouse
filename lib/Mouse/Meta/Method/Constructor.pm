@@ -44,9 +44,9 @@ sub _generate_processattrs {
             if ($attr->has_type_constraint) {
                 push @code, "\$attr->verify_type_constraint( \$args->{\$from} );";
             }
-            push @code, "\$instance->{\$key} = \$args->{\$from};";
+            push @code, "\$instance->{'$key'} = \$args->{\$from};";
             if ($attr->is_weak_ref) {
-                push @code, "weaken( \$instance->{\$key} ) if ref( \$instance->{\$key} );";
+                push @code, "weaken( \$instance->{'$key'} ) if ref( \$instance->{'$key'} );";
             }
             if ( $attr->has_trigger ) {
                 push @code, "\$attr->trigger->( \$instance, \$args->{\$from}, \$attr );";
@@ -72,9 +72,9 @@ sub _generate_processattrs {
                     if ($attr->has_type_constraint) {
                         push @code, "\$attr->verify_type_constraint(\$value);";
                     }
-                    push @code, "\$instance->{\$key} = \$value;";
+                    push @code, "\$instance->{'$key'} = \$value;";
                     if ($attr->is_weak_ref) {
-                        push @code, "weaken( \$instance->{\$key} ) if ref( \$instance->{\$key} );";
+                        push @code, "weaken( \$instance->{'$key'} ) if ref( \$instance->{'$key'} );";
                     }
                 }
                 join "\n", @code;
@@ -91,7 +91,6 @@ sub _generate_processattrs {
             {
                 my \$attr = \$attrs[$index];
                 my \$from = '$from';
-                my \$key  = '$key';
                 if (defined(\$from) && exists(\$args->{\$from})) {
                     $part1;
                 } else {
