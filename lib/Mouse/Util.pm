@@ -30,37 +30,26 @@ BEGIN {
         #   weaken
         # other functions need to be loaded from our respective sources
 
-        if (defined &Scalar::Util::openhandle) {
+        if (defined &Scalar::Util::openhandle || eval { require Scalar::Util; 1 }) {
             *openhandle = \&Scalar::Util::openhandle;
         } else {
             # XXX - room for improvement
             *openhandle = sub {
-                local($@, $SIG{__DIE__}, $SIG{__WARN__});
-                my $r = shift;
-                my $t;
+                my $fh = shift;
+                my $rt = reftype($fh) || '';
 
-                length($t = ref($r)) or return undef;
+                return defined(fileno($fh)) ? $fh : undef
+                    if $rt eq 'IO';
 
-                # This eval will fail if the reference is not blessed
-                eval { $r->a_sub_not_likely_to_be_here; 1 }
-                ? do {
-                    $t = eval {
-                        # we have a GLOB or an IO. Stringify a GLOB gives it's name
-                        my $q = *$r;
-                        $q =~ /^\*/ ? "GLOB" : "IO";
-                    }
-                    or do {
-                        # OK, if we don't have a GLOB what parts of
-                        # a glob will it populate.
-                        # NOTE: A glob always has a SCALAR
-                        local *glob = $r;
-                        defined *glob{ARRAY} && "ARRAY"
-                            or defined *glob{HASH} && "HASH"
-                            or defined *glob{CODE} && "CODE"
-                            or length(ref(${$r})) ? "REF" : "SCALAR";
-                    }
+                if (reftype(\$fh) eq 'GLOB') { # handle  openhandle(*DATA)
+                    $fh = \(my $tmp=$fh);
                 }
-                : $t
+                elsif ($rt ne 'GLOB') {
+                    return undef;
+                }
+
+                (tied(*$fh) or defined(fileno($fh)))
+                    ? $fh : undef;
             };
         }
 
