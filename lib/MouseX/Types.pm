@@ -56,8 +56,6 @@ Mouse - Organise your Mouse types in libraries
   use MouseX::Types 
     -declare => [qw(
         PositiveInt NegativeInt
-        ArrayRefOfPositiveInt ArrayRefOfAtLeastThreeNegativeInts
-        LotsOfInnerConstraints StrOrArrayRef
     )];
 
   # import builtin types
@@ -78,23 +76,6 @@ Mouse - Organise your Mouse types in libraries
   coerce PositiveInt,
       from Int,
           via { 1 };
-
-  # with parameterized constraints.
-  
-  subtype ArrayRefOfPositiveInt,
-    as ArrayRef[PositiveInt];
-    
-  subtype ArrayRefOfAtLeastThreeNegativeInts,
-    as ArrayRef[NegativeInt],
-    where { scalar(@$_) > 2 };
-
-  subtype LotsOfInnerConstraints,
-    as ArrayRef[ArrayRef[HashRef[Int]]];
-    
-  # with TypeConstraint Unions
-  
-  subtype StrOrArrayRef,
-    as Str|ArrayRef;
 
   1;
 
