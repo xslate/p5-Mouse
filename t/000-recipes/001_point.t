@@ -3,7 +3,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 58;
+use Test::More;
+BEGIN {
+    if (eval "require Class::Method::Modifiers; 1") {
+        plan tests => 58;
+    }
+    else {
+        plan skip_all => "Class::Method::Modifiers required for this test";
+    }
+}
+
 use Mouse::Util;
 use t::Exception;
 
