@@ -1,30 +1,34 @@
-#!/usr/bin/env perl
+
 package Mouse;
 use strict;
 use warnings;
+use 5.006;
 use base 'Exporter';
 
-our $VERSION = '0.12';
-use 5.006;
-
-if ($ENV{SHIKA_DEBUG}) {
-    *DEBUG = sub (){ 1 };
-} else {
-    *DEBUG = sub (){ 0 };
-}
-
+our $VERSION;
 our $PurePerl;
-$PurePerl = $ENV{SHIKA_PUREPERL} unless defined $PurePerl;
 
+BEGIN {
+    $VERSION  = '0.12';
 
-if (! $PurePerl) {
-    local $@;
-    local $^W = 0;
-    require XSLoader;
-    $PurePerl = !eval{ XSLoader::load(__PACKAGE__, $VERSION); 1 };
-    warn "Failed to load XS mode: $@" if $@ && Mouse::DEBUG();
+    if ($ENV{MOUSE_DEBUG}) {
+        *DEBUG = sub (){ 1 };
+    } else {
+        *DEBUG = sub (){ 0 };
+    }
+
+    if (! defined $PurePerl && $ENV{MOUSE_PUREPERL} && $ENV{MOUSE_PUREPERL} =~ /^(.+)$/) {
+        $PurePerl = $1;
+    }
+
+    if (! $PurePerl) {
+        local $@;
+        local $^W = 0;
+        require XSLoader;
+        $PurePerl = ! eval{ XSLoader::load(__PACKAGE__, $VERSION); 1 };
+        warn "Failed to load XS mode: $@" if $@; #  && Mouse::DEBUG();
+    }
 }
-
 
 use Carp 'confess';
 use Mouse::Util 'blessed';
@@ -110,7 +114,7 @@ sub import {
     no warnings 'redefine';
     *{$caller.'::meta'} = sub { $meta };
 
-    Mouse->export_to_level(1, @_);
+    __PACKAGE__->export_to_level( 1, @_);
 }
 
 sub unimport {

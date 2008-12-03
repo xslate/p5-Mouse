@@ -2,13 +2,97 @@
 package Mouse::Util;
 use strict;
 use warnings;
-use base 'Exporter';
+use Exporter 'import';
 use Carp;
 
-BEGIN {
-    our %dependencies = (
-        'Scalar::Util' => {
+our @EXPORT_OK = qw(
+    blessed
+    get_linear_isa
+    looks_like_number
+    openhandle
+    reftype
+    weaken
+);
+our %EXPORT_TAGS = (
+    all  => \@EXPORT_OK,
+);
 
+# We only have to do this nastiness if we haven't loaded XS version of
+# Mouse.pm, so check if we're running under PurePerl or not
+BEGIN {
+    if ($Mouse::PurePerl) {
+        _install_pp_func();
+    } else {
+        # If we're running under XS, we can provide
+        #   blessed
+        #   looks_like_number
+        #   reftype
+        #   weaken
+        # other functions need to be loaded from our respective sources
+
+        if (defined &Scalar::Util::openhandle) {
+            *openhandle = \&Scalar::Util::openhandle;
+        } else {
+            # XXX - room for improvement
+            *openhandle = sub {
+                local($@, $SIG{__DIE__}, $SIG{__WARN__});
+                my $r = shift;
+                my $t;
+
+                length($t = ref($r)) or return undef;
+
+                # This eval will fail if the reference is not blessed
+                eval { $r->a_sub_not_likely_to_be_here; 1 }
+                ? do {
+                    $t = eval {
+                        # we have a GLOB or an IO. Stringify a GLOB gives it's name
+                        my $q = *$r;
+                        $q =~ /^\*/ ? "GLOB" : "IO";
+                    }
+                    or do {
+                        # OK, if we don't have a GLOB what parts of
+                        # a glob will it populate.
+                        # NOTE: A glob always has a SCALAR
+                        local *glob = $r;
+                        defined *glob{ARRAY} && "ARRAY"
+                            or defined *glob{HASH} && "HASH"
+                            or defined *glob{CODE} && "CODE"
+                            or length(ref(${$r})) ? "REF" : "SCALAR";
+                    }
+                }
+                : $t
+            };
+        }
+
+        if (defined &mro::get_linear_isa) {
+            *get_linear_isa = \&mro::get_linear_isa;
+        } else {
+            # this recurses so it isn't pretty
+            my $code;
+            *get_linear_isa = $code = sub {
+                no strict 'refs';
+
+                my $classname = shift;
+
+                my @lin = ($classname);
+                my %stored;
+                foreach my $parent (@{"$classname\::ISA"}) {
+                    my $plin = $code->($parent);
+                    foreach (@$plin) {
+                        next if exists $stored{$_};
+                        push(@lin, $_);
+                        $stored{$_} = 1;
+                    }
+                }
+                return \@lin;
+            };
+        }
+    }
+}
+
+sub _install_pp_func {
+    my %dependencies = (
+        'Scalar::Util' => {
 #       VVVVV   CODE TAKEN FROM SCALAR::UTIL   VVVVV
             'blessed' => do {
                 *UNIVERSAL::a_sub_not_likely_to_be_here = sub {
@@ -123,13 +207,7 @@ BEGIN {
         },
     );
 
-    our %loaded;
-
-    our @EXPORT_OK = map { keys %$_ } values %dependencies;
-    our %EXPORT_TAGS = (
-        all  => \@EXPORT_OK,
-    );
-
+    my %loaded;
     for my $module_name (keys %dependencies) {
         my $loaded = do {
             local $SIG{__DIE__} = 'DEFAULT';
