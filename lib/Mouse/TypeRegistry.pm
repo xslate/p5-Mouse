@@ -24,7 +24,7 @@ sub import {
     no strict 'refs';
     *{"$caller\::subtype"}     = \&_subtype;
     *{"$caller\::coerce"}      = \&_coerce;
-#    *{"$caller\::class_type"}  = \&_class_type;
+    *{"$caller\::class_type"}  = \&_class_type;
 #    *{"$caller\::role_type"}   = \&_role_type;
 }
 
@@ -50,6 +50,16 @@ sub _coerce {
     my $pkg = caller(0);
     my($name, $conf) = @_;
     $COERCE->{$pkg}->{$name} = $conf;
+}
+
+sub _class_type {
+    my $pkg = caller(0);
+    $SUBTYPE->{$pkg} ||= +{};
+    my($name, $conf) = @_;
+    my $class = $conf->{class};
+    $SUBTYPE->{$pkg}->{$name} = sub {
+        defined $_ && ref($_) eq $class;
+    };
 }
 
 sub typecast_constraints {
