@@ -3,6 +3,8 @@ use inc::Module::Install;
 name     'Mouse';
 all_from 'lib/Mouse.pm';
 
+tests 't/*.t t/*/*.t';
+
 build_requires 'Test::More';
 
 WriteAll;
