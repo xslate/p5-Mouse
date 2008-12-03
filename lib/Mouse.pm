@@ -7,6 +7,25 @@ use base 'Exporter';
 our $VERSION = '0.12';
 use 5.006;
 
+if ($ENV{SHIKA_DEBUG}) {
+    *DEBUG = sub (){ 1 };
+} else {
+    *DEBUG = sub (){ 0 };
+}
+
+our $PurePerl;
+$PurePerl = $ENV{SHIKA_PUREPERL} unless defined $PurePerl;
+
+
+if (! $PurePerl) {
+    local $@;
+    local $^W = 0;
+    require XSLoader;
+    $PurePerl = !eval{ XSLoader::load(__PACKAGE__, $VERSION); 1 };
+    warn "Failed to load XS mode: $@" if $@ && Mouse::DEBUG();
+}
+
+
 use Carp 'confess';
 use Mouse::Util 'blessed';
 
