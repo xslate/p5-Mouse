@@ -3,15 +3,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More;
 use Test::Exception;
 
-
+plan skip_all => "mouse doesn't support Maybe[] yet";
+plan tests => 3;
 
 {
     package AClass;
 
-    use Moose;
+    use Mouse;
 
     has 'foo' => (is => 'rw', isa => 'Maybe[Str]', trigger => sub {
         die "Pulling the Foo trigger\n"
@@ -25,7 +26,7 @@ use Test::Exception;
 
     __PACKAGE__->meta->make_immutable; #(debug => 1);
 
-    no Moose;
+    no Mouse;
 }
 
 eval { AClass->new(foo => 'bar') };

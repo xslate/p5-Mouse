@@ -18,7 +18,7 @@ constructor.
 
 {
     package Foo;
-    use Moose;
+    use Mouse;
 
     has 'foo' => (is => 'rw', isa => 'Int');
 
