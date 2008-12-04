@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 6;
 use Test::Exception;
 
 {
@@ -10,6 +10,7 @@ use Test::Exception;
         is => 'rw',
         required => 1,
     );
+    sub BUILD { main::ok "calling BUILD in HardDog" }
     no Mouse;
     __PACKAGE__->meta->make_immutable;
 }
@@ -21,6 +22,7 @@ use Test::Exception;
         is => 'rw',
         required => 1,
     );
+    sub BUILD { main::ok "calling BUILD in SoftDog" }
     no Mouse;
 }
 

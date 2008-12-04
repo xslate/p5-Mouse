@@ -160,7 +160,7 @@ sub _generate_BUILDALL {
     no strict 'refs';
     for my $klass ($meta->linearized_isa) {
         if (*{ $klass . '::BUILD' }{CODE}) {
-            push  @code, qq{${klass}::BUILD->(\$instance, \$args);};
+            push  @code, qq{${klass}::BUILD(\$instance, \$args);};
         }
     }
     return join "\n", @code;
