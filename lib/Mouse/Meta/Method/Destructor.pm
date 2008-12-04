@@ -16,7 +16,7 @@ sub generate_destructor_method_inline {
             }
             join "\n", @code;
         } else {
-            ''; # no demolish =)
+            return; # no demolish =)
         }
     };
 
@@ -31,7 +31,7 @@ sub generate_destructor_method_inline {
     local $@;
     my $res = eval $code;
     die $@ if $@;
-    $res;
+    return $res;
 }
 
 1;
