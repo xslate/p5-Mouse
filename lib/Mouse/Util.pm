@@ -2,7 +2,7 @@
 package Mouse::Util;
 use strict;
 use warnings;
-use Exporter 'import';
+use base qw/Exporter/;
 use Carp;
 
 our @EXPORT_OK = qw(
