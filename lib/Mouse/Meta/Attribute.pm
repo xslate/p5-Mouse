@@ -301,7 +301,7 @@ sub find_type_constraint {
 
     return unless $type;
 
-    my $checker = Mouse::TypeRegistry->optimized_constraints($self->associated_class->name)->{$type};
+    my $checker = Mouse::TypeRegistry->optimized_constraints()->{$type};
     return $checker if $checker;
 
     return sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type };
