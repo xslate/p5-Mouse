@@ -200,6 +200,89 @@ sub does_role {
     return 0;
 }
 
+sub create {
+    my ( $class, @args ) = @_;
+
+    unshift @args, 'package' if @args % 2 == 1;
+
+    my (%options) = @args;
+    my $package_name = $options{package};
+
+    (ref $options{superclasses} eq 'ARRAY')
+        || confess "You must pass an ARRAY ref of superclasses"
+            if exists $options{superclasses};
+            
+    (ref $options{attributes} eq 'ARRAY')
+        || confess "You must pass an ARRAY ref of attributes"
+            if exists $options{attributes};      
+            
+    (ref $options{methods} eq 'HASH')
+        || confess "You must pass a HASH ref of methods"
+            if exists $options{methods};                  
+
+    do {
+        # XXX should I implement Mouse::Meta::Module?
+        my $package_name = $options{package};
+
+        ( defined $package_name && $package_name )
+          || confess "You must pass a package name";
+
+        my $code = "package $package_name;";
+        $code .= "\$$package_name\:\:VERSION = '" . $options{version} . "';"
+          if exists $options{version};
+        $code .= "\$$package_name\:\:AUTHORITY = '" . $options{authority} . "';"
+          if exists $options{authority};
+
+        eval $code;
+        confess "creation of $package_name failed : $@" if $@;
+    };
+
+    my (%initialize_options) = @args;
+    delete @initialize_options{qw(
+        package
+        superclasses
+        attributes
+        methods
+        version
+        authority
+    )};
+    my $meta = $class->initialize( $package_name => %initialize_options );
+
+    # FIXME totally lame
+    $meta->add_method('meta' => sub {
+        $class->initialize(ref($_[0]) || $_[0]);
+    });
+
+    $meta->superclasses(@{$options{superclasses}})
+        if exists $options{superclasses};
+    # NOTE:
+    # process attributes first, so that they can
+    # install accessors, but locally defined methods
+    # can then overwrite them. It is maybe a little odd, but
+    # I think this should be the order of things.
+    if (exists $options{attributes}) {
+        foreach my $attr (@{$options{attributes}}) {
+            Mouse::Meta::Attribute->create($meta, $attr->{name}, %$attr);
+        }
+    }
+    if (exists $options{methods}) {
+        foreach my $method_name (keys %{$options{methods}}) {
+            $meta->add_method($method_name, $options{methods}->{$method_name});
+        }
+    }
+    return $meta;
+}
+
+{
+    my $ANON_CLASS_SERIAL = 0;
+    my $ANON_CLASS_PREFIX = 'Mouse::Meta::Class::__ANON__::SERIAL::';
+    sub create_anon_class {
+        my ( $class, %options ) = @_;
+        my $package_name = $ANON_CLASS_PREFIX . ++$ANON_CLASS_SERIAL;
+        return $class->create( $package_name, %options );
+    }
+}
+
 1;
 
 __END__
