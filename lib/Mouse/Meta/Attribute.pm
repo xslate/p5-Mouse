@@ -5,7 +5,7 @@ use warnings;
 require overload;
 
 use Carp 'confess';
-use Mouse::Util qw/blessed weaken/;
+require Mouse::Util;
 
 sub new {
     my $class = shift;
@@ -100,7 +100,7 @@ sub generate_accessor {
         $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
         if ($is_weak) {
-            $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
+            $accessor .= 'Mouse::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
         }
 
         if ($trigger) {
@@ -304,7 +304,7 @@ sub find_type_constraint {
     my $checker = Mouse::TypeRegistry->optimized_constraints($self->associated_class->name)->{$type};
     return $checker if $checker;
 
-    return sub { blessed($_) && blessed($_) eq $type };
+    return sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type };
 }
 
 sub verify_type_constraint {
