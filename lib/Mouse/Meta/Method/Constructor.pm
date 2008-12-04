@@ -158,9 +158,9 @@ sub _generate_BUILDALL {
     push @code, q{no strict 'refs';};
     push @code, q{no warnings 'once';};
     no strict 'refs';
-    for my $class ($meta->linearized_isa) {
-        if (*{ $class . '::BUILD' }{CODE}) {
-            push  @code, qq{${class}::BUILD->(\$instance, \$args);};
+    for my $klass ($meta->linearized_isa) {
+        if (*{ $klass . '::BUILD' }{CODE}) {
+            push  @code, qq{${klass}::BUILD->(\$instance, \$args);};
         }
     }
     return join "\n", @code;
