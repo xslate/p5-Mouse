@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 29;
+use Test::More tests => 30;
 use Mouse::Util ':test';
 
 do {
@@ -12,12 +12,22 @@ do {
         is  => 'rw',
         isa => 'Test::Builder',
     );
+
+    package Test::Builder::Subclass;
+    our @ISA = qw(Test::Builder);
 };
 
 can_ok(Class => 'tb');
 
 lives_ok {
     Class->new(tb => Test::Builder->new);
+};
+
+lives_ok {
+    # Test::Builder was a bizarre choice, because it's a singleton.  Because of
+    # that calling new on T:B:S won't work.  Blessing directly -- rjbs,
+    # 2008-12-04
+    Class->new(tb => (bless {} => 'Test::Builder::Subclass'));
 };
 
 lives_ok {
