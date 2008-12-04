@@ -1,6 +1,7 @@
 Revision history for Mouse
 
 0.12
+    * make class-like types  behave more like Moose; subclasses OK! (rjbs)
 
 0.11 Sun Nov 2 11:35:04 2008
     * Throw an error if accessor/predicate/clearer/handles code eval fails

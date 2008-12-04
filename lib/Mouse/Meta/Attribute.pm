@@ -294,7 +294,7 @@ sub find_type_constraint {
     my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
     return $checker if $checker;
 
-    return sub { blessed($_) && blessed($_) eq $type };
+    return sub { blessed($_) && $_->isa($type) };
 }
 
 sub verify_type_constraint {
