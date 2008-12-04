@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
-use Test::Exception;
 
 {
     package FooRole;
@@ -22,7 +21,8 @@ use Test::Exception;
     no Mouse;
 }
 
-throws_ok { Mouse::Util::apply_all_roles('Baz', 'BarRole', 'FooRole') } qr{Mouse::Util only supports 'apply_all_roles' on individual roles at a time};
+eval { Mouse::Util::apply_all_roles('Baz', 'BarRole', 'FooRole') };
+ok !$@;
 
 Mouse::Util::apply_all_roles('Baz', 'BarRole');
 Mouse::Util::apply_all_roles('Baz', 'FooRole');

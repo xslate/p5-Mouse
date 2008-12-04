@@ -31,7 +31,7 @@ use Test::More tests => 5;
     };
 }
 
-ok(!Dog->can('eat'));
+ok(Dog->can('eat'));
 ok(Dog->can('drink'));
 
 my $d = Dog->new();

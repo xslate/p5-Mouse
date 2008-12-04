@@ -89,6 +89,7 @@ lives_ok {
     ::is(blessed($obj), "Impromptu::Class");
 };
 
+our $TODO = 'skip';
 throws_ok {
     package Class;
     use Mouse;

@@ -226,11 +226,35 @@ BEGIN {
 
 sub apply_all_roles {
     my $meta = Mouse::Meta::Class->initialize(shift);
-    my $role  = shift;
-    confess "Mouse::Util only supports 'apply_all_roles' on individual roles at a time" if @_;
 
-    Mouse::load_class($role);
-    $role->meta->apply($meta);
+    my @roles;
+    my $max = scalar(@_);
+    for (my $i = 0; $i < $max ; $i++) {
+        if ($i + 1 < $max && ref($_[$i + 1])) {
+            push @roles, [ $_[$i++] => $_[$i] ];
+        } else {
+            push @roles, [ $_[$i] => {} ];
+        }
+    }
+
+    foreach my $role_spec (@roles) {
+        Mouse::load_class( $role_spec->[0] );
+    }
+
+    ( $_->[0]->can('meta') && $_->[0]->meta->isa('Mouse::Meta::Role') )
+        || croak("You can only consume roles, "
+        . $_->[0]
+        . " is not a Moose role")
+        foreach @roles;
+
+    if ( scalar @roles == 1 ) {
+        my ( $role, $params ) = @{ $roles[0] };
+        $role->meta->apply( $meta, ( defined $params ? %$params : () ) );
+    }
+    else {
+        Mouse::Meta::Role->combine_apply($meta, @roles);
+    }
+
 }
 
 1;

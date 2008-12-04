@@ -87,12 +87,19 @@ sub apply {
         no strict 'refs';
         for my $name ($self->get_method_list) {
             next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
-            my $dstname = $args{alias} ? ($args{alias}->{$name}||$name) : $name;
-            if ($classname->can($dstname)) {
+
+            if ($classname->can($name)) {
                 # XXX what's Moose's behavior?
-                next;
+                #next;
+            } else {
+                *{"${classname}::${name}"} = *{"${selfname}::${name}"};
             }
-            *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
+            if ($args{alias} && $args{alias}->{$name}) {
+                my $dstname = $args{alias}->{$name};
+                unless ($classname->can($dstname)) {
+                    *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
+                }
+            }
         }
     }
 
@@ -127,6 +134,102 @@ sub apply {
 
     # append roles
     push @{ $class->roles }, $self, @{ $self->roles };
+}
+
+sub combine_apply {
+    my(undef, $class, @roles) = @_;
+    my $classname = $class->name;
+
+    if ($class->isa('Mouse::Meta::Class')) {
+        for my $role_spec (@roles) {
+            my $self = $role_spec->[0]->meta;
+            for my $name (@{$self->{required_methods}}) {
+                unless ($classname->can($name)) {
+                    my $method_required = 0;
+                    for my $role (@roles) {
+                        $method_required = 1 if $self->name ne $role->[0] && $role->[0]->can($name);
+                    }
+                    confess "'".$self->name."' requires the method '$name' to be implemented by '$classname'"
+                        unless $method_required;
+                }
+            }
+        }
+    }
+
+    {
+        no strict 'refs';
+        for my $role_spec (@roles) {
+            my $self = $role_spec->[0]->meta;
+            my $selfname = $self->name;
+            my %args = %{ $role_spec->[1] };
+            for my $name ($self->get_method_list) {
+                next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
+
+                if ($classname->can($name)) {
+                    # XXX what's Moose's behavior?
+                    #next;
+                } else {
+                    *{"${classname}::${name}"} = *{"${selfname}::${name}"};
+                }
+                if ($args{alias} && $args{alias}->{$name}) {
+                    my $dstname = $args{alias}->{$name};
+                    unless ($classname->can($dstname)) {
+                        *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
+                    }
+                }
+            }
+        }
+    }
+
+
+    if ($class->isa('Mouse::Meta::Class')) {
+        # apply role to class
+        for my $role_spec (@roles) {
+            my $self = $role_spec->[0]->meta;
+            for my $name ($self->get_attribute_list) {
+                next if $class->has_attribute($name);
+                my $spec = $self->get_attribute($name);
+                Mouse::Meta::Attribute->create($class, $name, %$spec);
+            }
+        }
+    } else {
+        # apply role to role
+        # XXX Room for speed improvement
+        for my $role_spec (@roles) {
+            my $self = $role_spec->[0]->meta;
+            for my $name ($self->get_attribute_list) {
+                next if $class->has_attribute($name);
+                my $spec = $self->get_attribute($name);
+                $class->add_attribute($name, $spec);
+            }
+        }
+    }
+
+    # XXX Room for speed improvement in role to role
+    for my $modifier_type (qw/before after around/) {
+        my $add_method = "add_${modifier_type}_method_modifier";
+        for my $role_spec (@roles) {
+            my $self = $role_spec->[0]->meta;
+            my $modified = $self->{"${modifier_type}_method_modifiers"};
+
+            for my $method_name (keys %$modified) {
+                for my $code (@{ $modified->{$method_name} }) {
+                    $class->$add_method($method_name => $code);
+                }
+            }
+        }
+    }
+
+    # append roles
+    my %role_apply_cache;
+    my @apply_roles;
+    for my $role_spec (@roles) {
+        my $self = $role_spec->[0]->meta;
+        push @apply_roles, $self unless $role_apply_cache{$self}++;
+        for my $role ($self->roles) {
+            push @apply_roles, $role unless $role_apply_cache{$role}++;
+        }
+    }
 }
 
 for my $modifier_type (qw/before after around/) {

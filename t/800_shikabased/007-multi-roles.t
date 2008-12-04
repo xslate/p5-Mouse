@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 
 plan skip_all => "Moose way 'with' function test" unless $ENV{MOUSE_DEVEL};
-plan tests => 2;
+plan tests => 3;
 
 {
     package Requires;
@@ -19,26 +19,21 @@ plan tests => 2;
 }
 
 {
-    package Requires2;
-    use Mouse::Role;
-    requires 'bar';
-}
-
-{
     package Method2;
     use Mouse::Role;
 
-    sub foo { 'yep' }
+    sub bar { 'yep' }
 }
-
 
 {
     package MyApp;
     use Mouse;
-    with ('Requires2', 'Method2' => { alias => { foo => 'bar' } }, 'Requires', 'Method');
+    with ('Requires', 'Method');
+    with ('Method2' => { alias => { bar => 'baz' } });
 }
 
 my $m = MyApp->new;
 is $m->foo, 'ok';
 is $m->bar, 'yep';
+is $m->baz, 'yep';
 
