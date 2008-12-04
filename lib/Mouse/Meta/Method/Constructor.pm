@@ -41,14 +41,14 @@ sub _generate_processattrs {
             my @code;
 
             if ($attr->should_coerce) {
-                push @code, "my \$value = \$attr->coerce_constraint( \$args->{'$from'});";
+                push @code, "my \$value = \$attrs[$index]->coerce_constraint( \$args->{'$from'});";
             }
             else {
                 push @code, "my \$value = \$args->{'$from'};";
             }
 
             if ($attr->has_type_constraint) {
-                push @code, "\$attr->verify_type_constraint( \$value );";
+                push @code, "\$attrs[$index]->verify_type_constraint( \$value );";
             }
 
             push @code, "\$instance->{'$key'} = \$value;";
@@ -58,7 +58,7 @@ sub _generate_processattrs {
             }
 
             if ( $attr->has_trigger ) {
-                push @code, "\$attr->trigger->( \$instance, \$value, \$attr );";
+                push @code, "\$attrs[$index]->trigger->( \$instance, \$value, \$attrs[$index] );";
             }
 
             join "\n", @code;
@@ -75,17 +75,17 @@ sub _generate_processattrs {
                     push @code, "my \$value = ";
 
                     if ($attr->should_coerce) {
-                        push @code, "\$attr->coerce_constraint(";
+                        push @code, "\$attrs[$index]->coerce_constraint(";
                     }
 
                         if ($attr->has_builder) {
                             push @code, "\$instance->$builder";
                         }
                         elsif (ref($default) eq 'CODE') {
-                            push @code, "\$attr->default()->()";
+                            push @code, "\$attrs[$index]->default()->()";
                         }
                         else {
-                            push @code, "\$attr->default()";
+                            push @code, "\$attrs[$index]->default()";
                         }
 
                     if ($attr->should_coerce) {
@@ -96,7 +96,7 @@ sub _generate_processattrs {
                     }
 
                     if ($attr->has_type_constraint) {
-                        push @code, "\$attr->verify_type_constraint(\$value);";
+                        push @code, "\$attrs[$index]->verify_type_constraint(\$value);";
                     }
 
                     push @code, "\$instance->{'$key'} = \$value;";
@@ -117,7 +117,6 @@ sub _generate_processattrs {
         };
         my $code = <<"...";
             {
-                my \$attr = \$attrs[$index];
                 if (exists(\$args->{'$from'})) {
                     $set_value;
                 } else {
