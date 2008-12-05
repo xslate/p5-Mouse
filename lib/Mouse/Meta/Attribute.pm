@@ -47,6 +47,11 @@ sub has_type_constraint { exists $_[0]->{type_constraint} }
 sub has_trigger         { exists $_[0]->{trigger}         }
 sub has_builder         { exists $_[0]->{builder}         }
 
+sub find_type_constraint      { $_[0]->{find_type_constraint}  }
+sub type_constraint_as_string {
+    ref($_[0]->{type_constraint}) eq 'ARRAY' ? join '|', @{ $_[0]->{type_constraint} } : $_[0]->{type_constraint}
+}
+
 sub _create_args {
     $_[0]->{_create_args} = $_[1] if @_ > 1;
     $_[0]->{_create_args}
@@ -64,7 +69,7 @@ sub generate_accessor {
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
-    my $type          = $attribute->type_constraint;
+    my $type          = $attribute->type_constraint_as_string;
     my $constraint    = $attribute->find_type_constraint;
     my $builder       = $attribute->builder;
     my $trigger       = $attribute->trigger;
@@ -82,10 +87,12 @@ sub generate_accessor {
         my $value = '$_[1]';
 
         if ($constraint) {
+            $accessor .= 'local $_ = '.$self.'->{'.$key.'} = ';
             if ($should_coerce) {
-                $accessor .= $value.' = $attribute->coerce_constraint('.$value.');';
+                $accessor .= '$attribute->coerce_constraint('.$value.');';
+            } else {
+                $accessor .= $value.';';
             }
-            $accessor .= 'local $_ = '.$value.';';
             $accessor .= '
                 unless ($constraint->()) {
                     my $display = defined($_) ? overload::StrVal($_) : "undef";
@@ -96,8 +103,6 @@ sub generate_accessor {
         # if there's nothing left to do for the attribute we can return during
         # this setter
         $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
-
-        $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
         if ($is_weak) {
             $accessor .= 'Mouse::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
@@ -125,7 +130,8 @@ sub generate_accessor {
     }
 
     if ($should_deref) {
-        if ($attribute->type_constraint eq 'ArrayRef') {
+        my $type_constraint = $attribute->type_constraint;
+        if (!ref($type_constraint) && $type_constraint eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
             }';
@@ -201,8 +207,33 @@ sub create {
     $args{should_coerce} = delete $args{coerce}
         if exists $args{coerce};
 
-    $args{type_constraint} = delete $args{isa}
-        if exists $args{isa};
+    if (exists $args{isa}) {
+        my $type_constraint = delete $args{isa};
+        $type_constraint =~ s/\s//g;
+        my @type_constraints = split /\|/, $type_constraint;
+
+        my $code;
+        my $optimized_constraints = Mouse::TypeRegistry->optimized_constraints;
+        if (@type_constraints == 1) {
+            $code = $optimized_constraints->{$type_constraints[0]} ||
+                sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type_constraints[0] };
+            $args{type_constraint} = $type_constraints[0];
+        } else {
+            my @code_list = map {
+                my $type = $_;
+                $optimized_constraints->{$type} ||
+                    sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type }
+            } @type_constraints;
+            $code = sub {
+                for my $code (@code_list) {
+                    return 1 if $code->();
+                }
+                return 0;
+            };
+            $args{type_constraint} = \@type_constraints;
+        }
+        $args{find_type_constraint} = $code;
+    }
 
     my $attribute = $self->new(%args);
 
@@ -295,23 +326,11 @@ sub validate_args {
     return 1;
 }
 
-sub find_type_constraint {
-    my $self = shift;
-    my $type = $self->type_constraint;
-
-    return unless $type;
-
-    my $checker = Mouse::TypeRegistry->optimized_constraints()->{$type};
-    return $checker if $checker;
-
-    return sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type };
-}
-
 sub verify_type_constraint {
     my $self = shift;
     local $_ = shift;
 
-    my $type = $self->type_constraint
+    my $type = $self->type_constraint_as_string
         or return 1;
     my $constraint = $self->find_type_constraint;
 
@@ -326,7 +345,7 @@ sub coerce_constraint {
     my($self, $value) = @_;
     my $type = $self->type_constraint
         or return $value;
-    return Mouse::TypeRegistry->typecast_constraints($self->associated_class->name, $type, $value);
+    return Mouse::TypeRegistry->typecast_constraints($self->associated_class->name, $self->find_type_constraint, $type, $value);
 }
 
 sub _canonicalize_handles {
