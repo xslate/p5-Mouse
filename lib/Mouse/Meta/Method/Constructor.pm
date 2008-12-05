@@ -77,15 +77,20 @@ sub _generate_processattrs {
                     if ($attr->should_coerce) {
                         push @code, "\$attrs[$index]->coerce_constraint(";
                     }
-
                         if ($attr->has_builder) {
                             push @code, "\$instance->$builder";
                         }
                         elsif (ref($default) eq 'CODE') {
                             push @code, "\$attrs[$index]->default()->()";
                         }
+                        elsif (!defined($default)) {
+                            push @code, 'undef';
+                        }
+                        elsif ($default =~ /^\-?[0-9]+(?:\.[0-9]+)$/) {
+                            push @code, $default;
+                        }
                         else {
-                            push @code, "\$attrs[$index]->default()";
+                            push @code, "'$default'";
                         }
 
                     if ($attr->should_coerce) {
@@ -119,8 +124,14 @@ sub _generate_processattrs {
             {
                 if (exists(\$args->{'$from'})) {
                     $set_value;
+...
+        if ($make_default_value) {
+            $code .= <<"...";
                 } else {
                     $make_default_value;
+...
+        }
+        $code .= <<"...";
                 }
             }
 ...
