@@ -47,7 +47,7 @@ my $optimized_constraints;
 my $optimized_constraints_base;
 {
     no warnings 'uninitialized';
-    $optimized_constraints = $optimized_constraints_base = {
+    $SUBTYPE = {
         Any        => sub { 1 },
         Item       => sub { 1 },
         Bool       => sub {
@@ -79,7 +79,12 @@ my $optimized_constraints_base;
 
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     };
+
+    sub optimized_constraints { $SUBTYPE }
+    my @SUBTYPE_KEYS = keys %{ $SUBTYPE };
+    sub list_all_builtin_type_constraints { @SUBTYPE_KEYS }
 }
+
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
@@ -90,7 +95,6 @@ sub _subtype {
     my $stuff = $conf{where} || optimized_constraints()->{$as};
 
     $SUBTYPE->{$name} = $stuff;
-    $optimized_constraints = +{ %{ $SUBTYPE }, %{ $optimized_constraints_base } };
 }
 
 sub _coerce {
@@ -148,12 +152,6 @@ sub typecast_constraints {
     }
 
     return $value;
-}
-
-sub optimized_constraints { $optimized_constraints }
-{
-    my @optimized_constraints_keys = keys %{ $optimized_constraints };
-    sub list_all_builtin_type_constraints { @optimized_constraints_keys }
 }
 
 1;
