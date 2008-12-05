@@ -1,7 +1,13 @@
 Revision history for Mouse
 
 0.12
+    * Provide Test::Exception function unless it's version 0.27 - RT #41254
+
     * make class-like types  behave more like Moose; subclasses OK! (rjbs)
+
+    * Mouse::Util now provides dies_ok
+
+    * Steal more tests from Mouse
 
 0.11 Sun Nov 2 11:35:04 2008
     * Throw an error if accessor/predicate/clearer/handles code eval fails
