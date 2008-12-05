@@ -39,7 +39,7 @@ sub new {
                     my $value = $attribute->has_builder
                               ? $instance->$builder
                               : ref($default) eq 'CODE'
-                                  ? $default->()
+                                  ? $default->($instance)
                                   : $default;
 
                     $attribute->verify_type_constraint($value)
