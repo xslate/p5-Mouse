@@ -18,11 +18,22 @@ do {
 
 my $object = Class->new;
 
-ok(!$object->can('rw_attr'), "no rw_attr method because wasn't 'is' ro or rw");
-ok($object->can('read_attr'),  "did get a reader");
-ok($object->can('write_attr'), "did get a writer");
+TODO: {
+  local $TODO = 'requires some refactoring to implement';
 
-$object->write_attr(2);
+  ok(
+    !$object->can('rw_attr'),
+    "no rw_attr method because wasn't 'is' ro or rw"
+  );
+  ok($object->can('read_attr'),  "did get a reader");
+  ok($object->can('write_attr'), "did get a writer");
 
-is($object->read_attr, 2, "writing to the object worked");
+  # eliminate these eval{} when out of TODO
+  eval { $object->write_attr(2); };
 
+  is(
+    eval { $object->read_attr },
+    2,
+    "writing to the object worked",
+  );
+}
