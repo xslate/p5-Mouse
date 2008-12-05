@@ -43,6 +43,43 @@ sub _via (&) {
     $_[0]
 }
 
+my $optimized_constraints;
+my $optimized_constraints_base;
+{
+    no warnings 'uninitialized';
+    $optimized_constraints = $optimized_constraints_base = {
+        Any        => sub { 1 },
+        Item       => sub { 1 },
+        Bool       => sub {
+            !defined($_) || $_ eq "" || "$_" eq '1' || "$_" eq '0'
+        },
+        Undef      => sub { !defined($_) },
+        Defined    => sub { defined($_) },
+        Value      => sub { defined($_) && !ref($_) },
+        Num        => sub { !ref($_) && looks_like_number($_) },
+        Int        => sub { defined($_) && !ref($_) && /^-?[0-9]+$/ },
+        Str        => sub { defined($_) && !ref($_) },
+        ClassName  => sub { Mouse::is_class_loaded($_) },
+        Ref        => sub { ref($_) },
+
+        ScalarRef  => sub { ref($_) eq 'SCALAR' },
+        ArrayRef   => sub { ref($_) eq 'ARRAY'  },
+        HashRef    => sub { ref($_) eq 'HASH'   },
+        CodeRef    => sub { ref($_) eq 'CODE'   },
+        RegexpRef  => sub { ref($_) eq 'Regexp' },
+        GlobRef    => sub { ref($_) eq 'GLOB'   },
+
+        FileHandle => sub {
+                ref($_) eq 'GLOB'
+                && openhandle($_)
+            or
+                blessed($_)
+                && $_->isa("IO::Handle")
+            },
+
+        Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
+    };
+}
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
@@ -53,6 +90,7 @@ sub _subtype {
     my $stuff = $conf{where} || optimized_constraints()->{$as};
 
     $SUBTYPE->{$name} = $stuff;
+    $optimized_constraints = +{ %{ $SUBTYPE }, %{ $optimized_constraints_base } };
 }
 
 sub _coerce {
@@ -112,44 +150,10 @@ sub typecast_constraints {
     return $value;
 }
 
+sub optimized_constraints { $optimized_constraints }
 {
-    no warnings 'uninitialized';
-    my $optimized_constraints = {
-        Any        => sub { 1 },
-        Item       => sub { 1 },
-        Bool       => sub {
-            !defined($_) || $_ eq "" || "$_" eq '1' || "$_" eq '0'
-        },
-        Undef      => sub { !defined($_) },
-        Defined    => sub { defined($_) },
-        Value      => sub { defined($_) && !ref($_) },
-        Num        => sub { !ref($_) && looks_like_number($_) },
-        Int        => sub { defined($_) && !ref($_) && /^-?[0-9]+$/ },
-        Str        => sub { defined($_) && !ref($_) },
-        ClassName  => sub { Mouse::is_class_loaded($_) },
-        Ref        => sub { ref($_) },
-
-        ScalarRef  => sub { ref($_) eq 'SCALAR' },
-        ArrayRef   => sub { ref($_) eq 'ARRAY'  },
-        HashRef    => sub { ref($_) eq 'HASH'   },
-        CodeRef    => sub { ref($_) eq 'CODE'   },
-        RegexpRef  => sub { ref($_) eq 'Regexp' },
-        GlobRef    => sub { ref($_) eq 'GLOB'   },
-
-        FileHandle => sub {
-                ref($_) eq 'GLOB'
-                && openhandle($_)
-            or
-                blessed($_)
-                && $_->isa("IO::Handle")
-        },
-
-        Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
-    };
-    sub list_all_builtin_type_constraints { keys %{ $optimized_constraints } }
-    sub optimized_constraints {
-        return { %{ $SUBTYPE }, %{ $optimized_constraints } };
-    }
+    my @optimized_constraints_keys = keys %{ $optimized_constraints };
+    sub list_all_builtin_type_constraints { @optimized_constraints_keys }
 }
 
 1;
