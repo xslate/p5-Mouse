@@ -93,7 +93,7 @@ sub _subtype {
         Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
     my $as = $conf{as};
-    my $stuff = $conf{where} || optimized_constraints()->{$as};
+    my $stuff = $conf{where} || $SUBTYPE{$as};
 
     $SUBTYPE{$name} = $stuff;
 }
@@ -102,9 +102,8 @@ sub _coerce {
     my($name, %conf) = @_;
 
     Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
-        unless optimized_constraints()->{$name};
+        unless $SUBTYPE{$name};
 
-    my $subtypes = optimized_constraints();
     unless ($COERCE{$name}) {
         $COERCE{$name}      = {};
         $COERCE_KEYS{$name} = [];
@@ -114,7 +113,7 @@ sub _coerce {
             if $COERCE{$name}->{$type};
 
         Carp::croak "Could not find the type constraint ($type) to coerce from"
-            unless $subtypes->{$type};
+            unless $SUBTYPE{$type};
 
         push @{ $COERCE_KEYS{$name} }, $type;
         $COERCE{$name}->{$type} = $code;
@@ -146,16 +145,15 @@ sub _role_type {
 sub typecast_constraints {
     my($class, $pkg, $type_constraint, $types, $value) = @_;
 
+    local $_;
     for my $type (ref($types) eq 'ARRAY' ? @{ $types } : ( $types )) {
         next unless $COERCE{$type};
-
         for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
-            local $_ = $value;
-            if ($SUBTYPE{$coerce_type}->()) {
-                local $_ = $value;
-                local $_ = $COERCE{$type}->{$coerce_type}->();
-                return $_ if $type_constraint->();
-            }
+            $_ = $value;
+            next unless $SUBTYPE{$coerce_type}->();
+            $_ = $value;
+            $_ = $COERCE{$type}->{$coerce_type}->();
+            return $_ if $type_constraint->();
         }
     }
     return $value;

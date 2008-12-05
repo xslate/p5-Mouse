@@ -48,9 +48,6 @@ sub has_trigger         { exists $_[0]->{trigger}         }
 sub has_builder         { exists $_[0]->{builder}         }
 
 sub find_type_constraint      { $_[0]->{find_type_constraint}  }
-sub type_constraint_as_string {
-    ref($_[0]->{type_constraint}) eq 'ARRAY' ? join '|', @{ $_[0]->{type_constraint} } : $_[0]->{type_constraint}
-}
 
 sub _create_args {
     $_[0]->{_create_args} = $_[1] if @_ > 1;
@@ -69,7 +66,6 @@ sub generate_accessor {
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
-    my $type          = $attribute->type_constraint_as_string;
     my $constraint    = $attribute->find_type_constraint;
     my $builder       = $attribute->builder;
     my $trigger       = $attribute->trigger;
@@ -89,16 +85,15 @@ sub generate_accessor {
         if ($constraint) {
             $accessor .= 'my $val = ';
             if ($should_coerce) {
-                $accessor .= '$attribute->coerce_constraint('.$value.');';
+                $accessor  .= 'Mouse::TypeRegistry->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
             } else {
                 $accessor .= $value.';';
             }
             $accessor .= 'local $_ = $val;';
             $accessor .= '
                 unless ($constraint->()) {
-                    my $display = defined($_) ? overload::StrVal($_) : "undef";
-                    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
-            }' . "\n";
+                    $attribute->verify_type_constraint_error($name, $_, $attribute->type_constraint);
+                }' . "\n";
             $value = '$val';
         }
 
@@ -337,9 +332,12 @@ sub verify_type_constraint {
     return 1 if $_[0]->{find_type_constraint}->($_);
 
     my $self = shift;
-    my $type = $self->type_constraint_as_string;
+    $self->verify_type_constraint_error($self->name, $_, $self->type_constraint);
+}
 
-    my $name = $self->name;
+sub verify_type_constraint_error {
+    my($self, $name, $value, $type) = @_;
+    $type = ref($type) eq 'ARRAY' ? join '|', @{ $type } : $type;
     my $display = defined($_) ? overload::StrVal($_) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
 }
