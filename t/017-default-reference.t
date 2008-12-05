@@ -51,7 +51,10 @@ is_deeply(Class->new->a, [1], "default of sub { reference } works");
 do {
   package Class::Two;
   use Mouse;
-  has foo => (is => 'rw', default => sub { shift->default_foo });
+  has foo => (is => 'rw', default => sub {
+    die unless $_[0]->isa('Class::Two');
+    shift->default_foo;
+  });
   sub default_foo { 1 };
 };
 
