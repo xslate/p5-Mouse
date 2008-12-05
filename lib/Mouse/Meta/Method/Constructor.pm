@@ -81,7 +81,7 @@ sub _generate_processattrs {
                             push @code, "\$instance->$builder";
                         }
                         elsif (ref($default) eq 'CODE') {
-                            push @code, "\$attrs[$index]->default()->()";
+                            push @code, "\$attrs[$index]->default()->(\$instance)";
                         }
                         elsif (!defined($default)) {
                             push @code, 'undef';
