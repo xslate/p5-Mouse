@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 require Mouse::TypeRegistry;
+use MouseX::Types::TypeDecorator;
 
 sub import {
     my $class  = shift;
@@ -16,8 +17,8 @@ sub import {
     if (defined $args{'-declare'} && ref($args{'-declare'}) eq 'ARRAY') {
         my $storage = $caller->type_storage($caller);
         for my $name (@{ $args{'-declare'} }) {
-            $storage->{$name} = "$caller\::$name";
-            *{"$caller\::$name"} = sub () { $caller->type_storage->{$name} };
+            my $obj = $storage->{$name} = "$caller\::$name";
+            *{"$caller\::$name"} = sub () { $obj };
         }
     }
 
@@ -28,7 +29,10 @@ sub _import {
     my($type_class, $pkg, @types) = @_;
     no strict 'refs';
     for my $name (@types) {
-        *{"$pkg\::$name"} = sub () { $type_class->type_storage->{$name} }
+        my $obj = $type_class->type_storage->{$name};
+        $obj = $type_class->type_storage->{$name} = MouseX::Types::TypeDecorator->new($obj)
+            unless ref($obj);
+        *{"$pkg\::$name"} = sub () { $obj };
     }
 }
 
