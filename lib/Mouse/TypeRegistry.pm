@@ -6,8 +6,9 @@ use warnings;
 use Carp ();
 use Mouse::Util qw/blessed looks_like_number openhandle/;
 
-my $SUBTYPE = +{};
-my $COERCE = +{};
+my %SUBTYPE;
+my %COERCE;
+my %COERCE_KEYS;
 
 #find_type_constraint register_type_constraint
 sub import {
@@ -47,7 +48,7 @@ my $optimized_constraints;
 my $optimized_constraints_base;
 {
     no warnings 'uninitialized';
-    $SUBTYPE = {
+    %SUBTYPE = (
         Any        => sub { 1 },
         Item       => sub { 1 },
         Bool       => sub {
@@ -78,23 +79,23 @@ my $optimized_constraints_base;
             },
 
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
-    };
+    );
 
-    sub optimized_constraints { $SUBTYPE }
-    my @SUBTYPE_KEYS = keys %{ $SUBTYPE };
+    sub optimized_constraints { \%SUBTYPE }
+    my @SUBTYPE_KEYS = keys %SUBTYPE;
     sub list_all_builtin_type_constraints { @SUBTYPE_KEYS }
 }
 
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
-    if (my $type = $SUBTYPE->{$name}) {
+    if (my $type = $SUBTYPE{$name}) {
         Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
     my $as = $conf{as};
     my $stuff = $conf{where} || optimized_constraints()->{$as};
 
-    $SUBTYPE->{$name} = $stuff;
+    $SUBTYPE{$name} = $stuff;
 }
 
 sub _coerce {
@@ -104,15 +105,19 @@ sub _coerce {
         unless optimized_constraints()->{$name};
 
     my $subtypes = optimized_constraints();
-    $COERCE->{$name} ||= {};
+    unless ($COERCE{$name}) {
+        $COERCE{$name}      = {};
+        $COERCE_KEYS{$name} = [];
+    }
     while (my($type, $code) = each %conf) {
         Carp::croak "A coercion action already exists for '$type'"
-            if $COERCE->{$name}->{$type};
+            if $COERCE{$name}->{$type};
 
         Carp::croak "Could not find the type constraint ($type) to coerce from"
             unless $subtypes->{$type};
 
-        $COERCE->{$name}->{$type} = $code;
+        push @{ $COERCE_KEYS{$name} }, $type;
+        $COERCE{$name}->{$type} = $code;
     }
 }
 
@@ -140,16 +145,15 @@ sub _role_type {
 
 sub typecast_constraints {
     my($class, $pkg, $type_constraint, $types, $value) = @_;
-    my $optimized_constraints = optimized_constraints();
 
     for my $type (ref($types) eq 'ARRAY' ? @{ $types } : ( $types )) {
-        next unless $COERCE->{$type};
+        next unless $COERCE{$type};
 
-        for my $coerce_type (keys %{ $COERCE->{$type} }) {
+        for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
             local $_ = $value;
-            if ($optimized_constraints->{$coerce_type}->()) {
+            if ($SUBTYPE{$coerce_type}->()) {
                 local $_ = $value;
-                local $_ = $COERCE->{$type}->{$coerce_type}->();
+                local $_ = $COERCE{$type}->{$coerce_type}->();
                 return $_ if $type_constraint->();
             }
         }

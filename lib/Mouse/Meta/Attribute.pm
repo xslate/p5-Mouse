@@ -331,25 +331,23 @@ sub validate_args {
 }
 
 sub verify_type_constraint {
+    return 1 unless $_[0]->{type_constraint};
+
+    local $_ = $_[1];
+    return 1 if $_[0]->{find_type_constraint}->($_);
+
     my $self = shift;
-    local $_ = shift;
-
-    my $type = $self->type_constraint_as_string
-        or return 1;
-    my $constraint = $self->find_type_constraint;
-
-    return 1 if $constraint->($_);
+    my $type = $self->type_constraint_as_string;
 
     my $name = $self->name;
     my $display = defined($_) ? overload::StrVal($_) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
 }
 
-sub coerce_constraint {
-    my($self, $value) = @_;
-    my $type = $self->type_constraint
-        or return $value;
-    return Mouse::TypeRegistry->typecast_constraints($self->associated_class->name, $self->find_type_constraint, $type, $value);
+sub coerce_constraint { ## my($self, $value) = @_;
+    my $type = $_[0]->{type_constraint}
+        or return $_[1];
+    return Mouse::TypeRegistry->typecast_constraints($_[0]->associated_class->name, $_[0]->find_type_constraint, $type, $_[1]);
 }
 
 sub _canonicalize_handles {
