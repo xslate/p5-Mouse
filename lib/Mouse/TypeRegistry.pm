@@ -139,18 +139,21 @@ sub _role_type {
 }
 
 sub typecast_constraints {
-    my($class, $pkg, $type, $value) = @_;
-    return $value unless $COERCE->{$type};
-
+    my($class, $pkg, $type_constraint, $types, $value) = @_;
     my $optimized_constraints = optimized_constraints();
-    for my $coerce_type (keys %{ $COERCE->{$type} }) {
-        local $_ = $value;
-        if ($optimized_constraints->{$coerce_type}->()) {
+
+    for my $type (ref($types) eq 'ARRAY' ? @{ $types } : ( $types )) {
+        next unless $COERCE->{$type};
+
+        for my $coerce_type (keys %{ $COERCE->{$type} }) {
             local $_ = $value;
-            return $COERCE->{$type}->{$coerce_type}->();
+            if ($optimized_constraints->{$coerce_type}->()) {
+                local $_ = $value;
+                local $_ = $COERCE->{$type}->{$coerce_type}->();
+                return $_ if $type_constraint->();
+            }
         }
     }
-
     return $value;
 }
 
