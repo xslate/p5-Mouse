@@ -184,7 +184,7 @@ sub generate_handles {
 
         my $method = 'sub {
             my $self = shift;
-            $self->$reader->$remote_method(@_)
+            $self->'.$reader.'->'.$remote_method.'(@_)
         }';
 
         $method_map{$local_method} = eval $method;
