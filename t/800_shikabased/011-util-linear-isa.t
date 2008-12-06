@@ -9,10 +9,9 @@ use Test::More tests => 2;
 
 {
     package Child;
-    use Mouse;
-    extends 'Parent';
+    unshift @Child::ISA, 'Parent';
 }
 
-is_deeply get_linear_isa('Parent'), [ 'Parent' ];
-is_deeply get_linear_isa('Child'),  [ 'Child', 'Parent' ];
+is_deeply join(', ', @{get_linear_isa('Parent')}), 'Parent';
+is_deeply join(', ', @{get_linear_isa('Child')}),  'Child, Parent';
 
