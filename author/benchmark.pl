@@ -37,3 +37,12 @@ cmpthese(
         qw/Moose Mouse/
     }
 );
+
+print "---- new,get\n";
+cmpthese(
+    100000 => {
+        map { my $y = $_; $_ => sub { $y->new(n => 3)->n() } }
+        map { "${_}One" }
+        qw/Moose Mouse/
+    }
+);
