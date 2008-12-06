@@ -6,7 +6,6 @@ use 5.006;
 use base 'Exporter';
 
 our $VERSION;
-our $PurePerl;
 
 BEGIN {
     $VERSION  = '0.12';
@@ -15,18 +14,6 @@ BEGIN {
         *DEBUG = sub (){ 1 };
     } else {
         *DEBUG = sub (){ 0 };
-    }
-
-    if (! defined $PurePerl && $ENV{MOUSE_PUREPERL} && $ENV{MOUSE_PUREPERL} =~ /^(.+)$/) {
-        $PurePerl = $1;
-    }
-
-    if (! $PurePerl) {
-        local $@;
-        local $^W = 0;
-        require XSLoader;
-        $PurePerl = ! eval{ XSLoader::load(__PACKAGE__, $VERSION); 1 };
-        warn "Failed to load XS mode: $@" if $@; #  && Mouse::DEBUG();
     }
 }
 
