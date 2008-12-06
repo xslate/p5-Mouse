@@ -16,12 +16,12 @@ our %EXPORT_TAGS = (
 
 BEGIN {
     my $impl;
-    if (\&mro::get_linear_isa) {
+    if ($] >= 5.009_005) {
         $impl = \&mro::get_linear_isa;
     } else {
         my $loaded = do {
             local $SIG{__DIE__} = 'DEFAULT';
-            eval "use MRO::Compat (); 1";
+            eval "require MRO::Compat; 1";
         };
         if ($loaded) {
             $impl = \&mro::get_linear_isa;
@@ -49,6 +49,7 @@ BEGIN {
             $impl = $code;
         }
     }
+
     no strict 'refs';
     *{ __PACKAGE__ . '::get_linear_isa'} = $impl;
 }
