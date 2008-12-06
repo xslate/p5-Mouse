@@ -16,7 +16,7 @@ sub generate_destructor_method_inline {
             }
             join "\n", @code;
         } else {
-            return; # no demolish =)
+            return 'sub { }'; # no demolish =)
         }
     };
 
