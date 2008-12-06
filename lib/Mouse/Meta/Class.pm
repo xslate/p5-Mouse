@@ -146,11 +146,7 @@ sub make_immutable {
     $self->{is_immutable}++;
     no strict 'refs';
     *{"$name\::new"}     = Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self );
-
-    my $destructor = Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self );
-    if ($destructor) {
-        *{"$name\::DESTROY"} = $destructor;
-    }
+    *{"$name\::DESTROY"} = Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self );
 }
 sub make_mutable {
     Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";
