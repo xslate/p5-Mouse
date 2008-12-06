@@ -17,6 +17,9 @@ for my $klass (qw/Moose Mouse/) {
     die $@ if $@;
 }
 
+print "Class::MOP: $Class::MOP::VERSION\n";
+print "Moose: $Moose::VERSION\n";
+print "Mouse: $Mouse::VERSION\n";
 print "---- new\n";
 cmpthese(
     100000 => {
