@@ -61,8 +61,8 @@ sub get_method_list {
 
     no strict 'refs';
     # Get all the CODE symbol table entries
-    my @functions = grep !/^meta$/,
-      grep { /\A[^\W\d]\w*\z/o }
+    my @functions =
+      grep !/(?:has|with|around|before|after|blessed|extends|confess|excludes|meta|requires)/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
     wantarray ? @functions : \@functions;
@@ -86,7 +86,7 @@ sub apply {
     {
         no strict 'refs';
         for my $name ($self->get_method_list) {
-            next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
+            next if $name eq 'meta';
 
             if ($classname->can($name)) {
                 # XXX what's Moose's behavior?
@@ -163,7 +163,7 @@ sub combine_apply {
             my $selfname = $self->name;
             my %args = %{ $role_spec->[1] };
             for my $name ($self->get_method_list) {
-                next if $name eq 'has' || $name eq 'requires' || $name eq 'meta' || $name eq 'with' || $name eq 'around' || $name eq 'before' || $name eq 'after' || $name eq 'blessed' || $name eq 'extends' || $name eq 'confess' || $name eq 'excludes';
+                next if $name eq 'meta';
 
                 if ($classname->can($name)) {
                     # XXX what's Moose's behavior?

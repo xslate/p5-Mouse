@@ -64,6 +64,7 @@ sub add_method {
     my $pkg = $self->name;
 
     no strict 'refs';
+    $self->{'methods'}->{$name}++; # Moose stores meta object here.
     *{ $pkg . '::' . $name } = $code;
 }
 
@@ -74,10 +75,11 @@ sub get_method_list {
 
     no strict 'refs';
     # Get all the CODE symbol table entries
-    my @functions = grep !/^meta$/,
-      grep { /\A[^\W\d]\w*\z/o }
+    my @functions =
+      grep !/(?:has|with|around|before|after|blessed|extends|confess)/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
+    push @functions, keys %{$self->{'methods'}->{$name}};
     wantarray ? @functions : \@functions;
 }
 
@@ -143,11 +145,13 @@ sub clone_instance {
 
 sub make_immutable {
     my $self = shift;
+    my %args = @_;
     my $name = $self->name;
     $self->{is_immutable}++;
-    no strict 'refs';
-    *{"$name\::new"}     = Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self );
-    *{"$name\::DESTROY"} = Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self );
+    $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
+    if ($args{inline_destructor}) {
+        $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
+    }
 }
 sub make_mutable {
     Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";

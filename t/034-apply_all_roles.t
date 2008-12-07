@@ -30,5 +30,5 @@ Mouse::Util::apply_all_roles('Baz', 'FooRole');
 my $baz = Baz->new;
 is $baz->foo, 'ok1';
 is $baz->bar, 'ok2';
-is join(",", sort $baz->meta->get_method_list), 'bar,foo';
+is join(",", sort $baz->meta->get_method_list), 'bar,foo,meta';
 

@@ -33,6 +33,7 @@ BEGIN {
 	    $self->y(0);    
 	}
 	
+    __PACKAGE__->meta->make_immutable();
 }{	
 	package Point3D;
 	use Mouse;
@@ -46,6 +47,7 @@ BEGIN {
 	    $self->{z} = 0;
 	};
 	
+    __PACKAGE__->meta->make_immutable();
 }
 
 my $point = Point->new(x => 1, y => 2);	
@@ -139,13 +141,13 @@ is_deeply(
 my @Point_methods = qw(meta new x y clear);
 my @Point_attrs   = ('x', 'y');
 
-SKIP: {
-    skip "Mouse has no method introspection", 2 + @Point_methods;
+is_deeply(
+    [ sort @Point_methods                 ],
+    [ sort Point->meta->get_method_list() ],
+    '... we match the method list for Point');
 
-    is_deeply(
-        [ sort @Point_methods                 ],
-        [ sort Point->meta->get_method_list() ],
-        '... we match the method list for Point');
+SKIP: {
+    skip "Mouse has no method introspection", 1 + @Point_methods;
         
     is_deeply(
         [ sort @Point_attrs                      ],
