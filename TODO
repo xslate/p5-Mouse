@@ -1,10 +1,4 @@
 TODO
 ====
 
-* Re-implement Mouse with code from Shika
-* Make coercion work
-* Make delegation via handles work
-* Make TypeConstraints from Shika
-* Copy some features from Scalar::Util's XS
-* more performance tuning to Mouse::Meta::Method::(Con|De)structor
-* make Mouse.XS?
+all todoes are finished.
