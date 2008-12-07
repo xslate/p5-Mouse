@@ -18,7 +18,8 @@ BEGIN {
 }
 
 use Carp 'confess';
-use Mouse::Util 'blessed';
+use Scalar::Util 'blessed';
+use Mouse::Util;
 
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Class;
@@ -123,6 +124,7 @@ sub load_class {
         confess "Invalid class name ($display)";
     }
 
+    return 1 if $class eq 'Mouse::Object';
     return 1 if is_class_loaded($class);
 
     (my $file = "$class.pm") =~ s{::}{/}g;

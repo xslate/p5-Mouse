@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Carp ();
-use Mouse::Util qw/blessed looks_like_number openhandle/;
+use Scalar::Util qw/blessed looks_like_number openhandle/;
 
 my %SUBTYPE;
 my %COERCE;

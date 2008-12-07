@@ -5,7 +5,7 @@ use warnings;
 require overload;
 
 use Carp 'confess';
-require Mouse::Util;
+use Scalar::Util ();
 
 sub new {
     my $class = shift;
@@ -104,7 +104,7 @@ sub generate_accessor {
         $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
         if ($is_weak) {
-            $accessor .= 'Mouse::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
+            $accessor .= 'Scalar::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
         }
 
         if ($trigger) {
@@ -215,13 +215,13 @@ sub create {
         my $optimized_constraints = Mouse::TypeRegistry->optimized_constraints;
         if (@type_constraints == 1) {
             $code = $optimized_constraints->{$type_constraints[0]} ||
-                sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type_constraints[0] };
+                sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type_constraints[0] };
             $args{type_constraint} = $type_constraints[0];
         } else {
             my @code_list = map {
                 my $type = $_;
                 $optimized_constraints->{$type} ||
-                    sub { Mouse::Util::blessed($_) && Mouse::Util::blessed($_) eq $type }
+                    sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type }
             } @type_constraints;
             $code = sub {
                 for my $code (@code_list) {

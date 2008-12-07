@@ -3,7 +3,7 @@ package Mouse::Object;
 use strict;
 use warnings;
 
-use Mouse::Util qw/weaken/;
+use Scalar::Util qw/weaken/;
 use Carp 'confess';
 
 sub new {

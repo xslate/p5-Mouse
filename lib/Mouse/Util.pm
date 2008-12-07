@@ -4,10 +4,8 @@ use strict;
 use warnings;
 use base qw/Exporter/;
 use Carp;
-use Scalar::Util qw(blessed looks_like_number openhandle reftype weaken);
 
 our @EXPORT_OK = qw(
-    blessed looks_like_number openhandle reftype weaken
     get_linear_isa
 );
 our %EXPORT_TAGS = (
@@ -100,27 +98,6 @@ Mouse::Util - features, with or without their dependencies
 =head2 L<MRO::Compat>
 
 =head3 get_linear_isa
-
-=head2 L<Scalar::Util>
-
-=head3 blessed
-
-=head3 looks_like_number
-
-=head3 reftype
-
-=head3 openhandle
-
-=head3 weaken
-
-C<weaken> I<must> be implemented in XS. If the user tries to use C<weaken>
-without L<Scalar::Util>, an error is thrown.
-
-=head2 Test::Exception
-
-=head3 throws_ok
-
-=head3 lives_ok
 
 =cut
 

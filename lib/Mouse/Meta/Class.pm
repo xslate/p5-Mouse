@@ -5,7 +5,8 @@ use warnings;
 
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
-use Mouse::Util qw/get_linear_isa blessed/;
+use Scalar::Util qw/blessed/;
+use Mouse::Util qw/get_linear_isa/;
 use Carp 'confess';
 
 do {

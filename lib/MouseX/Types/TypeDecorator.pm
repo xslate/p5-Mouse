@@ -3,7 +3,7 @@ package MouseX::Types::TypeDecorator;
 use strict;
 use warnings;
 
-use Mouse::Util 'blessed';
+use Scalar::Util 'blessed';
 
 use overload(
     '""' => sub { ${ $_[0] } },
