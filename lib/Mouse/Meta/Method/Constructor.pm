@@ -55,7 +55,7 @@ sub _generate_processattrs {
             push @code, "\$instance->{'$key'} = \$value;";
 
             if ($attr->is_weak_ref) {
-                push @code, "weaken( \$instance->{'$key'} ) if ref( \$value );";
+                push @code, "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );";
             }
 
             if ( $attr->has_trigger ) {
@@ -109,7 +109,7 @@ sub _generate_processattrs {
                     push @code, "\$instance->{'$key'} = \$value;";
 
                     if ($attr->is_weak_ref) {
-                        push @code, "weaken( \$instance->{'$key'} ) if ref( \$value );";
+                        push @code, "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );";
                     }
                 }
                 join "\n", @code;
