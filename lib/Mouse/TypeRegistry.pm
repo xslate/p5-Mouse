@@ -92,10 +92,13 @@ sub _subtype {
     if (my $type = $SUBTYPE{$name}) {
         Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
-    my $as = $conf{as};
-    my $stuff = $conf{where} || $SUBTYPE{$as};
-
-    $SUBTYPE{$name} = $stuff;
+    my $stuff = $conf{where};
+    my $as = $conf{as} || '';
+    if ($as = $SUBTYPE{$as}) {
+        $SUBTYPE{$name} = sub { $as->($_) && $stuff->($_) };
+    } else {
+        $SUBTYPE{$name} = $stuff;
+    }
 }
 
 sub _coerce {
