@@ -1,22 +1,15 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
-
-{
-    package Response::Headers;
-    use Mouse;
-    has 'foo' => ( is => 'rw' );
-}
-
 {
     package Response;
     use Mouse;
     use Mouse::TypeRegistry;
 
-    class_type Headers => { class => 'Response::Headers' };
+    class_type Headers => { class => 't::lib::ClassType_Foo' };
     coerce 'Headers' =>
         from 'HashRef' => via {
-            Response::Headers->new(%{ $_ });
+            t::lib::ClassType_Foo->new(%{ $_ });
         },
     ;
 
@@ -28,8 +21,8 @@ use Test::More tests => 4;
 }
 
 my $res = Response->new(headers => { foo => 'bar' });
-isa_ok($res->headers, 'Response::Headers');
+isa_ok($res->headers, 't::lib::ClassType_Foo');
 is($res->headers->foo, 'bar');
 $res->headers({foo => 'yay'});
-isa_ok($res->headers, 'Response::Headers');
+isa_ok($res->headers, 't::lib::ClassType_Foo');
 is($res->headers->foo, 'yay');

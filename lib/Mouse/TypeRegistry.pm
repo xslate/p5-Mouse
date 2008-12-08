@@ -127,6 +127,7 @@ sub _class_type {
     my $pkg = caller(0);
     my($name, $conf) = @_;
     my $class = $conf->{class};
+    Mouse::load_class($class);
     _subtype(
         $name => where => sub {
             defined $_ && ref($_) eq $class;
