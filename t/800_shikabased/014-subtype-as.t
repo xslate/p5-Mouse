@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More tests => 12;
 use Scalar::Util qw/blessed/;
 
 {
@@ -29,6 +29,19 @@ use Scalar::Util qw/blessed/;
         is     => 'rw',
         isa    => 'Type2',
     );
+
+    subtype 'Type3' => as 'Object';
+    has as_only => (
+        is     => 'rw',
+        isa    => 'Type3',
+    );
+
+
+    subtype 'Type4';
+    has any => (
+        is     => 'rw',
+        isa    => 'Type4',
+    );
 }
 
 eval { Foo->new( str_obj => Obj1->new ) };
@@ -45,3 +58,15 @@ like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Val
 my $f1 = eval { Foo->new( obj_str => Obj2->new ) };
 isa_ok $f1, 'Foo';
 is $f1->obj_str, 'Ref';
+
+my $f2 = eval { Foo->new( as_only => Obj1->new ) };
+isa_ok $f2, 'Foo';
+is ref($f2->as_only), 'Obj1';
+
+my $f3 = eval { Foo->new( any => Obj1->new ) };
+isa_ok $f3, 'Foo';
+is ref($f3->any), 'Obj1';
+
+my $f4 = eval { Foo->new( any => 'YATTA' ) };
+isa_ok $f4, 'Foo';
+is $f4->any, 'YATTA';
