@@ -7,7 +7,7 @@ sub generate_constructor_method_inline {
 
     my @attrs = $meta->compute_all_applicable_attributes;
     my $buildall = $class->_generate_BUILDALL($meta);
-    my $buildargs = $class->_generate_BUILDARGS();
+    my $buildargs = $class->_generate_BUILDARGS($meta);
     my $processattrs = $class->_generate_processattrs($meta, \@attrs);
 
     my $code = <<"...";
@@ -125,7 +125,14 @@ sub _generate_processattrs {
 }
 
 sub _generate_BUILDARGS {
-    <<'...';
+    my $self = shift;
+    my $meta = shift;
+
+    if ($meta->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
+        return '$class->BUILDARGS(@_)';
+    }
+
+    return <<'...';
     do {
         if ( scalar @_ == 1 ) {
             if ( defined $_[0] ) {
