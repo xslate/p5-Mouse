@@ -152,9 +152,9 @@ sub make_immutable {
         $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
     }
 }
-sub make_mutable {
-    Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";
-}
+
+sub make_mutable { confess "Mouse does not currently support 'make_mutable'" }
+
 sub is_immutable { $_[0]->{is_immutable} }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
@@ -196,11 +196,14 @@ sub roles { $_[0]->{roles} }
 
 sub does_role {
     my ($self, $role_name) = @_;
+
     (defined $role_name)
         || confess "You must supply a role name to look for";
+
     for my $role (@{ $self->{roles} }) {
         return 1 if $role->name eq $role_name;
     }
+
     return 0;
 }
 
@@ -215,14 +218,14 @@ sub create {
     (ref $options{superclasses} eq 'ARRAY')
         || confess "You must pass an ARRAY ref of superclasses"
             if exists $options{superclasses};
-            
+
     (ref $options{attributes} eq 'ARRAY')
         || confess "You must pass an ARRAY ref of attributes"
-            if exists $options{attributes};      
-            
+            if exists $options{attributes};
+
     (ref $options{methods} eq 'HASH')
         || confess "You must pass a HASH ref of methods"
-            if exists $options{methods};                  
+            if exists $options{methods};
 
     do {
         # XXX should I implement Mouse::Meta::Module?
