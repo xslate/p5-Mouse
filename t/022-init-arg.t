@@ -9,6 +9,7 @@ do {
 
     has name => (
         is       => 'rw',
+        isa      => 'Str',
         init_arg => 'key',
         default  => 'default',
     );
