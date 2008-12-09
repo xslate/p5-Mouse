@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 do {
     package Class;
@@ -43,3 +43,7 @@ do {
 my $foo = Foo->new(name => 'joe');
 is($foo->name, 'default', 'init_arg => undef ignores attribute name in the constructor');
 
+Foo->meta->make_immutable;
+
+my $bar = Foo->new(name => 'joe');
+is($bar->name, 'default', 'init_arg => undef ignores attribute name in the inlined constructor');
