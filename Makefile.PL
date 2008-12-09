@@ -10,7 +10,6 @@ if ($] < 5.007003) {
 }
 
 build_requires 'Test::Exception';
-build_requires 'Sub::Uplevel';    # required by Test::Exception
 build_requires 'Test::More';
 
 auto_include;
