@@ -11,6 +11,7 @@ do {
     # We want this attr to have a reader and writer with unconventional names,
     # and not the default rw_attr method. -- rjbs, 2008-12-04
     has 'rw_attr' => (
+        is     => 'rw',
         reader => 'read_attr',
         writer => 'write_attr',
     );;
