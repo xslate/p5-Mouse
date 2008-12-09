@@ -43,10 +43,14 @@ use Test::Exception;
 }
 
 {
+    local $TODO = "Doesn't work in the constructor yet?";
     my $r = Mosponse->new(headers => { foo => 'bar' });
-    local our $TODO = "Moose not yet aware of Mouse meta";
     isa_ok($r->headers, 'Headers');
     is(eval{$r->headers->foo}, 'bar');
+}
+
+{
+    my $r = Mosponse->new;
     $r->headers({foo => 'yay'});
     isa_ok($r->headers, 'Headers');
     is($r->headers->foo, 'yay');
