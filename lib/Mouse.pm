@@ -414,11 +414,15 @@ Returns whether this class is actually loaded or not. It uses a heuristic which
 involves checking for the existence of C<$VERSION>, C<@ISA>, and any
 locally-defined method.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Shawn M Moore, C<< <sartak at gmail.com> >>
 
 Yuval Kogman, C<< <nothingmuch at woobling.org> >>
+
+tokuhirom
+
+Yappo
 
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
