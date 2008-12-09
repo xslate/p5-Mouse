@@ -213,13 +213,13 @@ sub create {
         my $optimized_constraints = Mouse::TypeRegistry->optimized_constraints;
         if (@type_constraints == 1) {
             $code = $optimized_constraints->{$type_constraints[0]} ||
-                sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type_constraints[0] };
+                sub { Scalar::Util::blessed($_) && $_->isa($type_constraints[0]) };
             $args{type_constraint} = $type_constraints[0];
         } else {
             my @code_list = map {
                 my $type = $_;
                 $optimized_constraints->{$type} ||
-                    sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type }
+                    sub { Scalar::Util::blessed($_) && $_->isa($type) }
             } @type_constraints;
             $code = sub {
                 for my $code (@code_list) {

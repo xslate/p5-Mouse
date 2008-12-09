@@ -128,9 +128,7 @@ sub _class_type {
     my $class = $conf->{class};
     Mouse::load_class($class);
     _subtype(
-        $name => where => sub {
-            defined $_ && ref($_) eq $class;
-        }
+        $name => where => sub { $_->isa($class) }
     );
 }
 
