@@ -55,6 +55,8 @@ sub apply_all_roles {
     my $meta = Mouse::Meta::Class->initialize(shift);
 
     my @roles;
+
+    # Basis of Data::OptList
     my $max = scalar(@_);
     for (my $i = 0; $i < $max ; $i++) {
         if ($i + 1 < $max && ref($_[$i + 1])) {

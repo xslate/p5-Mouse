@@ -20,33 +20,32 @@ sub new {
     bless \%args, $class;
 }
 
-sub name              { $_[0]->{name}             }
-sub associated_class  { $_[0]->{associated_class} }
-sub _is_metadata      { $_[0]->{is}               }
-sub is_required       { $_[0]->{required}         }
-sub default           { $_[0]->{default}          }
-sub is_lazy           { $_[0]->{lazy}             }
-sub is_lazy_build     { $_[0]->{lazy_build}       }
-sub predicate         { $_[0]->{predicate}        }
-sub clearer           { $_[0]->{clearer}          }
-sub handles           { $_[0]->{handles}          }
-sub is_weak_ref       { $_[0]->{weak_ref}         }
-sub init_arg          { $_[0]->{init_arg}         }
-sub type_constraint   { $_[0]->{type_constraint}  }
-sub trigger           { $_[0]->{trigger}          }
-sub builder           { $_[0]->{builder}          }
-sub should_auto_deref { $_[0]->{auto_deref}       }
-sub should_coerce     { $_[0]->{should_coerce}    }
+sub name                 { $_[0]->{name}                   }
+sub associated_class     { $_[0]->{associated_class}       }
+sub _is_metadata         { $_[0]->{is}                     }
+sub is_required          { $_[0]->{required}               }
+sub default              { $_[0]->{default}                }
+sub is_lazy              { $_[0]->{lazy}                   }
+sub is_lazy_build        { $_[0]->{lazy_build}             }
+sub predicate            { $_[0]->{predicate}              }
+sub clearer              { $_[0]->{clearer}                }
+sub handles              { $_[0]->{handles}                }
+sub is_weak_ref          { $_[0]->{weak_ref}               }
+sub init_arg             { $_[0]->{init_arg}               }
+sub type_constraint      { $_[0]->{type_constraint}        }
+sub trigger              { $_[0]->{trigger}                }
+sub builder              { $_[0]->{builder}                }
+sub should_auto_deref    { $_[0]->{auto_deref}             }
+sub should_coerce        { $_[0]->{should_coerce}          }
+sub find_type_constraint { $_[0]->{find_type_constraint}   }
 
-sub has_default         { exists $_[0]->{default}         }
-sub has_predicate       { exists $_[0]->{predicate}       }
-sub has_clearer         { exists $_[0]->{clearer}         }
-sub has_handles         { exists $_[0]->{handles}         }
-sub has_type_constraint { exists $_[0]->{type_constraint} }
-sub has_trigger         { exists $_[0]->{trigger}         }
-sub has_builder         { exists $_[0]->{builder}         }
-
-sub find_type_constraint      { $_[0]->{find_type_constraint}  }
+sub has_default          { exists $_[0]->{default}         }
+sub has_predicate        { exists $_[0]->{predicate}       }
+sub has_clearer          { exists $_[0]->{clearer}         }
+sub has_handles          { exists $_[0]->{handles}         }
+sub has_type_constraint  { exists $_[0]->{type_constraint} }
+sub has_trigger          { exists $_[0]->{trigger}         }
+sub has_builder          { exists $_[0]->{builder}         }
 
 sub _create_args {
     $_[0]->{_create_args} = $_[1] if @_ > 1;
