@@ -74,7 +74,7 @@ For all intents and purposes, blame:
 
 Chris Prather  C<< <perigrin@cpan.org> >>
 
-...who wrote ouse.pm, which was adapted for use by Mouse by:
+...who wrote oose.pm, which was adapted for use by Mouse by:
 
 Ricardo SIGNES C<< <rjbs@cpan.org> >>
 
