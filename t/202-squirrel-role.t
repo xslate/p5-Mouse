@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Mouse::Util 'blessed';
+use Scalar::Util 'blessed';
 
 do {
     package Foo::Role;

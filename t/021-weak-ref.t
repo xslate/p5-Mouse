@@ -12,7 +12,7 @@ BEGIN {
     }
 }
 
-use Mouse::Util ':test';
+use Test::Exception;
 
 my %destroyed;
 

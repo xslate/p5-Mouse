@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 11;
-use Mouse::Util ':test';
+use Test::Exception;
 
 do {
     package Role;

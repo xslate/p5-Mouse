@@ -4,12 +4,13 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Exception;
 BEGIN {
     plan skip_all => "Moose required for this test" unless eval { require Moose  && Moose->VERSION('0.59') };
     plan tests => 27;
 }
 
-use Mouse::Util ':test';
+use Test::Exception;
 
 {
     package Foo;

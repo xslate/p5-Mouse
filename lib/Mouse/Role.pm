@@ -5,7 +5,7 @@ use warnings;
 use base 'Exporter';
 
 use Carp 'confess';
-use Mouse::Util 'blessed';
+use Scalar::Util 'blessed';
 
 use Mouse::Meta::Role;
 
@@ -49,9 +49,21 @@ sub has {
 
 sub extends  { confess "Roles do not support 'extends'" }
 
-sub with     { confess "Mouse::Role does not currently support 'with'" }
+sub with     {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+    my $role  = shift;
+    my $args  = shift || {};
+    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_ || !ref $args;
 
-sub requires { confess "Mouse::Role does not currently support 'requires'" }
+    Mouse::load_class($role);
+    $role->meta->apply($meta, %$args);
+}
+
+sub requires {
+    my $meta = Mouse::Meta::Role->initialize(caller);
+    Carp::croak "Must specify at least one method" unless @_;
+    $meta->add_required_methods(@_);
+}
 
 sub excludes { confess "Mouse::Role does not currently support 'excludes'" }
 

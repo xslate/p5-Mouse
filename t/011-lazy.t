@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 16;
-use Mouse::Util ':test';
+use Test::Exception;
 
 my $lazy_run = 0;
 

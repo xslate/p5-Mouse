@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 use IO::Handle;
-use Mouse::Util ':test';
+use Test::Exception;
 
 my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
                Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef

@@ -2,9 +2,10 @@
 package Mouse::Meta::Attribute;
 use strict;
 use warnings;
+require overload;
 
 use Carp 'confess';
-use Mouse::Util qw/blessed weaken/;
+use Scalar::Util ();
 
 sub new {
     my $class = shift;
@@ -36,6 +37,7 @@ sub type_constraint   { $_[0]->{type_constraint}  }
 sub trigger           { $_[0]->{trigger}          }
 sub builder           { $_[0]->{builder}          }
 sub should_auto_deref { $_[0]->{auto_deref}       }
+sub should_coerce     { $_[0]->{should_coerce}    }
 
 sub has_default         { exists $_[0]->{default}         }
 sub has_predicate       { exists $_[0]->{predicate}       }
@@ -44,6 +46,8 @@ sub has_handles         { exists $_[0]->{handles}         }
 sub has_type_constraint { exists $_[0]->{type_constraint} }
 sub has_trigger         { exists $_[0]->{trigger}         }
 sub has_builder         { exists $_[0]->{builder}         }
+
+sub find_type_constraint      { $_[0]->{find_type_constraint}  }
 
 sub _create_args {
     $_[0]->{_create_args} = $_[1] if @_ > 1;
@@ -60,14 +64,14 @@ sub inlined_name {
 sub generate_accessor {
     my $attribute = shift;
 
-    my $name         = $attribute->name;
-    my $default      = $attribute->default;
-    my $type         = $attribute->type_constraint;
-    my $constraint   = $attribute->find_type_constraint;
-    my $builder      = $attribute->builder;
-    my $trigger      = $attribute->trigger;
-    my $is_weak      = $attribute->is_weak_ref;
-    my $should_deref = $attribute->should_auto_deref;
+    my $name          = $attribute->name;
+    my $default       = $attribute->default;
+    my $constraint    = $attribute->find_type_constraint;
+    my $builder       = $attribute->builder;
+    my $trigger       = $attribute->trigger;
+    my $is_weak       = $attribute->is_weak_ref;
+    my $should_deref  = $attribute->should_auto_deref;
+    my $should_coerce = $attribute->should_coerce;
 
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
@@ -79,11 +83,18 @@ sub generate_accessor {
         my $value = '$_[1]';
 
         if ($constraint) {
-            $accessor .= 'local $_ = '.$value.';
+            $accessor .= 'my $val = ';
+            if ($should_coerce) {
+                $accessor  .= 'Mouse::TypeRegistry->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
+            } else {
+                $accessor .= $value.';';
+            }
+            $accessor .= 'local $_ = $val;';
+            $accessor .= '
                 unless ($constraint->()) {
-                    my $display = defined($_) ? overload::StrVal($_) : "undef";
-                    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
-            }' . "\n"
+                    $attribute->verify_type_constraint_error($name, $_, $attribute->type_constraint);
+                }' . "\n";
+            $value = '$val';
         }
 
         # if there's nothing left to do for the attribute we can return during
@@ -93,7 +104,7 @@ sub generate_accessor {
         $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
 
         if ($is_weak) {
-            $accessor .= 'weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
+            $accessor .= 'Scalar::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
         }
 
         if ($trigger) {
@@ -118,7 +129,8 @@ sub generate_accessor {
     }
 
     if ($should_deref) {
-        if ($attribute->type_constraint eq 'ArrayRef') {
+        my $type_constraint = $attribute->type_constraint;
+        if (!ref($type_constraint) && $type_constraint eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
             }';
@@ -172,7 +184,7 @@ sub generate_handles {
 
         my $method = 'sub {
             my $self = shift;
-            $self->$reader->$remote_method(@_)
+            $self->'.$reader.'->'.$remote_method.'(@_)
         }';
 
         $method_map{$local_method} = eval $method;
@@ -191,8 +203,36 @@ sub create {
     %args = $self->canonicalize_args($name, %args);
     $self->validate_args($name, \%args);
 
-    $args{type_constraint} = delete $args{isa}
-        if exists $args{isa};
+    $args{should_coerce} = delete $args{coerce}
+        if exists $args{coerce};
+
+    if (exists $args{isa}) {
+        my $type_constraint = delete $args{isa};
+        $type_constraint =~ s/\s//g;
+        my @type_constraints = split /\|/, $type_constraint;
+
+        my $code;
+        my $optimized_constraints = Mouse::TypeRegistry->optimized_constraints;
+        if (@type_constraints == 1) {
+            $code = $optimized_constraints->{$type_constraints[0]} ||
+                sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type_constraints[0] };
+            $args{type_constraint} = $type_constraints[0];
+        } else {
+            my @code_list = map {
+                my $type = $_;
+                $optimized_constraints->{$type} ||
+                    sub { Scalar::Util::blessed($_) && Scalar::Util::blessed($_) eq $type }
+            } @type_constraints;
+            $code = sub {
+                for my $code (@code_list) {
+                    return 1 if $code->();
+                }
+                return 0;
+            };
+            $args{type_constraint} = \@type_constraints;
+        }
+        $args{find_type_constraint} = $code;
+    }
 
     my $attribute = $self->new(%args);
 
@@ -285,31 +325,27 @@ sub validate_args {
     return 1;
 }
 
-sub find_type_constraint {
+sub verify_type_constraint {
+    return 1 unless $_[0]->{type_constraint};
+
+    local $_ = $_[1];
+    return 1 if $_[0]->{find_type_constraint}->($_);
+
     my $self = shift;
-    my $type = $self->type_constraint;
-
-    return unless $type;
-
-    my $checker = Mouse::TypeRegistry->optimized_constraints->{$type};
-    return $checker if $checker;
-
-    return sub { blessed($_) && $_->isa($type) };
+    $self->verify_type_constraint_error($self->name, $_, $self->type_constraint);
 }
 
-sub verify_type_constraint {
-    my $self = shift;
-    local $_ = shift;
-
-    my $type = $self->type_constraint
-        or return 1;
-    my $constraint = $self->find_type_constraint;
-
-    return 1 if $constraint->($_);
-
-    my $name = $self->name;
+sub verify_type_constraint_error {
+    my($self, $name, $value, $type) = @_;
+    $type = ref($type) eq 'ARRAY' ? join '|', @{ $type } : $type;
     my $display = defined($_) ? overload::StrVal($_) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
+}
+
+sub coerce_constraint { ## my($self, $value) = @_;
+    my $type = $_[0]->{type_constraint}
+        or return $_[1];
+    return Mouse::TypeRegistry->typecast_constraints($_[0]->associated_class->name, $_[0]->find_type_constraint, $type, $_[1]);
 }
 
 sub _canonicalize_handles {

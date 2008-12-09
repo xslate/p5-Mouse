@@ -3,7 +3,10 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
-use Mouse::Util qw/get_linear_isa blessed/;
+use Mouse::Meta::Method::Constructor;
+use Mouse::Meta::Method::Destructor;
+use Scalar::Util qw/blessed/;
+use Mouse::Util qw/get_linear_isa/;
 use Carp 'confess';
 
 do {
@@ -35,6 +38,7 @@ sub new {
         no strict 'refs';
         \@{ $args{name} . '::ISA' };
     };
+    $args{roles} ||= [];
 
     bless \%args, $class;
 }
@@ -60,7 +64,23 @@ sub add_method {
     my $pkg = $self->name;
 
     no strict 'refs';
+    $self->{'methods'}->{$name}++; # Moose stores meta object here.
     *{ $pkg . '::' . $name } = $code;
+}
+
+# copied from Class::Inspector
+sub get_method_list {
+    my $self = shift;
+    my $name = $self->name;
+
+    no strict 'refs';
+    # Get all the CODE symbol table entries
+    my @functions =
+      grep !/(?:has|with|around|before|after|blessed|extends|confess)/,
+      grep { defined &{"${name}::$_"} }
+      keys %{"${name}::"};
+    push @functions, keys %{$self->{'methods'}->{$name}};
+    wantarray ? @functions : \@functions;
 }
 
 sub add_attribute {
@@ -123,8 +143,20 @@ sub clone_instance {
 
 }
 
-sub make_immutable {}
-sub is_immutable { 0 }
+sub make_immutable {
+    my $self = shift;
+    my %args = @_;
+    my $name = $self->name;
+    $self->{is_immutable}++;
+    $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
+    if ($args{inline_destructor}) {
+        $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
+    }
+}
+sub make_mutable {
+    Carp::croak "Mouse::Meta::Class->make_mutable does not supported by Mouse";
+}
+sub is_immutable { $_[0]->{is_immutable} }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
 
@@ -159,6 +191,101 @@ sub add_after_method_modifier {
         $name,
         $code,
     );
+}
+
+sub roles { $_[0]->{roles} }
+
+sub does_role {
+    my ($self, $role_name) = @_;
+    (defined $role_name)
+        || confess "You must supply a role name to look for";
+    for my $role (@{ $self->{roles} }) {
+        return 1 if $role->name eq $role_name;
+    }
+    return 0;
+}
+
+sub create {
+    my ( $class, @args ) = @_;
+
+    unshift @args, 'package' if @args % 2 == 1;
+
+    my (%options) = @args;
+    my $package_name = $options{package};
+
+    (ref $options{superclasses} eq 'ARRAY')
+        || confess "You must pass an ARRAY ref of superclasses"
+            if exists $options{superclasses};
+            
+    (ref $options{attributes} eq 'ARRAY')
+        || confess "You must pass an ARRAY ref of attributes"
+            if exists $options{attributes};      
+            
+    (ref $options{methods} eq 'HASH')
+        || confess "You must pass a HASH ref of methods"
+            if exists $options{methods};                  
+
+    do {
+        # XXX should I implement Mouse::Meta::Module?
+        my $package_name = $options{package};
+
+        ( defined $package_name && $package_name )
+          || confess "You must pass a package name";
+
+        my $code = "package $package_name;";
+        $code .= "\$$package_name\:\:VERSION = '" . $options{version} . "';"
+          if exists $options{version};
+        $code .= "\$$package_name\:\:AUTHORITY = '" . $options{authority} . "';"
+          if exists $options{authority};
+
+        eval $code;
+        confess "creation of $package_name failed : $@" if $@;
+    };
+
+    my (%initialize_options) = @args;
+    delete @initialize_options{qw(
+        package
+        superclasses
+        attributes
+        methods
+        version
+        authority
+    )};
+    my $meta = $class->initialize( $package_name => %initialize_options );
+
+    # FIXME totally lame
+    $meta->add_method('meta' => sub {
+        $class->initialize(ref($_[0]) || $_[0]);
+    });
+
+    $meta->superclasses(@{$options{superclasses}})
+        if exists $options{superclasses};
+    # NOTE:
+    # process attributes first, so that they can
+    # install accessors, but locally defined methods
+    # can then overwrite them. It is maybe a little odd, but
+    # I think this should be the order of things.
+    if (exists $options{attributes}) {
+        foreach my $attr (@{$options{attributes}}) {
+            Mouse::Meta::Attribute->create($meta, $attr->{name}, %$attr);
+        }
+    }
+    if (exists $options{methods}) {
+        foreach my $method_name (keys %{$options{methods}}) {
+            $meta->add_method($method_name, $options{methods}->{$method_name});
+        }
+    }
+    return $meta;
+}
+
+{
+    my $ANON_CLASS_SERIAL = 0;
+    my $ANON_CLASS_PREFIX = 'Mouse::Meta::Class::__ANON__::SERIAL::';
+    sub create_anon_class {
+        my ( $class, %options ) = @_;
+        my $package_name = $ANON_CLASS_PREFIX . ++$ANON_CLASS_SERIAL;
+        return $class->create( $package_name, %options );
+    }
 }
 
 1;

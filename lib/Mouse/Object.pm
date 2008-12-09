@@ -3,7 +3,7 @@ package Mouse::Object;
 use strict;
 use warnings;
 
-use Mouse::Util qw/weaken/;
+use Scalar::Util qw/weaken/;
 use Carp 'confess';
 
 sub new {
@@ -16,9 +16,10 @@ sub new {
     for my $attribute ($class->meta->compute_all_applicable_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
-        my $default;
 
         if (defined($from) && exists($args->{$from})) {
+            $args->{$from} = $attribute->coerce_constraint($args->{$from})
+                if $attribute->should_coerce;
             $attribute->verify_type_constraint($args->{$from})
                 if $attribute->has_type_constraint;
 
@@ -42,6 +43,8 @@ sub new {
                                   ? $default->($instance)
                                   : $default;
 
+                    $value = $attribute->coerce_constraint($value)
+                        if $attribute->should_coerce;
                     $attribute->verify_type_constraint($value)
                         if $attribute->has_type_constraint;
 

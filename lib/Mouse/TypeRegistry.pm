@@ -3,11 +3,52 @@ package Mouse::TypeRegistry;
 use strict;
 use warnings;
 
-use Mouse::Util qw/blessed looks_like_number openhandle/;
+use Carp ();
+use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-no warnings 'uninitialized';
-sub optimized_constraints {
-    return {
+my %SUBTYPE;
+my %COERCE;
+my %COERCE_KEYS;
+
+#find_type_constraint register_type_constraint
+sub import {
+    my $class  = shift;
+    my %args   = @_;
+    my $caller = $args{callee} || caller(0);
+
+    no strict 'refs';
+    *{"$caller\::as"}          = \&_as;
+    *{"$caller\::where"}       = \&_where;
+    *{"$caller\::message"}     = \&_message;
+    *{"$caller\::from"}        = \&_from;
+    *{"$caller\::via"}         = \&_via;
+    *{"$caller\::subtype"}     = \&_subtype;
+    *{"$caller\::coerce"}      = \&_coerce;
+    *{"$caller\::class_type"}  = \&_class_type;
+    *{"$caller\::role_type"}   = \&_role_type;
+}
+
+
+sub _as ($) {
+    as => $_[0]
+}
+sub _where (&) {
+    where => $_[0]
+}
+sub _message ($) {
+    message => $_[0]
+}
+
+sub _from { @_ }
+sub _via (&) {
+    $_[0]
+}
+
+my $optimized_constraints;
+my $optimized_constraints_base;
+{
+    no warnings 'uninitialized';
+    %SUBTYPE = (
         Any        => sub { 1 },
         Item       => sub { 1 },
         Bool       => sub {
@@ -35,10 +76,91 @@ sub optimized_constraints {
             or
                 blessed($_)
                 && $_->isa("IO::Handle")
-        },
+            },
 
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
+    );
+
+    sub optimized_constraints { \%SUBTYPE }
+    my @SUBTYPE_KEYS = keys %SUBTYPE;
+    sub list_all_builtin_type_constraints { @SUBTYPE_KEYS }
+}
+
+sub _subtype {
+    my $pkg = caller(0);
+    my($name, %conf) = @_;
+    if (my $type = $SUBTYPE{$name}) {
+        Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
+    my $stuff = $conf{where} || do { $SUBTYPE{delete $conf{as} || 'Any' } };
+    my $as    = $conf{as} || '';
+    if ($as = $SUBTYPE{$as}) {
+        $SUBTYPE{$name} = sub { $as->($_) && $stuff->($_) };
+    } else {
+        $SUBTYPE{$name} = $stuff;
+    }
+}
+
+sub _coerce {
+    my($name, %conf) = @_;
+
+    Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
+        unless $SUBTYPE{$name};
+
+    unless ($COERCE{$name}) {
+        $COERCE{$name}      = {};
+        $COERCE_KEYS{$name} = [];
+    }
+    while (my($type, $code) = each %conf) {
+        Carp::croak "A coercion action already exists for '$type'"
+            if $COERCE{$name}->{$type};
+
+        Carp::croak "Could not find the type constraint ($type) to coerce from"
+            unless $SUBTYPE{$type};
+
+        push @{ $COERCE_KEYS{$name} }, $type;
+        $COERCE{$name}->{$type} = $code;
+    }
+}
+
+sub _class_type {
+    my $pkg = caller(0);
+    my($name, $conf) = @_;
+    my $class = $conf->{class};
+    Mouse::load_class($class);
+    _subtype(
+        $name => where => sub {
+            defined $_ && ref($_) eq $class;
+        }
+    );
+}
+
+sub _role_type {
+    my($name, $conf) = @_;
+    my $role = $conf->{role};
+    _subtype(
+        $name => where => sub {
+            return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
+            $_->meta->does_role($role);
+        }
+    );
+}
+
+sub typecast_constraints {
+    my($class, $pkg, $type_constraint, $types, $value) = @_;
+
+    local $_;
+    for my $type (ref($types) eq 'ARRAY' ? @{ $types } : ( $types )) {
+        next unless $COERCE{$type};
+        for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
+            $_ = $value;
+            next unless $SUBTYPE{$coerce_type}->();
+            $_ = $value;
+            $_ = $COERCE{$type}->{$coerce_type}->();
+            return $_ if $type_constraint->();
+        }
+    }
+    return $value;
 }
 
 1;
