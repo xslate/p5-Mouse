@@ -42,28 +42,32 @@ sub _generate_processattrs {
             $code .= "if (exists \$args->{'$from'}) {\n";
 
             if ($attr->should_coerce && $attr->type_constraint) {
-                $code .= "my \$value = Mouse::TypeRegistry->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{find_type_constraint}, \$attrs[$index]->{type_constraint}, \$args->{'$from'});";
+                $code .= "my \$value = Mouse::TypeRegistry->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{find_type_constraint}, \$attrs[$index]->{type_constraint}, \$args->{'$from'});\n";
             }
             else {
-                $code .= "my \$value = \$args->{'$from'};";
+                $code .= "my \$value = \$args->{'$from'};\n";
             }
 
             if ($attr->has_type_constraint) {
-                $code .= "{local \$_ = \$value; unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {";
-                $code .= "\$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)}}";
+                $code .= "{
+                    local \$_ = \$value;
+                    unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {
+                        \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
+                    }
+                }";
             }
 
-            $code .= "\$instance->{'$key'} = \$value;";
+            $code .= "\$instance->{'$key'} = \$value;\n";
 
             if ($attr->is_weak_ref) {
-                $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );";
+                $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );\n";
             }
 
             if ($attr->has_trigger) {
-                $code .= "\$attrs[$index]->{trigger}->( \$instance, \$value, \$attrs[$index] );";
+                $code .= "\$attrs[$index]->{trigger}->( \$instance, \$value, \$attrs[$index] );\n";
             }
 
-            $code .= "} else {";
+            $code .= "\n} else {\n";
         }
 
         if ($attr->has_default || $attr->has_builder) {
@@ -94,29 +98,33 @@ sub _generate_processattrs {
                     }
 
                 if ($attr->should_coerce) {
-                    $code .= ");";
+                    $code .= ");\n";
                 }
                 else {
-                    $code .= ";";
+                    $code .= ";\n";
                 }
 
                 if ($attr->has_type_constraint) {
-                    $code .= "{local \$_ = \$value; unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {";
-                    $code .= "\$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)}}";
+                    $code .= "{
+                        local \$_ = \$value;
+                        unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {
+                            \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
+                        }
+                    }";
                 }
 
-                $code .= "\$instance->{'$key'} = \$value;";
+                $code .= "\$instance->{'$key'} = \$value;\n";
 
                 if ($attr->is_weak_ref) {
-                    $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );";
+                    $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );\n";
                 }
             }
         }
         elsif ($attr->is_required) {
-            $code .= qq{Carp::confess("Attribute ($key) is required");};
+            $code .= "Carp::confess('Attribute ($key) is required');";
         }
 
-        $code .= "}" if defined $attr->init_arg;
+        $code .= "}\n" if defined $attr->init_arg;
 
         push @res, $code;
     }
