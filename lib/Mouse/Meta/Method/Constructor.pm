@@ -5,7 +5,7 @@ use warnings;
 sub generate_constructor_method_inline {
     my ($class, $meta) = @_;
 
-    my @attrs = $meta->compute_all_applicable_attributes; # this one is using by evaled code
+    my @attrs = $meta->compute_all_applicable_attributes;
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS();
     my $processattrs = $class->_generate_processattrs($meta, \@attrs);
@@ -20,8 +20,6 @@ sub generate_constructor_method_inline {
         return \$instance;
     }
 ...
-
-    warn $code if $ENV{DEBUG};
 
     local $@;
     my $res = eval $code;

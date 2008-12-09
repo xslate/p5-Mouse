@@ -26,7 +26,6 @@ sub generate_destructor_method_inline {
         $demolishall;
     }
 ...
-    warn $code if $ENV{DEBUG};
 
     local $@;
     my $res = eval $code;
