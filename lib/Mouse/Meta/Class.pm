@@ -75,7 +75,7 @@ sub get_method_list {
     no strict 'refs';
     # Get all the CODE symbol table entries
     my @functions =
-      grep !/(?:has|with|around|before|after|blessed|extends|confess)/,
+      grep !/^(?:has|with|around|before|after|blessed|extends|confess)$/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
     push @functions, keys %{$self->{'methods'}->{$name}};
