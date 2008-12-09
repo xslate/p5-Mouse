@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Test::Exception;
 
 do {
@@ -48,3 +48,15 @@ is(ref(Class->new->code), 'CODE', "default => sub { sub { 1 } } stuffs a coderef
 is(Class->new->code->(), 1, "default => sub sub strips off the first coderef");
 is_deeply(Class->new->a, [1], "default of sub { reference } works");
 
+do {
+  package Class::Two;
+  use Mouse;
+  has foo => (is => 'rw', default => sub {
+    die unless $_[0]->isa('Class::Two');
+    shift->default_foo;
+  });
+  sub default_foo { 1 };
+};
+
+my $obj2 = Class::Two->new;
+is($obj2->foo, 1, 'default method gets the $_[0] it needs to work');

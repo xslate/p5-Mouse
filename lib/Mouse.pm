@@ -5,11 +5,10 @@ use warnings;
 use 5.006;
 use base 'Exporter';
 
-our $VERSION;
+our $VERSION = '0.13';
+use 5.006;
 
 BEGIN {
-    $VERSION  = '0.12';
-
     if ($ENV{MOUSE_DEBUG}) {
         *DEBUG = sub (){ 1 };
     } else {
