@@ -167,6 +167,7 @@ sub _generate_BUILDALL {
     push @code, q{no strict 'refs';};
     push @code, q{no warnings 'once';};
     no strict 'refs';
+    no warnings 'once';
     for my $klass ($meta->linearized_isa) {
         if (*{ $klass . '::BUILD' }{CODE}) {
             push  @code, qq{${klass}::BUILD(\$instance, \$args);};
