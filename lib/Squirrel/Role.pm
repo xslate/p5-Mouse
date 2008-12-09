@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Squirrel::Role;
 use strict;
 use warnings;

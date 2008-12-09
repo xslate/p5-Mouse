@@ -1,4 +1,3 @@
-
 package Mouse;
 use strict;
 use warnings;

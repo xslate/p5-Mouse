@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Mouse::Util;
 use strict;
 use warnings;

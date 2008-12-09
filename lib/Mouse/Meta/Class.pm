@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Mouse::Meta::Class;
 use strict;
 use warnings;

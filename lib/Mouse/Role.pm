@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Mouse::Role;
 use strict;
 use warnings;

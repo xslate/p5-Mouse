@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Mouse::TypeRegistry;
 use strict;
 use warnings;
