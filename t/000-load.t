@@ -5,21 +5,10 @@ use Test::More tests => 1;
 
 use_ok 'Mouse';
 
-diag "Soft dependency versions:";
-for my $module_name (keys %Mouse::Util::loaded) {
-    my $version;
-    if ($Mouse::Util::loaded{$module_name}) {
-        no strict 'refs';
-        $version = ${$module_name . '::VERSION'};
-    }
-    else {
-        $version = "(provided by Mouse::Util)";
-    }
-
-    diag "    $module_name: $version";
-}
-
 no warnings 'uninitialized';
+
+diag "Soft dependency versions:";
+diag "    MRO::Compat: $MRO::Compat::VERSION";
 
 eval { require Moose };
 diag "    Class::MOP: $Class::MOP::VERSION";
