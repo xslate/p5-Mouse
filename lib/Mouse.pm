@@ -4,7 +4,7 @@ use warnings;
 use 5.006;
 use base 'Exporter';
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 use 5.006;
 
 BEGIN {
