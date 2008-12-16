@@ -10,7 +10,7 @@ unlink 'lib/Mouse/Tiny.pm';
 my @files;
 
 find({
-    wanted => sub { push @files, $_ if -f $_ && !/Squirrel|\.sw[po]$/ },
+    wanted => sub { push @files, $_ if -f $_ && !/Squirrel|MouseX|\.sw[po]$/ },
     no_chdir => 1,
 }, 'lib');
 
