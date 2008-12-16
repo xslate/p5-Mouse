@@ -3,6 +3,7 @@ Revision history for Mouse
 0.13 Tue Dec 16 02:01:40 2008
     * Pass in the instance to the default sub in the constructor (reported with
       failing tests by rjbs)
+
     * Tons of new features implemented by tokuhirom++ and Yappo++.
 
 0.12 Thu Dec 4 19:23:10 2008
