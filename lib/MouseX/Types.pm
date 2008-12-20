@@ -48,7 +48,7 @@ sub _import {
 
 =head1 NAME
 
-Mouse - Organise your Mouse types in libraries
+MouseX::Types - Organise your Mouse types in libraries
 
 =head1 SYNOPSIS
 
