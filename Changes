@@ -1,12 +1,25 @@
 Revision history for Mouse
 
-0.14
+0.14 Sat Dec 20 16:53:05 2008
+    * POD fix
+
+    * Document what changes tokuhirom and Yappo made (see below)
 
 0.13 Tue Dec 16 02:01:40 2008
     * Pass in the instance to the default sub in the constructor (reported with
       failing tests by rjbs)
 
-    * Tons of new features implemented by tokuhirom++ and Yappo++.
+    * Tons of new features implemented by tokuhirom++ and Yappo++:
+      - method API in classes and roles!
+      - "requires" and "with" for Mouse::Role
+      - Type coercion
+      - Inject a constructor after make_immutable. Huge speedup!
+      - class_type and role_type
+      - Inject a destructor for more speedup
+      - MouseX::Types (may move into its own dist)
+      - create_anon_class
+      - union type constraints (eg 'Str | Undef')
+      - subtypes and sugar for them
 
 0.12 Thu Dec 4 19:23:10 2008
     * Provide Test::Exception function unless it's version 0.27 - RT #41254
