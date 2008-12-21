@@ -14,7 +14,7 @@ do {
 
     package Mouse::TestClass;
     use Mouse;
-    extends 'Anti::Mouse';
+    extends 'Unsweetened';
 
     sub mouse { 1 }
 };
@@ -27,7 +27,7 @@ isa_ok($child => 'Child');
 isa_ok($child => 'Class');
 isa_ok($child => 'Mouse::Object');
 
-can_ok('Mouse::TestClass' => qw(mouse antimouse));
+can_ok('Mouse::TestClass' => qw(mouse unsweetened));
 
 eval "
     package Child;

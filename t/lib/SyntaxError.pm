@@ -1,11 +1,5 @@
-#!/usr/bin/env perl
-package Anti::MouseError;
-use strict;
-use warnings;
+package SyntaxError;
 
 # this syntax error is intentional!
-
     {
-
-1;
 

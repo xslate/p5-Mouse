@@ -1,9 +1,8 @@
-#!/usr/bin/env perl
-package Anti::Mouse;
+package Unsweetened;
 use strict;
 use warnings;
 
-sub antimouse { 1 }
+sub unsweetened { 1 }
 
 1;
 

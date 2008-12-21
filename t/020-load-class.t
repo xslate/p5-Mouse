@@ -15,8 +15,8 @@ throws_ok { Mouse::load_class()       } qr/Invalid class name \(undef\)/;
 throws_ok { Mouse::load_class('')     } qr/Invalid class name \(\)/;
 throws_ok { Mouse::load_class(\"foo") } qr/Invalid class name \(SCALAR\(\w+\)\)/;
 
-ok(Mouse::load_class('Anti::Mouse'));
-can_ok('Anti::Mouse' => 'antimouse');
+ok(Mouse::load_class('Unsweetened'));
+can_ok('Unsweetened' => 'unsweetened');
 
 do {
     package Class;
@@ -30,6 +30,6 @@ throws_ok {
 } qr/Can't locate /;
 
 throws_ok {
-    Mouse::load_class('Anti::MouseError');
+    Mouse::load_class('SyntaxError');
 } qr/Missing right curly/;
 
