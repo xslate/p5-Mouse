@@ -228,33 +228,6 @@ as Mouse unless Moose is loaded, in which case it will act as Moose.
 
 Mouse also has the blessings of Moose's author, stevan.
 
-=head2 MISSING FEATURES
-
-=head3 Roles
-
-We're working on fixing this one! stevan has suggested an implementation
-strategy. Mouse currently ignores methods, so that needs to be fixed next.
-Roles that consist entirely of attributes may be usable in this very version.
-
-=head3 Complex types
-
-User-defined type constraints and parameterized types may be implemented. Type
-coercions probably not (patches welcome).
-
-=head3 Bootstrapped meta world
-
-Very handy for extensions to the MOP. Not pressing, but would be nice to have.
-
-=head3 Modification of attribute metaclass
-
-When you declare an attribute with L</has>, you get the inlined accessors
-installed immediately. Modifying the attribute metaclass, even if possible,
-does nothing.
-
-=head3 Lots more..
-
-MouseX?
-
 =head1 KEYWORDS
 
 =head2 meta -> Mouse::Meta::Class
