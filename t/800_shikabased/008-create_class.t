@@ -42,7 +42,10 @@ isa_ok(
         superclasses => [ "FooBar", "Mouse::Object" ],
         attributes   => [
             Mouse::Meta::Attribute->new(
-                name => "foo", is => "rw", default => "yay"
+                "foo" => (
+                    is => "rw",
+                    default => "yay",
+                ),
             )
         ],
         methods => {

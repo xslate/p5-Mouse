@@ -7,17 +7,16 @@ use Carp 'confess';
 use Scalar::Util ();
 
 sub new {
-    my $class = shift;
-    my %args  = @_;
+    my ($class, $name, %options) = @_;
 
-    my $name = $args{name};
+    $options{name} = $name;
 
-    $args{init_arg} = $name
-        unless exists $args{init_arg};
+    $options{init_arg} = $name
+        unless exists $options{init_arg};
 
-    $args{is} ||= '';
+    $options{is} ||= '';
 
-    bless \%args, $class;
+    bless \%options, $class;
 }
 
 sub name                 { $_[0]->{name}                   }
@@ -232,7 +231,7 @@ sub create {
         $args{find_type_constraint} = $code;
     }
 
-    my $attribute = $self->new(%args);
+    my $attribute = $self->new($name, %args);
 
     $attribute->_create_args(\%args);
 
