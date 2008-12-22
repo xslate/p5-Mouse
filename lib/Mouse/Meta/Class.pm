@@ -208,12 +208,7 @@ sub does_role {
 }
 
 sub create {
-    my ( $class, @args ) = @_;
-
-    unshift @args, 'package' if @args % 2 == 1;
-
-    my (%options) = @args;
-    my $package_name = $options{package};
+    my ($self, $package_name, %options) = @_;
 
     (ref $options{superclasses} eq 'ARRAY')
         || confess "You must pass an ARRAY ref of superclasses"
@@ -228,9 +223,6 @@ sub create {
             if exists $options{methods};
 
     do {
-        # XXX should I implement Mouse::Meta::Module?
-        my $package_name = $options{package};
-
         ( defined $package_name && $package_name )
           || confess "You must pass a package name";
 
@@ -244,8 +236,7 @@ sub create {
         confess "creation of $package_name failed : $@" if $@;
     };
 
-    my (%initialize_options) = @args;
-    delete @initialize_options{qw(
+    delete @options{qw(
         package
         superclasses
         attributes
@@ -253,11 +244,11 @@ sub create {
         version
         authority
     )};
-    my $meta = $class->initialize( $package_name => %initialize_options );
+    my $meta = $self->initialize( $package_name => %options );
 
     # FIXME totally lame
     $meta->add_method('meta' => sub {
-        $class->initialize(ref($_[0]) || $_[0]);
+        $self->initialize(ref($_[0]) || $_[0]);
     });
 
     $meta->superclasses(@{$options{superclasses}})

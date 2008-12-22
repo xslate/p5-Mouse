@@ -38,7 +38,7 @@ is FooBar->meta->name, "FooBar";
 
 isa_ok(
     Mouse::Meta::Class->create(
-        package      => "Baz",
+        "Baz",
         superclasses => [ "FooBar", "Mouse::Object" ],
         attributes   => [
             Mouse::Meta::Attribute->new(
