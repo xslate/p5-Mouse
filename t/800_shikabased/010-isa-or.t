@@ -72,7 +72,7 @@ is $foo->foo, 'Name', 'foo is Name';
     sub new { bless {}, shift };
 }
 {   
-    package Baz;
+    package Funk;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
@@ -82,10 +82,10 @@ is $foo->foo, 'Name', 'foo is Name';
     has 'foo' => ( is => 'rw', isa => 'Type3|KLASS|Undef', coerce => 1 );
 }
 
-eval { Baz->new( foo => 'aaa' ) };
+eval { Funk->new( foo => 'aaa' ) };
 like $@, qr/Attribute \(foo\) does not pass the type constraint because: Validation failed for 'Type3\|KLASS\|Undef' failed with value aaa/;
 
-my $k = Baz->new;
+my $k = Funk->new;
 ok $k, 'got an object 4';
 $k->foo(sub {});
 is $k->foo, 'Name', 'foo is Name';
