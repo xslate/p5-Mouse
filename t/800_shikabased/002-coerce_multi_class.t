@@ -69,12 +69,12 @@ eval {
     use Mouse::Util::TypeConstraints;
 
     coerce 'Headers' =>
-        from 'HashRefa' => via {
+        from 'XXX' => via {
             Request::Headers->new(%{ $_ });
         },
     ;
 };
-like $@, qr/Could not find the type constraint \(HashRefa\) to coerce from/;
+like $@, qr/Could not find the type constraint \(XXX\) to coerce from/;
 
 eval {
     package Request;
