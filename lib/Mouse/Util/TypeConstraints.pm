@@ -71,12 +71,10 @@ my $optimized_constraints_base;
         GlobRef    => sub { ref($_) eq 'GLOB'   },
 
         FileHandle => sub {
-                ref($_) eq 'GLOB'
-                && openhandle($_)
+            ref($_) eq 'GLOB' && openhandle($_)
             or
-                blessed($_)
-                && $_->isa("IO::Handle")
-            },
+            blessed($_) && $_->isa("IO::Handle")
+        },
 
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     );
