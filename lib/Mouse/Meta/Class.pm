@@ -324,7 +324,7 @@ this class and its superclasses.
 Returns a mapping of attribute names to their corresponding
 L<Mouse::Meta::Attribute> objects.
 
-=head2 has_attribute Name -> Boool
+=head2 has_attribute Name -> Bool
 
 Returns whether we have a L<Mouse::Meta::Attribute> with the given name.
 
