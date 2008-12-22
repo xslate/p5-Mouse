@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 13;
 
 {
     package Response::Headers;
@@ -88,14 +88,6 @@ eval {
 };
 ok !$@;
 
-eval {
-    package Response;
-    type 'Headers' => where {
-        eval { $_->isa('Response::Headers') }
-    };
-};
-ok(!$@, "You can redefine types in their original package");
-
 {
     package Request;
     use Mouse;
@@ -106,7 +98,6 @@ ok(!$@, "You can redefine types in their original package");
         coerce => 1,
     );
 }
-
 
 my $req = Request->new(headers => { foo => 'bar' });
 isa_ok($req->headers, 'Response::Headers');
@@ -121,3 +112,4 @@ is($res->headers->foo, 'bar');
 $res->headers({foo => 'yay'});
 isa_ok($res->headers, 'Response::Headers');
 is($res->headers->foo, 'yay');
+
