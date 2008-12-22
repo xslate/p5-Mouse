@@ -66,9 +66,9 @@ is Baz->new()->dooo, "iiiit";
         }
     );
     isa_ok($meta, "Mouse::Meta::Class");
-    is $meta->name, "Mouse::Meta::Class::__ANON__::SERIAL::1";
+    like($meta->name, qr/Class::__ANON__::/);
     is $meta->name->new->dooo(), "iiiit";
 
     my $anon2 = Mouse::Meta::Class->create_anon_class();
-    is $anon2->name, "Mouse::Meta::Class::__ANON__::SERIAL::2";
+    like($anon2->name, qr/Class::__ANON__::/);
 }
