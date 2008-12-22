@@ -9,7 +9,7 @@ BEGIN {
 
 next if $ARGV =~ /squirrel/i; # Squirrel tests are for both Moose and Mouse
 
-s/Mouse/Moose/g;
+s/Mouse(?!::Tiny)/Moose/g;
 
 s/Moose::(load_class|is_class_loaded)/Class::MOP::$1/g;
 
