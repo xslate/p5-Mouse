@@ -85,6 +85,12 @@ sub import {
 
     my $caller = caller;
 
+    # we should never export to main
+    if ($caller eq 'main') {
+        warn qq{$class does not export its sugar to the 'main' package.\n};
+        return;
+    }
+
     my $meta = Mouse::Meta::Class->initialize($caller);
     $meta->superclasses('Mouse::Object')
         unless $meta->superclasses;

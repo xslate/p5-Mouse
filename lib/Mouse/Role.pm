@@ -67,10 +67,19 @@ sub requires {
 sub excludes { confess "Mouse::Role does not currently support 'excludes'" }
 
 sub import {
+    my $class = shift;
+
     strict->import;
     warnings->import;
 
     my $caller = caller;
+
+    # we should never export to main
+    if ($caller eq 'main') {
+        warn qq{$class does not export its sugar to the 'main' package.\n};
+        return;
+    }
+
     my $meta = Mouse::Meta::Role->initialize(caller);
 
     no strict 'refs';
