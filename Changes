@@ -9,6 +9,8 @@ Revision history for Mouse
 
     * Keep track of the source package of each type
 
+    * class_type shouldn't load the class (Moose compat; no easy fix :/)
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 

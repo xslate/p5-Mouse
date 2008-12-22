@@ -6,6 +6,8 @@ use Test::More tests => 4;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
+    require t::lib::ClassType_Foo;
+
     class_type Headers => { class => 't::lib::ClassType_Foo' };
     coerce 'Headers' =>
         from 'HashRef' => via {
