@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-my %SUBTYPE;
+my %TYPE;
 my %COERCE;
 my %COERCE_KEYS;
 
@@ -48,7 +48,7 @@ my $optimized_constraints;
 my $optimized_constraints_base;
 {
     no warnings 'uninitialized';
-    %SUBTYPE = (
+    %TYPE = (
         Any        => sub { 1 },
         Item       => sub { 1 },
         Bool       => sub {
@@ -81,33 +81,33 @@ my $optimized_constraints_base;
         Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
     );
 
-    sub optimized_constraints { \%SUBTYPE }
-    my @SUBTYPE_KEYS = keys %SUBTYPE;
-    sub list_all_builtin_type_constraints { @SUBTYPE_KEYS }
+    sub optimized_constraints { \%TYPE }
+    my @TYPE_KEYS = keys %TYPE;
+    sub list_all_builtin_type_constraints { @TYPE_KEYS }
 }
 
 sub _type {
     my $pkg = caller(0);
     my($name, %conf) = @_;
-    if (my $type = $SUBTYPE{$name}) {
+    if (my $type = $TYPE{$name}) {
         Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
-    my $stuff = $conf{where} || do { $SUBTYPE{delete $conf{as} || 'Any' } };
-    $SUBTYPE{$name} = $stuff;
+    my $stuff = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
+    $TYPE{$name} = $stuff;
 }
 
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
-    if (my $type = $SUBTYPE{$name}) {
+    if (my $type = $TYPE{$name}) {
         Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
     };
-    my $stuff = $conf{where} || do { $SUBTYPE{delete $conf{as} || 'Any' } };
+    my $stuff = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
     my $as    = $conf{as} || '';
-    if ($as = $SUBTYPE{$as}) {
-        $SUBTYPE{$name} = sub { $as->($_) && $stuff->($_) };
+    if ($as = $TYPE{$as}) {
+        $TYPE{$name} = sub { $as->($_) && $stuff->($_) };
     } else {
-        $SUBTYPE{$name} = $stuff;
+        $TYPE{$name} = $stuff;
     }
 }
 
@@ -115,7 +115,7 @@ sub _coerce {
     my($name, %conf) = @_;
 
     Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
-        unless $SUBTYPE{$name};
+        unless $TYPE{$name};
 
     unless ($COERCE{$name}) {
         $COERCE{$name}      = {};
@@ -126,7 +126,7 @@ sub _coerce {
             if $COERCE{$name}->{$type};
 
         Carp::croak "Could not find the type constraint ($type) to coerce from"
-            unless $SUBTYPE{$type};
+            unless $TYPE{$type};
 
         push @{ $COERCE_KEYS{$name} }, $type;
         $COERCE{$name}->{$type} = $code;
@@ -162,7 +162,7 @@ sub typecast_constraints {
         next unless $COERCE{$type};
         for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
             $_ = $value;
-            next unless $SUBTYPE{$coerce_type}->();
+            next unless $TYPE{$coerce_type}->();
             $_ = $value;
             $_ = $COERCE{$type}->{$coerce_type}->();
             return $_ if $type_constraint->();
