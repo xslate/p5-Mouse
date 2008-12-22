@@ -22,7 +22,7 @@ use Test::Exception;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
-    subtype 'HeadersType' => where { defined $_ && eval { $_->isa('Headers') } };
+    type 'HeadersType' => where { defined $_ && eval { $_->isa('Headers') } };
     coerce  'HeadersType' =>
         from 'HashRef' => via {
             Headers->new(%{ $_ });

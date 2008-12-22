@@ -21,6 +21,7 @@ sub import {
     *{"$caller\::message"}     = \&_message;
     *{"$caller\::from"}        = \&_from;
     *{"$caller\::via"}         = \&_via;
+    *{"$caller\::type"}        = \&_type;
     *{"$caller\::subtype"}     = \&_subtype;
     *{"$caller\::coerce"}      = \&_coerce;
     *{"$caller\::class_type"}  = \&_class_type;
@@ -83,6 +84,16 @@ my $optimized_constraints_base;
     sub optimized_constraints { \%SUBTYPE }
     my @SUBTYPE_KEYS = keys %SUBTYPE;
     sub list_all_builtin_type_constraints { @SUBTYPE_KEYS }
+}
+
+sub _type {
+    my $pkg = caller(0);
+    my($name, %conf) = @_;
+    if (my $type = $SUBTYPE{$name}) {
+        Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
+    };
+    my $stuff = $conf{where} || do { $SUBTYPE{delete $conf{as} || 'Any' } };
+    $SUBTYPE{$name} = $stuff;
 }
 
 sub _subtype {

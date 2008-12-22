@@ -5,6 +5,8 @@ Revision history for Mouse
 
     * Rename Mouse::TypeRegistry to Mouse::Util::TypeConstraints
 
+    * "type" sugar for when you're not subtyping anything
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 
