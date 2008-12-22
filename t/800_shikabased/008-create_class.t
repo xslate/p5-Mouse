@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Mouse;
+use Mouse ();
 use Test::More tests => 14;
 use Test::Exception;
 
