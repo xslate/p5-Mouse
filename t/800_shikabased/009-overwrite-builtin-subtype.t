@@ -8,4 +8,4 @@ eval {
 
     type 'Int' => where { 1};
 };
-like $@, qr/The type constraint 'Int' has already been created, cannot be created again in Request/;
+like $@, qr/The type constraint 'Int' has already been created in Mouse::Util::TypeConstraints and cannot be created again in Request/;

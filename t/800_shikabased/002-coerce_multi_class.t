@@ -38,7 +38,7 @@ eval {
 
     type 'Headers' => where { defined $_ && eval { $_->isa('Request::Headers') } };
 };
-like $@, qr/The type constraint 'Headers' has already been created, cannot be created again in Request/;
+like $@, qr/The type constraint 'Headers' has already been created in Response and cannot be created again in Request/;
 
 eval {
     package Request;
@@ -92,7 +92,7 @@ eval {
     package Response;
     type 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
 };
-like $@, qr/The type constraint 'Headers' has already been created, cannot be created again in Response/;
+like $@, qr/The type constraint 'Headers' has already been created in Response and cannot be created again in Response/;
 
 {
     package Request;

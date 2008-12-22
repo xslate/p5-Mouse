@@ -7,6 +7,8 @@ Revision history for Mouse
 
     * "type" sugar for when you're not subtyping anything
 
+    * Keep track of the source package of each type
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 

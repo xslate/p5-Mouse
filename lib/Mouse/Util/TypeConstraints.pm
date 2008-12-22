@@ -6,6 +6,7 @@ use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
 my %TYPE;
+my %TYPE_SOURCE;
 my %COERCE;
 my %COERCE_KEYS;
 
@@ -82,30 +83,37 @@ my $optimized_constraints_base;
     sub optimized_constraints { \%TYPE }
     my @TYPE_KEYS = keys %TYPE;
     sub list_all_builtin_type_constraints { @TYPE_KEYS }
+
+    @TYPE_SOURCE{@TYPE_KEYS} = (__PACKAGE__) x @TYPE_KEYS;
 }
 
 sub _type {
     my $pkg = caller(0);
     my($name, %conf) = @_;
     if (my $type = $TYPE{$name}) {
-        Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
+        Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $stuff = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
-    $TYPE{$name} = $stuff;
+    my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
+
+    $TYPE_SOURCE{$name} = $pkg;
+    $TYPE{$name} = $constraint;
 }
 
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
     if (my $type = $TYPE{$name}) {
-        Carp::croak "The type constraint '$name' has already been created, cannot be created again in $pkg";
+        Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $stuff = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
-    my $as    = $conf{as} || '';
+    my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
+    my $as         = $conf{as} || '';
+
+    $TYPE_SOURCE{$name} = $pkg;
+
     if ($as = $TYPE{$as}) {
-        $TYPE{$name} = sub { $as->($_) && $stuff->($_) };
+        $TYPE{$name} = sub { $as->($_) && $constraint->($_) };
     } else {
-        $TYPE{$name} = $stuff;
+        $TYPE{$name} = $constraint;
     }
 }
 
