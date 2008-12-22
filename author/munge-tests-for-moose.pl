@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 BEGIN {
-    @ARGV = glob('t/*.t t/*/*.t');
+    @ARGV = glob('t/*.t t/*/*.t') if !@ARGV;
     $^I = '';
 }
 
