@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 BEGIN {
     if (eval "require Class::Method::Modifiers; 1") {
-        plan tests => 58;
+        plan tests => 57;
     }
     else {
         plan skip_all => "Class::Method::Modifiers required for this test";
@@ -15,10 +15,6 @@ BEGIN {
 
 use Mouse::Util;
 use Test::Exception;
-
-BEGIN {
-    use_ok('Mouse');           
-}
 
 {
 	package Point;	
