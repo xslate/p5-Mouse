@@ -323,7 +323,7 @@ sub validate_args {
     return 1;
 }
 
-sub verify_type_constraint {
+sub verify_against_type_constraint {
     return 1 unless $_[0]->{type_constraint};
 
     local $_ = $_[1];
@@ -470,7 +470,7 @@ Creates a new code reference for each of the attribute's handles methods.
 Returns a code reference which can be used to check that a given value passes
 this attribute's type constraint;
 
-=head2 verify_type_constraint Item -> 1 | ERROR
+=head2 verify_against_type_constraint Item -> 1 | ERROR
 
 Checks that the given value passes this attribute's type constraint. Returns 1
 on success, otherwise C<confess>es.
