@@ -14,7 +14,7 @@ use Test::More tests => 18;
 eval {
     Foo->new( bar => +{} );
 };
-ok $@, 'not got an object';
+like($@, qr/^Attribute \(bar\) does not pass the type constraint because: Validation failed for 'Str\|Baz\|Undef' failed with value HASH\(\w+\)/, 'type constraint and coercion failed');
 
 eval {
     isa_ok(Foo->new( bar => undef ), 'Foo');
