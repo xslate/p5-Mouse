@@ -4,7 +4,7 @@ use Test::More tests => 1;
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Int' => where { 1};
 };

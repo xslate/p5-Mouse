@@ -83,7 +83,7 @@ sub generate_accessor {
         if ($constraint) {
             $accessor .= 'my $val = ';
             if ($should_coerce) {
-                $accessor  .= 'Mouse::TypeRegistry->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
+                $accessor  .= 'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
             } else {
                 $accessor .= $value.';';
             }
@@ -210,7 +210,7 @@ sub create {
         my @type_constraints = split /\|/, $type_constraint;
 
         my $code;
-        my $optimized_constraints = Mouse::TypeRegistry->optimized_constraints;
+        my $optimized_constraints = Mouse::Util::TypeConstraints->optimized_constraints;
         if (@type_constraints == 1) {
             $code = $optimized_constraints->{$type_constraints[0]} ||
                 sub { Scalar::Util::blessed($_) && $_->isa($type_constraints[0]) };
@@ -343,7 +343,7 @@ sub verify_type_constraint_error {
 sub coerce_constraint { ## my($self, $value) = @_;
     my $type = $_[0]->{type_constraint}
         or return $_[1];
-    return Mouse::TypeRegistry->typecast_constraints($_[0]->associated_class->name, $_[0]->find_type_constraint, $type, $_[1]);
+    return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $_[0]->find_type_constraint, $type, $_[1]);
 }
 
 sub _canonicalize_handles {

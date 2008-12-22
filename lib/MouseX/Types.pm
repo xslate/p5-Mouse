@@ -2,7 +2,7 @@ package MouseX::Types;
 use strict;
 use warnings;
 
-require Mouse::TypeRegistry;
+require Mouse::Util::TypeConstraints;
 use MouseX::Types::TypeDecorator;
 
 sub import {
@@ -22,7 +22,7 @@ sub import {
         }
     }
 
-    return Mouse::TypeRegistry->import( callee => $caller );
+    return Mouse::Util::TypeConstraints->import( callee => $caller );
 }
 
 sub _import {

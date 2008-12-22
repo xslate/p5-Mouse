@@ -4,7 +4,7 @@ use Test::More tests => 4;
 {
     package Response;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     class_type Headers => { class => 't::lib::ClassType_Foo' };
     coerce 'Headers' =>

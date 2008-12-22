@@ -16,7 +16,7 @@ use Test::More tests => 14;
 {
     package Response;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
     coerce 'Headers' =>
@@ -34,7 +34,7 @@ use Test::More tests => 14;
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Headers' => where { defined $_ && eval { $_->isa('Request::Headers') } };
 };
@@ -42,7 +42,7 @@ like $@, qr/The type constraint 'Headers' has already been created, cannot be cr
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     coerce 'TooBad' =>
         from 'HashRef' => via {
@@ -54,7 +54,7 @@ like $@, qr/Cannot find type 'TooBad', perhaps you forgot to load it./;
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     coerce 'Headers' =>
         from 'HashRef' => via {
@@ -66,7 +66,7 @@ like $@, qr/A coercion action already exists for 'HashRef'/;
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     coerce 'Headers' =>
         from 'HashRefa' => via {
@@ -78,7 +78,7 @@ like $@, qr/Could not find the type constraint \(HashRefa\) to coerce from/;
 
 eval {
     package Request;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     coerce 'Headers' =>
         from 'ArrayRef' => via {

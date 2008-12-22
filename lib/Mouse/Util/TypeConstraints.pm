@@ -1,4 +1,4 @@
-package Mouse::TypeRegistry;
+package Mouse::Util::TypeConstraints;
 use strict;
 use warnings;
 
@@ -166,7 +166,7 @@ __END__
 
 =head1 NAME
 
-Mouse::TypeRegistry - simple type constraints
+Mouse::Util::TypeConstraints - simple type constraints
 
 =head1 METHODS
 

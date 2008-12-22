@@ -20,7 +20,7 @@ use Test::Exception;
 {
     package Response;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'HeadersType' => where { defined $_ && eval { $_->isa('Headers') } };
     coerce  'HeadersType' =>

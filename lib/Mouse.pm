@@ -21,7 +21,7 @@ use Mouse::Util;
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Class;
 use Mouse::Object;
-use Mouse::TypeRegistry;
+use Mouse::Util::TypeConstraints;
 
 our @EXPORT = qw(extends has before after around blessed confess with);
 

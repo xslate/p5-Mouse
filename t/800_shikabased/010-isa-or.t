@@ -5,7 +5,7 @@ use Test::More tests => 18;
 {   
     package Foo;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
     subtype Baz => where { defined($_) && $_ eq 'Baz' };
     coerce Baz => from 'ArrayRef', via { 'Baz' };
     has 'bar' => ( is => 'rw', isa => 'Str | Baz | Undef', coerce => 1 );
@@ -51,7 +51,7 @@ is $f->bar, undef, 'bar is undef';
 {   
     package Bar;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Type1' => where { defined($_) && $_ eq 'Name' };
     coerce 'Type1', from 'Str', via { 'Names' };
@@ -74,7 +74,7 @@ is $foo->foo, 'Name', 'foo is Name';
 {   
     package Baz;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Type3' => where { defined($_) && $_ eq 'Name' };
     coerce 'Type3', from 'CodeRef', via { 'Name' };

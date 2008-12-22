@@ -16,7 +16,7 @@ use Scalar::Util qw/blessed/;
 {
     package Foo;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'Type1' => as 'Str' => where { blessed($_) };
     has str_obj => (

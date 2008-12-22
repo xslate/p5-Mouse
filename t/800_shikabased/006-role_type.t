@@ -29,7 +29,7 @@ use Test::More tests => 5;
 {
     package Response;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     role_type Headers => { role => 'Response::Headers::Role' };
     coerce 'Headers' =>

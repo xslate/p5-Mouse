@@ -11,7 +11,7 @@ use Test::More tests => 6;
 {
     package Response;
     use Mouse;
-    use Mouse::TypeRegistry;
+    use Mouse::Util::TypeConstraints;
 
     subtype 'HeadersType' => as 'Object' => where { defined $_ && eval { $_->isa('Headers') } };
     coerce 'HeadersType' =>

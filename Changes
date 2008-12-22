@@ -3,6 +3,8 @@ Revision history for Mouse
 0.15
     * Don't export Mouse's sugar into the package 'main'
 
+    * Rename Mouse::TypeRegistry to Mouse::Util::TypeConstraints
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 
