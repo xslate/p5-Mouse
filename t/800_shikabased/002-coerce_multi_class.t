@@ -18,7 +18,7 @@ use Test::More tests => 14;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
-    subtype 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
+    type 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
     coerce 'Headers' =>
         from 'HashRef' => via {
             Response::Headers->new(%{ $_ });
@@ -36,7 +36,7 @@ eval {
     package Request;
     use Mouse::Util::TypeConstraints;
 
-    subtype 'Headers' => where { defined $_ && eval { $_->isa('Request::Headers') } };
+    type 'Headers' => where { defined $_ && eval { $_->isa('Request::Headers') } };
 };
 like $@, qr/The type constraint 'Headers' has already been created, cannot be created again in Request/;
 
@@ -90,7 +90,7 @@ ok !$@;
 
 eval {
     package Response;
-    subtype 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
+    type 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
 };
 like $@, qr/The type constraint 'Headers' has already been created, cannot be created again in Response/;
 

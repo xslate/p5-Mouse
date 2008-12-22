@@ -37,7 +37,7 @@ use Scalar::Util qw/blessed/;
     );
 
 
-    subtype 'Type4';
+    type 'Type4';
     has any => (
         is     => 'rw',
         isa    => 'Type4',

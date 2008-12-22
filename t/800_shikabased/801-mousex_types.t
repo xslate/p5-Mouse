@@ -7,7 +7,7 @@ use Test::More tests => 16;
     use MouseX::Types -declare => [qw/ Headers /];
     use MouseX::Types::Mouse 'HashRef';
 
-    subtype Headers, where { defined $_ && eval { $_->isa('Headers1') } };
+    type Headers, where { defined $_ && eval { $_->isa('Headers1') } };
     coerce Headers,
         from HashRef, via {
             Headers1->new(%{ $_ });
@@ -20,7 +20,7 @@ use Test::More tests => 16;
     use MouseX::Types -declare => [qw/ Headers /];
     use MouseX::Types::Mouse 'HashRef';
 
-    subtype Headers, where { defined $_ && eval { $_->isa('Headers2') } };
+    type Headers, where { defined $_ && eval { $_->isa('Headers2') } };
     coerce Headers,
         from HashRef, via {
             Headers2->new(%{ $_ });

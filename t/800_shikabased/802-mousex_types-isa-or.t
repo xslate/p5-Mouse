@@ -9,13 +9,13 @@ use Test::More tests => 13;
     use MouseX::Types -declare => [qw/ Baz Type1 Type2 /];
     use MouseX::Types::Mouse qw( ArrayRef );
 
-    subtype Baz, where { defined($_) && $_ eq 'Baz' };
+    type Baz, where { defined($_) && $_ eq 'Baz' };
     coerce Baz, from ArrayRef, via { 'Baz' };
 
-    subtype Type1, where { defined($_) && $_ eq 'Name' };
+    type Type1, where { defined($_) && $_ eq 'Name' };
     coerce Type1, from 'Str', via { 'Names' };
 
-    subtype Type2, where { defined($_) && $_ eq 'Group' };
+    type Type2, where { defined($_) && $_ eq 'Group' };
     coerce Type2, from 'Str', via { 'Name' };
 
 }

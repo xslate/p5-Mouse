@@ -6,6 +6,6 @@ eval {
     package Request;
     use Mouse::Util::TypeConstraints;
 
-    subtype 'Int' => where { 1};
+    type 'Int' => where { 1};
 };
 like $@, qr/The type constraint 'Int' has already been created, cannot be created again in Request/;
