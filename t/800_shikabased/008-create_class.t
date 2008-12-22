@@ -7,6 +7,7 @@ use Test::Exception;
 # error handling
 throws_ok {
     Mouse::Meta::Class->create(
+        "ClassName",
         superclasses => "foo"
     );
 } qr/You must pass an ARRAY ref of superclasses/;
@@ -14,12 +15,14 @@ throws_ok {
 
 throws_ok {
     Mouse::Meta::Class->create(
+        "ClassName",
         attributes => "foo"
     );
 } qr/You must pass an ARRAY ref of attributes/;
 
 throws_ok {
     Mouse::Meta::Class->create(
+        "ClassName",
         methods => "foo"
     );
 } qr/You must pass a HASH ref of methods/;
