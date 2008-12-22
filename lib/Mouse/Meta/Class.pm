@@ -236,7 +236,8 @@ sub create {
         confess "creation of $package_name failed : $@" if $@;
     };
 
-    delete @options{qw(
+    my %initialize_options = %options;
+    delete @initialize_options{qw(
         package
         superclasses
         attributes
@@ -244,7 +245,7 @@ sub create {
         version
         authority
     )};
-    my $meta = $self->initialize( $package_name => %options );
+    my $meta = $self->initialize( $package_name => %initialize_options );
 
     # FIXME totally lame
     $meta->add_method('meta' => sub {
