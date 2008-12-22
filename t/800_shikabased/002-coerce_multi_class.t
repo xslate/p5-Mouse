@@ -68,9 +68,9 @@ eval {
     package Request;
     use Mouse::Util::TypeConstraints;
 
-    coerce 'Headers' =>
+    coerce 'Int' =>
         from 'XXX' => via {
-            Request::Headers->new(%{ $_ });
+            1
         },
     ;
 };
