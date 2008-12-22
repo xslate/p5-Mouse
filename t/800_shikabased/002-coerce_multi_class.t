@@ -90,9 +90,11 @@ ok !$@;
 
 eval {
     package Response;
-    type 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
+    type 'Headers' => where {
+        eval { $_->isa('Response::Headers') }
+    };
 };
-like $@, qr/The type constraint 'Headers' has already been created in Response and cannot be created again in Response/;
+ok(!$@, "You can redefine types in their original package");
 
 {
     package Request;

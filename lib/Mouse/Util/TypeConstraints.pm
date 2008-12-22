@@ -90,7 +90,7 @@ my $optimized_constraints_base;
 sub _type {
     my $pkg = caller(0);
     my($name, %conf) = @_;
-    if (my $type = $TYPE{$name}) {
+    if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
     my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
@@ -102,7 +102,7 @@ sub _type {
 sub _subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
-    if (my $type = $TYPE{$name}) {
+    if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
     my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
