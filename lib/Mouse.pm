@@ -234,6 +234,14 @@ as Mouse unless Moose is loaded, in which case it will act as Moose.
 
 Mouse also has the blessings of Moose's author, stevan.
 
+=head2 MouseX
+
+Please don't copy MooseX code to MouseX. If you need extensions, you really
+should upgrade to Moose. We don't need two parallel sets of extensions!
+
+If you really must write a Mouse extension, please contact the Moose mailing
+list or #moose on IRC beforehand.
+
 =head1 KEYWORDS
 
 =head2 meta -> Mouse::Meta::Class
