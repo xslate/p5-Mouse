@@ -63,6 +63,7 @@ sub add_method {
     my $pkg = $self->name;
 
     no strict 'refs';
+    no warnings 'redefine';
     $self->{'methods'}->{$name}++; # Moose stores meta object here.
     *{ $pkg . '::' . $name } = $code;
 }

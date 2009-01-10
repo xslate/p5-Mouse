@@ -11,6 +11,8 @@ Revision history for Mouse
 
     * class_type shouldn't load the class (Moose compat; no easy fix :/)
 
+    * suppress warninsgs when we use around and has '+...' 
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 
