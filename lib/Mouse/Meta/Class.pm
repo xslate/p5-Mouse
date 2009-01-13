@@ -160,37 +160,68 @@ sub is_immutable { $_[0]->{is_immutable} }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
 
+sub _install_fast_modifier {
+    my $self     = shift;
+    my $into     = shift;
+    my $type     = shift;
+    my $modifier = pop;
+
+    foreach my $name (@_) {
+        my $method = Data::Util::get_code_ref( $into, $name );
+
+        if ( !$method || !Data::Util::subroutine_modifier($method) ) {
+
+            unless ($method) {
+                $method = $into->can($name)
+                    or confess "The method '$name' is not found in the inheritance hierarchy for class $into";
+            }
+            $method = Data::Util::modify_subroutine( $method,
+                $type => [$modifier] );
+
+            no warnings 'redefine';
+            Data::Util::install_subroutine( $into, $name => $method );
+        }
+        else {
+            Data::Util::subroutine_modifier( $method, $type => $modifier );
+        }
+    }
+    return;
+}
+
+sub _install_modifier {
+    my ( $self, $into, $type, $name, $code ) = @_;
+    if (eval "require Data::Util; 1") {
+        $self->_install_fast_modifier( 
+            $into,
+            $type,
+            $name,
+            $code
+        );
+    }
+    else {
+        require Class::Method::Modifiers;
+        Class::Method::Modifiers::_install_modifier( 
+            $into,
+            $type,
+            $name,
+            $code
+        );
+    }
+}
+
 sub add_before_method_modifier {
-    my ($self, $name, $code) = @_;
-    require Class::Method::Modifiers;
-    Class::Method::Modifiers::_install_modifier(
-        $self->name,
-        'before',
-        $name,
-        $code,
-    );
+    my ( $self, $name, $code ) = @_;
+    $self->_install_modifier( $self->name, 'before', $name, $code );
 }
 
 sub add_around_method_modifier {
-    my ($self, $name, $code) = @_;
-    require Class::Method::Modifiers;
-    Class::Method::Modifiers::_install_modifier(
-        $self->name,
-        'around',
-        $name,
-        $code,
-    );
+    my ( $self, $name, $code ) = @_;
+    $self->_install_modifier( $self->name, 'around', $name, $code );
 }
 
 sub add_after_method_modifier {
-    my ($self, $name, $code) = @_;
-    require Class::Method::Modifiers;
-    Class::Method::Modifiers::_install_modifier(
-        $self->name,
-        'after',
-        $name,
-        $code,
-    );
+    my ( $self, $name, $code ) = @_;
+    $self->_install_modifier( $self->name, 'after', $name, $code );
 }
 
 sub roles { $_[0]->{roles} }
