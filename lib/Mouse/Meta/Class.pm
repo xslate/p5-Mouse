@@ -160,38 +160,10 @@ sub is_immutable { $_[0]->{is_immutable} }
 
 sub attribute_metaclass { "Mouse::Meta::Class" }
 
-sub _install_fast_modifier {
-    my $self     = shift;
-    my $into     = shift;
-    my $type     = shift;
-    my $modifier = pop;
-
-    foreach my $name (@_) {
-        my $method = Data::Util::get_code_ref( $into, $name );
-
-        if ( !$method || !Data::Util::subroutine_modifier($method) ) {
-
-            unless ($method) {
-                $method = $into->can($name)
-                    or confess "The method '$name' is not found in the inheritance hierarchy for class $into";
-            }
-            $method = Data::Util::modify_subroutine( $method,
-                $type => [$modifier] );
-
-            no warnings 'redefine';
-            Data::Util::install_subroutine( $into, $name => $method );
-        }
-        else {
-            Data::Util::subroutine_modifier( $method, $type => $modifier );
-        }
-    }
-    return;
-}
-
 sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
-    if (eval "require Data::Util; 1") {
-        $self->_install_fast_modifier( 
+    if (eval "require Class::Method::Modifiers::Fast; 1") {
+        Class::Method::Modifiers::Fast::_install_modifier( 
             $into,
             $type,
             $name,
