@@ -1,47 +1,32 @@
 package Mouse::Util::TypeConstraints;
 use strict;
 use warnings;
+use base 'Exporter';
 
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
+
+our @EXPORT = qw(
+    as where message from via type subtype coerce class_type role_type
+);
 
 my %TYPE;
 my %TYPE_SOURCE;
 my %COERCE;
 my %COERCE_KEYS;
 
-#find_type_constraint register_type_constraint
-sub import {
-    my $class  = shift;
-    my %args   = @_;
-    my $caller = $args{callee} || caller(0);
-
-    no strict 'refs';
-    *{"$caller\::as"}          = \&_as;
-    *{"$caller\::where"}       = \&_where;
-    *{"$caller\::message"}     = \&_message;
-    *{"$caller\::from"}        = \&_from;
-    *{"$caller\::via"}         = \&_via;
-    *{"$caller\::type"}        = \&_type;
-    *{"$caller\::subtype"}     = \&_subtype;
-    *{"$caller\::coerce"}      = \&_coerce;
-    *{"$caller\::class_type"}  = \&_class_type;
-    *{"$caller\::role_type"}   = \&_role_type;
-}
-
-
-sub _as ($) {
+sub as ($) {
     as => $_[0]
 }
-sub _where (&) {
+sub where (&) {
     where => $_[0]
 }
-sub _message ($) {
+sub message ($) {
     message => $_[0]
 }
 
-sub _from { @_ }
-sub _via (&) {
+sub from { @_ }
+sub via (&) {
     $_[0]
 }
 
@@ -87,7 +72,7 @@ my $optimized_constraints_base;
     @TYPE_SOURCE{@TYPE_KEYS} = (__PACKAGE__) x @TYPE_KEYS;
 }
 
-sub _type {
+sub type {
     my $pkg = caller(0);
     my($name, %conf) = @_;
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
@@ -99,7 +84,7 @@ sub _type {
     $TYPE{$name} = $constraint;
 }
 
-sub _subtype {
+sub subtype {
     my $pkg = caller(0);
     my($name, %conf) = @_;
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
@@ -117,7 +102,7 @@ sub _subtype {
     }
 }
 
-sub _coerce {
+sub coerce {
     my($name, %conf) = @_;
 
     Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
@@ -139,19 +124,19 @@ sub _coerce {
     }
 }
 
-sub _class_type {
+sub class_type {
     my $pkg = caller(0);
     my($name, $conf) = @_;
     my $class = $conf->{class};
-    _subtype(
+    subtype(
         $name => where => sub { $_->isa($class) }
     );
 }
 
-sub _role_type {
+sub role_type {
     my($name, $conf) = @_;
     my $role = $conf->{role};
-    _subtype(
+    subtype(
         $name => where => sub {
             return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
             $_->meta->does_role($role);
