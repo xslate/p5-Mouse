@@ -22,7 +22,7 @@ sub import {
         }
     }
 
-    return Mouse::Util::TypeConstraints->import( callee => $caller );
+    return Mouse::Util::TypeConstraints->export_to_level(1, $class);
 }
 
 sub _import {
