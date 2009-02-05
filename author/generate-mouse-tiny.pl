@@ -13,8 +13,9 @@ find({
     wanted => sub {
         push @files, $_
             if -f $_
-            && !/Squirrel|MouseX|\.sw[po]$/
+            && !/Squirrel/
             && !/\bouse/
+            && !/\.sw[po]$/
     },
     no_chdir => 1,
 }, 'lib');
