@@ -14,7 +14,7 @@ do {
         is     => 'rw',
         reader => 'read_attr',
         writer => 'write_attr',
-    );;
+    );
 };
 
 my $object = Class->new;
