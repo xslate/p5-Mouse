@@ -69,9 +69,9 @@ sub add_method {
 }
 
 # copied from Class::Inspector
-sub get_method_list {
+my $get_methods_for_class = sub {
     my $self = shift;
-    my $name = $self->name;
+    my $name = shift;
 
     no strict 'refs';
     # Get all the CODE symbol table entries
@@ -79,8 +79,13 @@ sub get_method_list {
       grep !/^(?:has|with|around|before|after|blessed|extends|confess|override|super)$/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
-    push @functions, keys %{$self->{'methods'}->{$name}};
+    push @functions, keys %{$self->{'methods'}->{$name}} if $self;
     wantarray ? @functions : \@functions;
+};
+
+sub get_method_list {
+    my $self = shift;
+    $get_methods_for_class->($self, $self->name);
 }
 
 sub add_attribute {
