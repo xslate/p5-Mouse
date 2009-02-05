@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 BEGIN {
-    plan skip_all => "Moose required for this test" unless eval { require Moose  && Moose->VERSION('0.59') };
+    plan skip_all => "Moose required for this test" unless eval { require Moose  && Moose->VERSION('0.68') };
     plan tests => 5;
 }
 
