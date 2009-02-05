@@ -7,7 +7,7 @@ use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
 our @EXPORT = qw(
-    as where message from via type subtype coerce class_type role_type
+    as where message from via type subtype coerce class_type role_type enum
 );
 
 my %TYPE;
@@ -159,6 +159,15 @@ sub typecast_constraints {
         }
     }
     return $value;
+}
+
+sub enum {
+    my $name = shift;
+    my %is_valid = map { $_ => 1 } @_;
+
+    subtype(
+        $name => where => sub { $is_valid{$_} }
+    );
 }
 
 1;
