@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.16
+
 0.15 Thu Feb 5 11:44:05 2009
     * Don't export Mouse's sugar into the package 'main'
 
