@@ -148,7 +148,14 @@ sub make_immutable {
     my %args = @_;
     my $name = $self->name;
     $self->{is_immutable}++;
-    $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
+
+    if ($self->name->can('new') != Mouse::Object->can('new')) {
+        warn "Not inlining a constructor for ".$self->name." since it is not inheriting the default Mouse::Object constructor\n";
+    }
+    else {
+        $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
+    }
+
     if ($args{inline_destructor}) {
         $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
     }
