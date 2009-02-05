@@ -244,11 +244,9 @@ Mouse aims to alleviate this by providing a subset of Moose's
 functionality, faster. In particular, L<Moose/has> is missing only a few
 expert-level features.
 
-We're also going as light on dependencies as possible. Most functions we use
-from L<Scalar::Util> are copied into this dist. L<Scalar::Util> is required if
-you'd like weak references; there's simply no way to do it from pure Perl.
-L<Class::Method::Modifiers> is required if you want support for L</before>,
-L</after>, and L</around>.
+We're also going as light on dependencies as possible.
+L<Class::Method::Modifiers> or L<Data::Util> is required if you want support
+for L</before>, L</after>, and L</around>.
 
 =head2 MOOSE COMPAT
 
@@ -261,8 +259,7 @@ The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
 nothingmuch has written L<Squirrel> (part of this distribution) which will act
 as Mouse unless Moose is loaded, in which case it will act as Moose.
-
-Mouse also has the blessings of Moose's author, stevan.
+L<Any::Moose> is a more high-tech L<Squirrel>.
 
 =head2 MouseX
 
