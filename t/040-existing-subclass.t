@@ -6,7 +6,7 @@ use Test::More;
 BEGIN {
     eval "use Test::Output;";
     plan skip_all => "Test::Output is required for this test" if $@;
-    plan tests => 1;
+    plan tests => 2;
 }
 
 do {
@@ -18,9 +18,30 @@ do {
     use Mouse;
 };
 
+TODO: {
+    local $TODO = "Mouse doesn't track enough context";
+    stderr_is(
+        sub { Child->meta->make_immutable },
+        "Not inlining a constructor for Child since it is not inheriting the default Mouse::Object constructor\n",
+        'Mouse warns when it would have blown away the inherited constructor',
+    );
+}
+
+do {
+    package Foo;
+    use Mouse;
+
+    __PACKAGE__->meta->make_immutable;
+
+    package Bar;
+    use Mouse;
+    extends 'Foo';
+
+};
+
 stderr_is(
-    sub { package Child; __PACKAGE__->meta->make_immutable },
-    "Not inlining a constructor for Child since it is not inheriting the default Mouse::Object constructor\n",
-    'Mouse warns when it would have blown away the inherited constructor',
+    sub { Bar->meta->make_immutable },
+    "",
+    'Mouse does not warn about inlining a constructor when the superclass inlined a constructor',
 );
 
