@@ -18,8 +18,6 @@ Revision history for Mouse
 
     * class_type shouldn't load the class (Moose compat; no easy fix :/)
 
-    * exists($_[1]) is faster than scalar(@_) >= 2 (obra)
-
     * suppress warnings when we use "around" and "has '+...'" (dann)
 
     * use Data::Util to make method modifiers fast if it's available (dann)
