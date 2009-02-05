@@ -173,6 +173,10 @@ sub make_immutable {
     if ($args{inline_destructor}) {
         $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
     }
+
+    # Moose's make_immutable returns true allowing calling code to skip setting an explicit true value
+    # at the end of a source file. 
+    return 1;
 }
 
 sub make_mutable { confess "Mouse does not currently support 'make_mutable'" }
