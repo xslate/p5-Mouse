@@ -75,7 +75,7 @@ sub generate_accessor {
 
     my $accessor = "sub {\n";
     if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 'if (exists $_[1]) {' . "\n";
+        $accessor .= 'if (@_ >= 2) {' . "\n";
 
         my $value = '$_[1]';
 
