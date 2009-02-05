@@ -54,6 +54,11 @@ Squirrel - Use L<Mouse>, unless L<Moose> is already loaded.
         is => "rw", 
     );
 
+=head1 DEPRECATION
+
+L<Squirrel> is being deprecated. L<Any::Moose> provides the same functionality,
+but better. :)
+
 =head1 DESCRIPTION
 
 L<Moose> and L<Squirrel> are TEH BEST FRENDS, but if L<Moose> isn't there
