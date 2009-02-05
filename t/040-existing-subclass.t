@@ -6,7 +6,7 @@ use Test::More;
 BEGIN {
     eval "use Test::Output;";
     plan skip_all => "Test::Output is required for this test" if $@;
-    plan tests => 2;
+    plan tests => 3;
 }
 
 do {
@@ -44,4 +44,16 @@ stderr_is(
     "",
     'Mouse does not warn about inlining a constructor when the superclass inlined a constructor',
 );
+
+do {
+    package Baz;
+
+    package Quux;
+    BEGIN { our @ISA = 'Baz' }
+    use Mouse;
+
+    __PACKAGE__->meta->make_immutable;
+};
+
+ok(Quux->new);
 

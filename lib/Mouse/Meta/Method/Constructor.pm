@@ -136,7 +136,7 @@ sub _generate_BUILDARGS {
     my $self = shift;
     my $meta = shift;
 
-    if ($meta->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
+    if ($meta->name->can('BUILDARGS') && $meta->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
         return '$class->BUILDARGS(@_)';
     }
 
