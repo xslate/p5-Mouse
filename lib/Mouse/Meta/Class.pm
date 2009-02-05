@@ -145,14 +145,15 @@ sub clone_instance {
 
 sub make_immutable {
     my $self = shift;
-    my %args = @_;
+    my %args = (
+        inline_constructor => 1,
+        @_,
+    );
+
     my $name = $self->name;
     $self->{is_immutable}++;
 
-    if ($self->name->can('new') != Mouse::Object->can('new')) {
-        warn "Not inlining a constructor for ".$self->name." since it is not inheriting the default Mouse::Object constructor\n";
-    }
-    else {
+    if ($args{inline_constructor}) {
         $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
     }
 
