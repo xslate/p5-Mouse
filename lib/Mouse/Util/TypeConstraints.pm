@@ -21,7 +21,7 @@ sub as ($) {
 sub where (&) {
     where => $_[0]
 }
-sub message ($) {
+sub message (&) {
     message => $_[0]
 }
 
