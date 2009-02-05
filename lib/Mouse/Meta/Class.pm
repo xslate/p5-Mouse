@@ -88,6 +88,14 @@ sub get_method_list {
     $get_methods_for_class->($self, $self->name);
 }
 
+sub get_all_method_names {
+    my $self = shift;
+    my %uniq;
+    return grep { $uniq{$_}++ == 0 }
+            map { $get_methods_for_class->(undef, $_) }
+            $self->linearized_isa;
+}
+
 sub add_attribute {
     my $self = shift;
     my $attr = shift;
