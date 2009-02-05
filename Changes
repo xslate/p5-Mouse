@@ -9,12 +9,18 @@ Revision history for Mouse
 
     * Keep track of the source package of each type
 
+    * Moose lets you redefine a type within the same package, so we now do too
+
+    * Borrow more of Moose's meta API
+
+    * Mouse::Util::TypeConstraints now uses Exporter so you can select which
+      sugar you want
+
     * class_type shouldn't load the class (Moose compat; no easy fix :/)
 
-    * suppress warninsgs when we use around and has '+...' (dann) 
+    * suppress warnings when we use "around" and "has '+...'" (dann)
 
-    * use Data::Util to make modifier fast if Data::Util is installed (dann)
-
+    * use Data::Util to make method modifiers fast if it's available (dann)
 
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
