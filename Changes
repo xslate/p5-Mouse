@@ -28,6 +28,8 @@ Revision history for Mouse
 
     * Implement "override" and "super"
 
+    * MouseX::Types is now in its own dist
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 
