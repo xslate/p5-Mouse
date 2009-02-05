@@ -24,6 +24,10 @@ Revision history for Mouse
 
     * use Data::Util to make method modifiers fast if it's available (dann)
 
+    * Implement "enum" type constraints
+
+    * Implement "override" and "super"
+
 0.14 Sat Dec 20 16:53:05 2008
     * POD fix
 
