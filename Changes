@@ -3,6 +3,8 @@ Revision history for Mouse
 0.16
     * Implement get_all_method_names
 
+    * Support for anonymous enums: enum [elements]
+
 0.15 Thu Feb 5 11:44:05 2009
     * Don't export Mouse's sugar into the package 'main'
 

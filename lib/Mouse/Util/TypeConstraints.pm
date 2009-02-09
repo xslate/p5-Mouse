@@ -161,7 +161,19 @@ sub typecast_constraints {
     return $value;
 }
 
+my $serial_enum = 0;
 sub enum {
+    # enum ['small', 'medium', 'large']
+    if (ref($_[0]) eq 'ARRAY') {
+        my @elements = @{ shift @_ };
+
+        my $name = 'Mouse::Util::TypeConstaints::Enum::Serial::'
+                 . ++$serial_enum;
+        enum($name, @elements);
+        return $name;
+    }
+
+    # enum size => 'small', 'medium', 'large'
     my $name = shift;
     my %is_valid = map { $_ => 1 } @_;
 
