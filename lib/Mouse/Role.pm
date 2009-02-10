@@ -104,7 +104,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Role
+Mouse::Role - define a role in Mouse
 
 =head1 KEYWORDS
 
