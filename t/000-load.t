@@ -15,6 +15,9 @@ eval { require Moose };
 diag "    Class::MOP: $Class::MOP::VERSION";
 diag "    Moose: $Moose::VERSION";
 
+eval { require Class::Method::Modifiers::Fast };
+diag "    Class::Method::Modifiers::Fast: $Class::Method::Modifiers::Fast::VERSION";
+
 eval { require Class::Method::Modifiers };
 diag "    Class::Method::Modifiers: $Class::Method::Modifiers::VERSION";
 
