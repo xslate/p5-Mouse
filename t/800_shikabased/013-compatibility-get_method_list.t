@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-plan skip_all => "This test requires Moose" unless eval "require Moose; 1;";
+plan skip_all => "This test requires Moose 0.68" unless eval "require Moose 0.68; 1;";
 plan tests => 6;
 
 test($_) for qw/Moose Mouse/;
