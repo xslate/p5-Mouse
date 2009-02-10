@@ -1,9 +1,12 @@
 Revision history for Mouse
 
-0.16
+0.16 Mon Feb 9 20:56:27 2009
     * Implement get_all_method_names
 
     * Support for anonymous enums: enum [elements]
+
+    * Moose's make_immutable returns true allowing calling code to skip
+      setting an explicit true value at the end of a source file. (obra)
 
 0.15 Thu Feb 5 11:44:05 2009
     * Don't export Mouse's sugar into the package 'main'
