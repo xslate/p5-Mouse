@@ -195,14 +195,16 @@ sub _install_modifier {
             $code
         );
     }
-    else {
-        require Class::Method::Modifiers;
+    elsif (eval "require Class::Method::Modifiers; 1") {
         Class::Method::Modifiers::_install_modifier( 
             $into,
             $type,
             $name,
             $code
         );
+    }
+    else {
+        Carp::croak("Method modifiers require the use of Class::Method::Modifiers. Please install it from CPAN and file a bug report with this application.");
     }
 }
 
