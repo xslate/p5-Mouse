@@ -14,6 +14,7 @@ our %EXPORT_TAGS = (
 BEGIN {
     my $impl;
     if ($] >= 5.009_005) {
+        require mro;
         $impl = \&mro::get_linear_isa;
     } else {
         my $loaded = do {
