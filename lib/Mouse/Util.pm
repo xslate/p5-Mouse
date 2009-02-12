@@ -6,6 +6,7 @@ use Carp;
 
 our @EXPORT_OK = qw(
     get_linear_isa
+    apply_all_roles
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
