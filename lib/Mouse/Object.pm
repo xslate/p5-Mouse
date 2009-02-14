@@ -113,6 +113,13 @@ sub DEMOLISHALL {
     }
 }
 
+sub dump { 
+    my $self = shift;
+    require Data::Dumper;
+    local $Data::Dumper::Maxdepth = shift if @_;
+    Data::Dumper::Dumper $self;
+}
+
 1;
 
 __END__
@@ -152,5 +159,20 @@ L</DESTROY> time.
 You may put any business logic deinitialization in DEMOLISH methods. You don't
 need to redispatch or return any specific value.
 
+
+=head2 B<dump ($maxdepth)>
+
+From the Moose POD:
+
+    C'mon, how many times have you written the following code while debugging:
+
+     use Data::Dumper; 
+     warn Dumper $obj;
+
+    It can get seriously annoying, so why not just use this.
+
+The implementation was lifted directly from Moose::Object.
+
 =cut
+
 
