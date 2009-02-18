@@ -1,9 +1,11 @@
 Revision history for Mouse
 
-0.17
+0.17 Tue Feb 17 20:10:29 2009
     * Load mro directly if Perl is recent enough (Nicholas Clark)
 
     * Add dump method from Moose::Object into Mouse::Object (perigrin)
+
+    * Add role-role composition (tokuhirom)
 
 0.16 Mon Feb 9 20:56:27 2009
     * Implement get_all_method_names

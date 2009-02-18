@@ -4,7 +4,7 @@ use warnings;
 use 5.006;
 use base 'Exporter';
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 BEGIN {
     if ($ENV{MOUSE_DEBUG}) {
