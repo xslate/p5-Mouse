@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.18
+
 0.17 Tue Feb 17 20:10:29 2009
     * Load mro directly if Perl is recent enough (Nicholas Clark)
 
