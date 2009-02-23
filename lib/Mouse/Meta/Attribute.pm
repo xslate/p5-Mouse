@@ -204,6 +204,9 @@ sub create {
         if exists $args{coerce};
 
     if (exists $args{isa}) {
+        confess "Mouse does not yet support parameterized types (rt.cpan.org #39795)"
+            if $args{isa} =~ /\[.*\]/;
+
         my $type_constraint = delete $args{isa};
         $type_constraint =~ s/\s//g;
         my @type_constraints = split /\|/, $type_constraint;
