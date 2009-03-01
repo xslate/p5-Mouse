@@ -32,13 +32,25 @@ sub has {
 
     my $names = shift;
     $names = [$names] if !ref($names);
+    my $metaclass = 'Mouse::Meta::Attribute';
+    my %options = @_;
+
+    if ( my $metaclass_name = delete $options{metaclass} ) {
+        my $new_class = Mouse::Util::resolve_metaclass_alias(
+            'Attribute',
+            $metaclass_name
+        );
+        if ( $metaclass ne $new_class ) {
+            $metaclass = $new_class;
+        }
+    }
 
     for my $name (@$names) {
         if ($name =~ s/^\+//) {
-            Mouse::Meta::Attribute->clone_parent($meta, $name, @_);
+            $metaclass->clone_parent($meta, $name, @_);
         }
         else {
-            Mouse::Meta::Attribute->create($meta, $name, @_);
+            $metaclass->create($meta, $name, @_);
         }
     }
 }

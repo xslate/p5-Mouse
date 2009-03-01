@@ -53,6 +53,99 @@ BEGIN {
     *{ __PACKAGE__ . '::get_linear_isa'} = $impl;
 }
 
+# taken from Class/MOP.pm
+{
+    my %cache;
+
+    sub resolve_metaclass_alias {
+        my ( $type, $metaclass_name, %options ) = @_;
+
+        my $cache_key = $type;
+        return $cache{$cache_key}{$metaclass_name}
+          if $cache{$cache_key}{$metaclass_name};
+
+        my $possible_full_name =
+            'Mouse::Meta::' 
+          . $type
+          . '::Custom::'
+          . $metaclass_name;
+
+        my $loaded_class =
+          load_first_existing_class( $possible_full_name,
+            $metaclass_name );
+
+        return $cache{$cache_key}{$metaclass_name} =
+            $loaded_class->can('register_implementation')
+          ? $loaded_class->register_implementation
+          : $loaded_class;
+    }
+}
+
+# taken from Class/MOP.pm
+sub _is_valid_class_name {
+    my $class = shift;
+
+    return 0 if ref($class);
+    return 0 unless defined($class);
+    return 0 unless length($class);
+
+    return 1 if $class =~ /^\w+(?:::\w+)*$/;
+
+    return 0;
+}
+
+# taken from Class/MOP.pm
+sub load_first_existing_class {
+    my @classes = @_
+      or return;
+
+    foreach my $class (@classes) {
+        unless ( _is_valid_class_name($class) ) {
+            my $display = defined($class) ? $class : 'undef';
+            confess "Invalid class name ($display)";
+        }
+    }
+
+    my $found;
+    my %exceptions;
+    for my $class (@classes) {
+        my $e = _try_load_one_class($class);
+
+        if ($e) {
+            $exceptions{$class} = $e;
+        }
+        else {
+            $found = $class;
+            last;
+        }
+    }
+    return $found if $found;
+
+    confess join(
+        "\n",
+        map {
+            sprintf( "Could not load class (%s) because : %s",
+                $_, $exceptions{$_} )
+          } @classes
+    );
+}
+
+# taken from Class/MOP.pm
+sub _try_load_one_class {
+    my $class = shift;
+
+    return if Mouse::is_class_loaded($class);
+
+    my $file = $class . '.pm';
+    $file =~ s{::}{/}g;
+
+    return do {
+        local $@;
+        eval { require($file) };
+        $@;
+    };
+}
+
 sub apply_all_roles {
     my $meta = Mouse::Meta::Class->initialize(shift);
 
