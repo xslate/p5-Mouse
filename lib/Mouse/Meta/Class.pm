@@ -187,25 +187,36 @@ sub attribute_metaclass { "Mouse::Meta::Class" }
 
 sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
-    if (eval "require Class::Method::Modifiers::Fast; 1") {
-        Class::Method::Modifiers::Fast::_install_modifier( 
-            $into,
-            $type,
-            $name,
-            $code
-        );
+
+    # which is modifer class available?
+    my $modifier_class = do {
+        if (eval "require Class::Method::Modifiers::Fast; 1") {
+            'Class::Method::Modifiers::Fast';
+        } elsif (eval "require Class::Method::Modifiers; 1") {
+            'Class::Method::Modifiers';
+        } else {
+            Carp::croak("Method modifiers require the use of Class::Method::Modifiers or Class::Method::Modifiers::Fast. Please install it from CPAN and file a bug report with this application.");
+        }
+    };
+    my $modifier = $modifier_class->can('_install_modifier');
+
+    # replace this method itself :)
+    {
+        no strict 'refs';
+        no warnings 'redefine';
+        *{__PACKAGE__ . '::_install_modifier'} = sub {
+            my ( $self, $into, $type, $name, $code ) = @_;
+            $modifier->(
+                $into,
+                $type,
+                $name,
+                $code
+            );
+        };
     }
-    elsif (eval "require Class::Method::Modifiers; 1") {
-        Class::Method::Modifiers::_install_modifier( 
-            $into,
-            $type,
-            $name,
-            $code
-        );
-    }
-    else {
-        Carp::croak("Method modifiers require the use of Class::Method::Modifiers. Please install it from CPAN and file a bug report with this application.");
-    }
+
+    # call me. for first time.
+    $self->_install_modifier( $into, $type, $name, $code );
 }
 
 sub add_before_method_modifier {
