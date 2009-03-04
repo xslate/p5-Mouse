@@ -125,7 +125,16 @@ sub import {
     strict->import;
     warnings->import;
 
-    my $caller = caller;
+    my $opts = do {
+        if (ref($_[0]) && ref($_[0]) eq 'HASH') {
+            shift @_;
+        } else {
+            +{ };
+        }
+    };
+    my $level = delete $opts->{into_level};
+       $level = 0 unless defined $level;
+    my $caller = caller($level);
 
     # we should never export to main
     if ($caller eq 'main') {
@@ -142,7 +151,7 @@ sub import {
     *{$caller.'::meta'} = sub { $meta };
 
     if (@_) {
-        __PACKAGE__->export_to_level( 1, $class, @_);
+        __PACKAGE__->export_to_level( $level+1, $class, @_);
     } else {
         # shortcut for the common case of no type character
         no strict 'refs';
