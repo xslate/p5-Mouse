@@ -29,30 +29,7 @@ sub extends { Mouse::Meta::Class->initialize(caller)->superclasses(@_) }
 
 sub has {
     my $meta = Mouse::Meta::Class->initialize(caller);
-
-    my $names = shift;
-    $names = [$names] if !ref($names);
-    my $metaclass = 'Mouse::Meta::Attribute';
-    my %options = @_;
-
-    if ( my $metaclass_name = delete $options{metaclass} ) {
-        my $new_class = Mouse::Util::resolve_metaclass_alias(
-            'Attribute',
-            $metaclass_name
-        );
-        if ( $metaclass ne $new_class ) {
-            $metaclass = $new_class;
-        }
-    }
-
-    for my $name (@$names) {
-        if ($name =~ s/^\+//) {
-            $metaclass->clone_parent($meta, $name, @_);
-        }
-        else {
-            $metaclass->create($meta, $name, @_);
-        }
-    }
+    $meta->add_attribute(@_);
 }
 
 sub before {

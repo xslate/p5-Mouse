@@ -98,9 +98,35 @@ sub get_all_method_names {
 
 sub add_attribute {
     my $self = shift;
-    my $attr = shift;
 
-    $self->{'attributes'}{$attr->name} = $attr;
+    if (@_ == 1 && blessed($_[0])) {
+        my $attr = shift @_;
+        $self->{'attributes'}{$attr->name} = $attr;
+    } else {
+        my $names = shift @_;
+        $names = [$names] if !ref($names);
+        my $metaclass = 'Mouse::Meta::Attribute';
+        my %options = @_;
+
+        if ( my $metaclass_name = delete $options{metaclass} ) {
+            my $new_class = Mouse::Util::resolve_metaclass_alias(
+                'Attribute',
+                $metaclass_name
+            );
+            if ( $metaclass ne $new_class ) {
+                $metaclass = $new_class;
+            }
+        }
+
+        for my $name (@$names) {
+            if ($name =~ s/^\+//) {
+                $metaclass->clone_parent($self, $name, @_);
+            }
+            else {
+                $metaclass->create($self, $name, @_);
+            }
+        }
+    }
 }
 
 sub compute_all_applicable_attributes {
@@ -351,7 +377,7 @@ Returns the name of the owner class.
 
 Gets (or sets) the list of superclasses of the owner class.
 
-=head2 add_attribute Mouse::Meta::Attribute
+=head2 add_attribute (Mouse::Meta::Attribute| name => spec)
 
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
