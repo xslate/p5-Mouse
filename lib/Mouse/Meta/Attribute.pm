@@ -114,13 +114,7 @@ sub generate_accessor {
         $accessor .= 'confess "Cannot assign a value to a read-only accessor" if scalar(@_) >= 2;' . "\n";
     }
 
-    # XXX - edit by lestrrat 20090304:
-    # I couldn't quite tell why this happened, but I encountered a case
-    # where the default value was not set. In introspecting the resulting
-    # $accessor string, I realized that there was no default handling code.
-    # which led me to adding "|| $attribute->has_default" below.
-    # Tests passed, so I hope everything will be ok
-    if ($attribute->is_lazy || $attribute->has_default) {
+    if ($attribute->is_lazy) {
         $accessor .= $self.'->{'.$key.'} = ';
 
         $accessor .= $attribute->has_builder
