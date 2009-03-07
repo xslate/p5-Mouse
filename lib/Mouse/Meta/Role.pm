@@ -2,6 +2,7 @@ package Mouse::Meta::Role;
 use strict;
 use warnings;
 use Carp 'confess';
+use Mouse::Util;
 
 do {
     my %METACLASS_CACHE;
@@ -107,7 +108,19 @@ sub apply {
         for my $name ($self->get_attribute_list) {
             next if $class->has_attribute($name);
             my $spec = $self->get_attribute($name);
-            Mouse::Meta::Attribute->create($class, $name, %$spec);
+
+            my $metaclass = 'Mouse::Meta::Attribute';
+            if ( my $metaclass_name = $spec->{metaclass} ) {
+                my $new_class = Mouse::Util::resolve_metaclass_alias(
+                    'Attribute',
+                    $metaclass_name
+                );
+                if ( $metaclass ne $new_class ) {
+                    $metaclass = $new_class;
+                }
+            }
+
+            $metaclass->create($class, $name, %$spec);
         }
     } else {
         # apply role to role
@@ -188,7 +201,19 @@ sub combine_apply {
             for my $name ($self->get_attribute_list) {
                 next if $class->has_attribute($name);
                 my $spec = $self->get_attribute($name);
-                Mouse::Meta::Attribute->create($class, $name, %$spec);
+
+                my $metaclass = 'Mouse::Meta::Attribute';
+                if ( my $metaclass_name = $spec->{metaclass} ) {
+                    my $new_class = Mouse::Util::resolve_metaclass_alias(
+                        'Attribute',
+                        $metaclass_name
+                    );
+                    if ( $metaclass ne $new_class ) {
+                        $metaclass = $new_class;
+                    }
+                }
+
+                $metaclass->create($class, $name, %$spec);
             }
         }
     } else {
