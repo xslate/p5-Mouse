@@ -6,14 +6,6 @@ use base 'Exporter';
 
 our $VERSION = '0.18';
 
-BEGIN {
-    if ($ENV{MOUSE_DEBUG}) {
-        *DEBUG = sub (){ 1 };
-    } else {
-        *DEBUG = sub (){ 0 };
-    }
-}
-
 use Carp 'confess';
 use Scalar::Util 'blessed';
 use Mouse::Util;
