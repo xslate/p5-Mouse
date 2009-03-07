@@ -1,6 +1,19 @@
 Revision history for Mouse
 
-0.18
+0.18 Fri Mar 6 19:09:33 2009
+    * Fix the issue preventing Mouse usage on Perl 5.6 - a bug in older
+      Scalar::Util! (tokuhirom)
+
+    * Allow extensible attribute metaclass (tokuhirom)
+
+    * Optimization for method modifiers (tokuhirom)
+
+    * Implement Mouse->import({into_level => 1}) (tokuhirom)
+
+    * Support for Class->meta->add_attribute($name => %options) (tokuhirom)
+
+    * Throw a more useful error message when trying to use a parameterized
+      type (Sartak)
 
 0.17 Tue Feb 17 20:10:29 2009
     * Load mro directly if Perl is recent enough (Nicholas Clark)
