@@ -20,7 +20,7 @@ BEGIN {
     } else {
         my $loaded = do {
             local $SIG{__DIE__} = 'DEFAULT';
-            eval "require MRO::Compat; 1";
+            eval { require MRO::Compat; 1 };
         };
         if ($loaded) {
             $impl = \&mro::get_linear_isa;
