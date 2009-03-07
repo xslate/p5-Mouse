@@ -191,10 +191,10 @@ sub generate_handles {
     return \%method_map;
 }
 
-our $optimized_constraints;
+my $optimized_constraints;
 sub _build_type_constraint {
     my $spec = shift;
-    local $optimized_constraints ||= Mouse::Util::TypeConstraints->optimized_constraints;
+    $optimized_constraints ||= Mouse::Util::TypeConstraints->optimized_constraints;
     my $code;
     if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
         # parameterized
@@ -233,6 +233,7 @@ sub _build_type_constraint {
         } else {
             Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
         }
+        $optimized_constraints->{$spec} = $code;
     } else {
         $code = $optimized_constraints->{ $spec };
         if (! $code) {
