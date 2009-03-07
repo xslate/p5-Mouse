@@ -191,6 +191,58 @@ sub generate_handles {
     return \%method_map;
 }
 
+our $optimized_constraints;
+sub _build_type_constraint {
+    my $spec = shift;
+    local $optimized_constraints ||= Mouse::Util::TypeConstraints->optimized_constraints;
+    my $code;
+    if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
+        # parameterized
+        my $constraint = $1;
+        my $param      = $2;
+        my $parent     = _build_type_constraint($constraint);
+        my $child      = _build_type_constraint($param);
+        if ($constraint eq 'ArrayRef') {
+            my $code_str = 
+                "sub {\n" .
+                "    if (\$parent->(\$_)) {\n" .
+                "        foreach my \$e (@\$_) {\n" .
+                "            local \$_ = \$e;\n" .
+                "            return () unless \$child->(\$_);\n" .
+                "        }\n" .
+                "        return 1;\n" .
+                "    }\n" .
+                "    return ();\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess($@);
+        } elsif ($constraint eq 'HashRef') {
+            my $code_str = 
+                "sub {\n" .
+                "    if (\$parent->(\$_)) {\n" .
+                "        foreach my \$e (values %\$_) {\n" .
+                "            local \$_ = \$e;\n" .
+                "            return () unless \$child->(\$_);\n" .
+                "        }\n" .
+                "        return 1;\n" .
+                "    }\n" .
+                "    return ();\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess($@);
+        } else {
+            Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
+        }
+    } else {
+        $code = $optimized_constraints->{ $spec };
+        if (! $code) {
+            $code = sub { Scalar::Util::blessed($_) && $_->isa($spec) };
+            $optimized_constraints->{$spec} = $code;
+        }
+    }
+    return $code;
+}
+
 sub create {
     my ($self, $class, $name, %args) = @_;
 
@@ -204,24 +256,22 @@ sub create {
         if exists $args{coerce};
 
     if (exists $args{isa}) {
-        confess "Mouse does not yet support parameterized types (rt.cpan.org #39795)"
-            if $args{isa} =~ /\[.*\]/;
+        warn "Got isa => $args{isa}, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef (rt.cpan.org #39795)"
+            if $args{isa} =~ /^([^\[]+)\[.+\]$/ &&
+               $1 ne 'ArrayRef' &&
+               $1 ne 'HashRef';
 
         my $type_constraint = delete $args{isa};
         $type_constraint =~ s/\s//g;
         my @type_constraints = split /\|/, $type_constraint;
 
         my $code;
-        my $optimized_constraints = Mouse::Util::TypeConstraints->optimized_constraints;
         if (@type_constraints == 1) {
-            $code = $optimized_constraints->{$type_constraints[0]} ||
-                sub { Scalar::Util::blessed($_) && $_->isa($type_constraints[0]) };
+            $code = _build_type_constraint($type_constraints[0]);
             $args{type_constraint} = $type_constraints[0];
         } else {
             my @code_list = map {
-                my $type = $_;
-                $optimized_constraints->{$type} ||
-                    sub { Scalar::Util::blessed($_) && $_->isa($type) }
+                _build_type_constraint($_)
             } @type_constraints;
             $code = sub {
                 for my $code (@code_list) {
