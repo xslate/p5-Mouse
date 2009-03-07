@@ -90,7 +90,13 @@ sub subtype {
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
+    my $constraint = $conf{where} || do {
+        my $as = delete $conf{as} || 'Any';
+        if (! exists $TYPE{$as}) { # Perhaps it's a parameterized source?
+            Mouse::Meta::Attribute::_build_type_constraint($as);
+        }
+        $TYPE{$as};
+    };
     my $as         = $conf{as} || '';
 
     $TYPE_SOURCE{$name} = $pkg;
@@ -116,8 +122,14 @@ sub coerce {
         Carp::croak "A coercion action already exists for '$type'"
             if $COERCE{$name}->{$type};
 
-        Carp::croak "Could not find the type constraint ($type) to coerce from"
-            unless $TYPE{$type};
+        if (! $TYPE{$type}) {
+            # looks parameterized
+            if ($type =~ /^[^\[]+\[.+\]$/) {
+                Mouse::Meta::Attribute::_build_type_constraint($type);
+            } else {
+                Carp::croak "Could not find the type constraint ($type) to coerce from"
+            }
+        }
 
         push @{ $COERCE_KEYS{$name} }, $type;
         $COERCE{$name}->{$type} = $code;

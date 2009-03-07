@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 9;
 use Test::Exception;
 
 {
@@ -50,6 +50,40 @@ use Test::Exception;
     throws_ok {
         Foo->new( complex => [ { a => 1, b => 1 }, { c => "d", e => "f" } ] )
     } qr/Attribute \(complex\) does not pass the type constraint because: Validation failed for 'ArrayRef\[HashRef\[Int\]\]' failed with value/, "Bad args for complex types throws an exception";
+}
+
+{
+    {
+        package Bar;
+        use Mouse;
+        use Mouse::Util::TypeConstraints;
+        
+        subtype 'Bar::List'
+            => as 'ArrayRef[HashRef]'
+        ;
+        coerce 'Bar::List'
+            => from 'ArrayRef[Str]'
+            => via {
+                [ map { +{ $_ => 1 } } @$_ ]
+            }
+        ;
+        has 'list' => (
+            is => 'ro',
+            isa => 'Bar::List',
+            coerce => 1,
+        );
+    }
+
+    lives_and {
+        my @list = ( {a => 1}, {b => 1}, {c => 1} );
+        my $bar = Bar->new(list => [ qw(a b c) ]);
+
+        is_deeply( $bar->list, \@list, "list is as expected");
+    } "coercion works";
+
+    throws_ok {
+        Bar->new(list => [ { 1 => 2 }, 2, 3 ]);
+    } qr/Attribute \(list\) does not pass the type constraint because: Validation failed for 'Bar::List' failed with value/, "Bad coercion parameter throws an error";
 }
 
 
