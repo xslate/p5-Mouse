@@ -257,7 +257,7 @@ sub create {
         if exists $args{coerce};
 
     if (exists $args{isa}) {
-        warn "Got isa => $args{isa}, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef (rt.cpan.org #39795)"
+        confess "Got isa => $args{isa}, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef (rt.cpan.org #39795)"
             if $args{isa} =~ /^([^\[]+)\[.+\]$/ &&
                $1 ne 'ArrayRef' &&
                $1 ne 'HashRef';
