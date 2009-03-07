@@ -4,7 +4,7 @@ use warnings;
 use 5.006;
 use base 'Exporter';
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 use Carp 'confess';
 use Scalar::Util 'blessed';

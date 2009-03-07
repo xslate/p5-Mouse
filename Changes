@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.19
+
 0.18 Fri Mar 6 19:09:33 2009
     * Fix the issue preventing Mouse usage on Perl 5.6 - a bug in older
       Scalar::Util! (tokuhirom)
