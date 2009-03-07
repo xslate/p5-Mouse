@@ -1,9 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
-
-plan skip_all => "Moose way 'with' function test" unless $ENV{MOUSE_DEVEL};
-plan tests => 3;
+use Test::More tests => 3;
 
 {
     package Requires;
