@@ -1,6 +1,12 @@
 Revision history for Mouse
 
 0.19
+    * Parameterized type constraints for ArrayRef and HashRef (lestrrat)
+
+    * Allow extensible attribute metaclass in traits too(tokuhirom)
+
+    * Don't use method modifiers in a test since they may not be
+      available (Sartak)
 
 0.18 Fri Mar 6 19:09:33 2009
     * Fix the issue preventing Mouse usage on Perl 5.6 - a bug in older
