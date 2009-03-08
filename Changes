@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.19
+0.19 Sun Mar 8 04:38:01 2009
     * Parameterized type constraints for ArrayRef and HashRef (lestrrat)
 
     * Allow extensible attribute metaclass in traits too(tokuhirom)
