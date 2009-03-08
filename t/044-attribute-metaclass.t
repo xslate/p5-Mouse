@@ -9,9 +9,9 @@ do {
     use Mouse;
     extends 'Mouse::Meta::Attribute';
 
-    around 'create' => sub {
-        my ($next, @args) = @_;
-        my $attr = $next->(@args);
+    sub create {
+        my ($self, @args) = @_;
+        my $attr = $self->SUPER::create(@args);
         my %provides = %{$attr->{provides}};
         my $method_constructors = {
             add => sub {
