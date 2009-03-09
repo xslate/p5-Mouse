@@ -38,31 +38,31 @@ my $optimized_constraints_base;
         Any        => sub { 1 },
         Item       => sub { 1 },
         Bool       => sub {
-            !defined($_) || $_ eq "" || "$_" eq '1' || "$_" eq '0'
+            !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0'
         },
-        Undef      => sub { !defined($_) },
-        Defined    => sub { defined($_) },
-        Value      => sub { defined($_) && !ref($_) },
-        Num        => sub { !ref($_) && looks_like_number($_) },
-        Int        => sub { defined($_) && !ref($_) && /^-?[0-9]+$/ },
-        Str        => sub { defined($_) && !ref($_) },
-        ClassName  => sub { Mouse::is_class_loaded($_) },
-        Ref        => sub { ref($_) },
+        Undef      => sub { !defined($_[0]) },
+        Defined    => sub { defined($_[0]) },
+        Value      => sub { defined($_[0]) && !ref($_[0]) },
+        Num        => sub { !ref($_[0]) && looks_like_number($_[0]) },
+        Int        => sub { defined($_[0]) && !ref($_[0]) && $_[0] =~ /^-?[0-9]+$/ },
+        Str        => sub { defined($_[0]) && !ref($_[0]) },
+        ClassName  => sub { Mouse::is_class_loaded($_[0]) },
+        Ref        => sub { ref($_[0]) },
 
-        ScalarRef  => sub { ref($_) eq 'SCALAR' },
-        ArrayRef   => sub { ref($_) eq 'ARRAY'  },
-        HashRef    => sub { ref($_) eq 'HASH'   },
-        CodeRef    => sub { ref($_) eq 'CODE'   },
-        RegexpRef  => sub { ref($_) eq 'Regexp' },
-        GlobRef    => sub { ref($_) eq 'GLOB'   },
+        ScalarRef  => sub { ref($_[0]) eq 'SCALAR' },
+        ArrayRef   => sub { ref($_[0]) eq 'ARRAY'  },
+        HashRef    => sub { ref($_[0]) eq 'HASH'   },
+        CodeRef    => sub { ref($_[0]) eq 'CODE'   },
+        RegexpRef  => sub { ref($_[0]) eq 'Regexp' },
+        GlobRef    => sub { ref($_[0]) eq 'GLOB'   },
 
         FileHandle => sub {
-            ref($_) eq 'GLOB' && openhandle($_)
+            ref($_[0]) eq 'GLOB' && openhandle($_[0])
             or
-            blessed($_) && $_->isa("IO::Handle")
+            blessed($_[0]) && $_[0]->isa("IO::Handle")
         },
 
-        Object     => sub { blessed($_) && blessed($_) ne 'Regexp' },
+        Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
     );
 
     sub optimized_constraints { \%TYPE }
@@ -81,7 +81,7 @@ sub type {
     my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
 
     $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = $constraint;
+    $TYPE{$name} = sub { local $_=$_[0]; $constraint->($_) };
 }
 
 sub subtype {
@@ -102,9 +102,9 @@ sub subtype {
     $TYPE_SOURCE{$name} = $pkg;
 
     if ($as = $TYPE{$as}) {
-        $TYPE{$name} = sub { $as->($_) && $constraint->($_) };
+        $TYPE{$name} = sub { local $_=$_[0]; $as->($_) && $constraint->($_) };
     } else {
-        $TYPE{$name} = $constraint;
+        $TYPE{$name} = sub { local $_=$_[0]; $constraint->($_) };
     }
 }
 
@@ -164,10 +164,10 @@ sub typecast_constraints {
         next unless $COERCE{$type};
         for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
             $_ = $value;
-            next unless $TYPE{$coerce_type}->();
+            next unless $TYPE{$coerce_type}->($value);
             $_ = $value;
-            $_ = $COERCE{$type}->{$coerce_type}->();
-            return $_ if $type_constraint->();
+            $_ = $COERCE{$type}->{$coerce_type}->($value);
+            return $_ if $type_constraint->($_);
         }
     }
     return $value;
@@ -207,6 +207,22 @@ Mouse::Util::TypeConstraints - simple type constraints
 =head2 optimized_constraints -> HashRef[CODE]
 
 Returns the simple type constraints that Mouse understands.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item B<subtype 'Name' => as 'Parent' => where { } ...>
+
+=item B<subtype as 'Parent' => where { } ...>
+
+=item B<class_type ($class, ?$options)>
+
+=item B<role_type ($role, ?$options)>
+
+=item B<enum (\@values)>
+
+=back
 
 =cut
 

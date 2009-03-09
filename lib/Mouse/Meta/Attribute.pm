@@ -86,10 +86,9 @@ sub generate_accessor {
             } else {
                 $accessor .= $value.';';
             }
-            $accessor .= 'local $_ = $val;';
             $accessor .= '
-                unless ($constraint->()) {
-                    $attribute->verify_type_constraint_error($name, $_, $attribute->type_constraint);
+                unless ($constraint->($val)) {
+                    $attribute->verify_type_constraint_error($name, $val, $attribute->type_constraint);
                 }' . "\n";
             $value = '$val';
         }
@@ -237,7 +236,7 @@ sub _build_type_constraint {
     } else {
         $code = $optimized_constraints->{ $spec };
         if (! $code) {
-            $code = sub { Scalar::Util::blessed($_) && $_->isa($spec) };
+            $code = sub { Scalar::Util::blessed($_[0]) && $_[0]->isa($spec) };
             $optimized_constraints->{$spec} = $code;
         }
     }
@@ -275,8 +274,9 @@ sub create {
                 _build_type_constraint($_)
             } @type_constraints;
             $code = sub {
+                local $_ = $_[0];
                 for my $code (@code_list) {
-                    return 1 if $code->();
+                    return 1 if $code->($_);
                 }
                 return 0;
             };
@@ -389,7 +389,7 @@ sub verify_against_type_constraint {
 sub verify_type_constraint_error {
     my($self, $name, $value, $type) = @_;
     $type = ref($type) eq 'ARRAY' ? join '|', @{ $type } : $type;
-    my $display = defined($_) ? overload::StrVal($_) : 'undef';
+    my $display = defined($value) ? overload::StrVal($value) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
 }
 

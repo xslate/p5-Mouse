@@ -50,8 +50,7 @@ sub _generate_processattrs {
 
             if ($attr->has_type_constraint) {
                 $code .= "{
-                    local \$_ = \$value;
-                    unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {
+                    unless (\$attrs[$index]->{find_type_constraint}->(\$value)) {
                         \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
                     }
                 }";
@@ -106,8 +105,7 @@ sub _generate_processattrs {
 
                 if ($attr->has_type_constraint) {
                     $code .= "{
-                        local \$_ = \$value;
-                        unless (\$attrs[$index]->{find_type_constraint}->(\$_)) {
+                        unless (\$attrs[$index]->{find_type_constraint}->(\$value)) {
                             \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
                         }
                     }";
