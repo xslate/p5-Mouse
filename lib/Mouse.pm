@@ -115,6 +115,9 @@ sub import {
     $meta->superclasses('Mouse::Object')
         unless $meta->superclasses;
 
+    # make a subtype for each Mouse class
+    class_type($caller) unless find_type_constraint($caller);
+
     no strict 'refs';
     no warnings 'redefine';
     *{$caller.'::meta'} = sub { $meta };
