@@ -69,6 +69,12 @@ sub add_method {
     *{ $pkg . '::' . $name } = $code;
 }
 
+sub has_method {
+    my $self = shift;
+    my $name = shift;
+    $self->name->can($name);
+}
+
 # copied from Class::Inspector
 my $get_methods_for_class = sub {
     my $self = shift;
