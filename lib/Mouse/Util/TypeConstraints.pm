@@ -8,6 +8,7 @@ use Scalar::Util qw/blessed looks_like_number openhandle/;
 
 our @EXPORT = qw(
     as where message from via type subtype coerce class_type role_type enum
+    find_type_constraint
 );
 
 my %TYPE;
