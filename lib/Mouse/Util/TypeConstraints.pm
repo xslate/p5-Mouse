@@ -30,9 +30,7 @@ sub via (&) {
     $_[0]
 }
 
-my $optimized_constraints;
-my $optimized_constraints_base;
-{
+BEGIN {
     no warnings 'uninitialized';
     %TYPE = (
         Any        => sub { 1 },
@@ -78,10 +76,16 @@ sub type {
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $constraint = $conf{where} || do { $TYPE{delete $conf{as} || 'Any' } };
+    my $constraint = $conf{where} || do {
+        my $as = delete $conf{as} || 'Any';
+        if (! exists $TYPE{$as}) {
+            $TYPE{$as} = _build_type_constraint($as);
+        }
+        $TYPE{$as};
+    };
 
     $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = sub { local $_=$_[0]; $constraint->($_) };
+    $TYPE{$name} = sub { local $_ = $_[0]; $constraint->($_[0]) };
 }
 
 sub subtype {
@@ -90,22 +94,21 @@ sub subtype {
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $constraint = $conf{where} || do {
-        my $as = delete $conf{as} || 'Any';
-        if (! exists $TYPE{$as}) { # Perhaps it's a parameterized source?
-            Mouse::Meta::Attribute::_build_type_constraint($as);
-        }
-        $TYPE{$as};
-    };
-    my $as         = $conf{as} || '';
+    my $constraint = $conf{where};
+    my $as_constraint = find_or_create_isa_type_constraint($conf{as} || 'Any');
 
     $TYPE_SOURCE{$name} = $pkg;
+    $TYPE{$name} = $constraint ? 
+        sub {
+            local $_ = $_[0];
+            $as_constraint->($_[0]) && $constraint->($_[0])
+        } :
+        sub {
+            local $_ = $_[0];
+            $as_constraint->($_[0]);
+        }
+    ;
 
-    if ($as = $TYPE{$as}) {
-        $TYPE{$name} = sub { local $_=$_[0]; $as->($_) && $constraint->($_) };
-    } else {
-        $TYPE{$name} = sub { local $_=$_[0]; $constraint->($_) };
-    }
     return $name;
 }
 
@@ -126,7 +129,7 @@ sub coerce {
         if (! $TYPE{$type}) {
             # looks parameterized
             if ($type =~ /^[^\[]+\[.+\]$/) {
-                Mouse::Meta::Attribute::_build_type_constraint($type);
+                _build_type_constraint($type);
             } else {
                 Carp::croak "Could not find the type constraint ($type) to coerce from"
             }
@@ -197,6 +200,107 @@ sub enum {
     subtype(
         $name => where => sub { $is_valid{$_} }
     );
+}
+
+sub _build_type_constraint {
+
+    my $spec = shift;
+    my $code;
+    if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
+        # parameterized
+        my $constraint = $1;
+        my $param      = $2;
+        my $parent;
+        if ($constraint eq 'Maybe') {
+            $parent = _build_type_constraint('Undef');
+        } else {
+            $parent = _build_type_constraint($constraint);
+        }
+        my $child = _build_type_constraint($param);
+        if ($constraint eq 'ArrayRef') {
+            my $code_str = 
+                "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                "sub {\n" .
+                "    if (\$parent->(\$_[0])) {\n" .
+                "        foreach my \$e (\@{\$_[0]}) {\n" .
+                "            return () unless \$child->(\$e);\n" .
+                "        }\n" .
+                "        return 1;\n" .
+                "    }\n" .
+                "    return ();\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess("Failed to generate inline type constraint: $@");
+        } elsif ($constraint eq 'HashRef') {
+            my $code_str = 
+                "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                "sub {\n" .
+                "    if (\$parent->(\$_[0])) {\n" .
+                "        foreach my \$e (values \%{\$_[0]}) {\n" .
+                "            return () unless \$child->(\$e);\n" .
+                "        }\n" .
+                "        return 1;\n" .
+                "    }\n" .
+                "    return ();\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess($@);
+        } elsif ($constraint eq 'Maybe') {
+            my $code_str =
+                "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                "sub {\n" .
+                "    return \$child->(\$_[0]) || \$parent->(\$_[0]);\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess($@);
+        } else {
+            Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
+        }
+        $TYPE{$spec} = $code;
+    } else {
+        $code = $TYPE{ $spec };
+        if (! $code) {
+            my $code_str = 
+                "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                "sub {\n" .
+                "    Scalar::Util::blessed(\$_[0]) && \$_[0]->isa('$spec');\n" .
+                "}"
+            ;
+            $code = eval $code_str  or Carp::confess($@);
+            $TYPE{$spec} = $code;
+        }
+    }
+    return $code;
+}
+
+sub find_type_constraint {
+    my $type_constraint = shift;
+    return $TYPE{$type_constraint};
+}
+
+sub find_or_create_isa_type_constraint {
+    my $type_constraint = shift;
+
+    my $code;
+
+    $type_constraint =~ s/\s+//g;
+    my @type_constraints = split /\|/, $type_constraint;
+    if (@type_constraints == 1) {
+        $code = $TYPE{$type_constraints[0]} ||
+            _build_type_constraint($type_constraints[0]);
+    } else {
+        my @code_list = map {
+            $TYPE{$_} || _build_type_constraint($_)
+        } @type_constraints;
+        $code = sub {
+            my $i = 0;
+            for my $code (@code_list) {
+                return 1 if $code->($_[0]);
+            }
+            return 0;
+        };
+    }
+    return $code;
 }
 
 1;

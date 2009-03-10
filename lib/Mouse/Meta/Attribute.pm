@@ -73,21 +73,30 @@ sub generate_accessor {
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
 
-    my $accessor = "sub {\n";
+    my $accessor = 
+        '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+        "sub {\n";
     if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 'if (@_ >= 2) {' . "\n";
+        $accessor .= 
+            '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+            'if (@_ >= 2) {' . "\n";
 
         my $value = '$_[1]';
 
         if ($constraint) {
             $accessor .= 'my $val = ';
             if ($should_coerce) {
-                $accessor  .= 'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
+                $accessor .=
+                    "\n".
+                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                    'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
             } else {
                 $accessor .= $value.';';
             }
-            $accessor .= '
-                unless ($constraint->($val)) {
+            $accessor .= 
+                "\n".
+                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                'unless ($constraint->($val)) {
                     $attribute->verify_type_constraint_error($name, $val, $attribute->type_constraint);
                 }' . "\n";
             $value = '$val';
@@ -190,71 +199,6 @@ sub generate_handles {
     return \%method_map;
 }
 
-my $optimized_constraints;
-sub _build_type_constraint {
-    my $spec = shift;
-    $optimized_constraints ||= Mouse::Util::TypeConstraints->optimized_constraints;
-    my $code;
-    if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
-        # parameterized
-        my $constraint = $1;
-        my $param      = $2;
-        my $parent;
-        if ($constraint eq 'Maybe') {
-            $parent = _build_type_constraint('Undef');
-        } else {
-            $parent = _build_type_constraint($constraint);
-        }
-        my $child = _build_type_constraint($param);
-        if ($constraint eq 'ArrayRef') {
-            my $code_str = 
-                "sub {\n" .
-                "    if (\$parent->(\$_)) {\n" .
-                "        foreach my \$e (@\$_) {\n" .
-                "            local \$_ = \$e;\n" .
-                "            return () unless \$child->(\$_);\n" .
-                "        }\n" .
-                "        return 1;\n" .
-                "    }\n" .
-                "    return ();\n" .
-                "};\n"
-            ;
-            $code = eval $code_str or Carp::confess($@);
-        } elsif ($constraint eq 'HashRef') {
-            my $code_str = 
-                "sub {\n" .
-                "    if (\$parent->(\$_)) {\n" .
-                "        foreach my \$e (values %\$_) {\n" .
-                "            local \$_ = \$e;\n" .
-                "            return () unless \$child->(\$_);\n" .
-                "        }\n" .
-                "        return 1;\n" .
-                "    }\n" .
-                "    return ();\n" .
-                "};\n"
-            ;
-            $code = eval $code_str or Carp::confess($@);
-        } elsif ($constraint eq 'Maybe') {
-            my $code_str =
-                "sub {\n" .
-                "    return \$child->(\$_) || \$parent->(\$_);\n" .
-                "};\n"
-            ;
-            $code = eval $code_str or Carp::confess($@);
-        } else {
-            Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
-        }
-        $optimized_constraints->{$spec} = $code;
-    } else {
-        $code = $optimized_constraints->{ $spec };
-        if (! $code) {
-            $code = sub { Scalar::Util::blessed($_[0]) && $_[0]->isa($spec) };
-            $optimized_constraints->{$spec} = $code;
-        }
-    }
-    return $code;
-}
-
 sub create {
     my ($self, $class, $name, %args) = @_;
 
@@ -276,26 +220,12 @@ sub create {
         ;
 
         my $type_constraint = delete $args{isa};
-        $type_constraint =~ s/\s//g;
-        my @type_constraints = split /\|/, $type_constraint;
-
-        my $code;
-        if (@type_constraints == 1) {
-            $code = _build_type_constraint($type_constraints[0]);
-            $args{type_constraint} = $type_constraints[0];
-        } else {
-            my @code_list = map {
-                _build_type_constraint($_)
-            } @type_constraints;
-            $code = sub {
-                local $_ = $_[0];
-                for my $code (@code_list) {
-                    return 1 if $code->($_);
-                }
-                return 0;
-            };
-            $args{type_constraint} = \@type_constraints;
-        }
+        $type_constraint =~ s/\s+//g;
+        my $code = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($type_constraint);
+        $args{type_constraint} = $type_constraint =~ /\|/ ?
+            [ split (/\|/, $type_constraint ) ] :
+            $type_constraint
+        ;
         $args{find_type_constraint} = $code;
     }
 
