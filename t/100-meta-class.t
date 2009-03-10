@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 do {
     package Class;
@@ -23,7 +23,7 @@ is_deeply([$meta->superclasses], ['Mouse::Object'], "correctly inherting from Mo
 my $meta2 = Class->meta;
 is($meta, $meta2, "same metaclass instance");
 
-can_ok($meta, 'name', 'get_attribute_map');
+can_ok($meta, 'name', 'get_attribute_map', 'get_attribute_list');
 
 ok($meta->has_attribute('pawn'));
 my $attr = $meta->get_attribute('pawn');
@@ -32,6 +32,9 @@ is($attr->name, 'pawn', 'got the correct attribute');
 
 my $map = $meta->get_attribute_map;
 is_deeply($map, { pawn => $attr }, "attribute map");
+
+my $list = [$meta->get_attribute_list];
+is_deeply($list, [ 'pawn' ], "attribute list");
 
 ok(!$meta->has_attribute('nonexistent_attribute'));
 

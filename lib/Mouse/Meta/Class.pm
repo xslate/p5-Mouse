@@ -156,6 +156,10 @@ sub compute_all_applicable_attributes {
 sub get_attribute_map { $_[0]->{attributes} }
 sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
+sub get_attribute_list {
+    my $self = shift;
+    keys %{$self->get_attribute_map};
+}
 
 sub linearized_isa { @{ get_linear_isa($_[0]->name) } }
 
@@ -414,6 +418,12 @@ this class and its superclasses.
 
 Returns a mapping of attribute names to their corresponding
 L<Mouse::Meta::Attribute> objects.
+
+=head2 get_attribute_list -> { name => Mouse::Meta::Attribute }
+
+This returns a list of attribute names which are defined in the local
+class. If you want a list of all applicable attributes for a class,
+use the C<compute_all_applicable_attributes> method.
 
 =head2 has_attribute Name -> Bool
 
