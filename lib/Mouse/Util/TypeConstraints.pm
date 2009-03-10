@@ -62,6 +62,9 @@ BEGIN {
 
         Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
     );
+    foreach my $code (values %TYPE) {
+        bless $code, 'Mouse::Meta::TypeConstraint';
+    }
 
     sub optimized_constraints { \%TYPE }
     my @TYPE_KEYS = keys %TYPE;
@@ -267,10 +270,10 @@ sub _build_type_constraint {
                 "}"
             ;
             $code = eval $code_str  or Carp::confess($@);
-            $TYPE{$spec} = $code;
+            $TYPE{$spec} = bless $code, 'Mouse::Meta::TypeConstraint';
         }
     }
-    return $code;
+    return bless $code, 'Mouse::Meta::TypeConstraint';
 }
 
 sub find_type_constraint {
@@ -292,16 +295,24 @@ sub find_or_create_isa_type_constraint {
         my @code_list = map {
             $TYPE{$_} || _build_type_constraint($_)
         } @type_constraints;
-        $code = sub {
+        $code = bless sub {
             my $i = 0;
             for my $code (@code_list) {
                 return 1 if $code->($_[0]);
             }
             return 0;
-        };
+        }, 'Mouse::Meta::TypeConstraint';
     }
     return $code;
 }
+
+package # Hide from pause
+    Mouse::Meta::TypeConstraint;
+
+sub check { 
+    $_[0]->($_[1])
+}
+
 
 1;
 
