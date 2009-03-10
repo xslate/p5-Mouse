@@ -6,7 +6,6 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-plan skip_all => "mouse doesn't support Maybe[] yet";
 plan tests => 3;
 
 {

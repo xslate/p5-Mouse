@@ -199,8 +199,13 @@ sub _build_type_constraint {
         # parameterized
         my $constraint = $1;
         my $param      = $2;
-        my $parent     = _build_type_constraint($constraint);
-        my $child      = _build_type_constraint($param);
+        my $parent;
+        if ($constraint eq 'Maybe') {
+            $parent = _build_type_constraint('Undef');
+        } else {
+            $parent = _build_type_constraint($constraint);
+        }
+        my $child = _build_type_constraint($param);
         if ($constraint eq 'ArrayRef') {
             my $code_str = 
                 "sub {\n" .
@@ -226,6 +231,13 @@ sub _build_type_constraint {
                 "        return 1;\n" .
                 "    }\n" .
                 "    return ();\n" .
+                "};\n"
+            ;
+            $code = eval $code_str or Carp::confess($@);
+        } elsif ($constraint eq 'Maybe') {
+            my $code_str =
+                "sub {\n" .
+                "    return \$child->(\$_) || \$parent->(\$_);\n" .
                 "};\n"
             ;
             $code = eval $code_str or Carp::confess($@);
@@ -259,7 +271,9 @@ sub create {
         confess "Got isa => $args{isa}, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef (rt.cpan.org #39795)"
             if $args{isa} =~ /^([^\[]+)\[.+\]$/ &&
                $1 ne 'ArrayRef' &&
-               $1 ne 'HashRef';
+               $1 ne 'HashRef'  &&
+               $1 ne 'Maybe'
+        ;
 
         my $type_constraint = delete $args{isa};
         $type_constraint =~ s/\s//g;
