@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# This test is taken from Moose :)
+
 use strict;
 use warnings;
 
