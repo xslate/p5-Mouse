@@ -133,7 +133,7 @@ sub coerce {
         if (! $TYPE{$type}) {
             # looks parameterized
             if ($type =~ /^[^\[]+\[.+\]$/) {
-                _build_type_constraint($type);
+                $TYPE{$type} = _build_type_constraint($type);
             } else {
                 Carp::croak "Could not find the type constraint ($type) to coerce from"
             }
@@ -210,6 +210,7 @@ sub _build_type_constraint {
 
     my $spec = shift;
     my $code;
+    $spec =~ s/\s+//g;
     if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
         # parameterized
         my $constraint = $1;
@@ -288,21 +289,25 @@ sub find_or_create_isa_type_constraint {
     my $code;
 
     $type_constraint =~ s/\s+//g;
-    my @type_constraints = split /\|/, $type_constraint;
-    if (@type_constraints == 1) {
-        $code = $TYPE{$type_constraints[0]} ||
-            _build_type_constraint($type_constraints[0]);
-    } else {
-        my @code_list = map {
-            $TYPE{$_} || _build_type_constraint($_)
-        } @type_constraints;
-        $code = bless sub {
-            my $i = 0;
-            for my $code (@code_list) {
-                return 1 if $code->($_[0]);
-            }
-            return 0;
-        }, 'Mouse::Meta::TypeConstraint';
+
+    $code = $TYPE{$type_constraint};
+    if (! $code) {
+        my @type_constraints = split /\|/, $type_constraint;
+        if (@type_constraints == 1) {
+            $code = $TYPE{$type_constraints[0]} ||
+                _build_type_constraint($type_constraints[0]);
+        } else {
+            my @code_list = map {
+                $TYPE{$_} || _build_type_constraint($_)
+            } @type_constraints;
+            $code = bless sub {
+                my $i = 0;
+                for my $code (@code_list) {
+                    return 1 if $code->($_[0]);
+                }
+                return 0;
+            }, 'Mouse::Meta::TypeConstraint';
+        }
     }
     return $code;
 }
