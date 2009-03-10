@@ -106,6 +106,7 @@ sub subtype {
     } else {
         $TYPE{$name} = sub { local $_=$_[0]; $constraint->($_) };
     }
+    return $name;
 }
 
 sub coerce {
@@ -137,12 +138,16 @@ sub coerce {
 }
 
 sub class_type {
-    my $pkg = caller(0);
     my($name, $conf) = @_;
-    my $class = $conf->{class};
-    subtype(
-        $name => where => sub { $_->isa($class) }
-    );
+    if ($conf && $conf->{class}) {
+        # No, you're using this wrong
+        warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
+        subtype($name, as => $conf->{class});
+    } else {
+        subtype(
+            $name => where => sub { $_->isa($name) }
+        );
+    }
 }
 
 sub role_type {
