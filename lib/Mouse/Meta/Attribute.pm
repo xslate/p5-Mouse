@@ -33,6 +33,10 @@ sub handles              { $_[0]->{handles}                }
 sub is_weak_ref          { $_[0]->{weak_ref}               }
 sub init_arg             { $_[0]->{init_arg}               }
 sub type_constraint      { $_[0]->{type_constraint}        }
+sub find_type_constraint {
+    Carp::carp("This method was deprecated");
+    $_[0]->type_constraint();
+}
 sub trigger              { $_[0]->{trigger}                }
 sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
