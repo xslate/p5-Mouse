@@ -186,6 +186,7 @@ sub role_type {
 # this is an original method for Mouse
 sub typecast_constraints {
     my($class, $pkg, $types, $value) = @_;
+    Carp::croak("wrong arguments count") unless @_==4;
 
     local $_;
     for my $type ( split /\|/, $types ) {
