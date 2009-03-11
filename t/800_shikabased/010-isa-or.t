@@ -32,7 +32,7 @@ my $f = Foo->new;
 eval {
     $f->bar([]);
 };
-ok !$@;
+ok !$@, $@;
 is $f->bar, 'Baz', 'bar is baz (coerce from ArrayRef)';
 
 eval {

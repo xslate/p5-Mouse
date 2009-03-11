@@ -5,6 +5,7 @@ use base 'Exporter';
 
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
+use Mouse::Meta::TypeConstraint;
 
 our @EXPORT = qw(
     as where message from via type subtype coerce class_type role_type enum
@@ -63,8 +64,8 @@ BEGIN {
 
         Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
     );
-    foreach my $code (values %TYPE) {
-        bless $code, 'Mouse::Meta::TypeConstraint';
+    while (my ($name, $code) = each %TYPE) {
+        $TYPE{$name} = Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $name );
     }
 
     sub optimized_constraints { \%TYPE }
@@ -89,7 +90,17 @@ sub type {
     };
 
     $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = sub { local $_ = $_[0]; $constraint->($_[0]) };
+    $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
+        name => $name,
+        _compiled_type_constraint => sub {
+            local $_ = $_[0];
+            if (ref $constraint eq 'CODE') {
+                $constraint->($_[0])
+            } else {
+                $constraint->check($_[0])
+            }
+        }
+    );
 }
 
 sub subtype {
@@ -102,16 +113,20 @@ sub subtype {
     my $as_constraint = find_or_create_isa_type_constraint($conf{as} || 'Any');
 
     $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = $constraint ? 
-        sub {
-            local $_ = $_[0];
-            $as_constraint->($_[0]) && $constraint->($_[0])
-        } :
-        sub {
-            local $_ = $_[0];
-            $as_constraint->($_[0]);
-        }
-    ;
+    $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
+        name => $name,
+        _compiled_type_constraint => (
+            $constraint ? 
+            sub {
+                local $_ = $_[0];
+                $as_constraint->check($_[0]) && $constraint->($_[0])
+            } :
+            sub {
+                local $_ = $_[0];
+                $as_constraint->check($_[0]);
+            }
+        ),
+    );
 
     return $name;
 }
@@ -168,18 +183,19 @@ sub role_type {
     );
 }
 
+# this is an original method for Mouse
 sub typecast_constraints {
-    my($class, $pkg, $type_constraint, $types, $value) = @_;
+    my($class, $pkg, $types, $value) = @_;
 
     local $_;
-    for my $type (ref($types) eq 'ARRAY' ? @{ $types } : ( $types )) {
+    for my $type ( split /\|/, $types ) {
         next unless $COERCE{$type};
         for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
             $_ = $value;
-            next unless $TYPE{$coerce_type}->($value);
+            next unless $TYPE{$coerce_type}->check($value);
             $_ = $value;
             $_ = $COERCE{$type}->{$coerce_type}->($value);
-            return $_ if $type_constraint->($_);
+            return $_ if $types->check($_);
         }
     }
     return $value;
@@ -226,9 +242,9 @@ sub _build_type_constraint {
             my $code_str = 
                 "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 "sub {\n" .
-                "    if (\$parent->(\$_[0])) {\n" .
+                "    if (\$parent->check(\$_[0])) {\n" .
                 "        foreach my \$e (\@{\$_[0]}) {\n" .
-                "            return () unless \$child->(\$e);\n" .
+                "            return () unless \$child->check(\$e);\n" .
                 "        }\n" .
                 "        return 1;\n" .
                 "    }\n" .
@@ -240,9 +256,9 @@ sub _build_type_constraint {
             my $code_str = 
                 "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 "sub {\n" .
-                "    if (\$parent->(\$_[0])) {\n" .
+                "    if (\$parent->check(\$_[0])) {\n" .
                 "        foreach my \$e (values \%{\$_[0]}) {\n" .
-                "            return () unless \$child->(\$e);\n" .
+                "            return () unless \$child->check(\$e);\n" .
                 "        }\n" .
                 "        return 1;\n" .
                 "    }\n" .
@@ -254,14 +270,14 @@ sub _build_type_constraint {
             my $code_str =
                 "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 "sub {\n" .
-                "    return \$child->(\$_[0]) || \$parent->(\$_[0]);\n" .
+                "    return \$child->check(\$_[0]) || \$parent->check(\$_[0]);\n" .
                 "};\n"
             ;
             $code = eval $code_str or Carp::confess($@);
         } else {
             Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
         }
-        $TYPE{$spec} = $code;
+        $TYPE{$spec} = Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $spec );
     } else {
         $code = $TYPE{ $spec };
         if (! $code) {
@@ -272,10 +288,10 @@ sub _build_type_constraint {
                 "}"
             ;
             $code = eval $code_str  or Carp::confess($@);
-            $TYPE{$spec} = bless $code, 'Mouse::Meta::TypeConstraint';
+            $TYPE{$spec} = Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $spec );
         }
     }
-    return bless $code, 'Mouse::Meta::TypeConstraint';
+    return Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $spec );
 }
 
 sub find_type_constraint {
@@ -300,25 +316,20 @@ sub find_or_create_isa_type_constraint {
             my @code_list = map {
                 $TYPE{$_} || _build_type_constraint($_)
             } @type_constraints;
-            $code = bless sub {
-                my $i = 0;
-                for my $code (@code_list) {
-                    return 1 if $code->($_[0]);
-                }
-                return 0;
-            }, 'Mouse::Meta::TypeConstraint';
+            $code = Mouse::Meta::TypeConstraint->new(
+                _compiled_type_constraint => sub {
+                    my $i = 0;
+                    for my $code (@code_list) {
+                        return 1 if $code->check($_[0]);
+                    }
+                    return 0;
+                },
+                name => $type_constraint,
+            );
         }
     }
     return $code;
 }
-
-package # Hide from pause
-    Mouse::Meta::TypeConstraint;
-
-sub check { 
-    $_[0]->($_[1])
-}
-
 
 1;
 

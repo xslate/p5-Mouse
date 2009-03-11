@@ -5,6 +5,7 @@ require overload;
 
 use Carp 'confess';
 use Scalar::Util ();
+use Mouse::Meta::TypeConstraint;
 
 sub new {
     my ($class, $name, %options) = @_;
@@ -36,7 +37,6 @@ sub trigger              { $_[0]->{trigger}                }
 sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
 sub should_coerce        { $_[0]->{should_coerce}          }
-sub find_type_constraint { $_[0]->{find_type_constraint}   }
 
 sub has_default          { exists $_[0]->{default}         }
 sub has_predicate        { exists $_[0]->{predicate}       }
@@ -63,7 +63,7 @@ sub generate_accessor {
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
-    my $constraint    = $attribute->find_type_constraint;
+    my $constraint    = $attribute->type_constraint;
     my $builder       = $attribute->builder;
     my $trigger       = $attribute->trigger;
     my $is_weak       = $attribute->is_weak_ref;
@@ -89,15 +89,15 @@ sub generate_accessor {
                 $accessor .=
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{find_type_constraint}, $attribute->{type_constraint}, '.$value.');';
+                    'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
             } else {
                 $accessor .= $value.';';
             }
             $accessor .= 
                 "\n".
                 '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                'unless ($constraint->($val)) {
-                    $attribute->verify_type_constraint_error($name, $val, $attribute->type_constraint);
+                'unless ($constraint->check($val)) {
+                    $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
                 }' . "\n";
             $value = '$val';
         }
@@ -134,8 +134,8 @@ sub generate_accessor {
     }
 
     if ($should_deref) {
-        my $type_constraint = $attribute->type_constraint;
-        if (!ref($type_constraint) && $type_constraint eq 'ArrayRef') {
+        my $type_constraint = $attribute->{type_constraint};
+        if (ref($type_constraint) && $type_constraint->name eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
             }';
@@ -220,13 +220,7 @@ sub create {
         ;
 
         my $type_constraint = delete $args{isa};
-        $type_constraint =~ s/\s+//g;
-        my $code = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($type_constraint);
-        $args{type_constraint} = $type_constraint =~ /\|/ ?
-            [ split (/\|/, $type_constraint ) ] :
-            $type_constraint
-        ;
-        $args{find_type_constraint} = $code;
+        $args{type_constraint}= Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($type_constraint);
     }
 
     my $attribute = $self->new($name, %args);
@@ -324,15 +318,15 @@ sub verify_against_type_constraint {
     return 1 unless $_[0]->{type_constraint};
 
     local $_ = $_[1];
-    return 1 if $_[0]->{find_type_constraint}->($_);
+    return 1 if $_[0]->{type_constraint}->check($_);
 
     my $self = shift;
-    $self->verify_type_constraint_error($self->name, $_, $self->type_constraint);
+    $self->verify_type_constraint_error($self->name, $_, $self->{type_constraint});
 }
 
 sub verify_type_constraint_error {
     my($self, $name, $value, $type) = @_;
-    $type = ref($type) eq 'ARRAY' ? join '|', @{ $type } : $type;
+    $type = ref($type) eq 'ARRAY' ? join '|', map { $_->name } @{ $type } : $type->name;
     my $display = defined($value) ? overload::StrVal($value) : 'undef';
     Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
 }
@@ -340,7 +334,7 @@ sub verify_type_constraint_error {
 sub coerce_constraint { ## my($self, $value) = @_;
     my $type = $_[0]->{type_constraint}
         or return $_[1];
-    return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $_[0]->find_type_constraint, $type, $_[1]);
+    return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $_[0]->type_constraint, $_[1]);
 }
 
 sub _canonicalize_handles {
@@ -461,11 +455,6 @@ Creates a new code reference for the attribute's clearer.
 =head2 generate_handles -> { MethodName => CODE }
 
 Creates a new code reference for each of the attribute's handles methods.
-
-=head2 find_type_constraint -> CODE
-
-Returns a code reference which can be used to check that a given value passes
-this attribute's type constraint;
 
 =head2 verify_against_type_constraint Item -> 1 | ERROR
 

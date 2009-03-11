@@ -64,6 +64,7 @@ isa_ok $f2, 'Foo';
 is ref($f2->as_only), 'Obj1';
 
 my $f3 = eval { Foo->new( any => Obj1->new ) };
+die $@ if $@;
 isa_ok $f3, 'Foo';
 is ref($f3->any), 'Obj1';
 

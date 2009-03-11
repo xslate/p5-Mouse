@@ -42,7 +42,7 @@ sub _generate_processattrs {
             $code .= "if (exists \$args->{'$from'}) {\n";
 
             if ($attr->should_coerce && $attr->type_constraint) {
-                $code .= "my \$value = Mouse::Util::TypeConstraints->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{find_type_constraint}, \$attrs[$index]->{type_constraint}, \$args->{'$from'});\n";
+                $code .= "my \$value = Mouse::Util::TypeConstraints->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{type_constraint}, \$attrs[$index]->{type_constraint}, \$args->{'$from'});\n";
             }
             else {
                 $code .= "my \$value = \$args->{'$from'};\n";
@@ -50,7 +50,7 @@ sub _generate_processattrs {
 
             if ($attr->has_type_constraint) {
                 $code .= "{
-                    unless (\$attrs[$index]->{find_type_constraint}->(\$value)) {
+                    unless (\$attrs[$index]->{type_constraint}->check(\$value)) {
                         \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
                     }
                 }";
@@ -77,7 +77,7 @@ sub _generate_processattrs {
                 $code .= "my \$value = ";
 
                 if ($attr->should_coerce && $attr->type_constraint) {
-                    $code .= "Mouse::Util::TypeConstraints->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{find_type_constraint}, \$attrs[$index]->{type_constraint}, ";
+                    $code .= "Mouse::Util::TypeConstraints->typecast_constraints('".$attr->associated_class->name."', \$attrs[$index]->{type_constraint}, \$attrs[$index]->{type_constraint}, ";
                 }
 
                     if ($attr->has_builder) {
@@ -105,7 +105,7 @@ sub _generate_processattrs {
 
                 if ($attr->has_type_constraint) {
                     $code .= "{
-                        unless (\$attrs[$index]->{find_type_constraint}->(\$value)) {
+                        unless (\$attrs[$index]->{type_constraint}->check(\$value)) {
                             \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
                         }
                     }";
