@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 2;
 use Mouse::Util::TypeConstraints;
 
-subtype 'Foo', where => sub { $_->isa('A') };
+subtype 'Foo', as 'Object', where { $_->isa('A') };
 
 {
     package A;
@@ -12,12 +12,12 @@ subtype 'Foo', where => sub { $_->isa('A') };
 }
 
 {
-    package B;
+    package C;
     use Mouse;
     has a => ( is => 'rw', isa => 'Foo', coerce => 1 );
 }
 
-isa_ok(B->new(a => A->new()), 'B');
-B->meta->make_immutable;
-isa_ok(B->new(a => A->new()), 'B');
+isa_ok(C->new(a => A->new()), 'C');
+C->meta->make_immutable;
+isa_ok(C->new(a => A->new()), 'C');
 
