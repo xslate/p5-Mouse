@@ -295,8 +295,11 @@ sub does_role {
     (defined $role_name)
         || confess "You must supply a role name to look for";
 
-    for my $role (@{ $self->{roles} }) {
-        return 1 if $role->name eq $role_name;
+    for my $class ($self->linearized_isa) {
+        next unless $class->can('meta') and $class->meta->can('roles');
+        for my $role (@{ $self->roles }) {
+            return 1 if $role->name eq $role_name;
+        }
     }
 
     return 0;
