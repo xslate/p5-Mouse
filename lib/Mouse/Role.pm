@@ -3,12 +3,12 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-use Carp 'confess';
+use Carp 'confess', 'croak';
 use Scalar::Util 'blessed';
 
 use Mouse::Meta::Role;
 
-our @EXPORT = qw(before after around has extends with requires excludes confess blessed);
+our @EXPORT = qw(before after around super override inner augment has extends with requires excludes confess blessed);
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(caller);
@@ -35,6 +35,42 @@ sub around {
     for (@_) {
         $meta->add_around_method_modifier($_ => $code);
     }
+}
+
+
+sub super {
+    return unless $Mouse::SUPER_BODY; 
+    $Mouse::SUPER_BODY->(@Mouse::SUPER_ARGS);
+}
+
+sub override {
+    my $classname = caller;
+    my $meta = Mouse::Meta::Role->initialize($classname);
+
+    my $name = shift;
+    my $code = shift;
+    my $fullname = "${classname}::${name}";
+
+    defined &$fullname
+        && confess "Cannot add an override of method '$fullname' " .
+                   "because there is a local version of '$fullname'";
+
+    $meta->add_override_method_modifier($name => sub {
+        local $Mouse::SUPER_PACKAGE = shift;
+        local $Mouse::SUPER_BODY = shift;
+        local @Mouse::SUPER_ARGS = @_;
+
+        $code->(@_);
+    });
+}
+
+# We keep the same errors messages as Moose::Role emits, here.
+sub inner {
+    croak "Moose::Role cannot support 'inner'";
+}
+
+sub augment {
+    croak "Moose::Role cannot support 'augment'";
 }
 
 sub has {
@@ -126,6 +162,22 @@ L<Class::Method::Modifiers/after>.
 
 Sets up an "around" method modifier. See L<Moose/around> or
 L<Class::Method::Modifiers/around>.
+
+=item B<super>
+
+Sets up the "super" keyword. See L<Moose/super>.
+
+=item B<override ($name, &sub)>
+
+Sets up an "override" method modifier. See L<Moose/Role/override>.
+
+=item B<inner>
+
+This is not supported and emits an error. See L<Moose/Role>.
+
+=item B<augment ($name, &sub)>
+
+This is not supported and emits an error. See L<Moose/Role>.
 
 =head2 has (name|names) => parameters
 

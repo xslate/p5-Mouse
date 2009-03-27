@@ -2,7 +2,7 @@ package Mouse::Meta::Role;
 use strict;
 use warnings;
 use Carp 'confess';
-use Mouse::Util;
+use Mouse::Util qw(version authority identifier);
 
 do {
     my %METACLASS_CACHE;
@@ -42,6 +42,8 @@ sub add_required_methods {
     my @methods = @_;
     push @{$self->{required_methods}}, @methods;
 }
+
+
 
 sub add_attribute {
     my $self = shift;
@@ -88,16 +90,18 @@ sub apply {
         for my $name ($self->get_method_list) {
             next if $name eq 'meta';
 
-            if ($classname->can($name)) {
+            my $class_function = "${classname}::${name}";
+            my $role_function = "${selfname}::${name}";
+            if (defined &$class_function) {
                 # XXX what's Moose's behavior?
                 #next;
             } else {
-                *{"${classname}::${name}"} = *{"${selfname}::${name}"};
+                *$class_function = *$role_function;
             }
             if ($args{alias} && $args{alias}->{$name}) {
                 my $dstname = $args{alias}->{$name};
                 unless ($classname->can($dstname)) {
-                    *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
+                    *{"${classname}::${dstname}"} = *$role_function;
                 }
             }
         }
@@ -133,7 +137,7 @@ sub apply {
     }
 
     # XXX Room for speed improvement in role to role
-    for my $modifier_type (qw/before after around/) {
+    for my $modifier_type (qw/before after around override/) {
         my $add_method = "add_${modifier_type}_method_modifier";
         my $modified = $self->{"${modifier_type}_method_modifiers"};
 
@@ -177,16 +181,18 @@ sub combine_apply {
             for my $name ($self->get_method_list) {
                 next if $name eq 'meta';
 
-                if ($classname->can($name)) {
+                my $class_function = "${classname}::${name}";
+                my $role_function = "${selfname}::${name}";
+                if (defined &$class_function) {
                     # XXX what's Moose's behavior?
                     #next;
                 } else {
-                    *{"${classname}::${name}"} = *{"${selfname}::${name}"};
+                    *$class_function = *$role_function;
                 }
                 if ($args{alias} && $args{alias}->{$name}) {
                     my $dstname = $args{alias}->{$name};
                     unless ($classname->can($dstname)) {
-                        *{"${classname}::${dstname}"} = *{"${selfname}::${name}"};
+                        *{"${classname}::${dstname}"} = *$role_function;
                     }
                 }
             }
@@ -230,7 +236,7 @@ sub combine_apply {
     }
 
     # XXX Room for speed improvement in role to role
-    for my $modifier_type (qw/before after around/) {
+    for my $modifier_type (qw/before after around override/) {
         my $add_method = "add_${modifier_type}_method_modifier";
         for my $role_spec (@roles) {
             my $self = $role_spec->[0]->meta;
@@ -246,17 +252,17 @@ sub combine_apply {
 
     # append roles
     my %role_apply_cache;
-    my @apply_roles;
+    my $apply_roles = $class->roles;
     for my $role_spec (@roles) {
         my $self = $role_spec->[0]->meta;
-        push @apply_roles, $self unless $role_apply_cache{$self}++;
-        for my $role ($self->roles) {
-            push @apply_roles, $role unless $role_apply_cache{$role}++;
+        push @$apply_roles, $self unless $role_apply_cache{$self}++;
+        for my $role (@{ $self->roles }) {
+            push @$apply_roles, $role unless $role_apply_cache{$role}++;
         }
     }
 }
 
-for my $modifier_type (qw/before after around/) {
+for my $modifier_type (qw/before after around override/) {
     no strict 'refs';
     *{ __PACKAGE__ . '::' . "add_${modifier_type}_method_modifier" } = sub {
         my ($self, $method_name, $method) = @_;
@@ -272,6 +278,24 @@ for my $modifier_type (qw/before after around/) {
 }
 
 sub roles { $_[0]->{roles} }
+
+
+# This is currently not passing all the Moose tests.
+sub does_role {
+    my ($self, $role_name) = @_;
+
+    (defined $role_name)
+        || confess "You must supply a role name to look for";
+
+    # if we are it,.. then return true
+    return 1 if $role_name eq $self->name;
+
+    for my $role (@{ $self->{roles} }) {
+        return 1 if $role->does_role($role_name);
+    }
+    return 0;
+}
+
 
 1;
 

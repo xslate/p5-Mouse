@@ -5,7 +5,7 @@ use warnings;
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
 use Scalar::Util qw/blessed/;
-use Mouse::Util qw/get_linear_isa/;
+use Mouse::Util qw/get_linear_isa version authority identifier/;
 use Carp 'confess';
 
 do {
@@ -20,8 +20,9 @@ do {
     }
 
     sub initialize {
-        my $class = shift;
-        my $name  = shift;
+        my $class = blessed($_[0]) || $_[0];
+        my $name  = $_[1];
+
         $METACLASS_CACHE{$name} = $class->new(name => $name)
             if !exists($METACLASS_CACHE{$name});
         return $METACLASS_CACHE{$name};
@@ -76,7 +77,7 @@ my $get_methods_for_class = sub {
     no strict 'refs';
     # Get all the CODE symbol table entries
     my @functions =
-      grep !/^(?:has|with|around|before|after|blessed|extends|confess|override|super)$/,
+      grep !/^(?:has|with|around|before|after|augment|inner|blessed|extends|confess|override|super)$/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
     push @functions, keys %{$self->{'methods'}->{$name}} if $self;
@@ -259,6 +260,22 @@ sub add_after_method_modifier {
     my ( $self, $name, $code ) = @_;
     $self->_install_modifier( $self->name, 'after', $name, $code );
 }
+
+sub add_override_method_modifier {
+    my ($self, $name, $code) = @_;
+
+    my $pkg = $self->name;
+    my $method = "${pkg}::${name}";
+
+    # Class::Method::Modifiers won't do this for us, so do it ourselves
+
+    my $body = $pkg->can($name)
+        or confess "You cannot override '$method' because it has no super method";
+
+    no strict 'refs';
+    *$method = sub { $code->($pkg, $body, @_) };
+}
+
 
 sub roles { $_[0]->{roles} }
 

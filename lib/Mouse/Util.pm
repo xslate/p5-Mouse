@@ -7,6 +7,9 @@ use Carp;
 our @EXPORT_OK = qw(
     get_linear_isa
     apply_all_roles
+    version 
+    authority
+    identifier
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
@@ -51,6 +54,20 @@ BEGIN {
 
     no strict 'refs';
     *{ __PACKAGE__ . '::get_linear_isa'} = $impl;
+}
+
+{ # adapted from Class::MOP::Module
+
+    sub version { no strict 'refs'; ${shift->name.'::VERSION'} }
+    sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }  
+    sub identifier {
+        my $self = shift;
+        join '-' => (
+            $self->name,
+            ($self->version   || ()),
+            ($self->authority || ()),
+        );
+    }
 }
 
 # taken from Class/MOP.pm

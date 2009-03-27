@@ -1,10 +1,11 @@
 META.yml
 Makefile
-blib/
-inc/
+blib/*
+inc/*
 *.sw[po]
 pm_to_blib
 MANIFEST
 MANIFEST.bak
 SIGNATURE
 lib/Mouse/Tiny.pm
+*~
