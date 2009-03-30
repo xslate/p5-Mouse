@@ -101,7 +101,7 @@ sub apply {
             if ($args{alias} && $args{alias}->{$name}) {
                 my $dstname = $args{alias}->{$name};
                 unless ($classname->can($dstname)) {
-                    *{"${classname}::${dstname}"} = *$role_function;
+                    *{"${classname}::${dstname}"} = \&$role_function;
                 }
             }
         }
@@ -192,7 +192,7 @@ sub combine_apply {
                 if ($args{alias} && $args{alias}->{$name}) {
                     my $dstname = $args{alias}->{$name};
                     unless ($classname->can($dstname)) {
-                        *{"${classname}::${dstname}"} = *$role_function;
+                        *{"${classname}::${dstname}"} = \&$role_function;
                     }
                 }
             }
