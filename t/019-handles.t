@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 20;
+use Test::More tests => 24;
 
 do {
     package Person;
@@ -38,39 +38,43 @@ do {
     );
 
     TODO: {
-        local $::TODO = "handles => role";
+        local our $TODO = "Mouse lacks this";
         eval {
             has error => (
                 handles => "string",
             );
         };
+        ::ok(!$@, "handles => role");
     }
 
     TODO: {
-        local $::TODO = "handles => \\str";
+        local our $TODO = "Mouse lacks this";
         eval {
             has error2 => (
                 handles => \"ref_to_string",
             );
         };
+        ::ok(!$@, "handles => \\str");
     }
 
     TODO: {
-        local $::TODO = "handles => qr/re/";
+        local our $TODO = "Mouse lacks this";
         eval {
             has error3 => (
                 handles => qr/regex/,
             );
         };
+        ::ok(!$@, "handles => qr/re/");
     }
 
     TODO: {
-        local $::TODO = "handles => sub { code }";
+        local our $TODO = "Mouse lacks this";
         eval {
             has error4 => (
                 handles => sub { "code" },
             );
         };
+        ::ok(!$@, "handles => sub { code }");
     }
 };
 
