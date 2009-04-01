@@ -68,13 +68,9 @@ sub BUILDARGS {
     my $class = shift;
 
     if (scalar @_ == 1) {
-        if (defined $_[0]) {
-            (ref($_[0]) eq 'HASH')
-                || confess "Single parameters to new() must be a HASH ref";
-            return {%{$_[0]}};
-        } else {
-            return {};
-        }
+        (ref($_[0]) eq 'HASH')
+            || confess "Single parameters to new() must be a HASH ref";
+        return {%{$_[0]}};
     }
     else {
         return {@_};

@@ -143,14 +143,9 @@ sub _generate_BUILDARGS {
     return <<'...';
     do {
         if ( scalar @_ == 1 ) {
-            if ( defined $_[0] ) {
-                ( ref( $_[0] ) eq 'HASH' )
+            ( ref( $_[0] ) eq 'HASH' )
                 || Carp::confess "Single parameters to new() must be a HASH ref";
-                +{ %{ $_[0] } };
-            }
-            else {
-                +{};
-            }
+            +{ %{ $_[0] } };
         }
         else {
             +{@_};

@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 7;
 use Test::Exception;
 
 do {
@@ -28,7 +28,16 @@ throws_ok {
     Class->new('non-hashref scalar');
 } qr/Single parameters to new\(\) must be a HASH ref/;
 
-lives_ok {
+throws_ok {
     Class->new(undef);
-} "Class->new(undef) specifically doesn't throw an error. weird"
+} qr/Single parameters to new\(\) must be a HASH ref/;
 
+Class->meta->make_immutable;
+
+throws_ok {
+    Class->new('non-hashref scalar');
+} qr/Single parameters to new\(\) must be a HASH ref/;
+
+throws_ok {
+    Class->new(undef);
+} qr/Single parameters to new\(\) must be a HASH ref/;
