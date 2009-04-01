@@ -282,10 +282,14 @@ sub _build_type_constraint {
     } else {
         $code = $TYPE{ $spec };
         if (! $code) {
+            # is $spec a known role?  If so, constrain with 'does' instead of 'isa'
+            require Mouse::Meta::Role;
+            my $check = Mouse::Meta::Role->_metaclass_cache($spec)? 
+                'does' : 'isa';
             my $code_str = 
                 "#line " . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 "sub {\n" .
-                "    Scalar::Util::blessed(\$_[0]) && \$_[0]->isa('$spec');\n" .
+                "    Scalar::Util::blessed(\$_[0]) && \$_[0]->$check('$spec');\n" .
                 "}"
             ;
             $code = eval $code_str  or Carp::confess($@);
