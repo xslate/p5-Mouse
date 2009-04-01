@@ -82,7 +82,7 @@ sub has {
     $meta->add_attribute($name => \%opts);
 }
 
-sub extends  { confess "Roles do not support 'extends'" }
+sub extends  { confess "Roles do not currently support 'extends'" }
 
 sub with     {
     my $meta = Mouse::Meta::Role->initialize(caller);
