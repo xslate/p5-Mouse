@@ -276,7 +276,7 @@ sub _build_type_constraint {
             ;
             $code = eval $code_str or Carp::confess($@);
         } else {
-            Carp::confess("Support for parameterized types other than ArrayRef or HashRef is not implemented yet");
+            Carp::confess("Support for parameterized types other than Maybe, ArrayRef or HashRef is not implemented yet");
         }
         $TYPE{$spec} = Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $spec );
     } else {
