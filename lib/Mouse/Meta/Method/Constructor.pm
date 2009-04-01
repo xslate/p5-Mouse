@@ -64,7 +64,7 @@ sub _generate_processattrs {
             }
 
             if ($attr->has_trigger) {
-                $code .= "\$attrs[$index]->{trigger}->( \$instance, \$value, \$attrs[$index] );\n";
+                $code .= "\$attrs[$index]->{trigger}->( \$instance, \$value );\n";
             }
 
             $code .= "\n} else {\n";

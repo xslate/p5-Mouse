@@ -27,7 +27,7 @@ sub new {
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args->{$from}, $attribute);
+                $attribute->trigger->($instance, $args->{$from});
             }
         }
         else {

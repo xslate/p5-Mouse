@@ -44,9 +44,9 @@ is(@trigger, 0, "trigger not called on read");
 
 is($object->attr(50), 50, "setting the value");
 is(@trigger, 1, "trigger was called on read");
-is_deeply([splice @trigger], [[$object, 50, $object->meta->get_attribute('attr')]], "correct arguments to trigger in the accessor");
+is_deeply([splice @trigger], [[$object, 50, undef]], "correct arguments to trigger in the accessor");
 
 my $object2 = Class->new(attr => 100);
 is(@trigger, 1, "trigger was called on new with the attribute specified");
-is_deeply([splice @trigger], [[$object2, 100, $object2->meta->get_attribute('attr')]], "correct arguments to trigger in the constructor");
+is_deeply([splice @trigger], [[$object2, 100, undef]], "correct arguments to trigger in the constructor");
 

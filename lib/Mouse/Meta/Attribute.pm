@@ -105,7 +105,7 @@ sub generate_accessor {
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->('.$self.', '.$value.', $attribute);' . "\n";
+            $accessor .= '$trigger->('.$self.', '.$value.');' . "\n";
         }
 
         $accessor .= "}\n";
