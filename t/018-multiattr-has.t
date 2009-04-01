@@ -8,13 +8,14 @@ do {
     package Class;
     use Mouse;
 
-    has [qw/a b c/] => (
-        is => 'rw',
-        trigger => sub {
-            my ($self, $value, $attr) = @_;
-            $trigger{$attr->name}++;
-        },
-    );
+    for my $attr (qw/a b c/) {
+        has $attr => (
+            is => 'rw',
+            trigger => sub {
+                $trigger{$attr}++;
+            },
+        );
+    }
 };
 
 can_ok(Class => qw/a b c/);
