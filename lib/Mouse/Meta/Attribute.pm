@@ -74,6 +74,8 @@ sub generate_accessor {
     my $should_deref  = $attribute->should_auto_deref;
     my $should_coerce = $attribute->should_coerce;
 
+    my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
+
     my $self  = '$_[0]';
     my $key   = $attribute->inlined_name;
 
@@ -97,12 +99,21 @@ sub generate_accessor {
             } else {
                 $accessor .= $value.';';
             }
-            $accessor .= 
-                "\n".
-                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                'unless ($constraint->check($val)) {
-                    $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
-                }' . "\n";
+            if ($compiled_type_constraint) {
+                $accessor .= 
+                    "\n".
+                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                    'unless ($compiled_type_constraint->($val)) {
+                        $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
+                    }' . "\n";
+            } else {
+                $accessor .= 
+                    "\n".
+                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                    'unless ($constraint->check($val)) {
+                        $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
+                    }' . "\n";
+            }
             $value = '$val';
         }
 
