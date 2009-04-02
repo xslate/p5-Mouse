@@ -70,12 +70,17 @@ sub get_method_list {
     wantarray ? @functions : \@functions;
 }
 
+# Moose uses Application::ToInstance, Application::ToClass, Application::ToRole
 sub apply {
     my $self  = shift;
     my $selfname = $self->name;
     my $class = shift;
     my $classname = $class->name;
     my %args  = @_;
+
+    if ($class->isa('Mouse::Object')) {
+        Carp::croak('Mouse does not support Application::ToInstance yet');
+    }
 
     if ($class->isa('Mouse::Meta::Class')) {
         for my $name (@{$self->{required_methods}}) {
