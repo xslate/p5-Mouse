@@ -154,7 +154,7 @@ sub coerce {
             }
         }
 
-        push @{ $COERCE_KEYS{$name} }, $type;
+        unshift @{ $COERCE_KEYS{$name} }, $type;
         $COERCE{$name}->{$type} = $code;
     }
 }
