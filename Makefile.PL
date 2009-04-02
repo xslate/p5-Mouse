@@ -29,8 +29,9 @@ auto_include;
 WriteAll;
 
 sub create_moose_compatibility_test {
-    require Path::Class;
-    Path::Class->import('file', 'dir');
+    require File::Path;
+    require File::Spec;
+    require File::Basename;
 
     # some test does not pass... currently skip it.
     my %SKIP_TEST = (
@@ -51,24 +52,36 @@ sub create_moose_compatibility_test {
         '031_roles_applied_in_create.t' => 'wtf?',
     );
 
-    dir('t')->recurse(
-        callback => sub {
-            my $f = shift;
-            return if $f->is_dir;
-            return if $f =~ /\.sw[po]$/;
-            return if $SKIP_TEST{$f->basename};
+    File::Find::find(
+        {
+            wanted => sub {
+                return unless -f $_;
+                my $basename = File::Basename::basename($_);
+                return if $basename =~ /^\./;
+                return if $SKIP_TEST{$basename};
+                
+                my $dirname = File::Basename::dirname($_);
 
-            my $dstfile = dir('xt', 'compatibility')->file($f);
-            $dstfile->dir->mkpath();
+                my $tmpdir = File::Spec->catfile('xt', 'compatibility', $dirname);
+                File::Path::make_path($tmpdir);
 
-            my $fh = $dstfile->openw();
-            $fh->print(do {
-                local $_ = $f->slurp;
-                s/Mouse/Moose/g;
-                $_;
-            });
-            $fh->close();
+                my $tmpfile = File::Spec->catfile($tmpdir, $basename);
+                open my $wfh, '>', $tmpfile or die $!;
+                print $wfh do {
+                    my $src = do {
+                        open my $rfh, '<', $_ or die $!;
+                        my $s = do { local $/; <$rfh> };
+                        close $rfh;
+                        $s;
+                    };
+                    $src =~ s/Mouse/Moose/g;
+                    $src;
+                };
+                close $wfh;
+            },
+            no_chdir => 1
         },
+        't',
     );
 }
 
