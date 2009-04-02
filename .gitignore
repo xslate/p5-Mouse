@@ -9,3 +9,4 @@ MANIFEST.bak
 SIGNATURE
 lib/Mouse/Tiny.pm
 *~
+*.old
