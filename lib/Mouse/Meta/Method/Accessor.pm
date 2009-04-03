@@ -91,8 +91,7 @@ sub generate_accessor_method_inline {
     }
 
     if ($should_deref) {
-        my $type_constraint = $attribute->{type_constraint};
-        if (ref($type_constraint) && $type_constraint->name eq 'ArrayRef') {
+        if (ref($constraint) && $constraint->name eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
                 return @{ '.$self.'->{'.$key.'} || [] };
             }';
