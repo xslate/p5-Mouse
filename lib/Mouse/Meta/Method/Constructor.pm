@@ -14,7 +14,7 @@ sub generate_constructor_method_inline {
     my $code = <<"...";
     sub {
         my \$class = shift;
-        my \$args = $buildargs;
+        $buildargs;
         my \$instance = bless {}, \$class;
         $processattrs;
         $buildall;
@@ -143,20 +143,19 @@ sub _generate_BUILDARGS {
     my $meta = shift;
 
     if ($meta->name->can('BUILDARGS') && $meta->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
-        return '$class->BUILDARGS(@_)';
+        return 'my $args = $class->BUILDARGS(@_)';
     }
 
     return <<'...';
-    do {
+        my $args;
         if ( scalar @_ == 1 ) {
             ( ref( $_[0] ) eq 'HASH' )
                 || Carp::confess "Single parameters to new() must be a HASH ref";
-            +{ %{ $_[0] } };
+            $args = +{ %{ $_[0] } };
         }
         else {
-            +{@_};
+            $args = +{@_};
         }
-    };
 ...
 }
 
