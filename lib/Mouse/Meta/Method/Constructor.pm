@@ -9,6 +9,7 @@ sub generate_constructor_method_inline {
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS($meta);
     my $processattrs = $class->_generate_processattrs($meta, \@attrs);
+    my @compiled_constraints = map { $_ ? $_->{_compiled_type_constraint} : undef } map { $_->{type_constraint} } @attrs;
 
     my $code = <<"...";
     sub {
@@ -22,6 +23,7 @@ sub generate_constructor_method_inline {
 ...
 
     local $@;
+    # warn $code;
     my $res = eval $code;
     die $@ if $@;
     $res;
@@ -49,11 +51,17 @@ sub _generate_processattrs {
             }
 
             if ($attr->has_type_constraint) {
-                $code .= "{
-                    unless (\$attrs[$index]->{type_constraint}->check(\$value)) {
-                        \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
+                if ($attr->type_constraint->{_compiled_type_constraint}) {
+                    $code .= "unless (\$compiled_constraints[$index](\$value)) {";
+                } else {
+                    $code .= "unless (\$attrs[$index]->{type_constraint}->check(\$value)) {";
+                }
+                $code .= "
+                        \$attrs[$index]->verify_type_constraint_error(
+                            '$key', \$_, \$attrs[$index]->type_constraint
+                        )
                     }
-                }";
+                ";
             }
 
             $code .= "\$instance->{'$key'} = \$value;\n";
