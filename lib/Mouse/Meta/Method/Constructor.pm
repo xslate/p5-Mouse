@@ -170,7 +170,7 @@ sub _generate_BUILDALL {
     no warnings 'once';
     for my $klass ($meta->linearized_isa) {
         if (*{ $klass . '::BUILD' }{CODE}) {
-            push  @code, qq{${klass}::BUILD(\$instance, \$args);};
+            unshift  @code, qq{${klass}::BUILD(\$instance, \$args);};
         }
     }
     return join "\n", @code;
