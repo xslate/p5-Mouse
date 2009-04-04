@@ -27,36 +27,33 @@ sub generate_accessor_method_inline {
     if ($attribute->_is_metadata eq 'rw') {
         $accessor .= 
             '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-            'if (@_ >= 2) {' . "\n";
+            'if (scalar(@_) >= 2) {' . "\n";
 
         my $value = '$_[1]';
 
         if ($constraint) {
-            $accessor .= 'my $val = ';
             if ($should_coerce) {
                 $accessor .=
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
-            } else {
-                $accessor .= $value.';';
+                    'my $val = Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
+                $value = '$val';
             }
             if ($compiled_type_constraint) {
                 $accessor .= 
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($compiled_type_constraint->($val)) {
-                        $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
+                    'unless ($compiled_type_constraint->('.$value.')) {
+                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
                     }' . "\n";
             } else {
                 $accessor .= 
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($constraint->check($val)) {
-                        $attribute->verify_type_constraint_error($name, $val, $attribute->{type_constraint});
+                    'unless ($constraint->check('.$value.')) {
+                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
                     }' . "\n";
             }
-            $value = '$val';
         }
 
         # if there's nothing left to do for the attribute we can return during
