@@ -1,5 +1,34 @@
 Revision history for Mouse
 
+    * Implemented Mouse::Object->does (wu-lee)
+
+    * Implemented override and super functions for Mouse::Role.
+      (wu-lee)
+    
+    * Implemented stub augment and inner functions for Mouse::Role,
+      which merely throw an exception as in Moose::Role. (wu-lee)
+    
+    * Stole more tests from Moose (020_roles/*).  Not all these pass
+      yet; the rest have been moved to 020_roles/failing for later
+      examination. (wu-lee)
+    
+    * Implemented Mouse::Role->does_role.  This does not yet quite
+      seem to pass all the tests it should. (wu-lee)
+    
+    * Fixed bug in Mouse::Meta::Role->apply and ->combine_apply, so that
+      030_roles/002_role.t tests pass. (wu-lee)
+    
+    * Implemented ->version, ->authority and ->identifier methods in
+      Mouse::Meta::Role and Mouse::Meta::Class (mainly to make more
+      Moose tests pass). (wu-lee)
+
+    * Mouse attribute property 'isa' now accepts Role names. (wu-lee)
+
+    * Fixed bug: typecoercion application order was reversed. (wu-lee)
+
+    * Fixed bug: inlined constructor was invoking BUILD methods in
+      wrong order. (wu-lee)
+    
 0.20
     * To improve Moose compat, the third argument to trigger
       (the attribute metaobject) has been removed (Sartak)
