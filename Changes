@@ -22,6 +22,9 @@ Revision history for Mouse
       Mouse::Meta::Role and Mouse::Meta::Class (mainly to make more
       Moose tests pass). (wu-lee)
 
+    * Implemented emulations of Class::MOP's metaclass accessors
+      (get_metaclass_by_name etc.) in Mouse::Meta::Class.
+
     * Mouse attribute property 'isa' now accepts Role names. (wu-lee)
 
     * Fixed bug: typecoercion application order was reversed. (wu-lee)
