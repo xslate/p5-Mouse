@@ -346,7 +346,7 @@ is(My::Test14->twist(), 'My::Test::Base::twist', '... got the right method retur
 }    
 
 ok(Role::Reality->meta->has_method('twist'), '... the twist method has not been added');
-#ok(!Role::Reality->meta->does_role('Role::Plot'), '... our role does() the correct roles');
+ok(!Role::Reality->meta->does_role('Role::Plot'), '... our role does() the correct roles');
 is(Role::Reality->meta->get_method('twist')->(), 
     'Role::Reality::twist', 
     '... the twist method returns the right value');

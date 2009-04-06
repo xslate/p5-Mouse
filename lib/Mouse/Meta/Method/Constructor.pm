@@ -5,6 +5,7 @@ use warnings;
 sub generate_constructor_method_inline {
     my ($class, $meta) = @_;
 
+    my $associated_metaclass_name = $meta->name;
     my @attrs = $meta->compute_all_applicable_attributes;
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS($meta);
@@ -14,6 +15,8 @@ sub generate_constructor_method_inline {
     my $code = <<"...";
     sub {
         my \$class = shift;
+        return \$class->Mouse::Object::new(\@_)
+            if \$class ne '$associated_metaclass_name';
         $buildargs;
         my \$instance = bless {}, \$class;
         $processattrs;
