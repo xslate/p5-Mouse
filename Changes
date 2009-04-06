@@ -28,6 +28,9 @@ Revision history for Mouse
 
     * Fixed bug: inlined constructor was invoking BUILD methods in
       wrong order. (wu-lee)
+
+    * Fixed bug: immutable constructor now redispatches correctly to
+      Mouse::Object::new when used in derived classes (wu-lee).
     
 0.20
     * To improve Moose compat, the third argument to trigger
