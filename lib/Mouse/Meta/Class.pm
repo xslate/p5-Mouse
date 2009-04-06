@@ -4,7 +4,7 @@ use warnings;
 
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
-use Scalar::Util qw/blessed/;
+use Scalar::Util qw/blessed weaken/;
 use Mouse::Util qw/get_linear_isa version authority identifier/;
 use Carp 'confess';
 
@@ -27,6 +27,17 @@ do {
             if !exists($METACLASS_CACHE{$name});
         return $METACLASS_CACHE{$name};
     }
+
+    # Means of accessing all the metaclasses that have
+    # been initialized thus far
+    sub get_all_metaclasses         {        %METACLASS_CACHE         }
+    sub get_all_metaclass_instances { values %METACLASS_CACHE         }
+    sub get_all_metaclass_names     { keys   %METACLASS_CACHE         }
+    sub get_metaclass_by_name       { $METACLASS_CACHE{$_[0]}         }
+    sub store_metaclass_by_name     { $METACLASS_CACHE{$_[0]} = $_[1] }
+    sub weaken_metaclass            { weaken($METACLASS_CACHE{$_[0]}) }
+    sub does_metaclass_exist        { exists $METACLASS_CACHE{$_[0]} && defined $METACLASS_CACHE{$_[0]} }
+    sub remove_metaclass_by_name    { $METACLASS_CACHE{$_[0]} = undef }
 };
 
 sub new {
