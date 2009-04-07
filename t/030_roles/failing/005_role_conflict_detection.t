@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 87; # it's really 124 with kolibrie's tests;
+use Test::More tests => 88; # it's really 124 with kolibrie's tests;
 use Test::Exception;
 
 =pod
