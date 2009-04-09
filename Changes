@@ -1,4 +1,11 @@
 Revision history for Mouse
+    
+0.20
+    * To improve Moose compat, the third argument to trigger
+      (the attribute metaobject) has been removed (Sartak)
+
+    * To improve Moose compat, a single undef passed to new
+      is now disallowed (Sartak)
 
     * Implemented Mouse::Object->does (wu-lee)
 
@@ -34,13 +41,6 @@ Revision history for Mouse
 
     * Fixed bug: immutable constructor now redispatches correctly to
       Mouse::Object::new when used in derived classes (wu-lee).
-    
-0.20
-    * To improve Moose compat, the third argument to trigger
-      (the attribute metaobject) has been removed (Sartak)
-
-    * To improve Moose compat, a single undef passed to new
-      is now disallowed (Sartak)
 
 0.19 Sun Mar 8 04:38:01 2009
     * Parameterized type constraints for ArrayRef and HashRef (lestrrat)
