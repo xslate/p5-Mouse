@@ -147,7 +147,8 @@ sub add_attribute {
     }
 }
 
-sub compute_all_applicable_attributes {
+sub compute_all_applicable_attributes { shift->get_all_attributes(@_) }
+sub get_all_attributes {
     my $self = shift;
     my (@attr, %seen);
 
@@ -192,7 +193,7 @@ sub clone_instance {
 
     my $clone = bless { %$instance }, ref $instance;
 
-    foreach my $attr ($class->compute_all_applicable_attributes()) {
+    foreach my $attr ($class->get_all_attributes()) {
         if ( defined( my $init_arg = $attr->init_arg ) ) {
             if (exists $params{$init_arg}) {
                 $clone->{ $attr->name } = $params{$init_arg};
@@ -423,7 +424,7 @@ Gets (or sets) the list of superclasses of the owner class.
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
 
-=head2 compute_all_applicable_attributes -> (Mouse::Meta::Attribute)
+=head2 get_all_attributes -> (Mouse::Meta::Attribute)
 
 Returns the list of all L<Mouse::Meta::Attribute> instances associated with
 this class and its superclasses.
@@ -437,7 +438,7 @@ L<Mouse::Meta::Attribute> objects.
 
 This returns a list of attribute names which are defined in the local
 class. If you want a list of all applicable attributes for a class,
-use the C<compute_all_applicable_attributes> method.
+use the C<get_all_attributes> method.
 
 =head2 has_attribute Name -> Bool
 
