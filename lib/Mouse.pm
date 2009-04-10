@@ -430,6 +430,8 @@ tokuhirom
 
 Yappo
 
+wu-lee
+
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
