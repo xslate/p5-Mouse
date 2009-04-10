@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.20
+0.21
+
+
+0.20 Thu Apr 9 20:22:33 2009
     * Squirrel is now deprecated. Use Any::Moose instead (Sartak)
 
     * To improve Moose compat, the third argument to trigger
