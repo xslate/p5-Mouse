@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.20
+    * Squirrel is now deprecated. Use Any::Moose instead (Sartak)
+
     * To improve Moose compat, the third argument to trigger
       (the attribute metaobject) has been removed (Sartak)
 

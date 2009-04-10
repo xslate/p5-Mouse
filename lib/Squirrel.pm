@@ -29,6 +29,8 @@ sub _handlers {
 }
 
 sub import {
+    require Carp;
+    Carp::carp("Squirrel is deprecated. Please use Any::Moose instead. It fixes a number of design problems that Squirrel has.");
     goto $_[0]->_handlers->{import};
 }
 
