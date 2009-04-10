@@ -1,5 +1,5 @@
 Revision history for Mouse
-    
+
 0.20
     * To improve Moose compat, the third argument to trigger
       (the attribute metaobject) has been removed (Sartak)
@@ -11,20 +11,20 @@ Revision history for Mouse
 
     * Implemented override and super functions for Mouse::Role.
       (wu-lee)
-    
+
     * Implemented stub augment and inner functions for Mouse::Role,
       which merely throw an exception as in Moose::Role. (wu-lee)
-    
+
     * Stole more tests from Moose (020_roles/*).  Not all these pass
       yet; the rest have been moved to 020_roles/failing for later
       examination. (wu-lee)
-    
+
     * Implemented Mouse::Role->does_role.  This does not yet quite
       seem to pass all the tests it should. (wu-lee)
-    
+
     * Fixed bug in Mouse::Meta::Role->apply and ->combine_apply, so that
       030_roles/002_role.t tests pass. (wu-lee)
-    
+
     * Implemented ->version, ->authority and ->identifier methods in
       Mouse::Meta::Role and Mouse::Meta::Class (mainly to make more
       Moose tests pass). (wu-lee)
@@ -41,6 +41,19 @@ Revision history for Mouse
 
     * Fixed bug: immutable constructor now redispatches correctly to
       Mouse::Object::new when used in derived classes (wu-lee).
+
+    * Maybe parameterized type constraint (lestrrat)
+
+    * Performance improvements! (tokuhirom)
+
+    * Improve Moose compat of class_type (lestrrat)
+
+    * Many type-constraint fixes (tokuhirom and lestrrat)
+
+    * Mouse::Meta::Class->has_method and ->get_attribute_list (tokuhirom)
+
+    * Add get_all_attributes, use it internally instead of
+      compute_all_applicable_attributes (nothingmuch)
 
 0.19 Sun Mar 8 04:38:01 2009
     * Parameterized type constraints for ArrayRef and HashRef (lestrrat)
