@@ -1,7 +1,19 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More;
+BEGIN {
+    plan skip_all => 
+            "This test requires Class::Method::Modifiers or Class::Method::Modifiers::Fast" 
+        unless eval { 
+            require Class::Method::Modifiers::Fast;
+        } or   eval {
+            require Class::Method::Modifiers;
+        };
+}
+
+plan tests => 6;
+
 
 # this test script ensures that my idiom of:
 # role: sub BUILD, after BUILD

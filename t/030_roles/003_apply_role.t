@@ -2,8 +2,18 @@
 
 use strict;
 use warnings;
+use Test::More;
+BEGIN {
+    plan skip_all => 
+            "This test requires Class::Method::Modifiers or Class::Method::Modifiers::Fast" 
+        unless eval { 
+            require Class::Method::Modifiers::Fast;
+        } or   eval {
+            require Class::Method::Modifiers;
+        };
+}
 
-use Test::More tests => 86;
+plan tests => 86;
 use Test::Exception;
 
 {
