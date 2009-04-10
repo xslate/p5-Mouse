@@ -227,15 +227,14 @@ Mouse - Moose minus the antlers
 
 =head1 DESCRIPTION
 
-L<Moose> is wonderful.
+L<Moose> is wonderful. B<Use Moose instead of Mouse.>
 
-Unfortunately, it's a little slow. Though significant progress has been made
-over the years, the compile time penalty is a non-starter for some
+Unfortunately, Moose has a compile-time penalty. Though significant progress has
+been made over the years, the compile time penalty is a non-starter for some
 applications.
 
-Mouse aims to alleviate this by providing a subset of Moose's
-functionality, faster. In particular, L<Moose/has> is missing only a few
-expert-level features.
+Mouse aims to alleviate this by providing a subset of Moose's functionality,
+faster.
 
 We're also going as light on dependencies as possible.
 L<Class::Method::Modifiers> or L<Data::Util> is required if you want support
@@ -250,9 +249,8 @@ runs the test suite 4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
-nothingmuch has written L<Squirrel> (part of this distribution) which will act
-as Mouse unless Moose is loaded, in which case it will act as Moose.
-L<Any::Moose> is a more high-tech L<Squirrel>.
+we have written L<Any::Moose> which will act as Mouse unless Moose is loaded,
+in which case it will act as Moose.
 
 =head2 MouseX
 
