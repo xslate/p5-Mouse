@@ -6,7 +6,7 @@ sub generate_constructor_method_inline {
     my ($class, $meta) = @_;
 
     my $associated_metaclass_name = $meta->name;
-    my @attrs = $meta->compute_all_applicable_attributes;
+    my @attrs = $meta->get_all_attributes;
     my $buildall = $class->_generate_BUILDALL($meta);
     my $buildargs = $class->_generate_BUILDARGS($meta);
     my $processattrs = $class->_generate_processattrs($meta, \@attrs);

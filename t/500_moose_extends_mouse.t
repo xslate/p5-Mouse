@@ -84,7 +84,7 @@ is( eval { $bar->bar }, undef, "no default value" );
 
 
     is_deeply(
-        [ sort map { $_->name } Bar->meta->compute_all_applicable_attributes ],
+        [ sort map { $_->name } Bar->meta->get_all_attributes ],
         [ sort qw(foo bar) ],
         "attributes",
     );

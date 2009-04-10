@@ -12,7 +12,7 @@ sub new {
 
     my $instance = bless {}, $class;
 
-    for my $attribute ($class->meta->compute_all_applicable_attributes) {
+    for my $attribute ($class->meta->get_all_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
 
