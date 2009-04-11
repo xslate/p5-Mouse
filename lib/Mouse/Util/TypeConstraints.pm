@@ -109,8 +109,8 @@ sub subtype {
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };
-    my $constraint = $conf{where};
-    my $as_constraint = find_or_create_isa_type_constraint($conf{as} || 'Any');
+    my $constraint = delete $conf{where};
+    my $as_constraint = find_or_create_isa_type_constraint(delete $conf{as} || 'Any');
 
     $TYPE_SOURCE{$name} = $pkg;
     $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
@@ -126,6 +126,7 @@ sub subtype {
                 $as_constraint->check($_[0]);
             }
         ),
+        %conf
     );
 
     return $name;

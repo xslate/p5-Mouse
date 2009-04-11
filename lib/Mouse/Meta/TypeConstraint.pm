@@ -14,7 +14,11 @@ sub new {
         $check = $check->{_compiled_type_constraint};
     }
 
-    bless +{ name => $name, _compiled_type_constraint => $check }, $class;
+    bless +{
+        name                      => $name,
+        _compiled_type_constraint => $check,
+        message                   => $args{message}
+    }, $class;
 }
 
 sub name { shift->{name} }
@@ -22,6 +26,25 @@ sub name { shift->{name} }
 sub check {
     my $self = shift;
     $self->{_compiled_type_constraint}->(@_);
+}
+
+sub message {
+    return $_[0]->{message};
+}
+
+sub get_message {
+    my ($self, $value) = @_;
+    if ( my $msg = $self->message ) {
+        local $_ = $value;
+        return $msg->($value);
+    }
+    else {
+        $value = ( defined $value ? overload::StrVal($value) : 'undef' );
+        return
+            "Validation failed for '"
+          . $self->name
+          . "' failed with value $value";
+    }
 }
 
 1;

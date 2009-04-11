@@ -236,9 +236,7 @@ sub verify_against_type_constraint {
 
 sub verify_type_constraint_error {
     my($self, $name, $value, $type) = @_;
-    $type = ref($type) eq 'ARRAY' ? join '|', map { $_->name } @{ $type } : $type->name;
-    my $display = defined($value) ? overload::StrVal($value) : 'undef';
-    Carp::confess("Attribute ($name) does not pass the type constraint because: Validation failed for \'$type\' failed with value $display");
+    Carp::confess("Attribute ($name) does not pass the type constraint because: " . $type->get_message($value));
 }
 
 sub coerce_constraint { ## my($self, $value) = @_;
