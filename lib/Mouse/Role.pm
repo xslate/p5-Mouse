@@ -163,6 +163,8 @@ L<Class::Method::Modifiers/after>.
 Sets up an "around" method modifier. See L<Moose/around> or
 L<Class::Method::Modifiers/around>.
 
+=over 4
+
 =item B<super>
 
 Sets up the "super" keyword. See L<Moose/super>.
@@ -178,6 +180,8 @@ This is not supported and emits an error. See L<Moose/Role>.
 =item B<augment ($name, &sub)>
 
 This is not supported and emits an error. See L<Moose/Role>.
+
+=back
 
 =head2 has (name|names) => parameters
 
