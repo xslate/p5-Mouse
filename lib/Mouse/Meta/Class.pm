@@ -459,7 +459,8 @@ metaclass.
 
 =head2 clone_instance Instance, Parameters -> Instance
 
-Clones the given C<Instance> and sets any additional parameters.
+The clone_instance method has been made private.
+The public version is deprecated.
 
 =cut
 

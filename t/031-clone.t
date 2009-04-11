@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 9;
 use Test::Exception;
 
 do {
@@ -57,7 +57,4 @@ throws_ok {
     Foo->meta->clone_object(Foo->meta)
 } qr/You must pass an instance of the metaclass \(Foo\), not \(Mo.se::Meta::Class=HASH\(\w+\)\)/;
 
-throws_ok {
-    Foo->meta->clone_instance("constant")
-} qr/You can only clone instances, \(constant\) is not a blessed instance/;
 
