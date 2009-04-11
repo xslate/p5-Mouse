@@ -101,7 +101,7 @@ sub apply {
                 # XXX what's Moose's behavior?
                 #next;
             } else {
-                *$class_function = *$role_function;
+                *{$class_function} = \&{$role_function};
             }
             if ($args{alias} && $args{alias}->{$name}) {
                 my $dstname = $args{alias}->{$name};

@@ -125,7 +125,6 @@ is stdout, "Mr. Ed\n";
 $talking->color("grey");        # sets the color
 $talking->speak;                # says "Mr. Ed goes neigh"
 
-TODO: { local $TODO = "this currently fails because of a bug in Class::Method::Modifiers (see RT #42992)";
 is stdout, <<EXPECTED;
 Mr. Ed goes neigh
 EXPECTED
@@ -137,7 +136,6 @@ $baab->speak;                   # prints "Baab goes baaaah"
 is stdout, <<EXPECTED;
 Baab goes baaaah
 EXPECTED
-    }
 
 #use MouseA
 my $mickey = MouseA->new(name => 'Mickey');
