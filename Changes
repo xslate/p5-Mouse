@@ -1,13 +1,21 @@
 Revision history for Mouse
 
 0.21
+    * clone_instance has been made private, like in Moose (tokuhirom)
 
-    * Fix test failures when user does not have C::Method::Modifiers(::Fast) installed(Joel Bernstein)
-    
-    * use get_all_attributes instead of compute_all_applicable_attributes(tokuhirom)
+    * Fix method modifiers applying to the wrong class (gfuji)
+      reported by Heikki Lehvaslaiho in [rt.cpan.org #42992]
 
-    * fixed pod bug(reported by Ryan52)
-    https://rt.cpan.org/Public/Bug/Display.html?id=44928
+    * Fix test failures when user does not have C::Method::Modifiers(::Fast)
+      installed (Joel Bernstein)
+
+    * use get_all_attributes instead of
+      compute_all_applicable_attributes (tokuhirom)
+
+    * fixed pod bug (tokuhirom)
+      reported by Ryan52 in [rt.cpan.org #44928]
+
+    * Parameterized type constraints can now have messages (tokuhirom)
 
     * Added documentation about type constraints (Mark Stosberg)
 
