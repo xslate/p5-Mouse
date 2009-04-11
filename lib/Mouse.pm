@@ -418,6 +418,15 @@ Returns whether this class is actually loaded or not. It uses a heuristic which
 involves checking for the existence of C<$VERSION>, C<@ISA>, and any
 locally-defined method.
 
+=head1 SOURCE CODE ACCESS
+
+We have a public git repo:
+
+ git clone git://jules.scsys.co.uk/gitmo/Mouse.git
+
+If you would like commit access, send a note with your public SSH key to Yuval
+Kogman, at the address below.
+
 =head1 AUTHORS
 
 Shawn M Moore, C<< <sartak at gmail.com> >>
