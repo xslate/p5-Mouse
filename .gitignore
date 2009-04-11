@@ -10,3 +10,4 @@ SIGNATURE
 lib/Mouse/Tiny.pm
 *~
 *.old
+xt/compatibility/
