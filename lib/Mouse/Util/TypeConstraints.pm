@@ -342,7 +342,165 @@ __END__
 
 =head1 NAME
 
-Mouse::Util::TypeConstraints - simple type constraints
+Mouse::Util::TypeConstraints - Type constraint system for Mouse
+
+=head2 SYNOPSIS
+
+  use Mouse::Util::TypeConstraints;
+
+  subtype 'Natural'
+      => as 'Int'
+      => where { $_ > 0 };
+
+  subtype 'NaturalLessThanTen'
+      => as 'Natural'
+      => where { $_ < 10 }
+      => message { "This number ($_) is not less than ten!" };
+
+  coerce 'Num'
+      => from 'Str'
+        => via { 0+$_ };
+
+  enum 'RGBColors' => qw(red green blue);
+
+  no Mouse::Util::TypeConstraints;
+
+=head1 DESCRIPTION
+
+This module provides Mouse with the ability to create custom type
+constraints to be used in attribute definition.
+
+=head2 Important Caveat
+
+This is B<NOT> a type system for Perl 5. These are type constraints,
+and they are not used by Mouse unless you tell it to. No type
+inference is performed, expressions are not typed, etc. etc. etc.
+
+A type constraint is at heart a small "check if a value is valid"
+function. A constraint can be associated with an attribute. This
+simplifies parameter validation, and makes your code clearer to read,
+because you can refer to constraints by name.
+
+=head2 Slightly Less Important Caveat
+
+It is B<always> a good idea to quote your type names.
+
+This prevents Perl from trying to execute the call as an indirect
+object call. This can be an issue when you have a subtype with the
+same name as a valid class.
+
+For instance:
+
+  subtype DateTime => as Object => where { $_->isa('DateTime') };
+
+will I<just work>, while this:
+
+  use DateTime;
+  subtype DateTime => as Object => where { $_->isa('DateTime') };
+
+will fail silently and cause many headaches. The simple way to solve
+this, as well as future proof your subtypes from classes which have
+yet to have been created, is to quote the type name:
+
+  use DateTime;
+  subtype 'DateTime' => as 'Object' => where { $_->isa('DateTime') };
+
+=head2 Default Type Constraints
+
+This module also provides a simple hierarchy for Perl 5 types, here is
+that hierarchy represented visually.
+
+  Any
+  Item
+      Bool
+      Maybe[`a]
+      Undef
+      Defined
+          Value
+              Num
+                Int
+              Str
+                ClassName
+                RoleName
+          Ref
+              ScalarRef
+              ArrayRef[`a]
+              HashRef[`a]
+              CodeRef
+              RegexpRef
+              GlobRef
+                FileHandle
+              Object
+                Role
+
+B<NOTE:> Any type followed by a type parameter C<[`a]> can be
+parameterized, this means you can say:
+
+  ArrayRef[Int]    # an array of integers
+  HashRef[CodeRef] # a hash of str to CODE ref mappings
+  Maybe[Str]       # value may be a string, may be undefined
+
+If Mouse finds a name in brackets that it does not recognize as an
+existing type, it assumes that this is a class name, for example
+C<ArrayRef[DateTime]>.
+
+B<NOTE:> Unless you parameterize a type, then it is invalid to include
+the square brackets. I.e. C<ArrayRef[]> will be treated as a new type
+name, I<not> as a parameterization of C<ArrayRef>.
+
+B<NOTE:> The C<Undef> type constraint for the most part works
+correctly now, but edge cases may still exist, please use it
+sparingly.
+
+B<NOTE:> The C<ClassName> type constraint does a complex package
+existence check. This means that your class B<must> be loaded for this
+type constraint to pass.
+
+B<NOTE:> The C<RoleName> constraint checks a string is a I<package
+name> which is a role, like C<'MyApp::Role::Comparable'>. The C<Role>
+constraint checks that an I<object does> the named role.
+
+=head2 Type Constraint Naming
+
+Type name declared via this module can only contain alphanumeric
+characters, colons (:), and periods (.).
+
+Since the types created by this module are global, it is suggested
+that you namespace your types just as you would namespace your
+modules. So instead of creating a I<Color> type for your
+B<My::Graphics> module, you would call the type
+I<My::Graphics::Types::Color> instead.
+
+=head2 Use with Other Constraint Modules
+
+This module can play nicely with other constraint modules with some
+slight tweaking. The C<where> clause in types is expected to be a
+C<CODE> reference which checks it's first argument and returns a
+boolean. Since most constraint modules work in a similar way, it
+should be simple to adapt them to work with Mouse.
+
+For instance, this is how you could use it with
+L<Declare::Constraints::Simple> to declare a completely new type.
+
+  type 'HashOfArrayOfObjects',
+      {
+      where => IsHashRef(
+          -keys   => HasLength,
+          -values => IsArrayRef(IsObject)
+      )
+  };
+
+Here is an example of using L<Test::Deep> and it's non-test
+related C<eq_deeply> function.
+
+  type 'ArrayOfHashOfBarsAndRandomNumbers'
+      => where {
+          eq_deeply($_,
+              array_each(subhashof({
+                  bar           => isa('Bar'),
+                  random_number => ignore()
+              })))
+        };
 
 =head1 METHODS
 
@@ -365,6 +523,10 @@ Returns the simple type constraints that Mouse understands.
 =item B<enum (\@values)>
 
 =back
+
+=head1 THANKS
+
+Much of this documentation was taken from L<Moose::Util::TypeConstraints>
 
 =cut
 

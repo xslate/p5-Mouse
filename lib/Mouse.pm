@@ -305,10 +305,16 @@ the attribute.
 
 =item isa => TypeConstraint
 
-Provides basic type checking in the constructor and accessor. Basic types such
-as C<Int>, C<ArrayRef>, C<Defined> are supported. Any unknown type is taken to
-be a class check (e.g. isa => 'DateTime' would accept only L<DateTime>
-objects).
+Provides type checking in the constructor and accessor. The following types are
+supported. Any unknown type is taken to be a class check (e.g. isa =>
+'DateTime' would accept only L<DateTime> objects).
+
+    Any Item Bool Undef Defined Value Num Int Str ClassName
+    Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
+    FileHandle Object
+
+For more documentation on type constraints, see L<Mouse::Util::TypeConstraints>.
+
 
 =item required => 0|1
 
@@ -417,6 +423,12 @@ C<eval "use $module"> or using C<require>.
 Returns whether this class is actually loaded or not. It uses a heuristic which
 involves checking for the existence of C<$VERSION>, C<@ISA>, and any
 locally-defined method.
+
+=head1 SOURCE CODE ACCESS
+
+We have a public git repo:
+
+ git clone git://jules.scsys.co.uk/gitmo/Mouse.git
 
 =head1 AUTHORS
 
