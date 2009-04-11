@@ -2,6 +2,12 @@ Revision history for Mouse
 
 0.21
 
+    * Fix test failures when user does not have C::Method::Modifiers(::Fast) installed(Joel Bernstein)
+    
+    * use get_all_attributes instead of compute_all_applicable_attributes(tokuhirom)
+
+    * fixed pod bug(reported by Ryan52)
+    https://rt.cpan.org/Public/Bug/Display.html?id=44928
 
 0.20 Thu Apr 9 20:22:33 2009
     * Squirrel is now deprecated. Use Any::Moose instead (Sartak)
