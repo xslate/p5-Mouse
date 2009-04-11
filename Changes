@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.22
+
 0.21 Sat Apr 11 13:52:11 2009
     * clone_instance has been made private, like in Moose (tokuhirom)
 
