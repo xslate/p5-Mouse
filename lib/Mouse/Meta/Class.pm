@@ -309,7 +309,7 @@ sub does_role {
 
     for my $class ($self->linearized_isa) {
         next unless $class->can('meta') and $class->meta->can('roles');
-        for my $role (@{ $self->roles }) {
+        for my $role (@{ $class->meta->roles }) {
             return 1 if $role->name eq $role_name;
         }
     }
