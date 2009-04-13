@@ -74,6 +74,7 @@ sub create_moose_compatibility_test {
                         close $rfh;
                         $s;
                     };
+                    $src =~ s/Mouse::is_class_loaded/Class::MOP::is_class_loaded/g;
                     $src =~ s/Mouse/Moose/g;
                     $src;
                 };
