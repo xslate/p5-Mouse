@@ -61,7 +61,7 @@ sub _generate_processattrs {
                 }
                 $code .= "
                         \$attrs[$index]->verify_type_constraint_error(
-                            '$key', \$_, \$attrs[$index]->type_constraint
+                            '$key', \$value, \$attrs[$index]->type_constraint
                         )
                     }
                 ";
@@ -117,7 +117,7 @@ sub _generate_processattrs {
                 if ($attr->has_type_constraint) {
                     $code .= "{
                         unless (\$attrs[$index]->{type_constraint}->check(\$value)) {
-                            \$attrs[$index]->verify_type_constraint_error('$key', \$_, \$attrs[$index]->type_constraint)
+                            \$attrs[$index]->verify_type_constraint_error('$key', \$value, \$attrs[$index]->type_constraint)
                         }
                     }";
                 }
