@@ -225,13 +225,14 @@ sub validate_args {
 }
 
 sub verify_against_type_constraint {
-    return 1 unless $_[0]->{type_constraint};
+    my ($self, $value) = @_;
+    my $tc = $self->type_constraint;
+    return 1 unless $tc;
 
-    local $_ = $_[1];
-    return 1 if $_[0]->{type_constraint}->check($_);
+    local $_ = $value;
+    return 1 if $tc->check($value);
 
-    my $self = shift;
-    $self->verify_type_constraint_error($self->name, $_, $self->{type_constraint});
+    $self->verify_type_constraint_error($self->name, $value, $tc);
 }
 
 sub verify_type_constraint_error {
