@@ -1,6 +1,12 @@
 Revision history for Mouse
 
-0.22
+0.22 Tue Apr 21 03:26:43 2009
+    * Regenerate broken signature (Sartak)
+      rerpoted by Michael Gray [rt.cpan.org #45167]
+
+    * does_role now checks parent classes (tokuhirom)
+
+    * Fix for $_ not being available type constraint messages (Sartak)
 
 0.21 Sat Apr 11 13:52:11 2009
     * clone_instance has been made private, like in Moose (tokuhirom)
