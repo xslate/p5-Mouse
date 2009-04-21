@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.23
+
 0.22 Tue Apr 21 03:26:43 2009
     * Regenerate broken signature (Sartak)
       rerpoted by Michael Gray [rt.cpan.org #45167]
