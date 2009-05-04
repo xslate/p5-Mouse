@@ -1,4 +1,5 @@
 use inc::Module::Install;
+use 5.008;
 
 name     'Mouse';
 all_from 'lib/Mouse.pm';

@@ -446,7 +446,9 @@ with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
 
-No known bugs.
+There is a known issue with Mouse on 5.6.2 regarding the @ISA tests. Until
+this is resolve the minimum version of Perl for Mouse is set to 5.8.0. Patches
+to resolve these tests are more than welcome.
 
 Please report any bugs through RT: email
 C<bug-mouse at rt.cpan.org>, or browse
