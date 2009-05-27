@@ -1,10 +1,14 @@
 Revision history for Mouse
 
 0.23
+    * Take the mro::linearized_isa DEMOLISHALL fix from Moose
+      (originally by doy)
+
+    * Mouse::class_of to mirror Class::MOP::class_of
 
 0.22 Tue Apr 21 03:26:43 2009
     * Regenerate broken signature (Sartak)
-      rerpoted by Michael Gray [rt.cpan.org #45167]
+      reported by Michael Gray [rt.cpan.org #45167]
 
     * does_role now checks parent classes (tokuhirom)
 
