@@ -111,7 +111,7 @@ sub DEMOLISHALL {
         # destruction. However, we should still be able to use mro at
         # that time (at least tests suggest so ;)
         my $class_name = ref $self;
-        @isa = @{ mro::get_linear_isa($class_name) }
+        @isa = @{ Mouse::Util::get_linear_isa($class_name) }
     }
 
     foreach my $class (@isa) {
