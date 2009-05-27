@@ -191,6 +191,12 @@ sub is_class_loaded {
     return 0;
 }
 
+sub class_of {
+    return unless defined $_[0];
+    my $class = blessed($_[0]) || $_[0];
+    return Mouse::Meta::Class::get_metaclass_by_name($class);
+}
+
 1;
 
 __END__
