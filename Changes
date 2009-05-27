@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.24
+
 0.23 Wed May 27 16:52:28 2009
     * Take the mro::linearized_isa DEMOLISHALL fix from Moose
       (originally by doy)
