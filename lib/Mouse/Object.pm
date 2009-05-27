@@ -102,10 +102,23 @@ sub DEMOLISHALL {
 
     no strict 'refs';
 
-    for my $class ($self->meta->linearized_isa) {
-        my $code = *{ $class . '::DEMOLISH' }{CODE}
-            or next;
-        $code->($self, @_);
+    my @isa;
+    if ( my $meta = Mouse::class_of($self) ) {
+        @isa = $meta->linearized_isa;
+    } else {
+        # We cannot count on being able to retrieve a previously made
+        # metaclass, _or_ being able to make a new one during global
+        # destruction. However, we should still be able to use mro at
+        # that time (at least tests suggest so ;)
+        my $class_name = ref $self;
+        @isa = @{ mro::get_linear_isa($class_name) }
+    }
+
+    foreach my $class (@isa) {
+        no strict 'refs';
+        my $demolish = *{"${class}::DEMOLISH"}{CODE};
+        $self->$demolish
+            if defined $demolish;
     }
 }
 
