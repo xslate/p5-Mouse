@@ -43,37 +43,37 @@ ok(My::OtherRole->meta->requires_method('bar'), '... and the &bar method is requ
 {
     package Foo::Role;
     use Mouse::Role;
-    
+
     sub foo { 'Foo::Role::foo' }
-    
+
     package Bar::Role;
     use Mouse::Role;
-    
-    sub foo { 'Bar::Role::foo' }    
+
+    sub foo { 'Bar::Role::foo' }
 
     package Baz::Role;
     use Mouse::Role;
-    
-    sub foo { 'Baz::Role::foo' }   
-    
+
+    sub foo { 'Baz::Role::foo' }
+
     package My::Foo::Class;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Foo::Role' => { excludes => 'foo' },
-             'Bar::Role' => { excludes => 'foo' }, 
+             'Bar::Role' => { excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
-    
+
     package My::Foo::Class::Broken;
     use Mouse;
-    
+
     ::throws_ok {
         with 'Foo::Role',
-             'Bar::Role' => { excludes => 'foo' }, 
+             'Bar::Role' => { excludes => 'foo' },
              'Baz::Role';
-    } qr/\'Foo::Role\|Bar::Role\|Baz::Role\' requires the method \'foo\' to be implemented by \'My::Foo::Class::Broken\'/, 
-      '... composed our roles correctly';    
+    } qr/Due to a method name conflict in roles 'Baz::Role' and 'Foo::Role', the method 'foo' must be implemented or excluded by 'My::Foo::Class::Broken'/,
+      '... composed our roles correctly';
 }
 
 {
@@ -89,7 +89,7 @@ ok(My::OtherRole->meta->requires_method('bar'), '... and the &bar method is requ
 
     ::lives_ok {
         with 'Foo::Role' => { excludes => 'foo' },
-             'Bar::Role' => { excludes => 'foo' }, 
+             'Bar::Role' => { excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
 }
@@ -103,7 +103,7 @@ ok(!My::Foo::Role->meta->requires_method('foo'), '... and the &foo method is not
 
     ::lives_ok {
         with 'Foo::Role',
-             'Bar::Role' => { excludes => 'foo' }, 
+             'Bar::Role' => { excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
 }

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 88; # it's really 124 with kolibrie's tests;
+use Test::More tests => 88;
 use Test::Exception;
 
 =pod
@@ -17,31 +17,31 @@ Mutually recursive roles.
     use Mouse::Role;
 
     requires 'foo';
-    
+
     sub bar { 'Role::Foo::bar' }
-    
+
     package Role::Bar;
     use Mouse::Role;
-    
+
     requires 'bar';
-    
-    sub foo { 'Role::Bar::foo' }    
+
+    sub foo { 'Role::Bar::foo' }
 }
 
 {
     package My::Test1;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Role::Foo', 'Role::Bar';
     } '... our mutually recursive roles combine okay';
-    
+
     package My::Test2;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Role::Bar', 'Role::Foo';
-    } '... our mutually recursive roles combine okay (no matter what order)';    
+    } '... our mutually recursive roles combine okay (no matter what order)';
 }
 
 my $test1 = My::Test1->new;
@@ -70,13 +70,11 @@ is($test2->bar, 'Role::Foo::bar', '... $test2->bar worked');
 
 # check some meta-stuff
 
-TODO: { todo_skip "Mouse: not yet implemented" => 4;
 ok(Role::Foo->meta->has_method('bar'), '... it still has the bar method');
 ok(Role::Foo->meta->requires_method('foo'), '... it still has the required foo method');
 
 ok(Role::Bar->meta->has_method('foo'), '... it still has the foo method');
 ok(Role::Bar->meta->requires_method('bar'), '... it still has the required bar method');
-}
 
 =pod
 
@@ -87,55 +85,53 @@ Role method conflicts
 {
     package Role::Bling;
     use Mouse::Role;
-    
+
     sub bling { 'Role::Bling::bling' }
-    
+
     package Role::Bling::Bling;
     use Mouse::Role;
-    
-    sub bling { 'Role::Bling::Bling::bling' }    
+
+    sub bling { 'Role::Bling::Bling::bling' }
 }
 
 {
     package My::Test3;
     use Mouse;
-    
+
     ::throws_ok {
         with 'Role::Bling', 'Role::Bling::Bling';
-    } qr/requires the method \'bling\' to be implemented/, '... role methods conflicted and method was required';
-    
+    } qr/Due to a method name conflict in roles 'Role::Bling' and 'Role::Bling::Bling', the method 'bling' must be implemented or excluded by 'My::Test3'/, '... role methods conflict and method was required';
+
     package My::Test4;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Role::Bling';
         with 'Role::Bling::Bling';
-    } '... role methods didnt conflict when manually combined';    
-    
+    } '... role methods didnt conflict when manually combined';
+
     package My::Test5;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Role::Bling::Bling';
         with 'Role::Bling';
-    } '... role methods didnt conflict when manually combined (in opposite order)';    
-    
+    } '... role methods didnt conflict when manually combined (in opposite order)';
+
     package My::Test6;
     use Mouse;
-    
+
     ::lives_ok {
         with 'Role::Bling::Bling', 'Role::Bling';
-    } '... role methods didnt conflict when manually resolved';    
-    
+    } '... role methods didnt conflict when manually resolved';
+
     sub bling { 'My::Test6::bling' }
 }
 
-TODO: { todo_skip "Mouse: not yet implemented" => 4;
 ok(!My::Test3->meta->has_method('bling'), '... we didnt get any methods in the conflict');
 ok(My::Test4->meta->has_method('bling'), '... we did get the method when manually dealt with');
 ok(My::Test5->meta->has_method('bling'), '... we did get the method when manually dealt with');
 ok(My::Test6->meta->has_method('bling'), '... we did get the method when manually dealt with');
-}
 
 ok(!My::Test3->does('Role::Bling'), '... our class does() the correct roles');
 ok(!My::Test3->does('Role::Bling::Bling'), '... our class does() the correct roles');
@@ -155,22 +151,19 @@ is(My::Test6->bling, 'My::Test6::bling', '... and we got the local method');
 {
     package Role::Bling::Bling::Bling;
     use Mouse::Role;
-    
+
     with 'Role::Bling::Bling';
-    
-    sub bling { 'Role::Bling::Bling::Bling::bling' }    
+
+    sub bling { 'Role::Bling::Bling::Bling::bling' }
 }
 
-TODO: { todo_skip "Mouse: not yet implemented" => 1;
 ok(Role::Bling::Bling->meta->has_method('bling'), '... still got the bling method in Role::Bling::Bling');
-    }
 ok(Role::Bling::Bling->meta->does_role('Role::Bling::Bling'), '... our role correctly does() the other role');
-TODO: { todo_skip "Mouse: not yet implemented" => 2;
 ok(Role::Bling::Bling::Bling->meta->has_method('bling'), '... dont have the bling method in Role::Bling::Bling::Bling');
-is(Role::Bling::Bling::Bling->meta->get_method('bling')->(), 
+is(Role::Bling::Bling::Bling->meta->get_method('bling')->(),
     'Role::Bling::Bling::Bling::bling',
     '... still got the bling method in Role::Bling::Bling::Bling');
-}
+
 
 =pod
 
@@ -181,23 +174,23 @@ Role attribute conflicts
 {
     package Role::Boo;
     use Mouse::Role;
-    
+
     has 'ghost' => (is => 'ro', default => 'Role::Boo::ghost');
-    
+
     package Role::Boo::Hoo;
     use Mouse::Role;
-    
+
     has 'ghost' => (is => 'ro', default => 'Role::Boo::Hoo::ghost');
 }
 
 {
     package My::Test7;
     use Mouse;
-    
+
     ::throws_ok {
         with 'Role::Boo', 'Role::Boo::Hoo';
-    } qr/We have encountered an attribute conflict/, 
-      '... role attrs conflicted and method was required';
+    } qr/We have encountered an attribute conflict/,
+      '... role attrs conflict and method was required';
 
     package My::Test8;
     use Mouse;
@@ -206,24 +199,24 @@ Role attribute conflicts
         with 'Role::Boo';
         with 'Role::Boo::Hoo';
     } '... role attrs didnt conflict when manually combined';
-    
+
     package My::Test9;
     use Mouse;
 
     ::lives_ok {
         with 'Role::Boo::Hoo';
         with 'Role::Boo';
-    } '... role attrs didnt conflict when manually combined';    
+    } '... role attrs didnt conflict when manually combined';
 
     package My::Test10;
     use Mouse;
-    
-    has 'ghost' => (is => 'ro', default => 'My::Test10::ghost');    
-    
+
+    has 'ghost' => (is => 'ro', default => 'My::Test10::ghost');
+
     ::throws_ok {
         with 'Role::Boo', 'Role::Boo::Hoo';
-    } qr/We have encountered an attribute conflict/, 
-      '... role attrs conflicted and cannot be manually disambiguted';  
+    } qr/We have encountered an attribute conflict/,
+      '... role attrs conflict and cannot be manually disambiguted';
 
 }
 
@@ -258,14 +251,14 @@ Role override method conflicts
 {
     package Role::Plot;
     use Mouse::Role;
-    
+
     override 'twist' => sub {
         super() . ' -> Role::Plot::twist';
     };
-    
+
     package Role::Truth;
     use Mouse::Role;
-    
+
     override 'twist' => sub {
         super() . ' -> Role::Truth::twist';
     };
@@ -274,43 +267,43 @@ Role override method conflicts
 {
     package My::Test::Base;
     use Mouse;
-    
+
     sub twist { 'My::Test::Base::twist' }
-        
+
     package My::Test11;
     use Mouse;
-    
+
     extends 'My::Test::Base';
 
     ::lives_ok {
         with 'Role::Truth';
     } '... composed the role with override okay';
-       
+
     package My::Test12;
     use Mouse;
 
     extends 'My::Test::Base';
 
-    ::lives_ok {    
+    ::lives_ok {
        with 'Role::Plot';
     } '... composed the role with override okay';
-              
+
     package My::Test13;
     use Mouse;
 
     ::dies_ok {
-        with 'Role::Plot';       
+        with 'Role::Plot';
     } '... cannot compose it because we have no superclass';
-    
+
     package My::Test14;
     use Mouse;
 
     extends 'My::Test::Base';
 
     ::throws_ok {
-        with 'Role::Plot', 'Role::Truth';       
-    } qr/Two \'override\' methods of the same name encountered/, 
-      '... cannot compose it because we have no superclass';       
+        with 'Role::Plot', 'Role::Truth';
+    } qr/Two \'override\' methods of the same name encountered/,
+      '... cannot compose it because we have no superclass';
 }
 
 ok(My::Test11->meta->has_method('twist'), '... the twist method has been added');
@@ -335,21 +328,43 @@ is(My::Test14->twist(), 'My::Test::Base::twist', '... got the right method retur
     package Role::Reality;
     use Mouse::Role;
 
-    ::throws_ok {    
+    ::throws_ok {
         with 'Role::Plot';
-    } qr/A local method of the same name as been found/, 
+    } qr/A local method of the same name as been found/,
     '... could not compose roles here, it dies';
 
     sub twist {
         'Role::Reality::twist';
     }
-}    
+}
 
 ok(Role::Reality->meta->has_method('twist'), '... the twist method has not been added');
-ok(!Role::Reality->meta->does_role('Role::Plot'), '... our role does() the correct roles');
-is(Role::Reality->meta->get_method('twist')->(), 
-    'Role::Reality::twist', 
+#ok(!Role::Reality->meta->does_role('Role::Plot'), '... our role does() the correct roles');
+is(Role::Reality->meta->get_method('twist')->(),
+    'Role::Reality::twist',
     '... the twist method returns the right value');
+
+# Ovid's test case from rt.cpan.org #44
+{
+    package Role1;
+    use Mouse::Role;
+
+    sub foo {}
+}
+{
+    package Role2;
+    use Mouse::Role;
+
+    sub foo {}
+}
+{
+    package Conflicts;
+    use Mouse;
+
+    ::throws_ok {
+        with qw(Role1 Role2);
+    } qr/Due to a method name conflict in roles 'Role1' and 'Role2', the method 'foo' must be implemented or excluded by 'Conflicts'/;
+}
 
 =pod
 
@@ -380,22 +395,22 @@ Now I have to decide actually what happens, and how to fix it.
 {
     package Role::Method;
     use Mouse::Role;
-    
+
     sub ghost { 'Role::Method::ghost' }
 
     package Role::Method2;
     use Mouse::Role;
-    
+
     sub ghost { 'Role::Method2::ghost' }
 
     package Role::Attribute;
     use Mouse::Role;
-    
+
     has 'ghost' => (is => 'ro', default => 'Role::Attribute::ghost');
 
     package Role::Attribute2;
     use Mouse::Role;
-    
+
     has 'ghost' => (is => 'ro', default => 'Role::Attribute2::ghost');
 }
 
@@ -403,7 +418,7 @@ Now I have to decide actually what happens, and how to fix it.
     package My::Test15;
     use Mouse;
 
-    ::lives_ok {    
+    ::lives_ok {
        with 'Role::Method';
     } '... composed the method role into the method class';
 
