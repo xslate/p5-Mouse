@@ -41,7 +41,7 @@ print { $handle } << 'EOF';
 
 # if regular Mouse is loaded, bail out
 unless ($INC{'Mouse.pm'}) {
-eval q{
+eval <<'END_OF_TINY';
 
 # tell Perl we already have all of the Mouse files loaded:
 EOF
@@ -55,7 +55,7 @@ print { $handle } "\n# and now their contents\n\n";
 
 print { $handle } $mouse_tiny;
 
-print { $handle } "}; #eval\n} #unless\n\n";
+print { $handle } "END_OF_TINY\n} #unless\n\n";
 
 print { $handle } << 'EOF';
 package Mouse::Tiny;
