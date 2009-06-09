@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 BEGIN {
     if (eval "require Class::Method::Modifiers; 1") {
-        plan tests => 57;
+        plan tests => 59;
     }
     else {
         plan skip_all => "Class::Method::Modifiers required for this test";
@@ -134,7 +134,7 @@ is_deeply(
 	[ 'Mouse::Object' ],
 	'... Point got the automagic base class');
 
-my @Point_methods = qw(meta new x y clear);
+my @Point_methods = qw(meta new x y clear DESTROY);
 my @Point_attrs   = ('x', 'y');
 
 is_deeply(
@@ -174,7 +174,7 @@ is_deeply(
 	[ 'Point' ],
 	'... Point3D gets the parent given to it');
 
-my @Point3D_methods = qw(new meta clear);
+my @Point3D_methods = qw(new meta clear DESTROY);
 my @Point3D_attrs   = ('z');
 
 SKIP: {

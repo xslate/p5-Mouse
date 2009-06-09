@@ -209,6 +209,7 @@ sub make_immutable {
     my $self = shift;
     my %args = (
         inline_constructor => 1,
+        inline_destructor  => 1,
         @_,
     );
 
