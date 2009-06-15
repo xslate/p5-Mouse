@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.25
+
 0.24 Mon Jun 15 14:47:18 2009
     * Moose's construct_instance is deprecated, use new_object (tokuhirom)
 
