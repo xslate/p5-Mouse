@@ -1,6 +1,15 @@
 Revision history for Mouse
 
-0.24
+0.24 Mon Jun 15 14:47:18 2009
+    * Moose's construct_instance is deprecated, use new_object (tokuhirom)
+
+    * Improve Mouse::Tiny generation (tokuhirom)
+
+    * Inlining destructor fixes (tokuhirom)
+
+    * Add Mouse->init_meta (tokuhirom)
+
+    * Fix failing tests by requiring a newer Moose in that test (Sartak)
 
 0.23 Wed May 27 16:52:28 2009
     * Take the mro::linearized_isa DEMOLISHALL fix from Moose
