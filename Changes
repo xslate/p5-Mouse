@@ -1,6 +1,7 @@
 Revision history for Mouse
 
-0.25
+0.25 Fri Jun 19 12:05:42 2009
+    * Fix SIGNATURE (reported by daxim) ... by removing it :)
 
 0.24 Mon Jun 15 14:47:18 2009
     * Moose's construct_instance is deprecated, use new_object (tokuhirom)
