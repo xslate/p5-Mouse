@@ -22,7 +22,7 @@ do {
 # affecting its definition
 
 BEGIN {
-    plan skip_all => "Moose required for this test" unless eval { require Moose::Role };
+    plan skip_all => "Moose 0.68 required for this test" unless eval { require Moose::Role && Moose::Role->VERSION('0.68') };
     plan tests => 6;
 }
 
