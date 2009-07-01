@@ -308,6 +308,12 @@ should upgrade to Moose. We don't need two parallel sets of extensions!
 If you really must write a Mouse extension, please contact the Moose mailing
 list or #moose on IRC beforehand.
 
+=head2 Maintenance
+
+The original author of this module has mostly stepped down from maintaining
+Mouse. See L<http://www.nntp.perl.org/group/perl.moose/2009/04/msg653.html>.
+If you would like to help maintain this module, please get in touch with us.
+
 =head1 KEYWORDS
 
 =head2 meta -> Mouse::Meta::Class
