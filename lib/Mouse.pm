@@ -268,9 +268,12 @@ Mouse - Moose minus the antlers
 
 L<Moose> is wonderful. B<Use Moose instead of Mouse.>
 
-Unfortunately, Moose has a compile-time penalty. Though significant progress has
-been made over the years, the compile time penalty is a non-starter for some
-applications.
+Unfortunately, Moose has a compile-time penalty. Though significant progress
+has been made over the years, the compile time penalty is a non-starter for
+some very specific applications. If you are writing a command-line application
+or CGI script where startup time is essential, you may not be able to use
+Moose. We recommend that you instead use L<HTTP::Engine> and FastCGI for the
+latter, if possible.
 
 Mouse aims to alleviate this by providing a subset of Moose's functionality,
 faster.
@@ -289,7 +292,13 @@ runs the test suite 4x faster.
 The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
 we have written L<Any::Moose> which will act as Mouse unless Moose is loaded,
-in which case it will act as Moose.
+in which case it will act as Moose. Since Mouse is a little sloppier than
+Moose, if you run into weird errors, it would be worth running:
+
+    ANY_MOOSE=Moose perl your-script.pl
+
+to see if the bug is caused by Mouse. Moose's diagnostics and validation are
+also much better.
 
 =head2 MouseX
 
