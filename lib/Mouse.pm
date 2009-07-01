@@ -279,8 +279,8 @@ Mouse aims to alleviate this by providing a subset of Moose's functionality,
 faster.
 
 We're also going as light on dependencies as possible.
-L<Class::Method::Modifiers> or L<Data::Util> is required if you want support
-for L</before>, L</after>, and L</around>.
+L<Class::Method::Modifiers::Fast> or L<Class::Method::Modifiers> is required
+if you want support for L</before>, L</after>, and L</around>.
 
 =head2 MOOSE COMPAT
 
