@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.27
+0.27 Thu Jul  2 15:17:37 2009
+    * Doc updates (Sartak)
+
+    * Include missing Mouse::Tiny
 
 0.26 Wed Jul  1 13:39:30 2009
     * Fix failing tests by requiring a newer Moose in that test (t0m)
