@@ -4,6 +4,9 @@ Revision history for Mouse
     * Alter Makefile.PL so in author mode we generate lib/Mouse/Tiny.pm on
       every run so that 'make dist' actually does what it's meant to (mst)
 
+    * Only unlink Mouse::Tiny if it exists, otherwise autodie pitches
+      a fit (miyagawa)
+
 0.27 Thu Jul  2 15:17:37 2009
     * Doc updates (Sartak)
 
