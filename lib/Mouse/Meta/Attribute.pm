@@ -209,8 +209,7 @@ sub validate_args {
 
     confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)"
         if $args->{auto_deref}
-        && $args->{isa} ne 'ArrayRef'
-        && $args->{isa} ne 'HashRef';
+        && $args->{isa} !~ /^(?:ArrayRef|HashRef)(?:\[.*\])?$/;
 
     if ($args->{trigger}) {
         if (ref($args->{trigger}) eq 'HASH') {
