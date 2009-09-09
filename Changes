@@ -1,6 +1,8 @@
 Revision history for Mouse
 
-0.28
+0.29
+
+0.28 Wed Sep  8 20:00:06 2009
     * Alter Makefile.PL so in author mode we generate lib/Mouse/Tiny.pm on
       every run so that 'make dist' actually does what it's meant to (mst)
 
