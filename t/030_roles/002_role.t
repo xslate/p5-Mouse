@@ -85,13 +85,13 @@ is_deeply(
 
 ok($foo_role->has_attribute('bar'), '... FooRole does have the bar attribute');
 
-is $foo_role->get_attribute('bar')->name, 'bar', '... got the correct description of the bar attribute';
+is $foo_role->get_attribute('bar')->{is}, 'rw', '... got the correct description of the bar attribute';
 
 ok($foo_role->has_attribute('baz'), '... FooRole does have the baz attribute');
 
 is(
-    $foo_role->get_attribute('baz')->name,
-    'baz',
+    $foo_role->get_attribute('baz')->{is},
+    'ro',
     '... got the correct description of the baz attribute');
 
 # method modifiers
