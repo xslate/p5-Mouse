@@ -70,7 +70,7 @@ isa_ok($foo_role->get_method('boo'), 'Mouse::Meta::Role::Method');
 
 is_deeply(
     [ sort $foo_role->get_method_list() ],
-    [ 'boo', 'foo' ],
+    [ 'boo', 'foo', 'meta' ],
     '... got the right method list');
 
 ok(FooRole->can('foo'), "locally defined methods are still there");
