@@ -221,13 +221,6 @@ sub create {
         if exists $args{coerce};
 
     if (exists $args{isa}) {
-        confess "Got isa => $args{isa}, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef (rt.cpan.org #39795)"
-            if $args{isa} =~ /^([^\[]+)\[.+\]$/ &&
-               $1 ne 'ArrayRef' &&
-               $1 ne 'HashRef'  &&
-               $1 ne 'Maybe'
-        ;
-
         my $type_constraint = delete $args{isa};
         $args{type_constraint}= Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($type_constraint);
     }

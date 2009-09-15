@@ -16,7 +16,7 @@ do {
     no Mouse::Role;
 };
 
-is(Role->meta->get_attribute('attr')->default, 'Role');
+is(Role->meta->get_attribute('attr')->{default}, 'Role');
 
 do {
     package Class;

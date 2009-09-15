@@ -308,6 +308,13 @@ sub find_type_constraint {
 sub find_or_create_isa_type_constraint {
     my $type_constraint = shift;
 
+    Carp::confess("Got isa => type_constraints, but Mouse does not yet support parameterized types for containers other than ArrayRef and HashRef and Maybe (rt.cpan.org #39795)")
+        if $type_constraint =~ /\A ( [^\[]+ ) \[\.+\] \z/xms &&
+           $1 ne 'ArrayRef' &&
+           $1 ne 'HashRef'  &&
+           $1 ne 'Maybe'
+    ;
+
     my $code;
 
     $type_constraint =~ s/\s+//g;
