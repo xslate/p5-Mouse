@@ -65,7 +65,7 @@ sub create_moose_compatibility_test {
                 my $dirname = File::Basename::dirname($_);
 
                 my $tmpdir = File::Spec->catfile('xt', 'compatibility', $dirname);
-                File::Path::make_path($tmpdir);
+                File::Path::mkpath($tmpdir);
 
                 my $tmpfile = File::Spec->catfile($tmpdir, $basename);
                 open my $wfh, '>', $tmpfile or die $!;
