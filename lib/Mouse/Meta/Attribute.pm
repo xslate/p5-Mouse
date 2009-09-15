@@ -55,14 +55,12 @@ sub _create_args {
     $_[0]->{_create_args}
 }
 
-sub inlined_name {
+sub _inlined_name {
     my $self = shift;
-    my $name = $self->name;
-    my $key   = "'" . $name . "'";
-    return $key;
+    return sprintf '"%s"', quotemeta $self->name;
 }
 
-sub generate_accessor_method_inline {
+sub _generate_accessor{
     my ($attribute) = @_;
 
     my $name          = $attribute->name;
@@ -77,7 +75,7 @@ sub generate_accessor_method_inline {
     my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
 
     my $self  = '$_[0]';
-    my $key   = $attribute->inlined_name;
+    my $key   = $attribute->_inlined_name;
 
     my $accessor = 
         '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
@@ -167,9 +165,9 @@ sub generate_accessor_method_inline {
 }
 
 
-sub generate_predicate {
+sub _generate_predicate {
     my $attribute = shift;
-    my $key = $attribute->inlined_name;
+    my $key = $attribute->_inlined_name;
 
     my $predicate = 'sub { exists($_[0]->{'.$key.'}) }';
 
@@ -178,9 +176,9 @@ sub generate_predicate {
     return $sub;
 }
 
-sub generate_clearer {
+sub _generate_clearer {
     my $attribute = shift;
-    my $key = $attribute->inlined_name;
+    my $key = $attribute->_inlined_name;
 
     my $clearer = 'sub { delete($_[0]->{'.$key.'}) }';
 
@@ -189,7 +187,7 @@ sub generate_clearer {
     return $sub;
 }
 
-sub generate_handles {
+sub _generate_handles {
     my $attribute = shift;
     my $reader = $attribute->name;
     my %handles = $attribute->_canonicalize_handles($attribute->handles);
@@ -243,21 +241,21 @@ sub create {
 
     # install an accessor
     if ($attribute->_is_metadata eq 'rw' || $attribute->_is_metadata eq 'ro') {
-        my $code = $attribute->generate_accessor_method_inline();
+        my $code = $attribute->_generate_accessor();
         $class->add_method($name => $code);
     }
 
     for my $method (qw/predicate clearer/) {
         my $predicate = "has_$method";
         if ($attribute->$predicate) {
-            my $generator = "generate_$method";
+            my $generator = "_generate_$method";
             my $coderef = $attribute->$generator;
             $class->add_method($attribute->$method => $coderef);
         }
     }
 
     if ($attribute->has_handles) {
-        my $method_map = $attribute->generate_handles;
+        my $method_map = $attribute->_generate_handles;
         for my $method_name (keys %$method_map) {
             $class->add_method($method_name => $method_map->{$method_name});
         }
@@ -449,22 +447,6 @@ installed. Some error checking is done.
 =head2 should_auto_deref -> Bool
 
 Informational methods.
-
-=head2 generate_accessor -> CODE
-
-Creates a new code reference for the attribute's accessor.
-
-=head2 generate_predicate -> CODE
-
-Creates a new code reference for the attribute's predicate.
-
-=head2 generate_clearer -> CODE
-
-Creates a new code reference for the attribute's clearer.
-
-=head2 generate_handles -> { MethodName => CODE }
-
-Creates a new code reference for each of the attribute's handles methods.
 
 =head2 verify_against_type_constraint Item -> 1 | ERROR
 
