@@ -9,13 +9,14 @@ do {
     use Mouse::Role;
 
     has 'attr' => (
+        is      => 'bare',
         default => 'Role',
     );
 
     no Mouse::Role;
 };
 
-is_deeply(Role->meta->get_attribute('attr'), {default => 'Role'});
+is(Role->meta->get_attribute('attr')->default, 'Role');
 
 do {
     package Class;
@@ -33,6 +34,7 @@ do {
     use Mouse::Role;
 
     has 'attr' => (
+        is      => 'bare',
         default => 'Role2',
     );
 
@@ -55,6 +57,7 @@ lives_ok {
     with 'Role';
 
     has attr => (
+        is      => 'bare',
         default => 'Class3',
     );
 };
@@ -66,6 +69,7 @@ lives_ok {
     use Mouse;
 
     has attr => (
+        is      => 'bare',
         default => 'Class::Parent',
     );
 };

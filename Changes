@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.29
+    * Support is => 'bare', and you must pass the 'is' option (gfx)
+    * Make generator methods private (gfx)
 
 0.28 Wed Sep  8 20:00:06 2009
     * Alter Makefile.PL so in author mode we generate lib/Mouse/Tiny.pm on

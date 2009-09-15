@@ -2,6 +2,8 @@ package Mouse::Meta::Role;
 use strict;
 use warnings;
 use Carp 'confess';
+
+use Mouse::Meta::Attribute;
 use Mouse::Util qw(version authority identifier);
 
 do {
@@ -49,7 +51,7 @@ sub add_attribute {
     my $self = shift;
     my $name = shift;
     my $spec = shift;
-    $self->{attributes}->{$name} = $spec;
+    $self->{attributes}->{$name} = Mouse::Meta::Attribute->new($name, %$spec);
 }
 
 sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
