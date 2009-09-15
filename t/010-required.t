@@ -9,15 +9,18 @@ do {
     use Mouse;
 
     has foo => (
+        is => 'bare',
         required => 1,
     );
 
     has bar => (
+        is => 'bare',
         required => 1,
         default => 50,
     );
 
     has baz => (
+        is => 'bare',
         required => 1,
         default => sub { 10 },
     );

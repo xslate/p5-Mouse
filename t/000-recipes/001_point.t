@@ -36,7 +36,7 @@ use Test::Exception;
 	
 	extends 'Point';
 	
-	has 'z' => (isa => 'Int');
+	has 'z' => (isa => 'Int', is => 'bare');
 	
 	after 'clear' => sub {
 	    my $self = shift;

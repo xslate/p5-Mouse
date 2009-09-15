@@ -8,7 +8,9 @@ do {
     package Class;
     use Mouse;
 
-    has 'x';
+    has x => (
+        is => 'bare',
+    );
 
     has y => (
         is => 'ro',

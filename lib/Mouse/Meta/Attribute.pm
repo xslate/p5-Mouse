@@ -1,7 +1,6 @@
 package Mouse::Meta::Attribute;
 use strict;
 use warnings;
-require overload;
 
 use Carp 'confess';
 use Scalar::Util ();
@@ -239,10 +238,15 @@ sub create {
 
     $class->add_attribute($attribute);
 
+    my $associated_methods = 0;
+
+    my $is_metadata = $attribute->_is_metadata || '';
+
     # install an accessor
-    if ($attribute->_is_metadata eq 'rw' || $attribute->_is_metadata eq 'ro') {
+    if ($is_metadata eq 'rw' || $is_metadata eq 'ro') {
         my $code = $attribute->_generate_accessor();
         $class->add_method($name => $code);
+        $associated_methods++;
     }
 
     for my $method (qw/predicate clearer/) {
@@ -251,6 +255,7 @@ sub create {
             my $generator = "_generate_$method";
             my $coderef = $attribute->$generator;
             $class->add_method($attribute->$method => $coderef);
+            $associated_methods++;
         }
     }
 
@@ -258,7 +263,12 @@ sub create {
         my $method_map = $attribute->_generate_handles;
         for my $method_name (keys %$method_map) {
             $class->add_method($method_name => $method_map->{$method_name});
+            $associated_methods++;
         }
+    }
+
+    if($associated_methods == 0 && $is_metadata ne 'bare'){
+        confess(qq{Attribute ($name) of class }.$class->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
 
     return $attribute;

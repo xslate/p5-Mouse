@@ -54,6 +54,7 @@ do {
     use Mouse;
 
     has oops => (
+        is      => 'bare',
         isa     => 'Int',
         default => "yikes",
     );
