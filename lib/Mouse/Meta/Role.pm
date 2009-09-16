@@ -64,7 +64,7 @@ sub get_method_list {
     no strict 'refs';
     # Get all the CODE symbol table entries
     my @functions =
-      grep !/^(?:has|with|around|before|after|augment|inner|override|super|blessed|extends|confess|excludes|meta|requires)$/,
+      grep !/^(?:has|with|around|before|after|augment|inner|override|super|blessed|extends|confess|excludes|requires)$/,
       grep { defined &{"${name}::$_"} }
       keys %{"${name}::"};
     wantarray ? @functions : \@functions;
