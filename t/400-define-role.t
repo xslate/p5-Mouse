@@ -44,7 +44,7 @@ lives_ok {
     package Role;
     use Mouse::Role;
 
-    has 'foo';
+    has 'foo' => (is => 'bare');
 
     no Mouse::Role;
 };
