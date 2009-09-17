@@ -1,5 +1,7 @@
 Revision history for Mouse
 
+0.30
+
 0.29 Thu Sep 17 11:49:49 2009
 
     * role class has ->meta in method_list, because it does in Moose since 0.90
