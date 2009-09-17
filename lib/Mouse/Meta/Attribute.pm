@@ -262,6 +262,7 @@ sub create {
 
     if($associated_methods == 0 && $is_metadata ne 'bare'){
         Carp::cluck(qq{Attribute ($name) of class }.$class->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
+
     }
 
     return $attribute;
