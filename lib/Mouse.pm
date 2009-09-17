@@ -122,7 +122,9 @@ sub init_meta {
     {
         no strict 'refs';
         no warnings 'redefine';
-        *{$class.'::meta'} = sub { $meta };
+        *{$class.'::meta'} = sub {
+            return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
+        };
     }
 
     return $meta;

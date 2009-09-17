@@ -20,12 +20,13 @@ do {
     }
 
     sub initialize {
-        my $class = blessed($_[0]) || $_[0];
-        my $name  = $_[1];
+        my($class, $package_name, @args) = @_;
 
-        $METACLASS_CACHE{$name} = $class->new(name => $name)
-            if !exists($METACLASS_CACHE{$name});
-        return $METACLASS_CACHE{$name};
+        ($package_name && !ref($package_name))
+            || confess("You must pass a package name and it cannot be blessed");
+
+        return $METACLASS_CACHE{$package_name}
+            ||= $class->_construct_class_instance(package => $package_name, @args);
     }
 
     # Means of accessing all the metaclasses that have
@@ -40,21 +41,20 @@ do {
     sub remove_metaclass_by_name    { $METACLASS_CACHE{$_[0]} = undef }
 };
 
-sub new {
-    my $class = shift;
-    my %args  = @_;
+sub _construct_class_instance {
+    my($class, %args) = @_;
 
-    $args{attributes} = {};
+    $args{attributes}   = {};
     $args{superclasses} = do {
         no strict 'refs';
-        \@{ $args{name} . '::ISA' };
+        \@{ $args{package} . '::ISA' };
     };
     $args{roles} ||= [];
 
     bless \%args, $class;
 }
 
-sub name { $_[0]->{name} }
+sub name { $_[0]->{package} }
 
 sub superclasses {
     my $self = shift;
@@ -319,7 +319,7 @@ sub does_role {
 }
 
 sub create {
-    my ($self, $package_name, %options) = @_;
+    my ($class, $package_name, %options) = @_;
 
     (ref $options{superclasses} eq 'ARRAY')
         || confess "You must pass an ARRAY ref of superclasses"
@@ -356,11 +356,11 @@ sub create {
         version
         authority
     )};
-    my $meta = $self->initialize( $package_name => %initialize_options );
+    my $meta = $class->initialize( $package_name => %initialize_options );
 
     # FIXME totally lame
     $meta->add_method('meta' => sub {
-        $self->initialize(ref($_[0]) || $_[0]);
+        Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
     });
 
     $meta->superclasses(@{$options{superclasses}})
