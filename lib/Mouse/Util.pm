@@ -21,16 +21,17 @@ BEGIN {
         require mro;
         $impl = \&mro::get_linear_isa;
     } else {
-        my $loaded = do {
-            local $SIG{__DIE__} = 'DEFAULT';
-            eval { require MRO::Compat; 1 };
+        my $e = do {
+            local $@;
+            eval { require MRO::Compat };
+            $@;
         };
-        if ($loaded) {
+        if (!$e) {
             $impl = \&mro::get_linear_isa;
         } else {
 #       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
-            my $code; # this recurses so it isn't pretty
-            $code = sub {
+            my $_get_linear_isa_dfs; # this recurses so it isn't pretty
+            $_get_linear_isa_dfs = sub {
                 no strict 'refs';
 
                 my $classname = shift;
@@ -38,17 +39,17 @@ BEGIN {
                 my @lin = ($classname);
                 my %stored;
                 foreach my $parent (@{"$classname\::ISA"}) {
-                    my $plin = $code->($parent);
-                    foreach (@$plin) {
-                        next if exists $stored{$_};
-                        push(@lin, $_);
-                        $stored{$_} = 1;
+                    my $plin = $_get_linear_isa_dfs->($parent);
+                    foreach  my $p(@$plin) {
+                        next if exists $stored{$p};
+                        push(@lin, $p);
+                        $stored{$p} = 1;
                     }
                 }
                 return \@lin;
             };
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
-            $impl = $code;
+            $impl = $_get_linear_isa_dfs;
         }
     }
 
