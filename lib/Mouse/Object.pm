@@ -92,6 +92,7 @@ sub BUILDALL {
             or next;
         $code->($self, @_);
     }
+    return;
 }
 
 sub DEMOLISHALL {
@@ -103,7 +104,7 @@ sub DEMOLISHALL {
     no strict 'refs';
 
     my @isa;
-    if ( my $meta = Mouse::class_of($self) ) {
+    if ( my $meta = Mouse::Meta::Class::class_of($self) ) {
         @isa = $meta->linearized_isa;
     } else {
         # We cannot count on being able to retrieve a previously made
@@ -120,13 +121,14 @@ sub DEMOLISHALL {
         $self->$demolish
             if defined $demolish;
     }
+    return;
 }
 
 sub dump { 
     my $self = shift;
     require Data::Dumper;
     local $Data::Dumper::Maxdepth = shift if @_;
-    Data::Dumper::Dumper $self;
+    Data::Dumper::Dumper($self);
 }
 
 
@@ -134,13 +136,14 @@ sub does {
     my ($self, $role_name) = @_;
     (defined $role_name)
         || confess "You must supply a role name to does()";
+
     my $meta = $self->meta;
     foreach my $class ($meta->linearized_isa) {
         my $m = ref($meta)->initialize($class);
-        return 1 
-            if $m->can('does_role') && $m->does_role($role_name);            
+        return 1
+            if $m->can('does_role') && $m->does_role($role_name);
     }
-    return 0;   
+    return 0;
 };
 
 1;

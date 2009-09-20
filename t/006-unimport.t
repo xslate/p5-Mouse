@@ -29,9 +29,7 @@ do {
 };
 
 ok(!Foo->can('has'), "has keyword is unimported");
-TODO: {
-    local $TODO = "fixing this may require a Sub::Identify dep";
-    ok(Foo->can('extends'), "extends method is NOT unimported");
-    is(eval { Foo->extends }, "good", "extends method is ours, not the extends keyword");
-};
+
+ok(Foo->can('extends'), "extends method is NOT unimported");
+is(eval { Foo->extends }, "good", "extends method is ours, not the extends keyword");
 

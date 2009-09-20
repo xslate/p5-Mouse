@@ -5,8 +5,10 @@ use warnings;
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
 use Scalar::Util qw/blessed weaken/;
-use Mouse::Util qw/get_linear_isa version authority identifier/;
+use Mouse::Util qw/get_linear_isa version authority identifier get_code_info/;
 use Carp 'confess';
+
+use base qw(Mouse::Meta::Module);
 
 do {
     my %METACLASS_CACHE;
@@ -29,6 +31,12 @@ do {
             ||= $class->_construct_class_instance(package => $package_name, @args);
     }
 
+    sub class_of{
+        my($class_or_instance) = @_;
+        return undef unless defined $class_or_instance;
+        return $METACLASS_CACHE{ blessed($class_or_instance) || $class_or_instance };
+    }
+
     # Means of accessing all the metaclasses that have
     # been initialized thus far
     sub get_all_metaclasses         {        %METACLASS_CACHE         }
@@ -49,12 +57,20 @@ sub _construct_class_instance {
         no strict 'refs';
         \@{ $args{package} . '::ISA' };
     };
-    $args{roles} ||= [];
+    $args{roles}   ||= [];
+    $args{methods} ||= {};
 
     bless \%args, $class;
 }
 
 sub name { $_[0]->{package} }
+sub _method_map{ $_[0]->{methods} }
+
+sub namespace{
+    my $name = $_[0]->{package};
+    no strict 'refs';
+    return \%{ $name . '::' };
+}
 
 sub superclasses {
     my $self = shift;
@@ -67,50 +83,11 @@ sub superclasses {
     @{ $self->{superclasses} };
 }
 
-sub add_method {
-    my $self = shift;
-    my $name = shift;
-    my $code = shift;
-
-    my $pkg = $self->name;
-
-    no strict 'refs';
-    no warnings 'redefine';
-    $self->{'methods'}->{$name}++; # Moose stores meta object here.
-    *{ $pkg . '::' . $name } = $code;
-}
-
-sub has_method {
-    my $self = shift;
-    my $name = shift;
-    $self->name->can($name);
-}
-
-# copied from Class::Inspector
-my $get_methods_for_class = sub {
-    my $self = shift;
-    my $name = shift;
-
-    no strict 'refs';
-    # Get all the CODE symbol table entries
-    my @functions =
-      grep !/^(?:has|with|around|before|after|augment|inner|blessed|extends|confess|override|super)$/,
-      grep { defined &{"${name}::$_"} }
-      keys %{"${name}::"};
-    push @functions, keys %{$self->{'methods'}->{$name}} if $self;
-    wantarray ? @functions : \@functions;
-};
-
-sub get_method_list {
-    my $self = shift;
-    $get_methods_for_class->($self, $self->name);
-}
-
 sub get_all_method_names {
     my $self = shift;
     my %uniq;
     return grep { $uniq{$_}++ == 0 }
-            map { $get_methods_for_class->(undef, $_) }
+            map { Mouse::Meta::Class->initialize($_)->get_method_list() }
             $self->linearized_isa;
 }
 
@@ -309,9 +286,11 @@ sub does_role {
         || confess "You must supply a role name to look for";
 
     for my $class ($self->linearized_isa) {
-        next unless $class->can('meta') and $class->meta->can('roles');
-        for my $role (@{ $class->meta->roles }) {
-            return 1 if $role->name eq $role_name;
+        my $meta = class_of($class);
+        next unless $meta && $meta->can('roles');
+
+        for my $role (@{ $meta->roles }) {
+            return 1 if $role->does_role($role_name);
         }
     }
 

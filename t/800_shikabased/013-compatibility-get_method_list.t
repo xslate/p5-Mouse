@@ -12,12 +12,14 @@ sub test {
     eval <<"...";
 {
     package ${class}Class;
+    use Carp; # import external functions (not our methods)
     use ${class};
     sub foo { }
     no ${class};
 }
 {
     package ${class}ClassImm;
+    use Carp; # import external functions (not our methods)
     use ${class};
     sub foo { }
     no ${class};
@@ -25,8 +27,10 @@ sub test {
 }
 {
     package ${class}Role;
+    use Carp; # import external functions (not our methods)
     use ${class}::Role;
     sub bar { }
+    no ${class}::Role;
 }
 ...
     die $@ if $@;

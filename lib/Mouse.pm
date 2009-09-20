@@ -17,6 +17,10 @@ use Mouse::Util::TypeConstraints;
 
 our @EXPORT = qw(extends has before after around override super blessed confess with);
 
+our %is_removable = map{ $_ => undef } @EXPORT;
+delete $is_removable{blessed};
+delete $is_removable{confess};
+
 sub extends { Mouse::Meta::Class->initialize(caller)->superclasses(@_) }
 
 sub has {
@@ -119,13 +123,10 @@ sub init_meta {
     $meta->superclasses($base_class)
         unless $meta->superclasses;
 
-    {
-        no strict 'refs';
-        no warnings 'redefine';
-        *{$class.'::meta'} = sub {
-            return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
-        };
-    }
+    $meta->add_method(meta => sub{
+        return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
+    });
+
 
     return $meta;
 }
@@ -171,9 +172,19 @@ sub import {
 sub unimport {
     my $caller = caller;
 
-    no strict 'refs';
+    my $stash = do{
+        no strict 'refs';
+        \%{$caller . '::'}
+    };
+
     for my $keyword (@EXPORT) {
-        delete ${ $caller . '::' }{$keyword};
+        my $code;
+        if(exists $is_removable{$keyword}
+            && ($code = $caller->can($keyword))
+            && (Mouse::Util::get_code_info($code))[0] eq __PACKAGE__){
+
+            delete $stash->{$keyword};
+        }
     }
 }
 
@@ -227,9 +238,7 @@ sub is_class_loaded {
 }
 
 sub class_of {
-    return unless defined $_[0];
-    my $class = blessed($_[0]) || $_[0];
-    return Mouse::Meta::Class::get_metaclass_by_name($class);
+    return Mouse::Meta::Class::class_of($_[0]);
 }
 
 1;

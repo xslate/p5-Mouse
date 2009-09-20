@@ -2,7 +2,8 @@ package Mouse::Util;
 use strict;
 use warnings;
 use base qw/Exporter/;
-use Carp;
+use Carp qw(confess);
+use B ();
 
 our @EXPORT_OK = qw(
     get_linear_isa
@@ -10,6 +11,7 @@ our @EXPORT_OK = qw(
     version 
     authority
     identifier
+    get_code_info
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
@@ -55,6 +57,21 @@ BEGIN {
 
     no strict 'refs';
     *{ __PACKAGE__ . '::get_linear_isa'} = $impl;
+}
+
+{ # taken from Sub::Identify
+    sub get_code_info($) {
+        my ($coderef) = @_;
+        ref($coderef) or return;
+        my $cv = B::svref_2object($coderef);
+        $cv->isa('B::CV') or return;
+
+        my $gv = $cv->GV;
+        # bail out if GV is undefined
+        $gv->isa('B::SPECIAL') and return;
+
+        return ($gv->STASH->NAME, $gv->NAME);
+    }
 }
 
 { # adapted from Class::MOP::Module
@@ -184,7 +201,7 @@ sub apply_all_roles {
     }
 
     ( $_->[0]->can('meta') && $_->[0]->meta->isa('Mouse::Meta::Role') )
-        || croak("You can only consume roles, "
+        || confess("You can only consume roles, "
         . $_->[0]
         . " is not a Moose role")
         foreach @roles;
