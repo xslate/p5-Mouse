@@ -3,11 +3,24 @@ use strict;
 use warnings;
 
 use Scalar::Util qw/blessed weaken/;
-use Mouse::Util qw/version authority identifier get_code_info/;
+use Mouse::Util qw/get_code_info/;
 use Carp 'confess';
 
 sub name { $_[0]->{package} }
 sub _method_map{ $_[0]->{methods} }
+
+
+sub version   { no strict 'refs'; ${shift->name.'::VERSION'}   }
+sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }
+sub identifier {
+    my $self = shift;
+    return join '-' => (
+        $self->name,
+        ($self->version   || ()),
+        ($self->authority || ()),
+    );
+}
+
 
 sub namespace{
     my $name = $_[0]->{package};

@@ -5,7 +5,7 @@ use warnings;
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
 use Scalar::Util qw/blessed weaken/;
-use Mouse::Util qw/get_linear_isa version authority identifier get_code_info/;
+use Mouse::Util qw/get_linear_isa/;
 use Carp 'confess';
 
 use base qw(Mouse::Meta::Module);

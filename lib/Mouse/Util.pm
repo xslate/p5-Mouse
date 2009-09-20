@@ -8,9 +8,6 @@ use B ();
 our @EXPORT_OK = qw(
     get_linear_isa
     apply_all_roles
-    version 
-    authority
-    identifier
     get_code_info
 );
 our %EXPORT_TAGS = (
@@ -63,28 +60,14 @@ BEGIN {
     sub get_code_info($) {
         my ($coderef) = @_;
         ref($coderef) or return;
+
         my $cv = B::svref_2object($coderef);
         $cv->isa('B::CV') or return;
 
         my $gv = $cv->GV;
-        # bail out if GV is undefined
-        $gv->isa('B::SPECIAL') and return;
+        $gv->isa('B::GV') or return;
 
         return ($gv->STASH->NAME, $gv->NAME);
-    }
-}
-
-{ # adapted from Class::MOP::Module
-
-    sub version { no strict 'refs'; ${shift->name.'::VERSION'} }
-    sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }  
-    sub identifier {
-        my $self = shift;
-        join '-' => (
-            $self->name,
-            ($self->version   || ()),
-            ($self->authority || ()),
-        );
     }
 }
 
@@ -134,16 +117,14 @@ sub load_first_existing_class {
     my @classes = @_
       or return;
 
-    foreach my $class (@classes) {
+    my $found;
+    my %exceptions;
+    for my $class (@classes) {
         unless ( _is_valid_class_name($class) ) {
             my $display = defined($class) ? $class : 'undef';
             confess "Invalid class name ($display)";
         }
-    }
 
-    my $found;
-    my %exceptions;
-    for my $class (@classes) {
         my $e = _try_load_one_class($class);
 
         if ($e) {
@@ -213,7 +194,7 @@ sub apply_all_roles {
     else {
         Mouse::Meta::Role->combine_apply($meta, @roles);
     }
-
+    return;
 }
 
 1;
