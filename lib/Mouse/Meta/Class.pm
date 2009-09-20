@@ -63,14 +63,7 @@ sub _construct_class_instance {
     bless \%args, $class;
 }
 
-sub name { $_[0]->{package} }
-sub _method_map{ $_[0]->{methods} }
-
-sub namespace{
-    my $name = $_[0]->{package};
-    no strict 'refs';
-    return \%{ $name . '::' };
-}
+sub roles { $_[0]->{roles} }
 
 sub superclasses {
     my $self = shift;
@@ -275,9 +268,6 @@ sub add_override_method_modifier {
     no strict 'refs';
     *$method = sub { $code->($pkg, $body, @_) };
 }
-
-
-sub roles { $_[0]->{roles} }
 
 sub does_role {
     my ($self, $role_name) = @_;

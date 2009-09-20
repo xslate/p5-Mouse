@@ -39,6 +39,9 @@ sub _new {
     bless \%args, $class;
 }
 
+sub get_roles { $_[0]->{roles} }
+
+
 sub add_required_methods {
     my $self = shift;
     my @methods = @_;
@@ -228,8 +231,6 @@ for my $modifier_type (qw/before after around override/) {
     *{ 'add_' . $modifier_type . '_method_modifier'  } = $add_method_modifier;
     *{ 'get_' . $modifier_type . '_method_modifiers' } = $get_method_modifiers;
 }
-
-sub get_roles { $_[0]->{roles} }
 
 # This is currently not passing all the Moose tests.
 sub does_role {
