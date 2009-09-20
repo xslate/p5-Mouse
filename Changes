@@ -2,6 +2,12 @@ Revision history for Mouse
 
 0.30
 
+    * Make get_method_list() compatible with Moose's
+
+    * Make unimport() not to remove non-Mouse functions (blessed and confess)
+
+    * Remove a lot of duplication code
+
     * Support is => 'bare', and you must pass and 'is' option to has() (gfx)
 
     * Make generator methods private (gfx)
