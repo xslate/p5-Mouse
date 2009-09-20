@@ -52,8 +52,9 @@ BEGIN {
         }
     }
 
-    no strict 'refs';
-    *{ __PACKAGE__ . '::get_linear_isa'} = $impl;
+
+    no warnings 'once';
+    *get_linear_isa = $impl;
 }
 
 { # taken from Sub::Identify
@@ -100,7 +101,7 @@ BEGIN {
 }
 
 # taken from Class/MOP.pm
-sub _is_valid_class_name {
+sub is_valid_class_name {
     my $class = shift;
 
     return 0 if ref($class);
@@ -120,7 +121,7 @@ sub load_first_existing_class {
     my $found;
     my %exceptions;
     for my $class (@classes) {
-        unless ( _is_valid_class_name($class) ) {
+        unless ( is_valid_class_name($class) ) {
             my $display = defined($class) ? $class : 'undef';
             confess "Invalid class name ($display)";
         }

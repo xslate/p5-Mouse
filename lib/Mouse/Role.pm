@@ -120,10 +120,6 @@ sub import {
         return;
     }
 
-    my $meta_method = sub{
-        Mouse::Meta::Role->initialize(ref($_[0]) || $_[0]);
-    };
-
     Mouse::Meta::Role->initialize($caller)->add_method(meta => sub {
         return Mouse::Meta::Role->initialize(ref($_[0]) || $_[0]);
     });

@@ -2,7 +2,6 @@ package Mouse::Meta::Module;
 use strict;
 use warnings;
 
-use Scalar::Util qw/blessed weaken/;
 use Mouse::Util qw/get_code_info/;
 use Carp 'confess';
 

@@ -191,12 +191,11 @@ sub unimport {
 sub load_class {
     my $class = shift;
 
-    if (ref($class) || !defined($class) || !length($class)) {
+    if (!Mouse::Util::is_valid_class_name($class)) {
         my $display = defined($class) ? $class : 'undef';
         confess "Invalid class name ($display)";
     }
 
-    return 1 if $class eq 'Mouse::Object';
     return 1 if is_class_loaded($class);
 
     (my $file = "$class.pm") =~ s{::}{/}g;
@@ -207,10 +206,13 @@ sub load_class {
     return 1;
 }
 
+my %is_class_loaded_cache;
 sub is_class_loaded {
     my $class = shift;
 
     return 0 if ref($class) || !defined($class) || !length($class);
+
+    return 1 if exists $is_class_loaded_cache{$class};
 
     # walk the symbol table tree to avoid autovififying
     # \*{${main::}{"Foo::"}} == \*main::Foo::
@@ -222,15 +224,15 @@ sub is_class_loaded {
     }
 
     # check for $VERSION or @ISA
-    return 1 if exists ${$$pack}{VERSION}
+    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{VERSION}
              && defined *{${$$pack}{VERSION}}{SCALAR};
-    return 1 if exists ${$$pack}{ISA}
+    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{ISA}
              && defined *{${$$pack}{ISA}}{ARRAY};
 
     # check for any method
     foreach ( keys %{$$pack} ) {
         next if substr($_, -2, 2) eq '::';
-        return 1 if defined *{${$$pack}{$_}}{CODE};
+        return ++$is_class_loaded_cache{$class} if defined *{${$$pack}{$_}}{CODE};
     }
 
     # fail
