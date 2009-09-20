@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-plan skip_all => "This test requires Moose 0.81" unless eval { require Moose; Moose->VERSION(0.81); };
+plan skip_all => "This test requires Moose 0.90" unless eval { require Moose; Moose->VERSION(0.90); };
 plan tests => 6;
 
 test($_) for qw/Moose Mouse/;

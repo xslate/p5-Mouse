@@ -18,19 +18,17 @@ my %COERCE;
 my %COERCE_KEYS;
 
 sub as ($) {
-    as => $_[0]
+    return(as => $_[0]);
 }
 sub where (&) {
-    where => $_[0]
+    return(where => $_[0])
 }
 sub message (&) {
-    message => $_[0]
+    return(message => $_[0])
 }
 
 sub from { @_ }
-sub via (&) {
-    $_[0]
-}
+sub via (&) { $_[0] }
 
 BEGIN {
     no warnings 'uninitialized';
@@ -78,9 +76,10 @@ BEGIN {
 sub type {
     my $pkg = caller(0);
     my($name, %conf) = @_;
+
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
-    };
+    }
     my $constraint = $conf{where} || do {
         my $as = delete $conf{as} || 'Any';
         if (! exists $TYPE{$as}) {
@@ -133,7 +132,7 @@ sub subtype {
 }
 
 sub coerce {
-    my($name, %conf) = @_;
+    my $name = shift;
 
     Carp::croak "Cannot find type '$name', perhaps you forgot to load it."
         unless $TYPE{$name};
@@ -142,7 +141,8 @@ sub coerce {
         $COERCE{$name}      = {};
         $COERCE_KEYS{$name} = [];
     }
-    while (my($type, $code) = each %conf) {
+
+    while (my($type, $code) = splice @_, 0, 2) {
         Carp::croak "A coercion action already exists for '$type'"
             if $COERCE{$name}->{$type};
 
@@ -155,9 +155,10 @@ sub coerce {
             }
         }
 
-        unshift @{ $COERCE_KEYS{$name} }, $type;
+        push @{ $COERCE_KEYS{$name} }, $type;
         $COERCE{$name}->{$type} = $code;
     }
+    return;
 }
 
 sub class_type {
