@@ -2,7 +2,7 @@ Revision history for Mouse
 
 0.30
 
-    * Support is => 'bare', and you must pass the 'is' option (gfx)
+    * Support is => 'bare', and you must pass and 'is' option to has() (gfx)
 
     * Make generator methods private (gfx)
 
