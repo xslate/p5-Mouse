@@ -137,13 +137,7 @@ sub does {
     (defined $role_name)
         || confess "You must supply a role name to does()";
 
-    my $meta = $self->meta;
-    foreach my $class ($meta->linearized_isa) {
-        my $m = ref($meta)->initialize($class);
-        return 1
-            if $m->can('does_role') && $m->does_role($role_name);
-    }
-    return 0;
+    return $self->meta->does_role($role_name);
 };
 
 1;

@@ -222,6 +222,11 @@ for my $modifier_type (qw/before after around override/) {
         push @{ $self->{$modifier}->{$method_name} ||= [] }, $method;
         return;
     };
+    my $has_method_modifiers = sub{
+        my($self, $method_name) = @_;
+        my $m = $self->{$modifier}->{$method_name};
+        return $m && @{$m} != 0;
+    };
     my $get_method_modifiers = sub {
         my ($self, $method_name) = @_;
         return @{ $self->{$modifier}->{$method_name} ||= [] }
@@ -229,6 +234,7 @@ for my $modifier_type (qw/before after around override/) {
 
     no strict 'refs';
     *{ 'add_' . $modifier_type . '_method_modifier'  } = $add_method_modifier;
+    *{ 'has_' . $modifier_type . '_method_modifiers' } = $has_method_modifiers;
     *{ 'get_' . $modifier_type . '_method_modifiers' } = $get_method_modifiers;
 }
 
