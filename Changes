@@ -2,6 +2,12 @@ Revision history for Mouse
 
 0.30
 
+    * Work around anonymous classes as mortal classes
+
+    * Implement with $role => -exlucdes => [...] (gfx)
+
+    * Implement get_method() in M::Meta::Class and M::Meta::Role (gfx)
+
     * Make get_method_list() compatible with Moose's (gfx)
 
     * Make unimport() not to remove non-Mouse functions (blessed and confess) (gfx)
@@ -9,8 +15,6 @@ Revision history for Mouse
     * Remove a lot of duplication code (gfx)
 
     * Support is => 'bare', and you must pass and 'is' option to has() (gfx)
-
-    * Make generator methods private (gfx)
 
 0.29 Thu Sep 17 11:49:49 2009
 

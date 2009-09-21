@@ -307,19 +307,14 @@ sub create {
         || $class->throw_error("You must pass a HASH ref of methods")
             if exists $options{methods};
 
-    do {
+    {
         ( defined $package_name && $package_name )
           || $class->throw_error("You must pass a package name");
 
-        my $code = "package $package_name;";
-        $code .= "\$$package_name\:\:VERSION = '" . $options{version} . "';"
-          if exists $options{version};
-        $code .= "\$$package_name\:\:AUTHORITY = '" . $options{authority} . "';"
-          if exists $options{authority};
-
-        eval $code;
-        $class->throw_error("creation of $package_name failed : $@") if $@;
-    };
+        no strict 'refs';
+        ${ $package_name . '::VERSION'   } = $options{version}   if exists $options{version};
+        ${ $package_name . '::AUTHORITY' } = $options{authority} if exists $options{authority};
+    }
 
     my %initialize_options = %options;
     delete @initialize_options{qw(
@@ -360,11 +355,58 @@ sub create {
 {
     my $ANON_CLASS_SERIAL = 0;
     my $ANON_CLASS_PREFIX = 'Mouse::Meta::Class::__ANON__::SERIAL::';
+
+    my %IMMORTAL_ANON_CLASSES;
     sub create_anon_class {
         my ( $class, %options ) = @_;
+
+        my $cache = $options{cache};
+        my $cache_key;
+
+        if($cache){ # anonymous but not mortal
+                # something like Super::Class|Super::Class::2=Role|Role::1
+                $cache_key = join '=' => (
+                    join('|', @{$options{superclasses} || []}),
+                    join('|', sort @{$options{roles}   || []}),
+                );
+                return $IMMORTAL_ANON_CLASSES{$cache_key} if exists $IMMORTAL_ANON_CLASSES{$cache_key};
+        }
         my $package_name = $ANON_CLASS_PREFIX . ++$ANON_CLASS_SERIAL;
-        return $class->create( $package_name, %options );
+        my $meta = $class->create( $package_name, anon_class_id => $ANON_CLASS_SERIAL, %options );
+
+        if($cache){
+            $IMMORTAL_ANON_CLASSES{$cache_key} = $meta;
+        }
+        else{
+            Mouse::Meta::Module::weaken_metaclass($package_name);
+        }
+        return $meta;
     }
+
+    sub is_anon_class{
+        return exists $_[0]->{anon_class_id};
+    }
+
+
+    sub DESTROY{
+        my($self) = @_;
+
+        my $serial_id = $self->{anon_class_id};
+
+        return if !$serial_id;
+
+        my $stash = $self->namespace;
+
+        @{$self->{sperclasses}} = ();
+        %{$stash} = ();
+        Mouse::Meta::Module::remove_metaclass_by_name($self->name);
+
+        no strict 'refs';
+        delete ${$ANON_CLASS_PREFIX}{ $serial_id . '::' };
+
+        return;
+    }
+
 }
 
 1;

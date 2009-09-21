@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Mouse ();
-use Test::More tests => 14;
+use Test::More tests => 20;
 use Test::Exception;
 
 # error handling
@@ -58,6 +58,7 @@ isa_ok Baz->new(), "FooBar";
 is Baz->new()->foo, "yay";
 is Baz->new()->dooo, "iiiit";
 
+my($anon_pkg1, $anon_pkg2);
 {
     my $meta = Mouse::Meta::Class->create_anon_class(
         superclasses => [ "Mouse::Object" ],
@@ -65,10 +66,25 @@ is Baz->new()->dooo, "iiiit";
             dooo => sub { "iiiit" },
         }
     );
-    isa_ok($meta, "Mouse::Meta::Class");
-    like($meta->name, qr/Class::__ANON__::/);
+    $anon_pkg1 = $meta->name;
+
+    isa_ok($meta, "Mouse::Meta::Class", 'create_anon_class');
+    ok($meta->is_anon_class, 'is_anon_class');
     is $meta->name->new->dooo(), "iiiit";
 
-    my $anon2 = Mouse::Meta::Class->create_anon_class();
-    like($anon2->name, qr/Class::__ANON__::/);
+    my $anon2 = Mouse::Meta::Class->create_anon_class(cache => 1);
+    $anon_pkg2 = $anon2->name;
+
+    ok($anon2->is_anon_class);
+
+    isnt $meta, $anon2;
+    isnt $meta->name, $anon2->name;
 }
+
+# all the stuff are removed?
+ok !$anon_pkg1->isa('Mouse::Object');
+ok !$anon_pkg1->can('dooo');
+ok !$anon_pkg1->can('meta');
+
+ok $anon_pkg2->can('meta'), 'cache => 1 makes it immortal';
+

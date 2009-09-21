@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Mouse::Util qw/get_code_info not_supported load_class/;
-use Scalar::Util qw/blessed/;
+use Scalar::Util qw/blessed weaken/;
 
 
 {

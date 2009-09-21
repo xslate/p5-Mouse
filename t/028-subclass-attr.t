@@ -26,10 +26,10 @@ my $obj = Child->new(class => 1, child => 1);
 ok($obj->child, "local attribute set in constructor");
 ok($obj->class, "inherited attribute set in constructor");
 
-is_deeply([Child->meta->get_all_attributes], [
+is_deeply([sort(Child->meta->get_all_attributes)], [sort(
     Child->meta->get_attribute('child'),
     Class->meta->get_attribute('class'),
-], "correct get_all_attributes");
+)], "correct get_all_attributes");
 
 do {
     package Foo;

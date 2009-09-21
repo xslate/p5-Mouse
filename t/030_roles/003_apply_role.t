@@ -3,7 +3,15 @@
 use strict;
 use warnings;
 
-use Test::More tests => 86;
+use Test::More;
+BEGIN{
+    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifier }){
+        plan tests => 86;
+    }
+    else{
+        plan skip_all => 'This test requires Class::Method::Modifiers(::Fast)?';
+    }
+}
 use Test::Exception;
 
 {
