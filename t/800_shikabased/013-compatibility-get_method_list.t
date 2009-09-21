@@ -1,41 +1,60 @@
 use strict;
 use warnings;
-use Test::More;
-plan skip_all => "This test requires Moose 0.90" unless eval { require Moose; Moose->VERSION(0.90); };
-plan tests => 6;
+use Test::More tests => 6;
 
-test($_) for qw/Moose Mouse/;
-exit;
-
-sub test {
-    my $class = shift;
-    eval <<"...";
 {
-    package ${class}Class;
+    package MouseClass;
     use Carp; # import external functions (not our methods)
-    use ${class};
+    use Mouse;
     sub foo { }
-    no ${class};
+    no Mouse;
 }
 {
-    package ${class}ClassImm;
+    package MouseClassImm;
     use Carp; # import external functions (not our methods)
-    use ${class};
+    use Mouse;
     sub foo { }
-    no ${class};
+    no Mouse;
     __PACKAGE__->meta->make_immutable();
 }
 {
-    package ${class}Role;
+    package MouseRole;
     use Carp; # import external functions (not our methods)
-    use ${class}::Role;
+    use Mouse::Role;
     sub bar { }
-    no ${class}::Role;
+    no Mouse::Role;
 }
-...
-    die $@ if $@;
-    is join(',', sort "${class}Class"->meta->get_method_list()),    'foo,meta',             "mutable   $class";
-    is join(',', sort "${class}ClassImm"->meta->get_method_list()), 'DESTROY,foo,meta,new', "immutable $class";
-    is join(',', sort "${class}Role"->meta->get_method_list()),     'bar,meta',             "role      $class";
+{
+    package MouseRoleWithoutNoMouseRole;
+    use Mouse::Role;
+
+    sub baz { }
+    # without no Mouse::Role;
 }
+{
+    package MouseClassWithRole;
+    use Mouse;
+
+    with 'MouseRole';
+    no Mouse;
+}
+{
+    package MouseClassWithRoles;
+    use Mouse;
+
+    with qw(MouseRole MouseRoleWithoutNoMouseRole);
+}
+
+is join(',', sort MouseClass->meta->get_method_list()),    'foo,meta',             "mutable Mouse";
+is join(',', sort MouseClassImm->meta->get_method_list()), 'DESTROY,foo,meta,new', "immutable Mouse";
+
+is join(',', sort MouseRole->meta->get_method_list()),     'bar,meta',             "role Mouse";
+is join(',', sort MouseRoleWithoutNoMouseRole->meta->get_method_list()),
+                                                           'baz,meta',             "role Mouse";
+
+is join(',', sort MouseClassWithRole->meta->get_method_list()),
+                                                           'bar,meta',                 "Mouse with a role";
+is join(',', sort MouseClassWithRoles->meta->get_method_list()),
+                                                           'bar,baz,meta',                 "Mouse with roles";
+
 

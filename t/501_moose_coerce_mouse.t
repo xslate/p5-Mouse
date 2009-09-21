@@ -6,7 +6,8 @@ use warnings;
 use Test::More;
 use Test::Exception;
 BEGIN {
-    plan skip_all => "Moose 0.68 required for this test" unless eval { require Moose  && Moose->VERSION('0.68') };
+    my $require_version = 0.68;
+    plan skip_all => "Moose $require_version required for this test" unless eval { require Moose  && Moose->VERSION($require_version) };
     plan tests => 5;
 }
 
@@ -43,10 +44,11 @@ use Test::Exception;
 }
 
 {
-    local $TODO = "Doesn't work in the constructor yet?";
     my $r = Mosponse->new(headers => { foo => 'bar' });
     isa_ok($r->headers, 'Headers');
-    is(eval{$r->headers->foo}, 'bar');
+    lives_and {
+        is $r->headers->foo, 'bar';
+    };
 }
 
 {

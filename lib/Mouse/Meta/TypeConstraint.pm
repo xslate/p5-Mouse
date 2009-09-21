@@ -69,6 +69,13 @@ sub get_message {
     }
 }
 
+sub is_a_type_of{
+    my($self, $tc_name) = @_;
+
+    return $self->name eq $tc_name
+        || $self->name =~ /\A $tc_name \[/xms; # "ArrayRef" =~ "ArrayRef[Foo]"
+}
+
 1;
 __END__
 

@@ -2,9 +2,9 @@ package Mouse::Meta::Attribute;
 use strict;
 use warnings;
 
-use Carp 'confess';
 use Scalar::Util ();
 use Mouse::Meta::TypeConstraint;
+use Mouse::Meta::Method::Accessor;
 
 sub new {
     my ($class, $name, %options) = @_;
@@ -14,21 +14,35 @@ sub new {
     $options{init_arg} = $name
         unless exists $options{init_arg};
 
-    $options{is} ||= '';
+    my $is = $options{is} ||= '';
+
+    if($is eq 'rw'){
+        $options{accessor} = $name if !exists $options{accessor};
+    }
+    elsif($is eq 'ro'){
+        $options{reader}   = $name if !exists $options{reader};
+    }
 
     bless \%options, $class;
 }
 
+# readers
+
 sub name                 { $_[0]->{name}                   }
 sub associated_class     { $_[0]->{associated_class}       }
+
+sub accessor             { $_[0]->{accessor}               }
+sub reader               { $_[0]->{reader}                 }
+sub writer               { $_[0]->{writer}                 }
+sub predicate            { $_[0]->{predicate}              }
+sub clearer              { $_[0]->{clearer}                }
+sub handles              { $_[0]->{handles}                }
+
 sub _is_metadata         { $_[0]->{is}                     }
 sub is_required          { $_[0]->{required}               }
 sub default              { $_[0]->{default}                }
 sub is_lazy              { $_[0]->{lazy}                   }
 sub is_lazy_build        { $_[0]->{lazy_build}             }
-sub predicate            { $_[0]->{predicate}              }
-sub clearer              { $_[0]->{clearer}                }
-sub handles              { $_[0]->{handles}                }
 sub is_weak_ref          { $_[0]->{weak_ref}               }
 sub init_arg             { $_[0]->{init_arg}               }
 sub type_constraint      { $_[0]->{type_constraint}        }
@@ -41,10 +55,16 @@ sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
 sub should_coerce        { $_[0]->{should_coerce}          }
 
-sub has_default          { exists $_[0]->{default}         }
+# predicates
+
+sub has_accessor         { exists $_[0]->{accessor}        }
+sub has_reader           { exists $_[0]->{reader}          }
+sub has_writer           { exists $_[0]->{writer}          }
 sub has_predicate        { exists $_[0]->{predicate}       }
 sub has_clearer          { exists $_[0]->{clearer}         }
 sub has_handles          { exists $_[0]->{handles}         }
+
+sub has_default          { exists $_[0]->{default}         }
 sub has_type_constraint  { exists $_[0]->{type_constraint} }
 sub has_trigger          { exists $_[0]->{trigger}         }
 sub has_builder          { exists $_[0]->{builder}         }
@@ -54,164 +74,18 @@ sub _create_args {
     $_[0]->{_create_args}
 }
 
+sub accessor_metaclass { 'Mouse::Meta::Method::Accessor' }
+
 sub _inlined_name {
     my $self = shift;
     return sprintf '"%s"', quotemeta $self->name;
 }
 
-sub _generate_accessor{
-    my ($attribute) = @_;
-
-    my $name          = $attribute->name;
-    my $default       = $attribute->default;
-    my $constraint    = $attribute->type_constraint;
-    my $builder       = $attribute->builder;
-    my $trigger       = $attribute->trigger;
-    my $is_weak       = $attribute->is_weak_ref;
-    my $should_deref  = $attribute->should_auto_deref;
-    my $should_coerce = $attribute->should_coerce;
-
-    my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
-
-    my $self  = '$_[0]';
-    my $key   = $attribute->_inlined_name;
-
-    my $accessor = 
-        '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-        "sub {\n";
-    if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 
-            '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-            'if (scalar(@_) >= 2) {' . "\n";
-
-        my $value = '$_[1]';
-
-        if ($constraint) {
-            if ($should_coerce) {
-                $accessor .=
-                    "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'my $val = Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
-                $value = '$val';
-            }
-            if ($compiled_type_constraint) {
-                $accessor .= 
-                    "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($compiled_type_constraint->('.$value.')) {
-                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
-                    }' . "\n";
-            } else {
-                $accessor .= 
-                    "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($constraint->check('.$value.')) {
-                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
-                    }' . "\n";
-            }
-        }
-
-        # if there's nothing left to do for the attribute we can return during
-        # this setter
-        $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
-
-        $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
-
-        if ($is_weak) {
-            $accessor .= 'Scalar::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
-        }
-
-        if ($trigger) {
-            $accessor .= '$trigger->('.$self.', '.$value.');' . "\n";
-        }
-
-        $accessor .= "}\n";
-    }
-    else {
-        $accessor .= 'Carp::confess("Cannot assign a value to a read-only accessor") if scalar(@_) >= 2;' . "\n";
-    }
-
-    if ($attribute->is_lazy) {
-        $accessor .= $self.'->{'.$key.'} = ';
-
-        $accessor .= $attribute->has_builder
-                ? $self.'->$builder'
-                    : ref($default) eq 'CODE'
-                    ? '$default->('.$self.')'
-                    : '$default';
-        $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
-    }
-
-    if ($should_deref) {
-        if (ref($constraint) && $constraint->name =~ '^ArrayRef\b') {
-            $accessor .= 'if (wantarray) {
-                return @{ '.$self.'->{'.$key.'} || [] };
-            }';
-        }
-        else {
-            $accessor .= 'if (wantarray) {
-                return %{ '.$self.'->{'.$key.'} || {} };
-            }';
-        }
-    }
-
-    $accessor .= 'return '.$self.'->{'.$key.'};
-    }';
-
-    my $sub = eval $accessor;
-    $attribute->throw_error($@) if $@;
-    return $sub;
-}
-
-
-sub _generate_predicate {
-    my $attribute = shift;
-    my $key = $attribute->_inlined_name;
-
-    my $predicate = 'sub { exists($_[0]->{'.$key.'}) }';
-
-    my $sub = eval $predicate;
-    $attribute->throw_error($@) if $@;
-    return $sub;
-}
-
-sub _generate_clearer {
-    my $attribute = shift;
-    my $key = $attribute->_inlined_name;
-
-    my $clearer = 'sub { delete($_[0]->{'.$key.'}) }';
-
-    my $sub = eval $clearer;
-    $attribute->throw_error($@) if $@;
-    return $sub;
-}
-
-sub _generate_handles {
-    my $attribute = shift;
-    my $reader = $attribute->name;
-    my %handles = $attribute->_canonicalize_handles($attribute->handles);
-
-    my %method_map;
-
-    for my $local_method (keys %handles) {
-        my $remote_method = $handles{$local_method};
-
-        my $method = 'sub {
-            my $self = shift;
-            $self->'.$reader.'->'.$remote_method.'(@_)
-        }';
-
-        $method_map{$local_method} = eval $method;
-        $attribute->throw_error($@) if $@;
-    }
-
-    return \%method_map;
-}
 
 sub create {
     my ($self, $class, $name, %args) = @_;
 
-    $args{name} = $name;
+    $args{name}             = $name;
     $args{associated_class} = $class;
 
     %args = $self->canonicalize_args($name, %args);
@@ -233,34 +107,16 @@ sub create {
 
     my $associated_methods = 0;
 
-    my $is_metadata = $attribute->_is_metadata || '';
-
-    # install an accessor
-    if ($is_metadata eq 'rw' || $is_metadata eq 'ro') {
-        my $code = $attribute->_generate_accessor();
-        $class->add_method($name => $code);
-        $associated_methods++;
-    }
-
-    for my $method (qw/predicate clearer/) {
-        my $predicate = "has_$method";
-        if ($attribute->$predicate) {
-            my $generator = "_generate_$method";
-            my $coderef = $attribute->$generator;
-            $class->add_method($attribute->$method => $coderef);
+    my $generator_class = $self->accessor_metaclass;
+    foreach my $type(qw(accessor reader writer predicate clearer handles)){
+        if(exists $attribute->{$type}){
+            my $installer    = '_install_' . $type;
+            $generator_class->$installer($attribute, $attribute->{$type}, $class);
             $associated_methods++;
         }
     }
 
-    if ($attribute->has_handles) {
-        my $method_map = $attribute->_generate_handles;
-        for my $method_name (keys %$method_map) {
-            $class->add_method($method_name => $method_map->{$method_name});
-            $associated_methods++;
-        }
-    }
-
-    if($associated_methods == 0 && $is_metadata ne 'bare'){
+    if($associated_methods == 0 && ($attribute->_is_metadata || '') ne 'bare'){
         Carp::cluck(qq{Attribute ($name) of class }.$class->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
 
     }
