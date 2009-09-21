@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 BEGIN{
-    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifier }){
+    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifiers }){
         plan tests => 74;
     }
     else{
