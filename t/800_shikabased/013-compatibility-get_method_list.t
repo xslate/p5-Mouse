@@ -1,6 +1,8 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More;
+plan skip_all => "This test requires Moose 0.91" unless eval { require Moose; Moose->VERSION(0.91); };
+plan tests => 6;
 
 {
     package MouseClass;
