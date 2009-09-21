@@ -22,15 +22,15 @@ our %is_removable = map{ $_ => undef } @EXPORT;
 delete $is_removable{blessed};
 delete $is_removable{confess};
 
-sub extends { Mouse::Meta::Class->initialize(caller)->superclasses(@_) }
+sub extends { Mouse::Meta::Class->initialize(scalar caller)->superclasses(@_) }
 
 sub has {
-    my $meta = Mouse::Meta::Class->initialize(caller);
+    my $meta = Mouse::Meta::Class->initialize(scalar caller);
     $meta->add_attribute(@_);
 }
 
 sub before {
-    my $meta = Mouse::Meta::Class->initialize(caller);
+    my $meta = Mouse::Meta::Class->initialize(scalar caller);
 
     my $code = pop;
 
@@ -40,7 +40,7 @@ sub before {
 }
 
 sub after {
-    my $meta = Mouse::Meta::Class->initialize(caller);
+    my $meta = Mouse::Meta::Class->initialize(scalar caller);
 
     my $code = pop;
 
@@ -50,7 +50,7 @@ sub after {
 }
 
 sub around {
-    my $meta = Mouse::Meta::Class->initialize(caller);
+    my $meta = Mouse::Meta::Class->initialize(scalar caller);
 
     my $code = pop;
 
@@ -60,7 +60,7 @@ sub around {
 }
 
 sub with {
-    Mouse::Util::apply_all_roles((caller)[0], @_);
+    Mouse::Util::apply_all_roles(scalar(caller), @_);
 }
 
 our $SUPER_PACKAGE;
