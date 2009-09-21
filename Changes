@@ -1,8 +1,8 @@
 Revision history for Mouse
 
-0.30
+0.30 Mon Sep 21 16:43:05 2009
 
-    * Work around anonymous classes as mortal classes
+    * Work around anonymous classes as mortal classes (gfx)
 
     * Implement with $role => -exlucdes => [...] (gfx)
 
