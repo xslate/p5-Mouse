@@ -285,6 +285,7 @@ sub does_role {
         next unless $meta && $meta->can('roles');
 
         for my $role (@{ $meta->roles }) {
+
             return 1 if $role->does_role($role_name);
         }
     }
@@ -307,6 +308,10 @@ sub create {
         || $class->throw_error("You must pass a HASH ref of methods")
             if exists $options{methods};
 
+    (ref $options{roles} eq 'ARRAY')
+        || $class->throw_error("You must pass an ARRAY ref of roles")
+            if exists $options{roles};
+
     {
         ( defined $package_name && $package_name )
           || $class->throw_error("You must pass a package name");
@@ -322,6 +327,7 @@ sub create {
         superclasses
         attributes
         methods
+        roles
         version
         authority
     )};
@@ -348,6 +354,9 @@ sub create {
         foreach my $method_name (keys %{$options{methods}}) {
             $meta->add_method($method_name, $options{methods}->{$method_name});
         }
+    }
+    if (exists $options{roles}){
+        Mouse::Util::apply_all_roles($package_name, @{$options{roles}});
     }
     return $meta;
 }

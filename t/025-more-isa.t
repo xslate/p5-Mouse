@@ -105,7 +105,7 @@ do {
     );
 };
 
-for ('B'..'E', 'G::H') {
+for ('B', 'D'..'E', 'G::H') {
     lives_ok {
         ClassNameTests->new(class => $_);
     };
@@ -116,17 +116,23 @@ for ('B'..'E', 'G::H') {
     };
 }
 
-TODO: {
-    local $TODO = "Moose throws errors here. Mouse does not";
-    throws_ok {
-        ClassNameTests->new(class => 'A');
-    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
+throws_ok {
+    ClassNameTests->new(class => 'A');
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
 
-    throws_ok {
-            my $obj = ClassNameTests->new;
-            $obj->class('A');
-    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
-}
+throws_ok {
+        my $obj = ClassNameTests->new;
+        $obj->class('A');
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
+
+throws_ok {
+    ClassNameTests->new(class => 'C');
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value C/;
+
+throws_ok {
+        my $obj = ClassNameTests->new;
+        $obj->class('C');
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value C/;
 
 for ('F', 'G', 'I', 'Z') {
     throws_ok {

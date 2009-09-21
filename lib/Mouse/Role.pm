@@ -7,7 +7,7 @@ use Carp 'confess', 'croak';
 use Scalar::Util 'blessed';
 
 use Mouse::Meta::Role;
-use Mouse::Util;
+use Mouse::Util qw(load_class);
 
 our @EXPORT = qw(before after around super override inner augment has extends with requires excludes confess blessed);
 our %is_removable = map{ $_ => undef } @EXPORT;
@@ -86,16 +86,11 @@ sub has {
     $meta->add_attribute($name => \%opts);
 }
 
-sub extends  { confess "Roles do not currently support 'extends'" }
+sub extends  { confess "Roles do not support 'extends'" }
 
 sub with     {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
-    my $role  = shift;
-    my $args  = shift || {};
-    confess "Mouse::Role only supports 'with' on individual roles at a time" if @_ || !ref $args;
-
-    Mouse::load_class($role);
-    $role->meta->apply($meta, %$args);
+    Mouse::Util::apply_all_roles($meta->name, @_);
 }
 
 sub requires {

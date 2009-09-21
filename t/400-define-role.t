@@ -18,7 +18,7 @@ throws_ok {
     extends 'Role::Parent';
 
     no Mouse::Role;
-} qr/Roles do not currently support 'extends'/;
+} qr/Roles do not support 'extends'/;
 
 lives_ok {
     package Role;
@@ -93,11 +93,10 @@ lives_ok {
     ::is(blessed($obj), "Impromptu::Class");
 };
 
-our $TODO = 'skip';
-throws_ok {
+lives_ok{
     package Class;
     use Mouse;
 
     with 'Role', 'Other::Role';
-} qr/Mouse::Role only supports 'with' on individual roles at a time/;
+};
 
