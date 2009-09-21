@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 15;
 use Test::Exception;
 
 do {
@@ -18,6 +18,12 @@ do {
 
     has 'z' => (
         is => 'rw',
+    );
+
+    has 'attr' => (
+        accessor => 'rw_attr',
+        reader   => 'read_attr',
+        writer   => 'write_attr',
     );
 };
 
@@ -40,4 +46,12 @@ is($object->y, undef);
 is($object->z, undef);
 is($object->z(10), 10);
 is($object->z, 10);
+
+can_ok($object, qw(rw_attr read_attr write_attr));
+$object->write_attr(42);
+is $object->rw_attr, 42;
+is $object->read_attr, 42;
+$object->rw_attr(100);
+is $object->rw_attr, 100;
+is $object->read_attr, 100;
 
