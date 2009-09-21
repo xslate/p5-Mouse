@@ -8,6 +8,8 @@ MANIFEST
 MANIFEST.bak
 SIGNATURE
 lib/Mouse/Tiny.pm
+Mouse-*
 *~
+*.bak
 *.old
 xt/compatibility/
