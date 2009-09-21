@@ -54,6 +54,8 @@ sub create_moose_compatibility_test {
         '031_roles_applied_in_create.t' => 't/lib/* classes are not Moose classes/roles',
     );
 
+    my @compat_tests;
+
     File::Find::find(
         {
             wanted => sub {
@@ -84,10 +86,12 @@ sub create_moose_compatibility_test {
                     $src;
                 };
                 close $wfh;
+                push @compat_tests, $tmpfile;
             },
             no_chdir => 1
         },
         't',
     );
+    clean_files "@compat_tests";
 }
 
