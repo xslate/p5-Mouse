@@ -2,11 +2,11 @@ Revision history for Mouse
 
 0.30
 
-    * Make get_method_list() compatible with Moose's
+    * Make get_method_list() compatible with Moose's (gfx)
 
-    * Make unimport() not to remove non-Mouse functions (blessed and confess)
+    * Make unimport() not to remove non-Mouse functions (blessed and confess) (gfx)
 
-    * Remove a lot of duplication code
+    * Remove a lot of duplication code (gfx)
 
     * Support is => 'bare', and you must pass and 'is' option to has() (gfx)
 
