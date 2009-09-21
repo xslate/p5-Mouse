@@ -455,6 +455,8 @@ Yappo
 
 wu-lee
 
+Goro Fuji (gfx) C<< <gfuji at cpan.org> >>
+
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
