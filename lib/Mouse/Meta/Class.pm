@@ -228,9 +228,8 @@ sub _install_modifier {
 
     # replace this method itself :)
     {
-        no strict 'refs';
         no warnings 'redefine';
-        *{__PACKAGE__ . '::_install_modifier'} = sub {
+        *_install_modifier = sub {
             my ( $self, $into, $type, $name, $code ) = @_;
             $modifier->(
                 $into,
