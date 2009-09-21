@@ -5,28 +5,6 @@ use Carp 'confess';
 
 use base qw(Mouse::Meta::Module);
 
-do {
-    my %METACLASS_CACHE;
-
-    # because Mouse doesn't introspect existing classes, we're forced to
-    # only pay attention to other Mouse classes
-    sub _metaclass_cache {
-        my $class = shift;
-        my $name  = shift;
-        return $METACLASS_CACHE{$name};
-    }
-
-    sub initialize {
-        my($class, $package_name, @args) = @_;
-
-        ($package_name && !ref($package_name))
-            || confess("You must pass a package name and it cannot be blessed");
-
-        return $METACLASS_CACHE{$package_name}
-            ||= $class->_new(package => $package_name, @args);
-    }
-};
-
 sub _new {
     my $class = shift;
     my %args  = @_;
@@ -54,10 +32,6 @@ sub add_attribute {
     my $spec = shift;
     $self->{attributes}->{$name} = $spec;
 }
-
-sub has_attribute { exists $_[0]->{attributes}->{$_[1]}  }
-sub get_attribute_list { keys %{ $_[0]->{attributes} } }
-sub get_attribute { $_[0]->{attributes}->{$_[1]} }
 
 sub _check_required_methods{
     my($role, $class, $args, @other_roles) = @_;

@@ -3,11 +3,52 @@ use strict;
 use warnings;
 
 use Mouse::Util qw/get_code_info/;
-use Carp 'confess';
+use Scalar::Util qw/blessed/;
+use Carp ();
+
+{
+    my %METACLASS_CACHE;
+
+    # because Mouse doesn't introspect existing classes, we're forced to
+    # only pay attention to other Mouse classes
+    sub _metaclass_cache {
+        my($class, $name) = @_;
+        return $METACLASS_CACHE{$name};
+    }
+
+    sub initialize {
+        my($class, $package_name, @args) = @_;
+
+        ($package_name && !ref($package_name))
+            || confess("You must pass a package name and it cannot be blessed");
+
+        return $METACLASS_CACHE{$package_name}
+            ||= $class->_new(package => $package_name, @args);
+    }
+
+    sub Mouse::class_of{
+        my($class_or_instance) = @_;
+        return undef unless defined $class_or_instance;
+        return $METACLASS_CACHE{ blessed($class_or_instance) || $class_or_instance };
+    }
+
+    # Means of accessing all the metaclasses that have
+    # been initialized thus far
+    sub get_all_metaclasses         {        %METACLASS_CACHE         }
+    sub get_all_metaclass_instances { values %METACLASS_CACHE         }
+    sub get_all_metaclass_names     { keys   %METACLASS_CACHE         }
+    sub get_metaclass_by_name       { $METACLASS_CACHE{$_[0]}         }
+    sub store_metaclass_by_name     { $METACLASS_CACHE{$_[0]} = $_[1] }
+    sub weaken_metaclass            { weaken($METACLASS_CACHE{$_[0]}) }
+    sub does_metaclass_exist        { defined $METACLASS_CACHE{$_[0]} }
+    sub remove_metaclass_by_name    { delete $METACLASS_CACHE{$_[0]}  }
+
+}
+
+sub _new{ Carp::croak("Mouse::Meta::Module is an abstract class") }
 
 sub name { $_[0]->{package} }
 sub _method_map{ $_[0]->{methods} }
-
 
 sub version   { no strict 'refs'; ${shift->name.'::VERSION'}   }
 sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }
@@ -20,6 +61,12 @@ sub identifier {
     );
 }
 
+# add_attribute is an abstract method
+
+sub get_attribute_map {        $_[0]->{attributes}          }
+sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
+sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
+sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
 
 sub namespace{
     my $name = $_[0]->{package};
@@ -63,7 +110,9 @@ sub has_method {
     return $code && $self->_code_is_mine($code);
 }
 
-
+sub get_method{
+    Carp::croak("get_method() is not yet implemented");
+}
 
 sub get_method_list {
     my($self) = @_;
@@ -71,14 +120,19 @@ sub get_method_list {
     return grep { $self->has_method($_) } keys %{ $self->namespace };
 }
 
-sub get_attribute_map { $_[0]->{attributes} }
-sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
-sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
-sub get_attribute_list {
-    my $self = shift;
-    keys %{$self->get_attribute_map};
-}
+sub throw_error{
+    my($class, $message, %args) = @_;
 
+    local $Carp::CarpLevel  = $Carp::CarpLevel + ($args{depth} || 1);
+    local $Carp::MaxArgNums = 20; # default is 8, usually we use named args which gets messier though
+
+    if(exists $args{longmess} && !$args{longmess}){ # intentionaly longmess => 0
+        Carp::croak($message);
+    }
+    else{
+        Carp::confess($message);
+    }
+}
 
 1;
 

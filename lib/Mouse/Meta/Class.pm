@@ -10,55 +10,18 @@ use Carp 'confess';
 
 use base qw(Mouse::Meta::Module);
 
-do {
-    my %METACLASS_CACHE;
 
-    # because Mouse doesn't introspect existing classes, we're forced to
-    # only pay attention to other Mouse classes
-    sub _metaclass_cache {
-        my $class = shift;
-        my $name  = shift;
-        return $METACLASS_CACHE{$name};
-    }
-
-    sub initialize {
-        my($class, $package_name, @args) = @_;
-
-        ($package_name && !ref($package_name))
-            || confess("You must pass a package name and it cannot be blessed");
-
-        return $METACLASS_CACHE{$package_name}
-            ||= $class->_construct_class_instance(package => $package_name, @args);
-    }
-
-    sub class_of{
-        my($class_or_instance) = @_;
-        return undef unless defined $class_or_instance;
-        return $METACLASS_CACHE{ blessed($class_or_instance) || $class_or_instance };
-    }
-
-    # Means of accessing all the metaclasses that have
-    # been initialized thus far
-    sub get_all_metaclasses         {        %METACLASS_CACHE         }
-    sub get_all_metaclass_instances { values %METACLASS_CACHE         }
-    sub get_all_metaclass_names     { keys   %METACLASS_CACHE         }
-    sub get_metaclass_by_name       { $METACLASS_CACHE{$_[0]}         }
-    sub store_metaclass_by_name     { $METACLASS_CACHE{$_[0]} = $_[1] }
-    sub weaken_metaclass            { weaken($METACLASS_CACHE{$_[0]}) }
-    sub does_metaclass_exist        { exists $METACLASS_CACHE{$_[0]} && defined $METACLASS_CACHE{$_[0]} }
-    sub remove_metaclass_by_name    { $METACLASS_CACHE{$_[0]} = undef }
-};
-
-sub _construct_class_instance {
+sub _new {
     my($class, %args) = @_;
 
-    $args{attributes}   = {};
+    $args{attributes} ||= {};
+    $args{methods}    ||= {};
+    $args{roles}      ||= [];
+
     $args{superclasses} = do {
         no strict 'refs';
         \@{ $args{package} . '::ISA' };
     };
-    $args{roles}   ||= [];
-    $args{methods} ||= {};
 
     bless \%args, $class;
 }
@@ -135,15 +98,60 @@ sub get_all_attributes {
     return @attr;
 }
 
-sub get_attribute_map { $_[0]->{attributes} }
-sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
-sub get_attribute     { $_[0]->{attributes}->{$_[1]} }
-sub get_attribute_list {
-    my $self = shift;
-    keys %{$self->get_attribute_map};
-}
-
 sub linearized_isa { @{ get_linear_isa($_[0]->name) } }
+
+sub new_object {
+    my $self = shift;
+    my $args = (@_ == 1) ? $_[0] : { @_ };
+
+    foreach my $attribute ($self->meta->get_all_attributes) {
+        my $from = $attribute->init_arg;
+        my $key  = $attribute->name;
+
+        if (defined($from) && exists($args->{$from})) {
+            $args->{$from} = $attribute->coerce_constraint($args->{$from})
+                if $attribute->should_coerce;
+            $attribute->verify_against_type_constraint($args->{$from});
+
+            $instance->{$key} = $args->{$from};
+
+            weaken($instance->{$key})
+                if $attribute->is_weak_ref;
+
+            if ($attribute->has_trigger) {
+                $attribute->trigger->($instance, $args->{$from});
+            }
+        }
+        else {
+            if ($attribute->has_default || $attribute->has_builder) {
+                unless ($attribute->is_lazy) {
+                    my $default = $attribute->default;
+                    my $builder = $attribute->builder;
+                    my $value = $attribute->has_builder
+                              ? $instance->$builder
+                              : ref($default) eq 'CODE'
+                                  ? $default->($instance)
+                                  : $default;
+
+                    $value = $attribute->coerce_constraint($value)
+                        if $attribute->should_coerce;
+                    $attribute->verify_against_type_constraint($value);
+
+                    $instance->{$key} = $value;
+
+                    weaken($instance->{$key})
+                        if $attribute->is_weak_ref;
+                }
+            }
+            else {
+                if ($attribute->is_required) {
+                    confess "Attribute (".$attribute->name.") is required";
+                }
+            }
+        }
+    }
+    return $instance;
+}
 
 sub clone_object {
     my $class    = shift;
@@ -276,7 +284,7 @@ sub does_role {
         || confess "You must supply a role name to look for";
 
     for my $class ($self->linearized_isa) {
-        my $meta = class_of($class);
+        my $meta = Mouse::class_of($class);
         next unless $meta && $meta->can('roles');
 
         for my $role (@{ $meta->roles }) {

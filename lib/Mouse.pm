@@ -11,6 +11,7 @@ use Scalar::Util 'blessed';
 use Mouse::Util;
 
 use Mouse::Meta::Attribute;
+use Mouse::Meta::Module; # class_of()
 use Mouse::Meta::Class;
 use Mouse::Object;
 use Mouse::Util::TypeConstraints;
@@ -237,10 +238,6 @@ sub is_class_loaded {
 
     # fail
     return 0;
-}
-
-sub class_of {
-    return Mouse::Meta::Class::class_of($_[0]);
 }
 
 1;
