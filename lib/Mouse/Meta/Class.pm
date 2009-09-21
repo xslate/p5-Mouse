@@ -211,8 +211,6 @@ sub make_mutable { not_supported }
 
 sub is_immutable { $_[0]->{is_immutable} }
 
-sub attribute_metaclass { "Mouse::Meta::Class" }
-
 sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
 
