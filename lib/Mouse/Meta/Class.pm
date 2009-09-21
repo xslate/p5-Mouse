@@ -5,8 +5,7 @@ use warnings;
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
 use Scalar::Util qw/blessed weaken/;
-use Mouse::Util qw/get_linear_isa/;
-use Carp 'confess';
+use Mouse::Util qw/get_linear_isa not_supported/;
 
 use base qw(Mouse::Meta::Module);
 
@@ -104,7 +103,9 @@ sub new_object {
     my $self = shift;
     my $args = (@_ == 1) ? $_[0] : { @_ };
 
-    foreach my $attribute ($self->meta->get_all_attributes) {
+    my $instance = bless {}, $self->name;
+
+    foreach my $attribute ($self->get_all_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
 
@@ -116,7 +117,7 @@ sub new_object {
             $instance->{$key} = $args->{$from};
 
             weaken($instance->{$key})
-                if $attribute->is_weak_ref;
+                if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
                 $attribute->trigger->($instance, $args->{$from});
@@ -140,12 +141,12 @@ sub new_object {
                     $instance->{$key} = $value;
 
                     weaken($instance->{$key})
-                        if $attribute->is_weak_ref;
+                        if ref($instance->{$key}) && $attribute->is_weak_ref;
                 }
             }
             else {
                 if ($attribute->is_required) {
-                    confess "Attribute (".$attribute->name.") is required";
+                    $self->throw_error("Attribute (".$attribute->name.") is required");
                 }
             }
         }
@@ -158,7 +159,7 @@ sub clone_object {
     my $instance = shift;
 
     (blessed($instance) && $instance->isa($class->name))
-        || confess "You must pass an instance of the metaclass (" . $class->name . "), not ($instance)";
+        || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($instance)");
 
     $class->clone_instance($instance, @_);
 }
@@ -167,7 +168,7 @@ sub clone_instance {
     my ($class, $instance, %params) = @_;
 
     (blessed($instance))
-        || confess "You can only clone instances, ($instance) is not a blessed instance";
+        || $class->throw_error("You can only clone instances, ($instance) is not a blessed instance");
 
     my $clone = bless { %$instance }, ref $instance;
 
@@ -191,7 +192,6 @@ sub make_immutable {
         @_,
     );
 
-    my $name = $self->name;
     $self->{is_immutable}++;
 
     if ($args{inline_constructor}) {
@@ -207,7 +207,7 @@ sub make_immutable {
     return 1;
 }
 
-sub make_mutable { confess "Mouse does not currently support 'make_mutable'" }
+sub make_mutable { not_supported }
 
 sub is_immutable { $_[0]->{is_immutable} }
 
@@ -271,7 +271,7 @@ sub add_override_method_modifier {
     # Class::Method::Modifiers won't do this for us, so do it ourselves
 
     my $body = $pkg->can($name)
-        or confess "You cannot override '$method' because it has no super method";
+        or $self->throw_error("You cannot override '$method' because it has no super method");
 
     no strict 'refs';
     *$method = sub { $code->($pkg, $body, @_) };
@@ -281,7 +281,7 @@ sub does_role {
     my ($self, $role_name) = @_;
 
     (defined $role_name)
-        || confess "You must supply a role name to look for";
+        || $self->throw_error("You must supply a role name to look for");
 
     for my $class ($self->linearized_isa) {
         my $meta = Mouse::class_of($class);
@@ -299,20 +299,20 @@ sub create {
     my ($class, $package_name, %options) = @_;
 
     (ref $options{superclasses} eq 'ARRAY')
-        || confess "You must pass an ARRAY ref of superclasses"
+        || $class->throw_error("You must pass an ARRAY ref of superclasses")
             if exists $options{superclasses};
 
     (ref $options{attributes} eq 'ARRAY')
-        || confess "You must pass an ARRAY ref of attributes"
+        || $class->throw_error("You must pass an ARRAY ref of attributes")
             if exists $options{attributes};
 
     (ref $options{methods} eq 'HASH')
-        || confess "You must pass a HASH ref of methods"
+        || $class->throw_error("You must pass a HASH ref of methods")
             if exists $options{methods};
 
     do {
         ( defined $package_name && $package_name )
-          || confess "You must pass a package name";
+          || $class->throw_error("You must pass a package name");
 
         my $code = "package $package_name;";
         $code .= "\$$package_name\:\:VERSION = '" . $options{version} . "';"
@@ -321,7 +321,7 @@ sub create {
           if exists $options{authority};
 
         eval $code;
-        confess "creation of $package_name failed : $@" if $@;
+        $class->throw_error("creation of $package_name failed : $@") if $@;
     };
 
     my %initialize_options = %options;

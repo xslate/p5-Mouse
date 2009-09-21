@@ -159,7 +159,7 @@ sub _generate_accessor{
     }';
 
     my $sub = eval $accessor;
-    Carp::confess($@) if $@;
+    $attribute->throw_error($@) if $@;
     return $sub;
 }
 
@@ -171,7 +171,7 @@ sub _generate_predicate {
     my $predicate = 'sub { exists($_[0]->{'.$key.'}) }';
 
     my $sub = eval $predicate;
-    confess $@ if $@;
+    $attribute->throw_error($@) if $@;
     return $sub;
 }
 
@@ -182,7 +182,7 @@ sub _generate_clearer {
     my $clearer = 'sub { delete($_[0]->{'.$key.'}) }';
 
     my $sub = eval $clearer;
-    confess $@ if $@;
+    $attribute->throw_error($@) if $@;
     return $sub;
 }
 
@@ -202,7 +202,7 @@ sub _generate_handles {
         }';
 
         $method_map{$local_method} = eval $method;
-        confess $@ if $@;
+        $attribute->throw_error($@) if $@;
     }
 
     return \%method_map;
@@ -296,31 +296,31 @@ sub validate_args {
     my $name = shift;
     my $args = shift;
 
-    confess "You can not use lazy_build and default for the same attribute ($name)"
+    $self->throw_error("You can not use lazy_build and default for the same attribute ($name)")
         if $args->{lazy_build} && exists $args->{default};
 
-    confess "You cannot have lazy attribute ($name) without specifying a default value for it"
+    $self->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it")
         if $args->{lazy}
         && !exists($args->{default})
         && !exists($args->{builder});
 
-    confess "References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])"
+    $self->throw_error("References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])")
         if ref($args->{default})
         && ref($args->{default}) ne 'CODE';
 
-    confess "You cannot auto-dereference without specifying a type constraint on attribute ($name)"
+    $self->throw_error("You cannot auto-dereference without specifying a type constraint on attribute ($name)")
         if $args->{auto_deref} && !exists($args->{isa});
 
-    confess "You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)"
+    $self->throw_error("You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)")
         if $args->{auto_deref}
         && $args->{isa} !~ /^(?:ArrayRef|HashRef)(?:\[.*\])?$/;
 
     if ($args->{trigger}) {
         if (ref($args->{trigger}) eq 'HASH') {
-            Carp::carp "HASH-based form of trigger has been removed. Only the coderef form of triggers are now supported.";
+            $self->throw_error("HASH-based form of trigger has been removed. Only the coderef form of triggers are now supported.");
         }
 
-        confess "Trigger must be a CODE ref on attribute ($name)"
+        $self->throw_error("Trigger must be a CODE ref on attribute ($name)")
             if ref($args->{trigger}) ne 'CODE';
     }
 
@@ -340,7 +340,7 @@ sub verify_against_type_constraint {
 
 sub verify_type_constraint_error {
     my($self, $name, $value, $type) = @_;
-    Carp::confess("Attribute ($name) does not pass the type constraint because: " . $type->get_message($value));
+    $self->throw_error("Attribute ($name) does not pass the type constraint because: " . $type->get_message($value));
 }
 
 sub coerce_constraint { ## my($self, $value) = @_;
@@ -360,7 +360,7 @@ sub _canonicalize_handles {
         return map { $_ => $_ } @$handles;
     }
     else {
-        confess "Unable to canonicalize the 'handles' option with $handles";
+        $self->throw_error("Unable to canonicalize the 'handles' option with $handles");
     }
 }
 
@@ -384,7 +384,14 @@ sub get_parent_args {
         return %{ $super_attr->_create_args };
     }
 
-    confess "Could not find an attribute by the name of '$name' to inherit from";
+    $self->throw_error("Could not find an attribute by the name of '$name' to inherit from");
+}
+
+sub throw_error{
+    my $self = shift;
+
+    my $metaclass = (ref $self && $self->associated_class) || 'Mouse::Meta::Class';
+    $metaclass->throw_error(@_, depth => 1);
 }
 
 1;

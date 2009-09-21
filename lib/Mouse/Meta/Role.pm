@@ -1,8 +1,8 @@
 package Mouse::Meta::Role;
 use strict;
 use warnings;
-use Carp 'confess';
 
+use Mouse::Util qw(not_supported);
 use base qw(Mouse::Meta::Module);
 
 sub _new {
@@ -51,7 +51,7 @@ sub _check_required_methods{
                     }
                 }
                 
-                confess "'$role_name' requires the method '$method_name' to be implemented by '$class_name'"
+                $role->throw_error("'$role_name' requires the method '$method_name' to be implemented by '$class_name'")
                     unless $has_method;
             }
         }
@@ -159,7 +159,7 @@ sub apply {
     my($self, $class, %args) = @_;
 
     if ($class->isa('Mouse::Object')) {
-        Carp::croak('Mouse does not support Application::ToInstance yet');
+        not_supported 'Application::ToInstance';
     }
 
     $self->_check_required_methods($class, \%args);
@@ -217,7 +217,7 @@ sub does_role {
     my ($self, $role_name) = @_;
 
     (defined $role_name)
-        || confess "You must supply a role name to look for";
+        || $self->throw_error("You must supply a role name to look for");
 
     # if we are it,.. then return true
     return 1 if $role_name eq $self->name;

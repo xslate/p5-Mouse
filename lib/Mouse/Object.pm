@@ -2,16 +2,14 @@ package Mouse::Object;
 use strict;
 use warnings;
 
-use Carp 'confess';
-
 sub new {
     my $class = shift;
 
-    confess('Cannot call new() on an instance') if ref $class;
+    $class->throw_error('Cannot call new() on an instance') if ref $class;
 
     my $args = $class->BUILDARGS(@_);
 
-    my $instance = Mouse::Meta::Class->initialize($class)->new_object($params);
+    my $instance = Mouse::Meta::Class->initialize($class)->new_object($args);
     $instance->BUILDALL($args);
     return $instance;
 }
@@ -21,7 +19,7 @@ sub BUILDARGS {
 
     if (scalar @_ == 1) {
         (ref($_[0]) eq 'HASH')
-            || confess "Single parameters to new() must be a HASH ref";
+            || $class->meta->throw_error("Single parameters to new() must be a HASH ref");
         return {%{$_[0]}};
     }
     else {
@@ -79,7 +77,7 @@ sub dump {
 sub does {
     my ($self, $role_name) = @_;
     (defined $role_name)
-        || confess "You must supply a role name to does()";
+        || $self->meta->throw_error("You must supply a role name to does()");
 
     return $self->meta->does_role($role_name);
 };

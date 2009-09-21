@@ -2,9 +2,9 @@ package Mouse::Meta::Module;
 use strict;
 use warnings;
 
-use Mouse::Util qw/get_code_info/;
+use Mouse::Util qw/get_code_info not_supported/;
 use Scalar::Util qw/blessed/;
-use Carp ();
+
 
 {
     my %METACLASS_CACHE;
@@ -20,7 +20,7 @@ use Carp ();
         my($class, $package_name, @args) = @_;
 
         ($package_name && !ref($package_name))
-            || confess("You must pass a package name and it cannot be blessed");
+            || $class->throw_error("You must pass a package name and it cannot be blessed");
 
         return $METACLASS_CACHE{$package_name}
             ||= $class->_new(package => $package_name, @args);
@@ -44,6 +44,8 @@ use Carp ();
     sub remove_metaclass_by_name    { delete $METACLASS_CACHE{$_[0]}  }
 
 }
+
+sub meta{ Mouse::Meta::Class->initialize(ref $_[0] || $_[0]) }
 
 sub _new{ Carp::croak("Mouse::Meta::Module is an abstract class") }
 
@@ -78,10 +80,10 @@ sub add_method {
     my($self, $name, $code) = @_;
 
     if(!defined $name){
-        confess "You must pass a defined name";
+        $self->throw_error("You must pass a defined name");
     }
     if(ref($code) ne 'CODE'){
-        confess "You must pass a CODE reference";
+        not_supported 'add_method for a method object';
     }
 
     $self->_method_map->{$name}++; # Moose stores meta object here.
@@ -123,7 +125,7 @@ sub get_method_list {
 sub throw_error{
     my($class, $message, %args) = @_;
 
-    local $Carp::CarpLevel  = $Carp::CarpLevel + ($args{depth} || 1);
+    local $Carp::CarpLevel  = $Carp::CarpLevel + 1 + ($args{depth} || 0);
     local $Carp::MaxArgNums = 20; # default is 8, usually we use named args which gets messier though
 
     if(exists $args{longmess} && !$args{longmess}){ # intentionaly longmess => 0

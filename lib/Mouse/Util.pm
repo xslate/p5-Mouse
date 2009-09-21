@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
     get_linear_isa
     apply_all_roles
     get_code_info
+    not_supported
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
@@ -196,6 +197,15 @@ sub apply_all_roles {
         Mouse::Meta::Role->combine_apply($meta, @roles);
     }
     return;
+}
+
+sub not_supported{
+    my($feature) = @_;
+
+    $feature ||= ( caller(1) )[3]; # subroutine name
+
+    local $Carp::CarpLevel = $Carp::CarpLevel + 2;
+    Carp::croak("Mouse does not currently support $feature");
 }
 
 1;
