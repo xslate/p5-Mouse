@@ -1,6 +1,10 @@
 Revision history for Mouse
 
+0.31
+
 0.30 Mon Sep 21 16:43:05 2009
+
+    * Implement RT #46930 (accessor/reader/writer in has())
 
     * Work around anonymous classes as mortal classes (gfx)
 
