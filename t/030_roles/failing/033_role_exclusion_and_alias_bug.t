@@ -9,18 +9,18 @@ use Test::Mouse;
 {
     package My::Role;
     use Mouse::Role;
-    
+
     sub foo { "FOO" }
-    sub bar { "BAR" }    
+    sub bar { "BAR" }
 }
 
 {
     package My::Class;
     use Mouse;
-    
+
     with 'My::Role' => {
-        alias    => { foo => 'baz', bar => 'gorch' },
-        excludes => ['foo', 'bar'],        
+        -alias    => { foo => 'baz', bar => 'gorch' },
+        -excludes => ['foo', 'bar'],
     };
 }
 
@@ -40,15 +40,15 @@ use Test::Mouse;
 {
     package My::Role::Again;
     use Mouse::Role;
-    
+
     with 'My::Role' => {
-        alias    => { foo => 'baz', bar => 'gorch' },
-        excludes => ['foo', 'bar'],        
+        -alias    => { foo => 'baz', bar => 'gorch' },
+        -excludes => ['foo', 'bar'],
     };
-    
+
     package My::Class::Again;
     use Mouse;
-    
+
     with 'My::Role::Again';
 }
 

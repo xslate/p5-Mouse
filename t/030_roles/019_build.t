@@ -3,17 +3,10 @@ use strict;
 use warnings;
 use Test::More;
 BEGIN {
-    plan skip_all => 
-            "This test requires Class::Method::Modifiers or Class::Method::Modifiers::Fast" 
-        unless eval { 
-            require Class::Method::Modifiers::Fast;
-        } or   eval {
-            require Class::Method::Modifiers;
-        };
+    eval "use Test::Output;";
+    plan skip_all => "Test::Output is required for this test" if $@;
+    plan tests => 8;
 }
-
-plan tests => 6;
-
 
 # this test script ensures that my idiom of:
 # role: sub BUILD, after BUILD
@@ -34,9 +27,23 @@ do {
 do {
     package ClassWithBUILD;
     use Mouse;
-    with 'TestRole';
+
+    ::stderr_is {
+        with 'TestRole';
+    } '';
 
     sub BUILD { push @CALLS, 'ClassWithBUILD::BUILD' }
+};
+
+do {
+    package ExplicitClassWithBUILD;
+    use Mouse;
+
+    ::stderr_is {
+        with 'TestRole' => { excludes => 'BUILD' };
+    } '';
+
+    sub BUILD { push @CALLS, 'ExplicitClassWithBUILD::BUILD' }
 };
 
 do {
@@ -45,42 +52,29 @@ do {
     with 'TestRole';
 };
 
-is_deeply([splice @CALLS], [], "no calls to BUILD yet");
+{
+    is_deeply([splice @CALLS], [], "no calls to BUILD yet");
 
-ClassWithBUILD->new;
+    ClassWithBUILD->new;
 
-is_deeply([splice @CALLS], [
-    'TestRole::BUILD:before',
-    'ClassWithBUILD::BUILD',
-    'TestRole::BUILD:after',
-]);
+    is_deeply([splice @CALLS], [
+        'TestRole::BUILD:before',
+        'ClassWithBUILD::BUILD',
+        'TestRole::BUILD:after',
+    ]);
 
-ClassWithoutBUILD->new;
+    ClassWithoutBUILD->new;
 
-is_deeply([splice @CALLS], [
-    'TestRole::BUILD:before',
-    'TestRole::BUILD',
-    'TestRole::BUILD:after',
-]);
+    is_deeply([splice @CALLS], [
+        'TestRole::BUILD:before',
+        'TestRole::BUILD',
+        'TestRole::BUILD:after',
+    ]);
 
-ClassWithBUILD->meta->make_immutable;
-ClassWithoutBUILD->meta->make_immutable;
-
-is_deeply([splice @CALLS], [], "no calls to BUILD yet");
-
-ClassWithBUILD->new;
-
-is_deeply([splice @CALLS], [
-    'TestRole::BUILD:before',
-    'ClassWithBUILD::BUILD',
-    'TestRole::BUILD:after',
-]);
-
-ClassWithoutBUILD->new;
-
-is_deeply([splice @CALLS], [
-    'TestRole::BUILD:before',
-    'TestRole::BUILD',
-    'TestRole::BUILD:after',
-]);
+    if (ClassWithBUILD->meta->is_mutable) {
+        ClassWithBUILD->meta->make_immutable;
+        ClassWithoutBUILD->meta->make_immutable;
+        redo;
+    }
+}
 

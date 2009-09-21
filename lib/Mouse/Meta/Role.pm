@@ -5,6 +5,8 @@ use warnings;
 use Mouse::Util qw(not_supported);
 use base qw(Mouse::Meta::Module);
 
+sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
+
 sub _new {
     my $class = shift;
     my %args  = @_;
@@ -19,6 +21,9 @@ sub _new {
 
 sub get_roles { $_[0]->{roles} }
 
+sub get_required_method_list{
+    return @{ $_[0]->{required_methods} };
+}
 
 sub add_required_methods {
     my $self = shift;
@@ -26,11 +31,16 @@ sub add_required_methods {
     push @{$self->{required_methods}}, @methods;
 }
 
+sub requires_method {
+    my($self, $name) = @_;
+    return scalar( grep{ $_ eq $name } @{ $self->{required_methods} } ) != 0;
+}
+
 sub add_attribute {
     my $self = shift;
     my $name = shift;
-    my $spec = shift;
-    $self->{attributes}->{$name} = $spec;
+
+    $self->{attributes}->{$name} = (@_ == 1) ? $_[0] : { @_ };
 }
 
 sub _check_required_methods{
@@ -65,23 +75,38 @@ sub _apply_methods{
 
     my $role_name  = $role->name;
     my $class_name = $class->name;
-    my $alias      = $args->{alias};
+
+    my $alias    = (exists $args->{alias}    && !exists $args->{-alias})    ? $args->{alias}    : $args->{-alias};
+    my $excludes = (exists $args->{excludes} && !exists $args->{-excludes}) ? $args->{excludes} : $args->{-excludes};
+
+    my %exclude_map;
+
+    if(defined $excludes){
+        if(ref $excludes){
+            %exclude_map = map{ $_ => undef } @{$excludes};
+        }
+        else{
+            $exclude_map{$excludes} = undef;
+        }
+    }
 
     foreach my $method_name($role->get_method_list){
         next if $method_name eq 'meta';
 
         my $code = $role_name->can($method_name);
-        if(do{ no strict 'refs'; defined &{$class_name . '::' . $method_name} }){
-            # XXX what's Moose's behavior?
-        }
-        else{
-            $class->add_method($method_name => $code);
+
+        if(!exists $exclude_map{$method_name}){
+            if(!$class->has_method($method_name)){
+                $class->add_method($method_name => $code);
+            }
         }
 
         if($alias && $alias->{$method_name}){
             my $dstname = $alias->{$method_name};
-            if(do{ no strict 'refs'; defined &{$class_name . '::' . $dstname} }){
-                # XXX wat's Moose's behavior?
+
+            my $slot = do{ no strict 'refs'; \*{$class_name . '::' . $dstname} };
+            if(defined(*{$slot}{CODE}) && *{$slot}{CODE} != $code){
+                $class->throw_error("Cannot create a method alias if a local method of the same name exists");
             }
             else{
                 $class->add_method($dstname => $code);
@@ -133,7 +158,7 @@ sub _apply_modifiers{
         my $modifiers    = $role->{"${modifier_type}_method_modifiers"};
 
         while(my($method_name, $modifier_codes) = each %{$modifiers}){
-            foreach my $code(@{$modifier_codes}){
+            foreach my $code(ref($modifier_codes) eq 'ARRAY' ? @{$modifier_codes} : $modifier_codes){
                 $class->$add_modifier($method_name => $code);
             }
         }
@@ -187,7 +212,7 @@ sub combine_apply {
     return;
 }
 
-for my $modifier_type (qw/before after around override/) {
+for my $modifier_type (qw/before after around/) {
 
     my $modifier = "${modifier_type}_method_modifiers";
     my $add_method_modifier =  sub {
@@ -210,6 +235,32 @@ for my $modifier_type (qw/before after around override/) {
     *{ 'add_' . $modifier_type . '_method_modifier'  } = $add_method_modifier;
     *{ 'has_' . $modifier_type . '_method_modifiers' } = $has_method_modifiers;
     *{ 'get_' . $modifier_type . '_method_modifiers' } = $get_method_modifiers;
+}
+
+sub add_override_method_modifier{
+    my($self, $method_name, $method) = @_;
+
+    (!$self->has_method($method_name))
+        || $self->throw_error("Cannot add an override of method '$method_name' " .
+                   "because there is a local version of '$method_name'");
+
+    $self->{override_method_modifiers}->{$method_name} = $method;
+}
+
+sub has_override_method_modifier {
+    my ($self, $method_name) = @_;
+    return exists $self->{override_method_modifiers}->{$method_name};
+}
+
+sub get_override_method_modifier {
+    my ($self, $method_name) = @_;
+    return $self->{override_method_modifiers}->{$method_name};
+}
+
+sub get_method_modifier_list {
+    my($self, $modifier_type) = @_;
+
+    return keys %{ $self->{$modifier_type . '_method_modifiers'} };
 }
 
 # This is currently not passing all the Moose tests.

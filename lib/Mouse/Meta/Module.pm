@@ -2,7 +2,7 @@ package Mouse::Meta::Module;
 use strict;
 use warnings;
 
-use Mouse::Util qw/get_code_info not_supported/;
+use Mouse::Util qw/get_code_info not_supported load_class/;
 use Scalar::Util qw/blessed/;
 
 
@@ -69,6 +69,7 @@ sub get_attribute_map {        $_[0]->{attributes}          }
 sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
 sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
+sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
 
 sub namespace{
     my $name = $_[0]->{package};
@@ -113,7 +114,21 @@ sub has_method {
 }
 
 sub get_method{
-    Carp::croak("get_method() is not yet implemented");
+    my($self, $method_name) = @_;
+
+    if($self->has_method($method_name)){
+        my $method_metaclass = $self->method_metaclass;
+        load_class($method_metaclass);
+
+        my $package = $self->name;
+        return $method_metaclass->new(
+            body    => $package->can($method_name),
+            name    => $method_name,
+            package => $package,
+        );
+    }
+
+    return undef;
 }
 
 sub get_method_list {

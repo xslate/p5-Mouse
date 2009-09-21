@@ -9,6 +9,7 @@ use Mouse::Util qw/get_linear_isa not_supported/;
 
 use base qw(Mouse::Meta::Module);
 
+sub method_metaclass(){ 'Mouse::Meta::Method' } # required for get_method()
 
 sub _new {
     my($class, %args) = @_;
@@ -209,7 +210,8 @@ sub make_immutable {
 
 sub make_mutable { not_supported }
 
-sub is_immutable { $_[0]->{is_immutable} }
+sub is_immutable {  $_[0]->{is_immutable} }
+sub is_mutable   { !$_[0]->{is_immutable} }
 
 sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
@@ -237,6 +239,8 @@ sub _install_modifier {
                 $name,
                 $code
             );
+            $self->{methods}{$name}++; # register it to the method map
+            return;
         };
     }
 
@@ -262,16 +266,12 @@ sub add_after_method_modifier {
 sub add_override_method_modifier {
     my ($self, $name, $code) = @_;
 
-    my $pkg = $self->name;
-    my $method = "${pkg}::${name}";
+    my $package = $self->name;
 
-    # Class::Method::Modifiers won't do this for us, so do it ourselves
+    my $body = $package->can($name)
+        or $self->throw_error("You cannot override '$name' because it has no super method");
 
-    my $body = $pkg->can($name)
-        or $self->throw_error("You cannot override '$method' because it has no super method");
-
-    no strict 'refs';
-    *$method = sub { $code->($pkg, $body, @_) };
+    $self->add_method($name => sub { $code->($package, $body, @_) });
 }
 
 sub does_role {

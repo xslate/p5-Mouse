@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 35;
+use Test::More tests => 46;
 use Test::Exception;
 
 
@@ -22,14 +22,14 @@ use Test::Exception;
     use Mouse;
 
     ::lives_ok {
-        with 'My::Role' => { alias => { bar => 'role_bar' } };
+        with 'My::Role' => { -alias => { bar => 'role_bar' } };
     } '... this succeeds';
 
     package My::Class::Failure;
     use Mouse;
 
     ::throws_ok {
-        with 'My::Role' => { alias => { bar => 'role_bar' } };
+        with 'My::Role' => { -alias => { bar => 'role_bar' } };
     } qr/Cannot create a method alias if a local method of the same name exists/, '... this succeeds';
 
     sub role_bar { 'FAIL' }
@@ -42,7 +42,7 @@ ok(My::Class->meta->has_method($_), "we have a $_ method") for qw(foo baz bar ro
     use Mouse::Role;
 
     ::lives_ok {
-        with 'My::Role' => { alias => { bar => 'role_bar' } };
+        with 'My::Role' => { -alias => { bar => 'role_bar' } };
     } '... this succeeds';
 
     sub bar { 'My::OtherRole::bar' }
@@ -51,14 +51,14 @@ ok(My::Class->meta->has_method($_), "we have a $_ method") for qw(foo baz bar ro
     use Mouse::Role;
 
     ::throws_ok {
-        with 'My::Role' => { alias => { bar => 'role_bar' } };
-    } qr/Cannot create a method alias if a local method of the same name exists/, '... this succeeds';
+        with 'My::Role' => { -alias => { bar => 'role_bar' } };
+    } qr/Cannot create a method alias if a local method of the same name exists/, '... cannot alias to a name that exists';
 
     sub role_bar { 'FAIL' }
 }
 
 ok(My::OtherRole->meta->has_method($_), "we have a $_ method") for qw(foo baz role_bar);
-ok(!My::OtherRole->meta->requires_method('bar'), '... and the &bar method is not required');
+ok(My::OtherRole->meta->requires_method('bar'), '... and the &bar method is required');
 ok(!My::OtherRole->meta->requires_method('role_bar'), '... and the &role_bar method is not required');
 
 {
@@ -66,12 +66,12 @@ ok(!My::OtherRole->meta->requires_method('role_bar'), '... and the &role_bar met
     use Mouse::Role;
 
     ::lives_ok {
-        with 'My::Role' => { alias => { bar => 'role_bar' } };
+        with 'My::Role' => { -alias => { bar => 'role_bar' } };
     } '... this succeeds';
 }
 
 ok(My::AliasingRole->meta->has_method($_), "we have a $_ method") for qw(foo baz role_bar);
-ok(My::AliasingRole->meta->requires_method('bar'), '... and the &bar method is required');
+ok(!My::AliasingRole->meta->requires_method('bar'), '... and the &bar method is not required');
 
 {
     package Foo::Role;
@@ -93,8 +93,8 @@ ok(My::AliasingRole->meta->requires_method('bar'), '... and the &bar method is r
     use Mouse;
 
     ::lives_ok {
-        with 'Foo::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
-             'Bar::Role' => { alias => { 'foo' => 'bar_foo' }, excludes => 'foo' },
+        with 'Foo::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
+             'Bar::Role' => { -alias => { 'foo' => 'bar_foo' }, -excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
 
@@ -102,8 +102,8 @@ ok(My::AliasingRole->meta->requires_method('bar'), '... and the &bar method is r
     use Mouse;
 
     ::throws_ok {
-        with 'Foo::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
-             'Bar::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
+        with 'Foo::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
+             'Bar::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
              'Baz::Role';
     } qr/Due to a method name conflict in roles 'Bar::Role' and 'Foo::Role', the method 'foo_foo' must be implemented or excluded by 'My::Foo::Class::Broken'/,
       '... composed our roles correctly';
@@ -123,8 +123,8 @@ ok(My::AliasingRole->meta->requires_method('bar'), '... and the &bar method is r
     use Mouse::Role;
 
     ::lives_ok {
-        with 'Foo::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
-             'Bar::Role' => { alias => { 'foo' => 'bar_foo' }, excludes => 'foo' },
+        with 'Foo::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
+             'Bar::Role' => { -alias => { 'foo' => 'bar_foo' }, -excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
 }
@@ -138,8 +138,8 @@ ok(!My::Foo::Role->meta->requires_method('foo'), '... and the &foo method is not
     use Mouse::Role;
 
     ::lives_ok {
-        with 'Foo::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
-             'Bar::Role' => { alias => { 'foo' => 'foo_foo' }, excludes => 'foo' },
+        with 'Foo::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
+             'Bar::Role' => { -alias => { 'foo' => 'foo_foo' }, -excludes => 'foo' },
              'Baz::Role';
     } '... composed our roles correctly';
 }
@@ -147,3 +147,68 @@ ok(!My::Foo::Role->meta->requires_method('foo'), '... and the &foo method is not
 ok(!My::Foo::Role::Other->meta->has_method('foo_foo'), "we dont have a foo_foo method");
 ok(My::Foo::Role::Other->meta->requires_method('foo_foo'), '... and the &foo method is required');
 
+{
+    package My::Foo::AliasOnly;
+    use Mouse;
+
+    ::lives_ok {
+        with 'Foo::Role' => { -alias => { 'foo' => 'foo_foo' } },
+    } '... composed our roles correctly';
+}
+
+ok(My::Foo::AliasOnly->meta->has_method('foo'), 'we have a foo method');
+ok(My::Foo::AliasOnly->meta->has_method('foo_foo'), '.. and the aliased foo_foo method');
+
+{
+    package Role::Foo;
+    use Mouse::Role;
+
+    sub x1 {}
+    sub y1 {}
+}
+
+{
+    package Role::Bar;
+    use Mouse::Role;
+
+    use Test::Exception;
+
+    lives_ok {
+        with 'Role::Foo' => {
+            -alias    => { x1 => 'foo_x1' },
+            -excludes => ['y1'],
+        };
+    }
+    'Compose Role::Foo into Role::Bar with alias and exclude';
+
+    sub x1 {}
+    sub y1 {}
+}
+
+{
+    my $bar = Role::Bar->meta;
+    ok( $bar->has_method($_), "has $_ method" )
+        for qw( x1 y1 foo_x1 );
+}
+
+{
+    package Role::Baz;
+    use Mouse::Role;
+
+    use Test::Exception;
+
+    lives_ok {
+        with 'Role::Foo' => {
+            -alias    => { x1 => 'foo_x1' },
+            -excludes => ['y1'],
+        };
+    }
+    'Compose Role::Foo into Role::Baz with alias and exclude';
+}
+
+{
+    my $baz = Role::Baz->meta;
+    ok( $baz->has_method($_), "has $_ method" )
+        for qw( x1 foo_x1 );
+    ok( ! $baz->has_method('y1'), 'Role::Baz has no y1 method' );
+}

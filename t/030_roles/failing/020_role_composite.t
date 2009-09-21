@@ -12,15 +12,15 @@ use Mouse::Meta::Role::Composite;
 {
     package Role::Foo;
     use Mouse::Role;
-    
+
     package Role::Bar;
     use Mouse::Role;
 
     package Role::Baz;
-    use Mouse::Role;      
-    
+    use Mouse::Role;
+
     package Role::Gorch;
-    use Mouse::Role;       
+    use Mouse::Role;
 }
 
 {
@@ -28,7 +28,7 @@ use Mouse::Meta::Role::Composite;
         roles => [
             Role::Foo->meta,
             Role::Bar->meta,
-            Role::Baz->meta,            
+            Role::Baz->meta,
         ]
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
@@ -38,22 +38,22 @@ use Mouse::Meta::Role::Composite;
     is_deeply($c->get_roles, [
         Role::Foo->meta,
         Role::Bar->meta,
-        Role::Baz->meta,        
+        Role::Baz->meta,
     ], '... got the right roles');
-    
+
     ok($c->does_role($_), '... our composite does the role ' . $_)
         for qw(
             Role::Foo
             Role::Bar
-            Role::Baz            
+            Role::Baz
         );
-    
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this composed okay';   
-    
+    } '... this composed okay';
+
     ##... now nest 'em
-    { 
+    {
         my $c2 = Mouse::Meta::Role::Composite->new(
             roles => [
                 $c,
@@ -66,15 +66,15 @@ use Mouse::Meta::Role::Composite;
 
         is_deeply($c2->get_roles, [
             $c,
-            Role::Gorch->meta,  
+            Role::Gorch->meta,
         ], '... got the right roles');
 
         ok($c2->does_role($_), '... our composite does the role ' . $_)
             for qw(
                 Role::Foo
                 Role::Bar
-                Role::Baz     
-                Role::Gorch                        
-            );     
+                Role::Baz
+                Role::Gorch
+            );
     }
 }

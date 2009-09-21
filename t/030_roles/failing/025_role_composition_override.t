@@ -12,27 +12,27 @@ use Mouse::Meta::Role::Composite;
 {
     package Role::Foo;
     use Mouse::Role;
-    
+
     override foo => sub { 'Role::Foo::foo' };
-    
+
     package Role::Bar;
     use Mouse::Role;
 
     override bar => sub { 'Role::Bar::bar' };
-    
+
     package Role::FooConflict;
-    use Mouse::Role;    
-    
+    use Mouse::Role;
+
     override foo => sub { 'Role::FooConflict::foo' };
-    
+
     package Role::FooMethodConflict;
-    use Mouse::Role;    
-    
-    sub foo { 'Role::FooConflict::foo' }    
-    
+    use Mouse::Role;
+
+    sub foo { 'Role::FooConflict::foo' }
+
     package Role::BarMethodConflict;
     use Mouse::Role;
-    
+
     sub bar { 'Role::BarConflict::bar' }
 }
 
@@ -46,12 +46,12 @@ use Mouse::Meta::Role::Composite;
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');    
-    
+    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this lives ok';    
-    
+    } '... this lives ok';
+
     is_deeply(
         [ sort $c->get_method_modifier_list('override') ],
         [ 'bar', 'foo' ],
@@ -74,7 +74,7 @@ dies_ok {
 # test simple overrides w/ conflicts
 dies_ok {
     Mouse::Meta::Role::Application::RoleSummation->new->apply(
-        Mouse::Meta::Role::Composite->new(        
+        Mouse::Meta::Role::Composite->new(
             roles => [
                 Role::Foo->meta,
                 Role::FooMethodConflict->meta,
@@ -90,8 +90,8 @@ dies_ok {
         Mouse::Meta::Role::Composite->new(
             roles => [
                 Role::Foo->meta,
-                Role::Bar->meta,            
-                Role::FooConflict->meta,         
+                Role::Bar->meta,
+                Role::FooConflict->meta,
             ]
         )
     );
@@ -101,11 +101,11 @@ dies_ok {
 # test simple overrides w/ conflicts
 dies_ok {
     Mouse::Meta::Role::Application::RoleSummation->new->apply(
-        Mouse::Meta::Role::Composite->new(        
+        Mouse::Meta::Role::Composite->new(
             roles => [
                 Role::Foo->meta,
-                Role::Bar->meta,            
-                Role::FooMethodConflict->meta,          
+                Role::Bar->meta,
+                Role::FooMethodConflict->meta,
             ]
         )
     );

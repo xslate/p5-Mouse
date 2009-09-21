@@ -8,7 +8,7 @@ our $VERSION = '0.30';
 
 use Carp 'confess';
 use Scalar::Util 'blessed';
-use Mouse::Util;
+use Mouse::Util qw(load_class is_class_loaded);
 
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Module; # class_of()
@@ -187,57 +187,6 @@ sub unimport {
             delete $stash->{$keyword};
         }
     }
-}
-
-sub load_class {
-    my $class = shift;
-
-    if (!Mouse::Util::is_valid_class_name($class)) {
-        my $display = defined($class) ? $class : 'undef';
-        confess "Invalid class name ($display)";
-    }
-
-    return 1 if is_class_loaded($class);
-
-    (my $file = "$class.pm") =~ s{::}{/}g;
-
-    eval { CORE::require($file) };
-    confess "Could not load class ($class) because : $@" if $@;
-
-    return 1;
-}
-
-my %is_class_loaded_cache;
-sub is_class_loaded {
-    my $class = shift;
-
-    return 0 if ref($class) || !defined($class) || !length($class);
-
-    return 1 if exists $is_class_loaded_cache{$class};
-
-    # walk the symbol table tree to avoid autovififying
-    # \*{${main::}{"Foo::"}} == \*main::Foo::
-
-    my $pack = \*::;
-    foreach my $part (split('::', $class)) {
-        return 0 unless exists ${$$pack}{"${part}::"};
-        $pack = \*{${$$pack}{"${part}::"}};
-    }
-
-    # check for $VERSION or @ISA
-    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{VERSION}
-             && defined *{${$$pack}{VERSION}}{SCALAR};
-    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{ISA}
-             && defined *{${$$pack}{ISA}}{ARRAY};
-
-    # check for any method
-    foreach ( keys %{$$pack} ) {
-        next if substr($_, -2, 2) eq '::';
-        return ++$is_class_loaded_cache{$class} if defined *{${$$pack}{$_}}{CODE};
-    }
-
-    # fail
-    return 0;
 }
 
 1;

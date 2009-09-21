@@ -11,20 +11,20 @@ use Mouse::Meta::Role::Composite;
 
 {
     package Role::Foo;
-    use Mouse::Role;    
+    use Mouse::Role;
     requires 'foo';
-    
+
     package Role::Bar;
     use Mouse::Role;
     requires 'bar';
-    
+
     package Role::ProvidesFoo;
-    use Mouse::Role;    
+    use Mouse::Role;
     sub foo { 'Role::ProvidesFoo::foo' }
-    
+
     package Role::ProvidesBar;
-    use Mouse::Role;    
-    sub bar { 'Role::ProvidesBar::bar' }     
+    use Mouse::Role;
+    sub bar { 'Role::ProvidesBar::bar' }
 }
 
 # test simple requirement
@@ -33,16 +33,16 @@ use Mouse::Meta::Role::Composite;
         roles => [
             Role::Foo->meta,
             Role::Bar->meta,
-        ]        
+        ]
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');    
-    
+    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
-    
+    } '... this succeeds as expected';
+
     is_deeply(
         [ sort $c->get_required_method_list ],
         [ 'bar', 'foo' ],
@@ -60,12 +60,12 @@ use Mouse::Meta::Role::Composite;
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::ProvidesFoo', '... got the composite role name');    
-    
-    lives_ok { 
+    is($c->name, 'Role::Foo|Role::ProvidesFoo', '... got the composite role name');
+
+    lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
-    
+    } '... this succeeds as expected';
+
     is_deeply(
         [ sort $c->get_required_method_list ],
         [],
@@ -79,17 +79,17 @@ use Mouse::Meta::Role::Composite;
         roles => [
             Role::Foo->meta,
             Role::ProvidesFoo->meta,
-            Role::Bar->meta,            
+            Role::Bar->meta,
         ]
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::ProvidesFoo|Role::Bar', '... got the composite role name');    
-    
+    is($c->name, 'Role::Foo|Role::ProvidesFoo|Role::Bar', '... got the composite role name');
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
-    
+    } '... this succeeds as expected';
+
     is_deeply(
         [ sort $c->get_required_method_list ],
         [ 'bar' ],
@@ -103,18 +103,18 @@ use Mouse::Meta::Role::Composite;
         roles => [
             Role::Foo->meta,
             Role::ProvidesFoo->meta,
-            Role::ProvidesBar->meta,            
-            Role::Bar->meta,            
+            Role::ProvidesBar->meta,
+            Role::Bar->meta,
         ]
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::ProvidesFoo|Role::ProvidesBar|Role::Bar', '... got the composite role name');    
-    
+    is($c->name, 'Role::Foo|Role::ProvidesFoo|Role::ProvidesBar|Role::Bar', '... got the composite role name');
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
-    
+    } '... this succeeds as expected';
+
     is_deeply(
         [ sort $c->get_required_method_list ],
         [ ],

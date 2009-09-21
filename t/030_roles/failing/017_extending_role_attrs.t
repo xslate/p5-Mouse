@@ -10,7 +10,7 @@ use Test::Exception;
 
 =pod
 
-This basically just makes sure that using +name 
+This basically just makes sure that using +name
 on role attributes works right.
 
 =cut
@@ -18,21 +18,21 @@ on role attributes works right.
 {
     package Foo::Role;
     use Mouse::Role;
-    
+
     has 'bar' => (
         is      => 'rw',
-        isa     => 'Int',   
+        isa     => 'Int',
         default => sub { 10 },
     );
-    
+
     package Foo;
     use Mouse;
-    
+
     with 'Foo::Role';
-    
+
     ::lives_ok {
         has '+bar' => (default => sub { 100 });
-    } '... extended the attribute successfully';  
+    } '... extended the attribute successfully';
 }
 
 my $foo = Foo->new;
@@ -151,6 +151,7 @@ is_deeply($quux->quux, ["hi"], "... still has the old ArrayRef value");
     for (1..3) {
         has "err$_" => (
             isa => 'Str | Int',
+            is => 'bare',
         );
     }
 

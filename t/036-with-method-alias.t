@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 {
     package Animal;
@@ -12,7 +12,8 @@ use Test::More tests => 5;
     package Cat;
     use Mouse::Role;
     with 'Animal', {
-        alias => { eat => 'drink' },
+        -alias    => { eat => 'drink' },
+        -excludes => [qw(eat)],
     };
     sub eat { 'good!' }
 }
@@ -27,7 +28,7 @@ use Test::More tests => 5;
     package Dog;
     use Mouse;
     with 'Animal', {
-        alias => { eat => 'drink' }
+        -alias    => { eat => 'drink' },
     };
 }
 
@@ -36,6 +37,7 @@ ok(Dog->can('drink'));
 
 my $d = Dog->new();
 is($d->drink(), 'delicious');
+is($d->eat(),   'delicious');
 
 my $t = Tama->new;
 is $t->drink(), 'delicious';

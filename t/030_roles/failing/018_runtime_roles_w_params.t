@@ -12,11 +12,11 @@ use Test::Exception;
     package Foo;
     use Mouse;
     has 'bar' => (is => 'ro');
-    
+
     package Bar;
     use Mouse::Role;
-    
-    has 'baz' => (is => 'ro', default => 'BAZ');    
+
+    has 'baz' => (is => 'ro', default => 'BAZ');
 }
 
 # normal ...

@@ -14,16 +14,16 @@ use Mouse::Meta::Role::Composite;
     use Mouse::Role;
 
     before foo => sub { 'Role::Foo::foo' };
-    around foo => sub { 'Role::Foo::foo' };    
-    after  foo => sub { 'Role::Foo::foo' };        
+    around foo => sub { 'Role::Foo::foo' };
+    after  foo => sub { 'Role::Foo::foo' };
     around baz => sub { [ 'Role::Foo', @{shift->(@_)} ] };
 
     package Role::Bar;
     use Mouse::Role;
 
     before bar => sub { 'Role::Bar::bar' };
-    around bar => sub { 'Role::Bar::bar' };    
-    after  bar => sub { 'Role::Bar::bar' };    
+    around bar => sub { 'Role::Bar::bar' };
+    after  bar => sub { 'Role::Bar::bar' };
 
     package Role::Baz;
     use Mouse::Role;
@@ -60,11 +60,11 @@ use Mouse::Meta::Role::Composite;
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');    
+    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');
 
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
+    } '... this succeeds as expected';
 
     is_deeply(
         [ sort $c->get_method_modifier_list('before') ],
@@ -76,11 +76,11 @@ use Mouse::Meta::Role::Composite;
         [ sort $c->get_method_modifier_list('after') ],
         [ 'bar', 'foo' ],
         '... got the right list of methods'
-    );    
+    );
 
     is_deeply(
         [ sort $c->get_method_modifier_list('around') ],
         [ 'bar', 'baz', 'foo' ],
         '... got the right list of methods'
-    );    
+    );
 }

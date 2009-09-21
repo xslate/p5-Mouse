@@ -6,6 +6,8 @@ use Carp qw(confess);
 use B ();
 
 our @EXPORT_OK = qw(
+    load_class
+    is_class_loaded
     get_linear_isa
     apply_all_roles
     get_code_info
@@ -107,7 +109,6 @@ sub is_valid_class_name {
 
     return 0 if ref($class);
     return 0 unless defined($class);
-    return 0 unless length($class);
 
     return 1 if $class =~ /^\w+(?:::\w+)*$/;
 
@@ -122,11 +123,6 @@ sub load_first_existing_class {
     my $found;
     my %exceptions;
     for my $class (@classes) {
-        unless ( is_valid_class_name($class) ) {
-            my $display = defined($class) ? $class : 'undef';
-            confess "Invalid class name ($display)";
-        }
-
         my $e = _try_load_one_class($class);
 
         if ($e) {
@@ -152,7 +148,12 @@ sub load_first_existing_class {
 sub _try_load_one_class {
     my $class = shift;
 
-    return if Mouse::is_class_loaded($class);
+    unless ( is_valid_class_name($class) ) {
+        my $display = defined($class) ? $class : 'undef';
+        confess "Invalid class name ($display)";
+    }
+
+    return if is_class_loaded($class);
 
     my $file = $class . '.pm';
     $file =~ s{::}{/}g;
@@ -163,6 +164,49 @@ sub _try_load_one_class {
         $@;
     };
 }
+
+
+sub load_class {
+    my $class = shift;
+    my $e = _try_load_one_class($class);
+    confess "Could not load class ($class) because : $e" if $e;
+
+    return 1;
+}
+
+my %is_class_loaded_cache;
+sub is_class_loaded {
+    my $class = shift;
+
+    return 0 if ref($class) || !defined($class) || !length($class);
+
+    return 1 if exists $is_class_loaded_cache{$class};
+
+    # walk the symbol table tree to avoid autovififying
+    # \*{${main::}{"Foo::"}} == \*main::Foo::
+
+    my $pack = \*::;
+    foreach my $part (split('::', $class)) {
+        return 0 unless exists ${$$pack}{"${part}::"};
+        $pack = \*{${$$pack}{"${part}::"}};
+    }
+
+    # check for $VERSION or @ISA
+    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{VERSION}
+             && defined *{${$$pack}{VERSION}}{SCALAR};
+    return ++$is_class_loaded_cache{$class} if exists ${$$pack}{ISA}
+             && defined *{${$$pack}{ISA}}{ARRAY};
+
+    # check for any method
+    foreach ( keys %{$$pack} ) {
+        next if substr($_, -2, 2) eq '::';
+        return ++$is_class_loaded_cache{$class} if defined *{${$$pack}{$_}}{CODE};
+    }
+
+    # fail
+    return 0;
+}
+
 
 sub apply_all_roles {
     my $meta = Mouse::Meta::Class->initialize(shift);

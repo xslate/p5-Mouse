@@ -11,23 +11,23 @@ use Mouse::Meta::Role::Composite;
 
 {
     package Role::Foo;
-    use Mouse::Role;    
+    use Mouse::Role;
     has 'foo' => (is => 'rw');
-    
+
     package Role::Bar;
     use Mouse::Role;
     has 'bar' => (is => 'rw');
-    
+
     package Role::FooConflict;
-    use Mouse::Role;    
+    use Mouse::Role;
     has 'foo' => (is => 'rw');
-    
+
     package Role::BarConflict;
     use Mouse::Role;
     has 'bar' => (is => 'rw');
-    
+
     package Role::AnotherFooConflict;
-    use Mouse::Role;    
+    use Mouse::Role;
     with 'Role::FooConflict';
 }
 
@@ -41,12 +41,12 @@ use Mouse::Meta::Role::Composite;
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
 
-    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');    
-    
+    is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');
+
     lives_ok {
         Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
-    } '... this succeeds as expected';    
-    
+    } '... this succeeds as expected';
+
     is_deeply(
         [ sort $c->get_attribute_list ],
         [ 'bar', 'foo' ],
@@ -72,9 +72,9 @@ dies_ok {
         Mouse::Meta::Role::Composite->new(
             roles => [
                 Role::Foo->meta,
-                Role::Bar->meta,            
+                Role::Bar->meta,
                 Role::FooConflict->meta,
-                Role::BarConflict->meta,            
+                Role::BarConflict->meta,
             ]
         )
     );
