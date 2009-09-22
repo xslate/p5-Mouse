@@ -1,10 +1,15 @@
 Revision history for Mouse
 
-0.32
+0.32 Tue Sep 22 16:44:57 2009
+    * Add many tests copied from Moose (gfx)
 
+    * Fix Mouse::Util::find_meta() and Mouse::Util::does_role() (gfx)
+
+    * Implement confliction checks in roles
+
+    * work around create() and create_anon() in Mouse::Meta::Role
 
 0.31 Tue Sep 22 11:08:12 2009
-
     * Add find_meta() and does_role() to Mouse::Util (gfx)
 
     * Fix tests using Class::Method::Modifiers to be skipped correctly (gfx)
@@ -12,7 +17,6 @@ Revision history for Mouse
     * Remove Test::Mouse, which was accidentally included (gfx)
 
 0.30 Mon Sep 21 16:43:05 2009
-
     * Implement RT #46930 (accessor/reader/writer in has()) (gfx)
 
     * Work around anonymous classes as mortal classes (gfx)
