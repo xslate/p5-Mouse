@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
     find_meta
     does_role
     resolve_metaclass_alias
+    english_list
 
     load_class
     is_class_loaded
@@ -259,6 +260,19 @@ sub apply_all_roles {
         Mouse::Meta::Role->combine_apply($meta, @roles);
     }
     return;
+}
+
+# taken from Moose::Util 0.90
+sub english_list {
+    return $_[0] if @_ == 1;
+
+    my @items = sort @_;
+
+    return "$items[0] and $items[1]" if @items == 2;
+
+    my $tail = pop @items;
+
+    return join q{, }, @items, "and $tail";
 }
 
 sub not_supported{
