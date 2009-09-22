@@ -2,9 +2,11 @@ Revision history for Mouse
 
 0.31
 
-    * Remove Test::Mouse, which was accidentally included (gfx)
-    
     * Add find_meta() and does_role() to Mouse::Util (gfx)
+
+    * Fix tests using Class::Method::Modifiers to be skipped correctly (gfx)
+
+    * Remove Test::Mouse, which was accidentally included (gfx)
 
 0.30 Mon Sep 21 16:43:05 2009
 
