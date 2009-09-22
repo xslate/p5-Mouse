@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.31
+0.31 Tue Sep 22 11:08:12 2009
 
     * Add find_meta() and does_role() to Mouse::Util (gfx)
 
