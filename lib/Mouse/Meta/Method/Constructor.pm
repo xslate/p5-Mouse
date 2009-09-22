@@ -26,7 +26,7 @@ sub generate_constructor_method_inline {
 ...
 
     local $@;
-    # warn $code;
+    #warn $code;
     my $res = eval $code;
     die $@ if $@;
     $res;
@@ -61,20 +61,20 @@ sub _generate_processattrs {
                 }
                 $code .= "
                         \$attrs[$index]->verify_type_constraint_error(
-                            '$key', \$value, \$attrs[$index]->type_constraint
+                            q{$key}, \$value, \$attrs[$index]->type_constraint
                         )
                     }
                 ";
             }
 
-            $code .= "\$instance->{'$key'} = \$value;\n";
+            $code .= "\$instance->{q{$key}} = \$value;\n";
 
             if ($attr->is_weak_ref) {
-                $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );\n";
+                $code .= "Scalar::Util::weaken( \$instance->{q{$key}} ) if ref( \$value );\n";
             }
 
             if ($attr->has_trigger) {
-                $code .= "\$attrs[$index]->{trigger}->( \$instance, \$value );\n";
+                $code .= "push \@triggers, [\$attrs[$index]->{trigger}, \$value];\n";
             }
 
             $code .= "\n} else {\n";
@@ -117,15 +117,15 @@ sub _generate_processattrs {
                 if ($attr->has_type_constraint) {
                     $code .= "{
                         unless (\$attrs[$index]->{type_constraint}->check(\$value)) {
-                            \$attrs[$index]->verify_type_constraint_error('$key', \$value, \$attrs[$index]->type_constraint)
+                            \$attrs[$index]->verify_type_constraint_error(q{$key}, \$value, \$attrs[$index]->type_constraint)
                         }
                     }";
                 }
 
-                $code .= "\$instance->{'$key'} = \$value;\n";
+                $code .= "\$instance->{q{$key}} = \$value;\n";
 
                 if ($attr->is_weak_ref) {
-                    $code .= "Scalar::Util::weaken( \$instance->{'$key'} ) if ref( \$value );\n";
+                    $code .= "Scalar::Util::weaken( \$instance->{q{$key}} ) if ref( \$value );\n";
                 }
             }
         }
@@ -138,7 +138,7 @@ sub _generate_processattrs {
         push @res, $code;
     }
 
-    return join "\n", @res;
+    return join "\n", q{my @triggers;}, @res, q{$_->[0]->($instance, $_->[1]) for @triggers;};
 }
 
 sub _generate_BUILDARGS {

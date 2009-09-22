@@ -119,6 +119,8 @@ sub new_object {
 
     my $instance = bless {}, $self->name;
 
+    my @triggers_queue;
+
     foreach my $attribute ($self->get_all_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
@@ -134,7 +136,7 @@ sub new_object {
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args{$from});
+                push @triggers_queue, [ $attribute->trigger, $args{$from} ];
             }
         }
         else {
@@ -165,6 +167,12 @@ sub new_object {
             }
         }
     }
+
+    foreach my $trigger_and_value(@triggers_queue){
+        my($trigger, $value) = @{$trigger_and_value};
+        $trigger->($instance, $value);
+    }
+
     return $instance;
 }
 

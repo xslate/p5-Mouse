@@ -5,6 +5,8 @@ Revision history for Mouse
 
     * Fix Mouse::Util::find_meta() and Mouse::Util::does_role() (gfx)
 
+    * Fix the timing triggers are invoked (gfx)
+
     * Implement confliction checks in roles
 
     * work around create() and create_anon() in Mouse::Meta::Role
