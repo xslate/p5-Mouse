@@ -12,11 +12,15 @@ tests 't/*.t t/*/*.t';
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
-build_requires 'Test::Exception' => 0.21;
-build_requires 'Test::More' => 0.80;
+test_requires 'Test::Exception' => 0.21;
+test_requires 'Test::More'      => 0.80;
 
 if ($Module::Install::AUTHOR) {
-    if (eval "package foo; use Moose; 1;") {
+    local @INC = ('lib', @INC);
+    require 'lib/Mouse.pm'; # for moose_version()
+    my $require_version = Mouse->moose_version;
+
+    if (eval{ require Moose; Moose->VERSION($require_version) }) {
         if (eval 'use Module::Install::AuthorTests; 1') {
             create_moose_compatibility_test();
             recursive_author_tests('xt');
@@ -24,7 +28,7 @@ if ($Module::Install::AUTHOR) {
             print "you don't have a M::I::AuthorTests.\n";
         }
     } else {
-        print "you don't have a moose. skipping moose compatibility test\n";
+        print "you don't have Moose $require_version. skipping moose compatibility test\n";
     }
     system("author/generate-mouse-tiny.pl");
 }
