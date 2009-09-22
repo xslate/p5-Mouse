@@ -44,8 +44,6 @@ sub create_moose_compatibility_test {
     # some test does not pass... currently skip it.
     my %SKIP_TEST = (
         '016-trigger.t'    => "trigger's argument is incompatble :(",
-#        '020-load-class.t' => "&Moose::is_class_loaded doesn't exists",
-        '019-handles.t'    => 'incompatible',
         '029-new.t'        => 'Class->new(undef) incompatible',
         '010-isa-or.t'     => 'Mouse has a [BUG]',
         '044-attribute-metaclass.t' => 'Moose::Meta::Attribute does not have a "create"',

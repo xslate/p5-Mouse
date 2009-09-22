@@ -2,7 +2,6 @@ package Mouse::Meta::Attribute;
 use strict;
 use warnings;
 
-use Scalar::Util ();
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
 
@@ -75,12 +74,6 @@ sub _create_args {
 }
 
 sub accessor_metaclass { 'Mouse::Meta::Method::Accessor' }
-
-sub _inlined_name {
-    my $self = shift;
-    return sprintf '"%s"', quotemeta $self->name;
-}
-
 
 sub create {
     my ($self, $class, $name, %args) = @_;

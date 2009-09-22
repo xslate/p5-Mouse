@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 24;
+use Test::More tests => 26;
+use Test::Exception;
 
 do {
     package Person;
@@ -116,4 +117,14 @@ is_deeply(
     { person_name => 'name', person_age => 'age' },
     "correct handles layout for 'person'",
 );
+
+throws_ok{
+    $object->person(undef);
+    $object->person_name();
+} qr/Cannot delegate person_name to name because the value of person is not defined/;
+
+throws_ok{
+    $object->person([]);
+    $object->person_age();
+} qr/Cannot delegate person_age to age because the value of person is not an object/;
 

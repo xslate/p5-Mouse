@@ -1,6 +1,7 @@
 package Mouse::Meta::Method::Accessor;
 use strict;
 use warnings;
+use Scalar::Util qw(blessed);
 
 sub _install_accessor{
     my (undef, $attribute, $method_name, $class, $type) = @_;
@@ -17,7 +18,7 @@ sub _install_accessor{
     my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
 
     my $self  = '$_[0]';
-    my $key   = $attribute->_inlined_name;
+    my $key   = sprintf q{"%s"}, quotemeta $name;
 
     $type ||= 'accessor';
 
@@ -140,54 +141,54 @@ sub _install_writer{
 sub _install_predicate {
     my (undef, $attribute, $method_name, $class) = @_;
 
-    my $key = $attribute->_inlined_name;
+    my $slot = $attribute->name;
 
-    my $predicate = 'sub { exists($_[0]->{'.$key.'}) }';
-
-    my $code = eval $predicate;
-    $attribute->throw_error($@) if $@;
-    $class->add_method($method_name => $code);
+    $class->add_method($method_name => sub{
+        return exists $_[0]->{$slot};
+    });
     return;
 }
 
 sub _install_clearer {
     my (undef, $attribute, $method_name, $class) = @_;
 
-    my $key = $attribute->_inlined_name;
+    my $slot = $attribute->name;
 
-    my $clearer = 'sub { delete($_[0]->{'.$key.'}) }';
-
-    my $code = eval $clearer;
-    $attribute->throw_error($@) if $@;
-    $class->add_method($method_name => $code);
+    $class->add_method($method_name => sub{
+        delete $_[0]->{$slot};
+    });
     return;
 }
 
 sub _install_handles {
     my (undef, $attribute, $handles, $class) = @_;
 
-    my $reader  = $attribute->name;
+    my $reader  = $attribute->reader || $attribute->accessor
+        or $class->throw_error("You must pass a reader method for '".$attribute->name."'");
+
     my %handles = $attribute->_canonicalize_handles($handles);
 
-    my @methods;
+    foreach my $handle_name (keys %handles) {
+        my $method_to_call = $handles{$handle_name};
 
-    foreach my $local_method (keys %handles) {
-        my $remote_method = $handles{$local_method};
+        my $code = sub {
+            my $instance = shift;
+            my $proxy    = $instance->$reader();
 
-        my $method = 'sub {
-            my $self = shift;
-            $self->'.$reader.'->'.$remote_method.'(@_)
-        }';
-
-        my $code = eval $method;
-        $attribute->throw_error($@) if $@;
-
-        push @methods, ($local_method => $code);
-    }
-
-    # install after all the method compiled successfully
-    while(my($name, $code) = splice @methods, 0, 2){
-        $class->add_method($name, $code);
+            my $error = !defined($proxy)                ? ' is not defined'
+                      : ref($proxy) && !blessed($proxy) ? qq{ is not an object (got '$proxy')}
+                                                        : undef;
+            if ($error) {
+                $instance->meta->throw_error(
+                    "Cannot delegate $handle_name to $method_to_call because "
+                        . "the value of "
+                        . $attribute->name
+                        . $error,
+                 );
+            }
+            $proxy->$method_to_call(@_);
+        };
+        $class->add_method($handle_name => $code);
     }
     return;
 }
