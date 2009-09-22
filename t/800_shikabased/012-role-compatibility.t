@@ -1,38 +1,35 @@
 use strict;
 use warnings;
-use Test::More;
-plan skip_all => "This test requires Moose" unless eval "require Moose; 1;";
-plan tests => 4;
+use Test::More tests => 5;
 
-test('Moose');
-test('Mouse');
-exit;
-
-sub test {
-    my $class = shift;
-    eval <<"...";
 {
-    package ${class}Parent;
-    use ${class};
-    sub parent_method { 'ok' }
+    package ParentRole;
+    use Mouse::Role;
+    sub parent_method { 'parent_method' }
 }
 
 {
-    package ${class}ChildRole;
-    use ${class}::Role;
-    use base qw/${class}Parent/;
-    sub conflict { "role's" }
+    package ChildRole;
+    use Mouse::Role;
+
+    with 'ParentRole';
+
+    sub child_method { "role's" }
 }
 
 {
-    package ${class}Class;
-    use ${class};
-    with '${class}ChildRole';
-    sub conflict { "class's" }
+    package Class;
+    use Mouse;
+    with 'ChildRole';
+
+    sub child_method { "class's" }
 }
-...
-    die $@ if $@;
-    ok !"${class}Class"->can('parent_method');
-    is "${class}Class"->conflict(), "class's";
-}
+
+my $o = Class->new;
+
+ok $o->does('ChildRole'), 'does ChildRole';
+ok $o->does('ParentRole'), 'does ParentRole';
+can_ok $o, qw(parent_method child_method);
+is $o->parent_method, 'parent_method';
+is $o->child_method,  "class's";
 

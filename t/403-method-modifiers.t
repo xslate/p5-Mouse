@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 BEGIN {
-    if (eval "require Class::Method::Modifiers; 1") {
+    if (eval {require Class::Method::Modifiers::Fast } || eval {require Class::Method::Modifiers }) {
         plan tests => 4;
     }
     else {
