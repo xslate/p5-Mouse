@@ -26,7 +26,7 @@ use Scalar::Util qw/blessed weaken/;
             ||= $class->_new(package => $package_name, @args);
     }
 
-    sub Mouse::class_of{
+    sub class_of{
         my($class_or_instance) = @_;
         return undef unless defined $class_or_instance;
         return $METACLASS_CACHE{ blessed($class_or_instance) || $class_or_instance };

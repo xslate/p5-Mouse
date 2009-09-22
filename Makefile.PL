@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use inc::Module::Install;
 use 5.008;
 
@@ -35,12 +37,14 @@ sub create_moose_compatibility_test {
     require File::Spec;
     require File::Basename;
 
-    print "Creating xt/compatibility/* ...\n";
+    print "Creating compatibility tests in xt/compatibility/* ...\n";
+
+    File::Path::rmtree(File::Spec->catfile('xt', 'compatibility'));
 
     # some test does not pass... currently skip it.
     my %SKIP_TEST = (
         '016-trigger.t'    => "trigger's argument is incompatble :(",
-        '020-load-class.t' => "&Moose::is_class_loaded doesn't exists",
+#        '020-load-class.t' => "&Moose::is_class_loaded doesn't exists",
         '019-handles.t'    => 'incompatible',
         '029-new.t'        => 'Class->new(undef) incompatible',
         '010-isa-or.t'     => 'Mouse has a [BUG]',
@@ -65,7 +69,11 @@ sub create_moose_compatibility_test {
 
                 my $basename = File::Basename::basename($_);
                 return if $basename =~ /^\./;
-                return if $SKIP_TEST{$basename};
+
+                if(exists $SKIP_TEST{$basename}){
+                    print "# skip $basename because: $SKIP_TEST{$basename}\n";
+                    return;
+                }
 
                 my $dirname = File::Basename::dirname($_);
 
@@ -82,6 +90,7 @@ sub create_moose_compatibility_test {
                         $s;
                     };
                     $src =~ s/Mouse::is_class_loaded/Class::MOP::is_class_loaded/g;
+                    $src =~ s/Mouse::load_class/Class::MOP::load_class/g;
                     $src =~ s/Mouse/Moose/g;
                     $src;
                 };
@@ -92,6 +101,8 @@ sub create_moose_compatibility_test {
         },
         't',
     );
+    print "Compatibility tests created.\n";
+
     clean_files "@compat_tests";
 }
 

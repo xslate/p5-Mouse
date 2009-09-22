@@ -6,16 +6,40 @@ use Carp qw(confess);
 use B ();
 
 our @EXPORT_OK = qw(
+    find_meta
+    does_role
+    resolve_metaclass_alias
+
     load_class
     is_class_loaded
-    get_linear_isa
+
     apply_all_roles
-    get_code_info
     not_supported
+
+    get_linear_isa
+    get_code_info
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
 );
+
+# Moose::Util compatible utilities
+
+sub find_meta{
+    return Mouse::Module::class_of( $_[0] );
+}
+
+sub does_role{
+    my ($class_or_obj, $role) = @_;
+
+    my $meta = Mouse::Module::class_of($class_or_obj);
+
+    return 0 unless defined $meta;
+    return 1 if $meta->does_role($role);
+    return 0;
+}
+
+
 
 BEGIN {
     my $impl;
@@ -75,31 +99,30 @@ BEGIN {
     }
 }
 
-# taken from Class/MOP.pm
+# taken from Mouse::Util (0.90)
 {
     my %cache;
 
     sub resolve_metaclass_alias {
         my ( $type, $metaclass_name, %options ) = @_;
 
-        my $cache_key = $type;
-        return $cache{$cache_key}{$metaclass_name}
-          if $cache{$cache_key}{$metaclass_name};
+        my $cache_key = $type . q{ } . ( $options{trait} ? '-Trait' : '' );
 
-        my $possible_full_name =
-            'Mouse::Meta::' 
-          . $type
-          . '::Custom::'
-          . $metaclass_name;
+        return $cache{$cache_key}{$metaclass_name} ||= do{
 
-        my $loaded_class =
-          load_first_existing_class( $possible_full_name,
-            $metaclass_name );
+            my $possible_full_name = join '::',
+                'Mouse::Meta', $type, 'Custom', ($options{trait} ? 'Trait' : ()), $metaclass_name
+            ;
 
-        return $cache{$cache_key}{$metaclass_name} =
+            my $loaded_class = load_first_existing_class(
+                $possible_full_name,
+                $metaclass_name
+            );
+
             $loaded_class->can('register_implementation')
-          ? $loaded_class->register_implementation
-          : $loaded_class;
+                ? $loaded_class->register_implementation
+                : $loaded_class;
+        };
     }
 }
 
