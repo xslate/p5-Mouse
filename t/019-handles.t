@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 26;
+use Test::More tests => 28;
 use Test::Exception;
 
 do {
@@ -118,13 +118,30 @@ is_deeply(
     "correct handles layout for 'person'",
 );
 
-throws_ok{
+
+{
+    local $TODO = "failed in 5.10.1, but I don't know why (gfx)" if $] == 5.010_001;
+    throws_ok{
+        $object->person(undef);
+        $object->person_name();
+    } qr/Cannot delegate person_name to name because the value of person is not defined/;
+
+    throws_ok{
+        $object->person([]);
+        $object->person_age();
+    } qr/Cannot delegate person_age to age because the value of person is not an object/;
+}
+
+eval{
     $object->person(undef);
     $object->person_name();
-} qr/Cannot delegate person_name to name because the value of person is not defined/;
+};
+like $@, qr/Cannot delegate person_name to name because the value of person is not defined/;
 
-throws_ok{
+eval{
     $object->person([]);
     $object->person_age();
-} qr/Cannot delegate person_age to age because the value of person is not an object/;
+};
+like $@, qr/Cannot delegate person_age to age because the value of person is not an object/;
+
 

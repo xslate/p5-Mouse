@@ -183,7 +183,7 @@ sub _install_handles {
                     "Cannot delegate $handle_name to $method_to_call because "
                         . "the value of "
                         . $attribute->name
-                        . $error,
+                        . $error
                  );
             }
             $proxy->$method_to_call(@_);
