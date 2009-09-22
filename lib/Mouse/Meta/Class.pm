@@ -312,6 +312,7 @@ sub create {
         || $class->throw_error("You must pass an ARRAY ref of roles")
             if exists $options{roles};
 
+    # instantiate a module
     {
         ( defined $package_name && $package_name )
           || $class->throw_error("You must pass a package name");
@@ -340,6 +341,7 @@ sub create {
 
     $meta->superclasses(@{$options{superclasses}})
         if exists $options{superclasses};
+
     # NOTE:
     # process attributes first, so that they can
     # install accessors, but locally defined methods
