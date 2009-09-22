@@ -39,7 +39,7 @@ ok(My::OtherRole->meta->has_method($_), "we have a $_ method") for qw(foo bar ba
 
 ok(!My::OtherRole->meta->requires_method('foo'), '... and the &foo method is not required');
 ok(My::OtherRole->meta->requires_method('bar'), '... and the &bar method is required');
-
+use Data::Dumper; print Dumper(My::OtherRole->meta->{required_methods});
 {
     package Foo::Role;
     use Mouse::Role;

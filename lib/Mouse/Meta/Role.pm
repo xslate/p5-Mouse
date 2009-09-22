@@ -9,6 +9,7 @@ sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method(
 
 sub _new {
     my $class = shift;
+
     my %args  = @_;
 
     $args{methods}          ||= {};
@@ -16,7 +17,19 @@ sub _new {
     $args{required_methods} ||= [];
     $args{roles}            ||= [];
 
-    bless \%args, $class;
+#    return Mouse::Meta::Class->initialize($class)->new_object(%args)
+#        if $class ne __PACKAGE__;
+
+    return bless \%args, $class;
+}
+
+sub create_anon_role{
+    my $self = shift;
+    return $self->create(undef, @_);
+}
+
+sub is_anon_role{
+    return exists $_[0]->{anon_serial_id};
 }
 
 sub get_roles { $_[0]->{roles} }
@@ -43,14 +56,50 @@ sub add_attribute {
     $self->{attributes}->{$name} = (@_ == 1) ? $_[0] : { @_ };
 }
 
+sub _canonicalize_apply_args{
+    my($self, $applicant, %args) = @_;
+
+    if($applicant->isa('Mouse::Meta::Class')){
+        $args{_to} = 'class';
+    }
+    elsif($applicant->isa('Mouse::Meta::Role')){
+        $args{_to} = 'role';
+    }
+    else{
+        $args{_to} = 'instance';
+
+        not_supported 'Application::ToInstance';
+    }
+
+    if($args{alias} && !exists $args{-alias}){
+        $args{-alias} = $args{alias};
+    }
+    if($args{excludes} && !exists $args{-excludes}){
+        $args{-excludes} = $args{excludes};
+    }
+
+    if(my $excludes = $args{-excludes}){
+        $args{-excludes} = {}; # replace with a hash ref
+        if(ref $excludes){
+            %{$args{-excludes}} = (map{ $_ => undef } @{$excludes});
+        }
+        else{
+            $args{-excludes}{$excludes} = undef;
+        }
+    }
+
+    return \%args;
+}
+
 sub _check_required_methods{
     my($role, $class, $args, @other_roles) = @_;
 
-    if($class->isa('Mouse::Meta::Class')){
+    if($args->{_to} eq 'class'){
         my $class_name = $class->name;
+        my $role_name  = $role->name;
+        my @missing;
         foreach my $method_name(@{$role->{required_methods}}){
-            unless($class_name->can($method_name)){
-                my $role_name       = $role->name;
+            if(!$class_name->can($method_name)){
                 my $has_method      = 0;
 
                 foreach my $another_role_spec(@other_roles){
@@ -60,10 +109,23 @@ sub _check_required_methods{
                         last;
                     }
                 }
-                
-                $role->throw_error("'$role_name' requires the method '$method_name' to be implemented by '$class_name'")
-                    unless $has_method;
+
+                push @missing, $method_name if !$has_method;
             }
+        }
+        if(@missing){
+            $class->throw_error("'$role_name' requires the "
+                . (@missing == 1 ? 'method' : 'methods')
+                . " "
+                . english_list(map{ sprintf q{'%s'}, $_ } @missing)
+                . " to be implemented by '$class_name'");
+        }
+    }
+    elsif($args->{_to} eq 'role'){
+        # apply role($role) to role($class)
+        foreach my $method_name($role->get_required_method_list){
+            next if $class->has_method($method_name); # already has it
+            $class->add_required_methods($method_name);
         }
     }
 
@@ -76,26 +138,15 @@ sub _apply_methods{
     my $role_name  = $role->name;
     my $class_name = $class->name;
 
-    my $alias    = (exists $args->{alias}    && !exists $args->{-alias})    ? $args->{alias}    : $args->{-alias};
-    my $excludes = (exists $args->{excludes} && !exists $args->{-excludes}) ? $args->{excludes} : $args->{-excludes};
-
-    my %exclude_map;
-
-    if(defined $excludes){
-        if(ref $excludes){
-            %exclude_map = map{ $_ => undef } @{$excludes};
-        }
-        else{
-            $exclude_map{$excludes} = undef;
-        }
-    }
+    my $alias    = $args->{-alias};
+    my $excludes = $args->{-excludes};
 
     foreach my $method_name($role->get_method_list){
         next if $method_name eq 'meta';
 
         my $code = $role_name->can($method_name);
 
-        if(!exists $exclude_map{$method_name}){
+        if(!exists $excludes->{$method_name}){
             if(!$class->has_method($method_name)){
                 $class->add_method($method_name => $code);
             }
@@ -104,8 +155,9 @@ sub _apply_methods{
         if($alias && $alias->{$method_name}){
             my $dstname = $alias->{$method_name};
 
-            my $slot = do{ no strict 'refs'; \*{$class_name . '::' . $dstname} };
-            if(defined(*{$slot}{CODE}) && *{$slot}{CODE} != $code){
+            my $dstcode = do{ no strict 'refs'; *{$class_name . '::' . $dstname}{CODE} };
+
+            if(defined($dstcode) && $dstcode != $code){
                 $class->throw_error("Cannot create a method alias if a local method of the same name exists");
             }
             else{
@@ -120,7 +172,7 @@ sub _apply_methods{
 sub _apply_attributes{
     my($role, $class, $args) = @_;
 
-    if ($class->isa('Mouse::Meta::Class')) {
+    if ($args->{_to} eq 'class') {
         # apply role to class
         for my $attr_name ($role->get_attribute_list) {
             next if $class->has_attribute($attr_name);
@@ -137,7 +189,8 @@ sub _apply_attributes{
 
             $attr_metaclass->create($class, $attr_name => %$spec);
         }
-    } else {
+    }
+    elsif($args->{_to} eq 'role'){
         # apply role to role
         for my $attr_name ($role->get_attribute_list) {
             next if $class->has_attribute($attr_name);
@@ -153,7 +206,7 @@ sub _apply_attributes{
 sub _apply_modifiers{
     my($role, $class, $args) = @_;
 
-    for my $modifier_type (qw/before after around override/) {
+    for my $modifier_type (qw/override before around after/) {
         my $add_modifier = "add_${modifier_type}_method_modifier";
         my $modifiers    = $role->{"${modifier_type}_method_modifiers"};
 
@@ -169,7 +222,7 @@ sub _apply_modifiers{
 sub _append_roles{
     my($role, $class, $args) = @_;
 
-    my $roles = $class->isa('Mouse::Meta::Class') ? $class->roles : $class->get_roles;
+    my $roles = ($args->{_to} eq 'class') ? $class->roles : $class->get_roles;
 
     foreach my $r($role, @{$role->get_roles}){
         if(!$class->does_role($r->name)){
@@ -181,22 +234,25 @@ sub _append_roles{
 
 # Moose uses Application::ToInstance, Application::ToClass, Application::ToRole
 sub apply {
-    my($self, $class, %args) = @_;
+    my $self      = shift;
+    my $applicant = shift;
 
-    if ($class->isa('Mouse::Object')) {
-        not_supported 'Application::ToInstance';
-    }
+    my $args = $self->_canonicalize_apply_args($applicant, @_);
 
-    $self->_check_required_methods($class, \%args);
-    $self->_apply_methods($class, \%args);
-    $self->_apply_attributes($class, \%args);
-    $self->_apply_modifiers($class, \%args);
-    $self->_append_roles($class, \%args);
+    $self->_check_required_methods($applicant, $args);
+    $self->_apply_methods($applicant, $args);
+    $self->_apply_attributes($applicant, $args);
+    $self->_apply_modifiers($applicant, $args);
+    $self->_append_roles($applicant, $args);
     return;
 }
 
 sub combine_apply {
     my(undef, $class, @roles) = @_;
+
+    if($class->isa('Mouse::Object')){
+        not_supported 'Application::ToInstance';
+    }
 
     # check conflicting
     my %method_provided;
@@ -281,6 +337,8 @@ sub combine_apply {
         my($role_name, $args) = @{$role_spec};
 
         my $role = $role_name->meta;
+
+        $args = $role->_canonicalize_apply_args($class, %{$args});
 
         $role->_check_required_methods($class, $args, @roles);
         $role->_apply_methods($class, $args);

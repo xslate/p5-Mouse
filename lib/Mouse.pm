@@ -15,6 +15,7 @@ use Mouse::Util qw(load_class is_class_loaded);
 use Mouse::Meta::Attribute;
 use Mouse::Meta::Module;
 use Mouse::Meta::Class;
+use Mouse::Meta::Role;
 use Mouse::Object;
 use Mouse::Util::TypeConstraints;
 

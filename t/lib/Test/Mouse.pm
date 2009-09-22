@@ -2,6 +2,7 @@ package Test::Mouse;
 
 use strict;
 use warnings;
+use Carp qw(croak);
 use Mouse::Util qw(find_meta does_role);
 
 use base qw(Test::Builder::Module);
@@ -24,6 +25,9 @@ sub meta_ok ($;$) {
 sub does_ok ($$;$) {
     my ($class_or_obj, $does, $message) = @_;
 
+    if(!defined $does){
+        croak "You must pass a role name";
+    }
     $message ||= "The object does $does";
 
     if (does_ok($class_or_obj)) {

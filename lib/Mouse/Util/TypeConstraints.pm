@@ -103,8 +103,20 @@ sub type {
 }
 
 sub subtype {
-    my $pkg = caller(0);
-    my($name, %conf) = @_;
+    my $pkg = caller;
+
+    my $name;
+    my %conf;
+
+    if(@_ % 2){ # odd number of arguments
+        $name = shift;
+        %conf = @_;
+    }
+    else{
+        %conf = @_;
+        $name = $conf{name} || '__ANON__';
+    }
+
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     };

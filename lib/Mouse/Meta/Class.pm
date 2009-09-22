@@ -23,7 +23,19 @@ sub _new {
         \@{ $args{package} . '::ISA' };
     };
 
-    bless \%args, $class;
+    #return Mouse::Meta::Class->initialize($class)->new_object(%args)
+    #    if $class ne __PACKAGE__;
+
+    return bless \%args, $class;
+}
+
+sub create_anon_class{
+    my $self = shift;
+    return $self->create(undef, @_);
+}
+
+sub is_anon_class{
+    return exists $_[0]->{anon_serial_id};
 }
 
 sub roles { $_[0]->{roles} }
@@ -53,11 +65,12 @@ sub add_attribute {
     if (@_ == 1 && blessed($_[0])) {
         my $attr = shift @_;
         $self->{'attributes'}{$attr->name} = $attr;
-    } else {
+    }
+    else {
         my $names = shift @_;
         $names = [$names] if !ref($names);
         my $metaclass = 'Mouse::Meta::Attribute';
-        my %options = @_;
+        my %options   = (@_ == 1 ? %{$_[0]} : @_);
 
         if ( my $metaclass_name = delete $options{metaclass} ) {
             my $new_class = Mouse::Util::resolve_metaclass_alias(
@@ -71,10 +84,10 @@ sub add_attribute {
 
         for my $name (@$names) {
             if ($name =~ s/^\+//) {
-                $metaclass->clone_parent($self, $name, @_);
+                $metaclass->clone_parent($self, $name, %options);
             }
             else {
-                $metaclass->create($self, $name, @_);
+                $metaclass->create($self, $name, %options);
             }
         }
     }
@@ -102,7 +115,7 @@ sub linearized_isa { @{ get_linear_isa($_[0]->name) } }
 
 sub new_object {
     my $self = shift;
-    my $args = (@_ == 1) ? $_[0] : { @_ };
+    my %args = (@_ == 1 ? %{$_[0]} : @_);
 
     my $instance = bless {}, $self->name;
 
@@ -110,18 +123,18 @@ sub new_object {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
 
-        if (defined($from) && exists($args->{$from})) {
-            $args->{$from} = $attribute->coerce_constraint($args->{$from})
+        if (defined($from) && exists($args{$from})) {
+            $args{$from} = $attribute->coerce_constraint($args{$from})
                 if $attribute->should_coerce;
-            $attribute->verify_against_type_constraint($args->{$from});
+            $attribute->verify_against_type_constraint($args{$from});
 
-            $instance->{$key} = $args->{$from};
+            $instance->{$key} = $args{$from};
 
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                $attribute->trigger->($instance, $args->{$from});
+                $attribute->trigger->($instance, $args{$from});
             }
         }
         else {
@@ -291,133 +304,6 @@ sub does_role {
     }
 
     return 0;
-}
-
-sub create {
-    my ($class, $package_name, %options) = @_;
-
-    (ref $options{superclasses} eq 'ARRAY')
-        || $class->throw_error("You must pass an ARRAY ref of superclasses")
-            if exists $options{superclasses};
-
-    (ref $options{attributes} eq 'ARRAY')
-        || $class->throw_error("You must pass an ARRAY ref of attributes")
-            if exists $options{attributes};
-
-    (ref $options{methods} eq 'HASH')
-        || $class->throw_error("You must pass a HASH ref of methods")
-            if exists $options{methods};
-
-    (ref $options{roles} eq 'ARRAY')
-        || $class->throw_error("You must pass an ARRAY ref of roles")
-            if exists $options{roles};
-
-    # instantiate a module
-    {
-        ( defined $package_name && $package_name )
-          || $class->throw_error("You must pass a package name");
-
-        no strict 'refs';
-        ${ $package_name . '::VERSION'   } = $options{version}   if exists $options{version};
-        ${ $package_name . '::AUTHORITY' } = $options{authority} if exists $options{authority};
-    }
-
-    my %initialize_options = %options;
-    delete @initialize_options{qw(
-        package
-        superclasses
-        attributes
-        methods
-        roles
-        version
-        authority
-    )};
-    my $meta = $class->initialize( $package_name => %initialize_options );
-
-    # FIXME totally lame
-    $meta->add_method('meta' => sub {
-        Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
-    });
-
-    $meta->superclasses(@{$options{superclasses}})
-        if exists $options{superclasses};
-
-    # NOTE:
-    # process attributes first, so that they can
-    # install accessors, but locally defined methods
-    # can then overwrite them. It is maybe a little odd, but
-    # I think this should be the order of things.
-    if (exists $options{attributes}) {
-        foreach my $attr (@{$options{attributes}}) {
-            Mouse::Meta::Attribute->create($meta, $attr->{name}, %$attr);
-        }
-    }
-    if (exists $options{methods}) {
-        foreach my $method_name (keys %{$options{methods}}) {
-            $meta->add_method($method_name, $options{methods}->{$method_name});
-        }
-    }
-    if (exists $options{roles}){
-        Mouse::Util::apply_all_roles($package_name, @{$options{roles}});
-    }
-    return $meta;
-}
-
-{
-    my $ANON_CLASS_SERIAL = 0;
-    my $ANON_CLASS_PREFIX = 'Mouse::Meta::Class::__ANON__::SERIAL::';
-
-    my %IMMORTAL_ANON_CLASSES;
-    sub create_anon_class {
-        my ( $class, %options ) = @_;
-
-        my $cache = $options{cache};
-        my $cache_key;
-
-        if($cache){ # anonymous but not mortal
-                # something like Super::Class|Super::Class::2=Role|Role::1
-                $cache_key = join '=' => (
-                    join('|', @{$options{superclasses} || []}),
-                    join('|', sort @{$options{roles}   || []}),
-                );
-                return $IMMORTAL_ANON_CLASSES{$cache_key} if exists $IMMORTAL_ANON_CLASSES{$cache_key};
-        }
-        my $package_name = $ANON_CLASS_PREFIX . ++$ANON_CLASS_SERIAL;
-        my $meta = $class->create( $package_name, anon_class_id => $ANON_CLASS_SERIAL, %options );
-
-        if($cache){
-            $IMMORTAL_ANON_CLASSES{$cache_key} = $meta;
-        }
-        else{
-            Mouse::Meta::Module::weaken_metaclass($package_name);
-        }
-        return $meta;
-    }
-
-    sub is_anon_class{
-        return exists $_[0]->{anon_class_id};
-    }
-
-
-    sub DESTROY{
-        my($self) = @_;
-
-        my $serial_id = $self->{anon_class_id};
-
-        return if !$serial_id;
-
-        my $stash = $self->namespace;
-
-        @{$self->{sperclasses}} = ();
-        %{$stash} = ();
-        Mouse::Meta::Module::remove_metaclass_by_name($self->name);
-
-        no strict 'refs';
-        delete ${$ANON_CLASS_PREFIX}{ $serial_id . '::' };
-
-        return;
-    }
-
 }
 
 1;

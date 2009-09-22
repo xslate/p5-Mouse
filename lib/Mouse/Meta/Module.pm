@@ -5,7 +5,6 @@ use warnings;
 use Mouse::Util qw/get_code_info not_supported load_class/;
 use Scalar::Util qw/blessed weaken/;
 
-
 {
     my %METACLASS_CACHE;
 
@@ -135,6 +134,146 @@ sub get_method_list {
     my($self) = @_;
 
     return grep { $self->has_method($_) } keys %{ $self->namespace };
+}
+
+{
+    my $ANON_SERIAL = 0;
+    my $ANON_PREFIX = 'Mouse::Meta::Module::__ANON__::';
+
+    my %IMMORTALS;
+
+    sub create {
+        my ($class, $package_name, %options) = @_;
+
+        $class->throw_error('You must pass a package name') if @_ == 1;
+
+
+        if(exists $options{superclasses}){
+            if($class->isa('Mouse::Meta::Class')){
+                (ref $options{superclasses} eq 'ARRAY')
+                    || $class->throw_error("You must pass an ARRAY ref of superclasses");
+            }
+            else{ # role
+                delete $options{superclasses};
+            }
+        }
+
+        my $attributes;
+        if(exists $options{attributes}){
+            $attributes = delete $options{attributes};
+           (ref $attributes eq 'ARRAY' || ref $attributes eq 'HASH')
+               || $class->throw_error("You must pass an ARRAY ref of attributes")
+           }
+
+        (ref $options{methods} eq 'HASH')
+            || $class->throw_error("You must pass a HASH ref of methods")
+                if exists $options{methods};
+
+        (ref $options{roles} eq 'ARRAY')
+            || $class->throw_error("You must pass an ARRAY ref of roles")
+                if exists $options{roles};
+
+
+        my @extra_options;
+        my $mortal;
+        my $cache_key;
+
+        if(!defined $package_name){ # anonymous
+            $mortal = !$options{cache};
+
+            # anonymous but immortal
+            if(!$mortal){
+                    # something like Super::Class|Super::Class::2=Role|Role::1
+                    $cache_key = join '=' => (
+                        join('|',      @{$options{superclasses} || []}),
+                        join('|', sort @{$options{roles}        || []}),
+                    );
+                    return $IMMORTALS{$cache_key} if exists $IMMORTALS{$cache_key};
+            }
+            $package_name = $ANON_PREFIX . ++$ANON_SERIAL;
+
+            push @extra_options, (anon_serial_id => $ANON_SERIAL);
+        }
+
+        # instantiate a module
+        {
+            no strict 'refs';
+            ${ $package_name . '::VERSION'   } = delete $options{version}   if exists $options{version};
+            ${ $package_name . '::AUTHORITY' } = delete $options{authority} if exists $options{authority};
+        }
+
+        my %initialize_options = %options;
+        delete @initialize_options{qw(
+            package
+            superclasses
+            attributes
+            methods
+            roles
+        )};
+        my $meta = $class->initialize( $package_name, %initialize_options, @extra_options);
+
+        Mouse::Meta::Module::weaken_metaclass($package_name)
+            if $mortal;
+
+        # FIXME totally lame
+        $meta->add_method('meta' => sub {
+            $class->initialize(ref($_[0]) || $_[0]);
+        });
+
+        $meta->superclasses(@{$options{superclasses}})
+            if exists $options{superclasses};
+
+        # NOTE:
+        # process attributes first, so that they can
+        # install accessors, but locally defined methods
+        # can then overwrite them. It is maybe a little odd, but
+        # I think this should be the order of things.
+        if (defined $attributes) {
+            if(ref($attributes) eq 'ARRAY'){
+                foreach my $attr (@{$attributes}) {
+                    $meta->add_attribute($attr->{name} => $attr);
+                }
+            }
+            else{
+                while(my($name, $attr) = each %{$attributes}){
+                    $meta->add_attribute($name => $attr);
+                }
+            }
+        }
+        if (exists $options{methods}) {
+            foreach my $method_name (keys %{$options{methods}}) {
+                $meta->add_method($method_name, $options{methods}->{$method_name});
+            }
+        }
+        if (exists $options{roles}){
+            Mouse::Util::apply_all_roles($package_name, @{$options{roles}});
+        }
+
+        if(!$mortal && exists $meta->{anon_serial_id}){
+            $IMMORTALS{$cache_key} = $meta;
+        }
+
+        return $meta;
+    }
+
+    sub DESTROY{
+        my($self) = @_;
+
+        my $serial_id = $self->{anon_serial_id};
+
+        return if !$serial_id;
+
+        my $stash = $self->namespace;
+
+        @{$self->{superclasses}} = () if exists $self->{superclasses};
+        %{$stash} = ();
+        Mouse::Meta::Module::remove_metaclass_by_name($self->name);
+
+        no strict 'refs';
+        delete ${$ANON_PREFIX}{ $serial_id . '::' };
+
+        return;
+    }
 }
 
 sub throw_error{

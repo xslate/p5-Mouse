@@ -27,13 +27,13 @@ our %EXPORT_TAGS = (
 # Moose::Util compatible utilities
 
 sub find_meta{
-    return Mouse::Module::class_of( $_[0] );
+    return Mouse::Meta::Module::class_of( $_[0] );
 }
 
 sub does_role{
     my ($class_or_obj, $role) = @_;
 
-    my $meta = Mouse::Module::class_of($class_or_obj);
+    my $meta = Mouse::Meta::Module::class_of($class_or_obj);
 
     return 0 unless defined $meta;
     return 1 if $meta->does_role($role);

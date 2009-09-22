@@ -19,6 +19,7 @@ do {
 };
 
 my $role = My::Meta::Role->create_anon_role;
+#use Data::Dumper; $Data::Dumper::Deparse = 1; print Dumper $role->can('test_serial');
 is($role->test_serial, 1, "default value for the serial attribute");
 
 my $nine_role = My::Meta::Role->create_anon_role(test_serial => 9);
