@@ -2,7 +2,7 @@ package Mouse::Meta::Role;
 use strict;
 use warnings;
 
-use Mouse::Util qw(not_supported);
+use Mouse::Util qw(not_supported english_list);
 use base qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
@@ -198,6 +198,85 @@ sub apply {
 sub combine_apply {
     my(undef, $class, @roles) = @_;
 
+    # check conflicting
+    my %method_provided;
+    my @method_conflicts;
+    my %attr_provided;
+    my %override_provided;
+
+    foreach my $role_spec (@roles) {
+        my $role      = $role_spec->[0]->meta;
+        my $role_name = $role->name;
+
+        # methods
+        foreach my $method_name($role->get_method_list){
+            next if $class->has_method($method_name); # manually resolved
+
+            my $code = do{ no strict 'refs'; \&{ $role_name . '::' . $method_name } };
+
+            my $c = $method_provided{$method_name};
+
+            if($c && $c->[0] != $code){
+                push @{$c}, $role;
+                push @method_conflicts, $c;
+            }
+            else{
+                $method_provided{$method_name} = [$code, $method_name, $role];
+            }
+        }
+
+        # attributes
+        foreach my $attr_name($role->get_attribute_list){
+            my $attr = $role->get_attribute($attr_name);
+            my $c    = $attr_provided{$attr_name};
+            if($c && $c != $attr){
+                $class->throw_error("We have encountered an attribute conflict with '$attr_name' "
+                                   . "during composition. This is fatal error and cannot be disambiguated.")
+            }
+            else{
+                $attr_provided{$attr_name} = $attr;
+            }
+        }
+
+        # override modifiers
+        foreach my $method_name($role->get_method_modifier_list('override')){
+            my $override = $role->get_override_method_modifier($method_name);
+            my $c        = $override_provided{$method_name};
+            if($c && $c != $override){
+                $class->throw_error( "We have encountered an 'override' method conflict with '$method_name' during "
+                                   . "composition (Two 'override' methods of the same name encountered). "
+                                   . "This is fatal error.")
+            }
+            else{
+                $override_provided{$method_name} = $override;
+            }
+        }
+    }
+    if(@method_conflicts){
+        my $error;
+
+        if(@method_conflicts == 1){
+            my($code, $method_name, @roles) = @{$method_conflicts[0]};
+            $class->throw_error(
+                sprintf q{Due to a method name conflict in roles %s, the method '%s' must be implemented or excluded by '%s'},
+                    english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $class->name
+            );
+        }
+        else{
+            @method_conflicts = sort { $a->[0] cmp $b->[0] } @method_conflicts; # to avoid hash-ordering bugs
+            my $methods = english_list(map{ sprintf q{'%s'}, $_->[1] } @method_conflicts);
+            my $roles   = english_list(
+                map{ sprintf q{'%s'}, $_->name }
+                map{ my($code, $method_name, @roles) = @{$_}; @roles } @method_conflicts
+            );
+
+            $class->throw_error(
+                sprintf q{Due to method name conflicts in roles %s, the methods %s must be implemented or excluded by '%s'},
+                    $roles, $methods, $class->name
+            );
+        }
+    }
+
     foreach my $role_spec (@roles) {
         my($role_name, $args) = @{$role_spec};
 
@@ -240,9 +319,13 @@ for my $modifier_type (qw/before after around/) {
 sub add_override_method_modifier{
     my($self, $method_name, $method) = @_;
 
-    (!$self->has_method($method_name))
-        || $self->throw_error("Cannot add an override of method '$method_name' " .
-                   "because there is a local version of '$method_name'");
+    if($self->has_method($method_name)){
+        # This error happens in the override keyword or during role composition,
+        # so I added a message, "A local method of ...", only for compatibility (gfx)
+        $self->throw_error("Cannot add an override of method '$method_name' "
+                   . "because there is a local version of '$method_name'"
+                   . "(A local method of the same name as been found)");
+    }
 
     $self->{override_method_modifiers}->{$method_name} = $method;
 }
