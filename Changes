@@ -3,6 +3,8 @@ Revision history for Mouse
 0.33
     * Fix RT #49902: 0.32 fails tests reported by GRUBER (gfx)
 
+    * Add some tests
+
 0.32 Tue Sep 22 16:44:57 2009
     * Add many tests copied from Moose (gfx)
 
