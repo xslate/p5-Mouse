@@ -26,7 +26,7 @@ sub _handlers {
 
     my $caller = caller(1);
 
-    $pkgs{$caller} ||== $class->_choose_backend;
+    $pkgs{$caller} ||= $class->_choose_backend;
 }
 
 sub import {
