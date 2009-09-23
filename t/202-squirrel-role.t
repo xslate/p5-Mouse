@@ -6,6 +6,10 @@ use warnings;
 use Test::More;
 use Scalar::Util 'blessed';
 
+BEGIN {
+    $SIG{__WARN__} = sub { warn $_[0] if $_[0] !~ /Squirrel is deprecated/ };
+}
+
 do {
     package Foo::Role;
     use Squirrel::Role;
