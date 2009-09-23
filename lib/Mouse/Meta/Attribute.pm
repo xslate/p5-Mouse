@@ -2,6 +2,8 @@ package Mouse::Meta::Attribute;
 use strict;
 use warnings;
 
+use Mouse::Util;
+
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
 

@@ -1,10 +1,13 @@
 package Mouse::Meta::TypeConstraint;
 use strict;
 use warnings;
-use Carp ();
 
 use overload '""'     => sub { shift->{name} },   # stringify to tc name
              fallback => 1;
+
+use Carp ();
+
+use Mouse::Util ();
 
 sub new {
     my $class = shift;

@@ -2,6 +2,8 @@ package Mouse::Object;
 use strict;
 use warnings;
 
+use Mouse::Util;
+
 sub new {
     my $class = shift;
 

@@ -2,6 +2,7 @@ package Mouse::Util;
 use strict;
 use warnings;
 use base qw/Exporter/;
+
 use Carp qw(confess);
 use B ();
 

@@ -2,10 +2,13 @@ package Mouse::Meta::Class;
 use strict;
 use warnings;
 
+use Scalar::Util qw/blessed weaken/;
+
+use Mouse::Util qw/get_linear_isa not_supported/;
+
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
-use Scalar::Util qw/blessed weaken/;
-use Mouse::Util qw/get_linear_isa not_supported/;
+use Mouse::Meta::Module;
 
 use base qw(Mouse::Meta::Module);
 

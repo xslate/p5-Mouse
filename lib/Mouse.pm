@@ -10,14 +10,15 @@ sub moose_version(){ 0.90 } # which Mouse is a subset of
 
 use Carp 'confess';
 use Scalar::Util 'blessed';
+
 use Mouse::Util qw(load_class is_class_loaded);
 
-use Mouse::Meta::Attribute;
 use Mouse::Meta::Module;
 use Mouse::Meta::Class;
 use Mouse::Meta::Role;
+use Mouse::Meta::Attribute;
 use Mouse::Object;
-use Mouse::Util::TypeConstraints;
+use Mouse::Util::TypeConstraints ();
 
 our @EXPORT = qw(extends has before after around override super blessed confess with);
 
@@ -120,8 +121,8 @@ sub init_meta {
             unless $metaclass->isa('Mouse::Meta::Class');
     
     # make a subtype for each Mouse class
-    class_type($class)
-        unless find_type_constraint($class);
+    Mouse::Util::TypeConstraints::class_type($class)
+        unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
     my $meta = $metaclass->initialize($class);
     $meta->superclasses($base_class)

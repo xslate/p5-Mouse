@@ -5,6 +5,8 @@ use base 'Exporter';
 
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
+
+use Mouse::Util;
 use Mouse::Meta::TypeConstraint;
 
 our @EXPORT = qw(
