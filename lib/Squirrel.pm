@@ -5,15 +5,17 @@ use warnings;
 sub _choose_backend {
     if ( $INC{"Moose.pm"} ) {
         return {
+            backend  => 'Moose',
             import   => \&Moose::import,
             unimport => \&Moose::unimport,
-        }
+        };
     } else {
         require Mouse;
         return {
+            backend  => 'Mouse',
             import   => \&Mouse::import,
             unimport => \&Mouse::unimport,
-        }
+        };
     }
 }
 
@@ -24,18 +26,22 @@ sub _handlers {
 
     my $caller = caller(1);
 
-    $pkgs{$caller} = $class->_choose_backend
-        unless $pkgs{$caller};
+    $pkgs{$caller} ||== $class->_choose_backend;
 }
 
 sub import {
     require Carp;
     Carp::carp("Squirrel is deprecated. Please use Any::Moose instead. It fixes a number of design problems that Squirrel has.");
-    goto $_[0]->_handlers->{import};
+
+    my $handlers = shift->_handlers;
+    unshift @_, $handlers->{backend};
+    goto &{$handlers->{import}};
 }
 
 sub unimport {
-    goto $_[0]->_handlers->{unimport};
+    my $handlers = shift->_handlers;
+    unshift @_, $handlers->{backend};
+    goto &{$handlers->{unimport}};
 }
 
 1;
@@ -58,7 +64,7 @@ Squirrel - Use L<Mouse>, unless L<Moose> is already loaded.
 
 =head1 DEPRECATION
 
-L<Squirrel> is being deprecated. L<Any::Moose> provides the same functionality,
+L<Squirrel> is deprecated. L<Any::Moose> provides the same functionality,
 but better. :)
 
 =head1 DESCRIPTION

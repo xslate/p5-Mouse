@@ -98,40 +98,29 @@ sub override {
 }
 
 sub init_meta {
-    # This used to be called as a function. This hack preserves
-    # backwards compatibility.
-    if ( $_[0] ne __PACKAGE__ ) {
-        return __PACKAGE__->init_meta(
-            for_class  => $_[0],
-            base_class => $_[1],
-            metaclass  => $_[2],
-        );
-    }
-
     shift;
     my %args = @_;
 
     my $class = $args{for_class}
-      or Carp::croak(
-        "Cannot call init_meta without specifying a for_class");
+                    or confess("Cannot call init_meta without specifying a for_class");
     my $base_class = $args{base_class} || 'Mouse::Object';
     my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Class';
 
-    Carp::croak("The Metaclass $metaclass must be a subclass of Mouse::Meta::Class.")
+    confess("The Metaclass $metaclass must be a subclass of Mouse::Meta::Class.")
             unless $metaclass->isa('Mouse::Meta::Class');
-    
+
     # make a subtype for each Mouse class
     Mouse::Util::TypeConstraints::class_type($class)
         unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
     my $meta = $metaclass->initialize($class);
-    $meta->superclasses($base_class)
-        unless $meta->superclasses;
 
     $meta->add_method(meta => sub{
-        return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
+        return $metaclass->initialize(ref($_[0]) || $_[0]);
     });
 
+    $meta->superclasses($base_class)
+        unless $meta->superclasses;
 
     return $meta;
 }
@@ -159,7 +148,7 @@ sub import {
         return;
     }
 
-    Mouse->init_meta(
+    $class->init_meta(
         for_class  => $caller,
     );
 
