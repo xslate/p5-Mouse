@@ -20,7 +20,15 @@ use Mouse::Meta::Attribute;
 use Mouse::Object;
 use Mouse::Util::TypeConstraints ();
 
-our @EXPORT = qw(extends has before after around override super blessed confess with);
+our @EXPORT = qw(
+    extends with
+    has
+    before after around
+    override super
+    augment  inner
+
+    blessed confess
+);
 
 our %is_removable = map{ $_ => undef } @EXPORT;
 delete $is_removable{blessed};
@@ -96,6 +104,9 @@ sub override {
         $code->(@_);
     });
 }
+
+sub inner  { not_supported }
+sub augment{ not_supported }
 
 sub init_meta {
     shift;

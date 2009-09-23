@@ -10,6 +10,19 @@ use Mouse::Util qw(load_class not_supported);
 use Mouse ();
 
 our @EXPORT = qw(before after around super override inner augment has extends with requires excludes confess blessed);
+
+our @EXPORT = qw(
+    extends with
+    has
+    before after around
+    override super
+    augment  inner
+
+    requires excludes
+
+    blessed confess
+);
+
 our %is_removable = map{ $_ => undef } @EXPORT;
 delete $is_removable{confess};
 delete $is_removable{blessed};
