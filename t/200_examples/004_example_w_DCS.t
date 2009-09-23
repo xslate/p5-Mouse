@@ -30,11 +30,12 @@ use Test::Exception;
 
     # define your own type ...
     type( 'HashOfArrayOfObjects',
+        {
         where => IsHashRef(
             -keys   => HasLength,
             -values => IsArrayRef(IsObject)
         )
-    );
+    } );
 
     has 'bar' => (
         is  => 'rw',
@@ -44,7 +45,7 @@ use Test::Exception;
     # inline the constraints as anon-subtypes
     has 'baz' => (
         is  => 'rw',
-        isa => subtype( as => 'ArrayRef', where => IsArrayRef(IsInt) ),
+        isa => subtype( { as => 'ArrayRef', where => IsArrayRef(IsInt) } ),
     );
 
     package Bar;
@@ -82,7 +83,6 @@ dies_ok {
     $foo->bar({ foo => [ 1, 2, 3 ] });
 } '... validation failed correctly';
 
-
 dies_ok {
     $foo->baz([ "foo" ]);
 } '... validation failed correctly';
@@ -90,3 +90,4 @@ dies_ok {
 dies_ok {
     $foo->baz({});
 } '... validation failed correctly';
+

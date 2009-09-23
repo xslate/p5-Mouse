@@ -29,7 +29,7 @@ sub message (&) {
     return(message => $_[0])
 }
 
-sub from { @_ }
+sub from    { @_ }
 sub via (&) { $_[0] }
 
 BEGIN {
@@ -37,16 +37,14 @@ BEGIN {
     %TYPE = (
         Any        => sub { 1 },
         Item       => sub { 1 },
-        Bool       => sub {
-            !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0'
-        },
+
+        Bool       => sub { $_[0] ? $_[0] eq '1' : 1 },
         Undef      => sub { !defined($_[0]) },
         Defined    => sub { defined($_[0]) },
         Value      => sub { defined($_[0]) && !ref($_[0]) },
         Num        => sub { !ref($_[0]) && looks_like_number($_[0]) },
         Int        => sub { defined($_[0]) && !ref($_[0]) && $_[0] =~ /^-?[0-9]+$/ },
         Str        => sub { defined($_[0]) && !ref($_[0]) },
-        ClassName  => sub { Mouse::is_class_loaded($_[0]) },
         Ref        => sub { ref($_[0]) },
 
         ScalarRef  => sub { ref($_[0]) eq 'SCALAR' },
@@ -63,9 +61,15 @@ BEGIN {
         },
 
         Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
+
+        ClassName  => sub { Mouse::Util::is_class_loaded($_[0]) },
+        RoleName   => sub { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::Role') },
     );
     while (my ($name, $code) = each %TYPE) {
-        $TYPE{$name} = Mouse::Meta::TypeConstraint->new( _compiled_type_constraint => $code, name => $name );
+        $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
+            name                      => $name,
+            _compiled_type_constraint => $code,
+        );
     }
 
     sub optimized_constraints { \%TYPE }
@@ -76,8 +80,27 @@ BEGIN {
 }
 
 sub type {
-    my $pkg = caller(0);
-    my($name, %conf) = @_;
+    my $name;
+    my %conf;
+
+    if(@_ == 1 && ref $_[0]){ # type { where => ... }
+        %conf = %{$_[0]};
+    }
+    elsif(@_ == 2 && ref $_[1]){ # type $name => { where => ... }*
+        $name = $_[0];
+        %conf = %{$_[1]};
+    }
+    elsif(@_ % 2){ # odd number of arguments
+        $name = shift;
+        %conf = @_;
+    }
+    else{
+        %conf = @_;
+    }
+
+    $name = '__ANON__' if !defined $name;
+
+    my $pkg = caller;
 
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
@@ -105,23 +128,32 @@ sub type {
 }
 
 sub subtype {
-    my $pkg = caller;
-
     my $name;
     my %conf;
 
-    if(@_ % 2){ # odd number of arguments
+    if(@_ == 1 && ref $_[0]){ # type { where => ... }
+        %conf = %{$_[0]};
+    }
+    elsif(@_ == 2 && ref $_[1]){ # type $name => { where => ... }*
+        $name = $_[0];
+        %conf = %{$_[1]};
+    }
+    elsif(@_ % 2){ # odd number of arguments
         $name = shift;
         %conf = @_;
     }
     else{
         %conf = @_;
-        $name = $conf{name} || '__ANON__';
     }
+
+    $name = '__ANON__' if !defined $name;
+
+    my $pkg = caller;
+
 
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
-    };
+    }
     my $constraint = delete $conf{where};
     my $as_constraint = find_or_create_isa_type_constraint(delete $conf{as} || 'Any');
 
