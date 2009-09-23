@@ -32,7 +32,7 @@ BEGIN {
 {
   package Quux;
 
-  use metaclass;
+  #use metaclass;
 }
 
 {
