@@ -11,7 +11,7 @@ sub moose_version(){ 0.90 } # which Mouse is a subset of
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
-use Mouse::Util qw(load_class is_class_loaded);
+use Mouse::Util qw(load_class is_class_loaded not_supported);
 
 use Mouse::Meta::Module;
 use Mouse::Meta::Class;

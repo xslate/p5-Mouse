@@ -9,8 +9,6 @@ use Scalar::Util 'blessed';
 use Mouse::Util qw(load_class not_supported);
 use Mouse ();
 
-our @EXPORT = qw(before after around super override inner augment has extends with requires excludes confess blessed);
-
 our @EXPORT = qw(
     extends with
     has
