@@ -4,7 +4,7 @@ use warnings;
 use 5.006;
 use base 'Exporter';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 sub moose_version(){ 0.90 } # which Mouse is a subset of
 
