@@ -32,8 +32,20 @@ sub message (&) {
 sub from    { @_ }
 sub via (&) { $_[0] }
 
+sub export_type_constraints_as_functions {
+    my $into = caller;
+
+    foreach my $constraint ( values %TYPE ) {
+        my $tc = $constraint->{_compiled_type_constraint};
+        my $as = $into . '::' . $constraint->{name};
+
+        no strict 'refs';
+        *{$as} = sub{ &{$tc} || undef };
+    }
+    return;
+}
+
 BEGIN {
-    no warnings 'uninitialized';
     %TYPE = (
         Any        => sub { 1 },
         Item       => sub { 1 },
@@ -63,20 +75,20 @@ BEGIN {
         Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
 
         ClassName  => sub { Mouse::Util::is_class_loaded($_[0]) },
-        RoleName   => sub { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::Role') },
+        RoleName   => sub { (Mouse::Util::find_meta($_[0]) || return 0)->isa('Mouse::Meta::Role') },
     );
     while (my ($name, $code) = each %TYPE) {
         $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
             name                      => $name,
             _compiled_type_constraint => $code,
         );
+        $TYPE_SOURCE{$name} = __PACKAGE__;
     }
 
     sub optimized_constraints { \%TYPE }
+
     my @TYPE_KEYS = keys %TYPE;
     sub list_all_builtin_type_constraints { @TYPE_KEYS }
-
-    @TYPE_SOURCE{@TYPE_KEYS} = (__PACKAGE__) x @TYPE_KEYS;
 }
 
 sub type {
@@ -105,26 +117,24 @@ sub type {
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     }
+
     my $constraint = $conf{where} || do {
         my $as = delete $conf{as} || 'Any';
-        if (! exists $TYPE{$as}) {
-            $TYPE{$as} = _build_type_constraint($as);
-        }
-        $TYPE{$as};
+        ($TYPE{$as} ||= _build_type_constraint($as))->{_compiled_type_constraint};
     };
 
-    $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
-        name => $name,
+    my $tc = Mouse::Meta::TypeConstraint->new(
+        name                      => $name,
         _compiled_type_constraint => sub {
             local $_ = $_[0];
-            if (ref $constraint eq 'CODE') {
-                $constraint->($_[0])
-            } else {
-                $constraint->check($_[0])
-            }
-        }
+            return &{$constraint};
+        },
     );
+
+    $TYPE_SOURCE{$name} = $pkg;
+    $TYPE{$name}        = $tc;
+
+    return $tc;
 }
 
 sub subtype {
@@ -150,31 +160,34 @@ sub subtype {
 
     my $pkg = caller;
 
-
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
     }
-    my $constraint = delete $conf{where};
-    my $as_constraint = find_or_create_isa_type_constraint(delete $conf{as} || 'Any');
 
-    $TYPE_SOURCE{$name} = $pkg;
-    $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
+    my $constraint    = delete $conf{where};
+    my $as_constraint = find_or_create_isa_type_constraint(delete $conf{as} || 'Any')
+        ->{_compiled_type_constraint};
+
+    my $tc = Mouse::Meta::TypeConstraint->new(
         name => $name,
         _compiled_type_constraint => (
             $constraint ? 
             sub {
                 local $_ = $_[0];
-                $as_constraint->check($_[0]) && $constraint->($_[0])
+                $as_constraint->($_[0]) && $constraint->($_[0])
             } :
             sub {
                 local $_ = $_[0];
-                $as_constraint->check($_[0]);
+                $as_constraint->($_[0]);
             }
         ),
-        %conf
+        %conf,
     );
 
-    return $name;
+    $TYPE_SOURCE{$name} = $pkg;
+    $TYPE{$name}        = $tc;
+
+    return $tc;
 }
 
 sub coerce {
