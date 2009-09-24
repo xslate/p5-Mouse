@@ -17,8 +17,8 @@ test_requires 'Test::More'      => 0.80;
 
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
-    require 'lib/Mouse.pm'; # for moose_version()
-    my $require_version = Mouse->moose_version;
+    require 'lib/Mouse/Spec.pm';
+    my $require_version = Mouse::Spec->MooseVersion;
 
     if (eval{ require Moose; Moose->VERSION($require_version) }) {
         if (eval 'use Module::Install::AuthorTests; 1') {

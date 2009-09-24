@@ -6,8 +6,6 @@ use base 'Exporter';
 
 our $VERSION = '0.32';
 
-sub moose_version(){ 0.90 } # which Mouse is a subset of
-
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
