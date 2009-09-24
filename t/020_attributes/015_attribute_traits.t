@@ -4,7 +4,15 @@ use lib 't/lib';
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More;
+BEGIN{
+    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifiers }){
+        plan tests => 12;
+    }
+    else{
+        plan skip_all => 'This test requires Class::Method::Modifiers(::Fast)?';
+    }
+}
 use Test::Exception;
 use Test::Mouse;
 
