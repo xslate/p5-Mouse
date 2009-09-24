@@ -1,10 +1,13 @@
 #!/usr/bin/perl
 
+use lib 't/lib';
 use strict;
 use warnings;
 
 use Test::More tests => 277;
 use Test::Exception;
+
+use Test::Mouse;
 
 use Scalar::Util ();
 

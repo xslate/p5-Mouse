@@ -32,21 +32,8 @@ sub message (&) {
 sub from    { @_ }
 sub via (&) { $_[0] }
 
-sub export_type_constraints_as_functions {
-    my $into = caller;
-
-    foreach my $constraint ( values %TYPE ) {
-        my $tc = $constraint->{_compiled_type_constraint};
-        my $as = $into . '::' . $constraint->{name};
-
-        no strict 'refs';
-        *{$as} = sub{ &{$tc} || undef };
-    }
-    return;
-}
-
 BEGIN {
-    %TYPE = (
+    my %builtins = (
         Any        => sub { 1 },
         Item       => sub { 1 },
 
@@ -77,7 +64,8 @@ BEGIN {
         ClassName  => sub { Mouse::Util::is_class_loaded($_[0]) },
         RoleName   => sub { (Mouse::Util::find_meta($_[0]) || return 0)->isa('Mouse::Meta::Role') },
     );
-    while (my ($name, $code) = each %TYPE) {
+
+    while (my ($name, $code) = each %builtins) {
         $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
             name                      => $name,
             _compiled_type_constraint => $code,
@@ -87,8 +75,10 @@ BEGIN {
 
     sub optimized_constraints { \%TYPE }
 
-    my @TYPE_KEYS = keys %TYPE;
-    sub list_all_builtin_type_constraints { @TYPE_KEYS }
+    my @builtins = keys %TYPE;
+    sub list_all_builtin_type_constraints { @builtins }
+
+    sub list_all_type_constraints         { keys %TYPE }
 }
 
 sub type {
@@ -361,8 +351,13 @@ sub _build_type_constraint {
 }
 
 sub find_type_constraint {
-    my $type_constraint = shift;
-    return $TYPE{$type_constraint};
+    my($type) = @_;
+    if(blessed($type) && $type->isa('Mouse::Meta::TypeConstraint')){
+        return $type;
+    }
+    else{
+        return $TYPE{$type};
+    }
 }
 
 sub find_or_create_isa_type_constraint {
