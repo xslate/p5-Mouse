@@ -71,7 +71,8 @@ sub dump {
 
     require 'Data/Dumper.pm'; # we don't want to create its namespace
     my $dd = Data::Dumper->new([$self]);
-    $dd->Maxdepth($maxdepth || 1);
+    $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 2);
+    $dd->Indent(1);
     return $dd->Dump();
 }
 

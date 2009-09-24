@@ -9,7 +9,7 @@ use base qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
 
-sub _new {
+sub _construct_meta {
     my $class = shift;
 
     my %args  = @_;
@@ -22,7 +22,7 @@ sub _new {
 #    return Mouse::Meta::Class->initialize($class)->new_object(%args)
 #        if $class ne __PACKAGE__;
 
-    return bless \%args, $class;
+    return bless \%args, ref($class) || $class;
 }
 
 sub create_anon_role{
@@ -181,15 +181,7 @@ sub _apply_attributes{
 
             my $spec = $role->get_attribute($attr_name);
 
-            my $attr_metaclass = 'Mouse::Meta::Attribute';
-            if ( my $metaclass_name = $spec->{metaclass} ) {
-                $attr_metaclass = Mouse::Util::resolve_metaclass_alias(
-                    'Attribute',
-                    $metaclass_name
-                );
-            }
-
-            $attr_metaclass->create($class, $attr_name => %$spec);
+            $class->add_attribute($attr_name => %{$spec});
         }
     }
     elsif($args->{_to} eq 'role'){

@@ -6,7 +6,8 @@ use base 'Exporter';
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-use Mouse::Util;
+use Mouse::Util qw(does_role not_supported);
+use Mouse::Meta::Module; # class_of
 use Mouse::Meta::TypeConstraint;
 
 our @EXPORT = qw(
@@ -32,21 +33,8 @@ sub message (&) {
 sub from    { @_ }
 sub via (&) { $_[0] }
 
-sub export_type_constraints_as_functions {
-    my $into = caller;
-
-    foreach my $constraint ( values %TYPE ) {
-        my $tc = $constraint->{_compiled_type_constraint};
-        my $as = $into . '::' . $constraint->{name};
-
-        no strict 'refs';
-        *{$as} = sub{ &{$tc} || undef };
-    }
-    return;
-}
-
 BEGIN {
-    %TYPE = (
+    my %builtins = (
         Any        => sub { 1 },
         Item       => sub { 1 },
 
@@ -77,7 +65,8 @@ BEGIN {
         ClassName  => sub { Mouse::Util::is_class_loaded($_[0]) },
         RoleName   => sub { (Mouse::Util::find_meta($_[0]) || return 0)->isa('Mouse::Meta::Role') },
     );
-    while (my ($name, $code) = each %TYPE) {
+
+    while (my ($name, $code) = each %builtins) {
         $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
             name                      => $name,
             _compiled_type_constraint => $code,
@@ -87,8 +76,10 @@ BEGIN {
 
     sub optimized_constraints { \%TYPE }
 
-    my @TYPE_KEYS = keys %TYPE;
-    sub list_all_builtin_type_constraints { @TYPE_KEYS }
+    my @builtins = keys %TYPE;
+    sub list_all_builtin_type_constraints { @builtins }
+
+    sub list_all_type_constraints         { keys %TYPE }
 }
 
 sub type {
@@ -225,10 +216,11 @@ sub class_type {
     if ($conf && $conf->{class}) {
         # No, you're using this wrong
         warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        subtype($name, as => $conf->{class});
-    } else {
-        subtype(
-            $name => where => sub { $_->isa($name) }
+        subtype $name => (as => $conf->{class});
+    }
+    else {
+        subtype $name => (
+            where => sub { blessed($_) && $_->isa($name) },
         );
     }
 }
@@ -236,18 +228,15 @@ sub class_type {
 sub role_type {
     my($name, $conf) = @_;
     my $role = $conf->{role};
-    subtype(
-        $name => where => sub {
-            return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
-            $_->meta->does_role($role);
-        }
+    subtype $name => (
+        where => sub { does_role($_, $role) },
     );
 }
 
 # this is an original method for Mouse
 sub typecast_constraints {
     my($class, $pkg, $types, $value) = @_;
-    Carp::croak("wrong arguments count") unless @_==4;
+    Carp::croak("wrong arguments count") unless @_ == 4;
 
     local $_;
     for my $type ( split /\|/, $types ) {
@@ -285,18 +274,21 @@ sub enum {
 }
 
 sub _build_type_constraint {
+    my($spec) = @_;
 
-    my $spec = shift;
     my $code;
     $spec =~ s/\s+//g;
-    if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
+
+    if ($spec =~ /\A (\w+) \[ (.+) \] \z/xms) {
         # parameterized
         my $constraint = $1;
         my $param      = $2;
         my $parent;
+
         if ($constraint eq 'Maybe') {
             $parent = _build_type_constraint('Undef');
-        } else {
+        }
+        else {
             $parent = _build_type_constraint($constraint);
         }
         my $child = _build_type_constraint($param);
@@ -361,8 +353,17 @@ sub _build_type_constraint {
 }
 
 sub find_type_constraint {
-    my $type_constraint = shift;
-    return $TYPE{$type_constraint};
+    my($type) = @_;
+    if(blessed($type) && $type->isa('Mouse::Meta::TypeConstraint')){
+        return $type;
+    }
+    else{
+        return $TYPE{$type};
+    }
+}
+
+sub find_or_create_does_type_constraint{
+    not_supported;
 }
 
 sub find_or_create_isa_type_constraint {
@@ -375,33 +376,34 @@ sub find_or_create_isa_type_constraint {
            $1 ne 'Maybe'
     ;
 
-    my $code;
 
     $type_constraint =~ s/\s+//g;
 
-    $code = $TYPE{$type_constraint};
-    if (! $code) {
+    my $tc =  find_type_constraint($type_constraint);
+    if (!$tc) {
         my @type_constraints = split /\|/, $type_constraint;
         if (@type_constraints == 1) {
-            $code = $TYPE{$type_constraints[0]} ||
+            $tc = $TYPE{$type_constraints[0]} ||
                 _build_type_constraint($type_constraints[0]);
-        } else {
+        }
+        else {
             my @code_list = map {
                 $TYPE{$_} || _build_type_constraint($_)
             } @type_constraints;
-            $code = Mouse::Meta::TypeConstraint->new(
+
+            $tc = Mouse::Meta::TypeConstraint->new(
+                name => $type_constraint,
+
                 _compiled_type_constraint => sub {
-                    my $i = 0;
-                    for my $code (@code_list) {
+                    foreach my $code (@code_list) {
                         return 1 if $code->check($_[0]);
                     }
                     return 0;
                 },
-                name => $type_constraint,
             );
         }
     }
-    return $code;
+    return $tc;
 }
 
 1;

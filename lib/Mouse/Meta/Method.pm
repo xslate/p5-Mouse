@@ -13,9 +13,9 @@ sub new{
     return bless \%args, $class;
 }
 
-sub body   { $_[0]->{body} }
-sub name   { $_[0]->{name} }
-sub package{ $_[0]->{name} }
+sub body        { $_[0]->{body}    }
+sub name        { $_[0]->{name}    }
+sub package_name{ $_[0]->{package} }
 
 
 1;

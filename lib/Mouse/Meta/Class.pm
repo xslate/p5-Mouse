@@ -14,7 +14,7 @@ use base qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Method' } # required for get_method()
 
-sub _new {
+sub _construct_meta {
     my($class, %args) = @_;
 
     $args{attributes} ||= {};
@@ -29,7 +29,7 @@ sub _new {
     #return Mouse::Meta::Class->initialize($class)->new_object(%args)
     #    if $class ne __PACKAGE__;
 
-    return bless \%args, $class;
+    return bless \%args, ref($class) || $class;
 }
 
 sub create_anon_class{
@@ -51,7 +51,23 @@ sub superclasses {
         @{ $self->{superclasses} } = @_;
     }
 
-    @{ $self->{superclasses} };
+    return @{ $self->{superclasses} };
+}
+
+sub find_method_by_name{
+    my($self, $method_name) = @_;
+    defined($method_name)
+        or $self->throw_error('You must define a method name to find');
+    foreach my $class( $self->linearized_isa ){
+        my $method = $self->initialize($class)->get_method($method_name);
+        return $method if defined $method;
+    }
+    return undef;
+}
+
+sub get_all_methods {
+    my($self) = @_;
+    return map{ $self->find_method_by_name($self) } $self->get_all_method_names;
 }
 
 sub get_all_method_names {
@@ -62,38 +78,50 @@ sub get_all_method_names {
             $self->linearized_isa;
 }
 
+sub _process_attribute{
+    my $self = shift;
+    my $name = shift;
+
+    my $args = (@_ == 1) ? $_[0] : { @_ };
+
+    defined($name)
+        or $self->throw_error('You must provide a name for the attribute');
+
+    if ($name =~ s/^\+//) {
+        my $inherited_attr;
+
+        foreach my $class($self->linearized_isa){
+            my $meta = Mouse::Meta::Module::get_metaclass_by_name($class) or next;
+            $inherited_attr = $meta->get_attribute($name) and last;
+        }
+
+        defined($inherited_attr)
+            or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
+
+        return $inherited_attr->clone_and_inherit_options($name, $args);
+    }
+    else{
+        return Mouse::Meta::Attribute->interpolate_class_and_new($name, $args);
+    }
+}
+
 sub add_attribute {
     my $self = shift;
 
-    if (@_ == 1 && blessed($_[0])) {
-        my $attr = shift @_;
-        $self->{'attributes'}{$attr->name} = $attr;
-    }
-    else {
-        my $names = shift @_;
-        $names = [$names] if !ref($names);
-        my $metaclass = 'Mouse::Meta::Attribute';
-        my %options   = (@_ == 1 ? %{$_[0]} : @_);
+    my $attr = blessed($_[0]) ? $_[0] : $self->_process_attribute(@_);
 
-        if ( my $metaclass_name = delete $options{metaclass} ) {
-            my $new_class = Mouse::Util::resolve_metaclass_alias(
-                'Attribute',
-                $metaclass_name
-            );
-            if ( $metaclass ne $new_class ) {
-                $metaclass = $new_class;
-            }
-        }
+    $attr->isa('Mouse::Meta::Attribute')
+        || $self->throw_error("Your attribute must be an instance of Mouse::Meta::Attribute (or a subclass)");
 
-        for my $name (@$names) {
-            if ($name =~ s/^\+//) {
-                $metaclass->clone_parent($self, $name, %options);
-            }
-            else {
-                $metaclass->create($self, $name, %options);
-            }
-        }
+    weaken( $attr->{associated_class} = $self );
+
+    $self->{attributes}{$attr->name} = $attr;
+    $attr->install_accessors();
+
+    if(!$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
+        Carp::cluck(qq{Attribute (}.$attr->name.qq{) of class }.$self->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
+    return $attr;
 }
 
 sub compute_all_applicable_attributes { shift->get_all_attributes(@_) }
@@ -122,24 +150,32 @@ sub new_object {
 
     my $instance = bless {}, $self->name;
 
+    $self->_initialize_instance($instance, \%args);
+    return $instance;
+}
+
+sub _initialize_instance{
+    my($self, $instance, $args) = @_;
+
     my @triggers_queue;
 
     foreach my $attribute ($self->get_all_attributes) {
         my $from = $attribute->init_arg;
         my $key  = $attribute->name;
 
-        if (defined($from) && exists($args{$from})) {
-            $args{$from} = $attribute->coerce_constraint($args{$from})
+        if (defined($from) && exists($args->{$from})) {
+            $args->{$from} = $attribute->coerce_constraint($args->{$from})
                 if $attribute->should_coerce;
-            $attribute->verify_against_type_constraint($args{$from});
 
-            $instance->{$key} = $args{$from};
+            $attribute->verify_against_type_constraint($args->{$from});
+
+            $instance->{$key} = $args->{$from};
 
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                push @triggers_queue, [ $attribute->trigger, $args{$from} ];
+                push @triggers_queue, [ $attribute->trigger, $args->{$from} ];
             }
         }
         else {
@@ -174,6 +210,10 @@ sub new_object {
     foreach my $trigger_and_value(@triggers_queue){
         my($trigger, $value) = @{$trigger_and_value};
         $trigger->($instance, $value);
+    }
+
+    if($self->is_anon_class){
+        $instance->{__METACLASS__} = $self;
     }
 
     return $instance;

@@ -30,7 +30,7 @@ sub does_ok ($$;$) {
     }
     $message ||= "The object does $does";
 
-    if (does_ok($class_or_obj)) {
+    if (does_role($class_or_obj, $does)) {
         return __PACKAGE__->builder->ok(1, $message)
     }
     else {
@@ -52,6 +52,30 @@ sub has_attribute_ok ($$;$) {
         return __PACKAGE__->builder->ok(0, $message);
     }
 }
+
+# Moose compatible methods/functions
+
+package Mouse::Util::TypeConstraints;
+
+use Mouse::Util::TypeConstraints ();
+
+sub export_type_constraints_as_functions { # TEST ONLY
+    my $into = caller;
+
+    foreach my $type( list_all_type_constraints() ) {
+        my $tc = find_type_constraint($type)->{_compiled_type_constraint};
+        my $as = $into . '::' . $type;
+
+        no strict 'refs';
+        *{$as} = sub{ &{$tc} || undef };
+    }
+    return;
+}
+
+package Mouse::Meta::Attribute;
+
+sub applied_traits{            $_[0]->{traits} } # TEST ONLY
+sub has_applied_traits{ exists $_[0]->{traits} } # TEST ONLY
 
 1;
 

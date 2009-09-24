@@ -1,11 +1,19 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 16;
 use Test::Exception;
 
 {
     {
+        package My::Role;
+        use Mouse::Role;
+
+        package My::Class;
+        use Mouse;
+
+        with 'My::Role';
+
         package Foo;
         use Mouse;
 
@@ -19,9 +27,19 @@ use Test::Exception;
             isa => 'ArrayRef[Int]',
         );
 
-        has 'complex' => (
-            is => 'rw',
+        has complex => (
+            is  => 'rw',
             isa => 'ArrayRef[HashRef[Int]]'
+        );
+
+        has my_class => (
+            is  => 'rw',
+            isa => 'ArrayRef[My::Class]',
+        );
+
+        has my_role => (
+            is  => 'rw',
+            isa => 'ArrayRef[My::Role]',
         );
     };
 
@@ -36,6 +54,14 @@ use Test::Exception;
         is_deeply($foo->foo(), $hash, "foo is a proper hash");
         is_deeply($foo->bar(), $array, "bar is a proper array");
         is_deeply($foo->complex(), $complex, "complex is a proper ... structure");
+
+        $foo->my_class([My::Class->new]);
+        is ref($foo->my_class), 'ARRAY';
+        isa_ok $foo->my_class->[0], 'My::Class';
+
+        $foo->my_role([My::Class->new]);
+        is ref($foo->my_role), 'ARRAY';
+
     } "Parameterized constraints work";
 
     # check bad args
@@ -50,6 +76,21 @@ use Test::Exception;
     throws_ok {
         Foo->new( complex => [ { a => 1, b => 1 }, { c => "d", e => "f" } ] )
     } qr/Attribute \(complex\) does not pass the type constraint because: Validation failed for 'ArrayRef\[HashRef\[Int\]\]' failed with value/, "Bad args for complex types throws an exception";
+
+    throws_ok {
+        Foo->new( my_class => [ 10 ] );
+    } qr/Attribute \(my_class\) does not pass the type constraint because: Validation failed for 'ArrayRef\[My::Class\]' failed with value/;
+    throws_ok {
+        Foo->new( my_class => [ {foo => 'bar'} ] );
+    } qr/Attribute \(my_class\) does not pass the type constraint because: Validation failed for 'ArrayRef\[My::Class\]' failed with value/;
+
+
+    throws_ok {
+        Foo->new( my_role => [ 20 ] );
+    } qr/Attribute \(my_role\) does not pass the type constraint because: Validation failed for 'ArrayRef\[My::Role\]' failed with value/;
+    throws_ok {
+        Foo->new( my_role => [ {foo => 'bar'} ] );
+    } qr/Attribute \(my_role\) does not pass the type constraint because: Validation failed for 'ArrayRef\[My::Role\]' failed with value/;
 }
 
 {

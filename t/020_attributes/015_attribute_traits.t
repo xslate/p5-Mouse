@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+use lib 't/lib';
+
+use strict;
+use warnings;
+
+use Test::More;
+BEGIN{
+    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifiers }){
+        plan tests => 12;
+    }
+    else{
+        plan skip_all => 'This test requires Class::Method::Modifiers(::Fast)?';
+    }
+}
+use Test::Exception;
+use Test::Mouse;
+
+
+
+{
+    package My::Attribute::Trait;
+    use Mouse::Role;
+
+    has 'alias_to' => (is => 'ro', isa => 'Str');
+
+    has foo => ( is => "ro", default => "blah" );
+
+    after 'install_accessors' => sub {
+        my $self = shift;
+        my $reader = $self->get_read_method;
+
+        $self->associated_class->add_method(
+            $self->alias_to,
+            sub { shift->$reader(@_) },
+        );
+    };
+}
+
+{
+    package My::Class;
+    use Mouse;
+
+    has 'bar' => (
+        traits   => [qw/My::Attribute::Trait/],
+        is       => 'ro',
+        isa      => 'Int',
+        alias_to => 'baz',
+    );
+
+    has 'gorch' => (
+        is      => 'ro',
+        isa     => 'Int',
+        default => sub { 10 }
+    );
+}
+
+my $c = My::Class->new(bar => 100);
+isa_ok($c, 'My::Class');
+
+is($c->bar, 100, '... got the right value for bar');
+is($c->gorch, 10, '... got the right value for gorch');
+
+can_ok($c, 'baz');
+is($c->baz, 100, '... got the right value for baz');
+
+my $bar_attr = $c->meta->get_attribute('bar');
+
+does_ok($bar_attr, 'My::Attribute::Trait');
+ok($bar_attr->has_applied_traits, '... got the applied traits');
+is_deeply($bar_attr->applied_traits, [qw/My::Attribute::Trait/], '... got the applied traits');
+is($bar_attr->foo, "blah", "attr initialized");
+
+my $gorch_attr = $c->meta->get_attribute('gorch');
+ok(!$gorch_attr->does('My::Attribute::Trait'), '... gorch doesnt do the trait');
+ok(!$gorch_attr->has_applied_traits, '... no traits applied');
+is($gorch_attr->applied_traits, undef, '... no traits applied');
+
+
+

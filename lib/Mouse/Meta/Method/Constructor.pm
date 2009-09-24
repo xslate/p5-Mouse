@@ -3,13 +3,13 @@ use strict;
 use warnings;
 
 sub generate_constructor_method_inline {
-    my ($class, $meta) = @_;
+    my ($class, $metaclass) = @_;
 
-    my $associated_metaclass_name = $meta->name;
-    my @attrs = $meta->get_all_attributes;
-    my $buildall = $class->_generate_BUILDALL($meta);
-    my $buildargs = $class->_generate_BUILDARGS($meta);
-    my $processattrs = $class->_generate_processattrs($meta, \@attrs);
+    my $associated_metaclass_name = $metaclass->name;
+    my @attrs = $metaclass->get_all_attributes;
+    my $buildall = $class->_generate_BUILDALL($metaclass);
+    my $buildargs = $class->_generate_BUILDARGS($metaclass);
+    my $processattrs = $class->_generate_processattrs($metaclass, \@attrs);
     my @compiled_constraints = map { $_ ? $_->{_compiled_type_constraint} : undef } map { $_->{type_constraint} } @attrs;
 
     my $code = <<"...";
@@ -33,8 +33,10 @@ sub generate_constructor_method_inline {
 }
 
 sub _generate_processattrs {
-    my ($class, $meta, $attrs) = @_;
+    my ($class, $metaclass, $attrs) = @_;
     my @res;
+
+    my $has_triggers;
 
     for my $index (0 .. @$attrs - 1) {
         my $attr = $attrs->[$index];
@@ -74,6 +76,7 @@ sub _generate_processattrs {
             }
 
             if ($attr->has_trigger) {
+                $has_triggers++;
                 $code .= "push \@triggers, [\$attrs[$index]->{trigger}, \$value];\n";
             }
 
@@ -138,14 +141,22 @@ sub _generate_processattrs {
         push @res, $code;
     }
 
-    return join "\n", q{my @triggers;}, @res, q{$_->[0]->($instance, $_->[1]) for @triggers;};
+    if($metaclass->is_anon_class){
+        push @res, q{$instnace->{__METACLASS__} = $metaclass;};
+    }
+
+    if($has_triggers){
+        unshift @res, q{my @triggers;};
+        push    @res,  q{$_->[0]->($instance, $_->[1]) for @triggers;};
+    }
+
+    return join "\n", @res;
 }
 
 sub _generate_BUILDARGS {
-    my $self = shift;
-    my $meta = shift;
+    my($self, $metaclass) = @_;
 
-    if ($meta->name->can('BUILDARGS') && $meta->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
+    if ($metaclass->name->can('BUILDARGS') && $metaclass->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
         return 'my $args = $class->BUILDARGS(@_)';
     }
 
@@ -163,15 +174,15 @@ sub _generate_BUILDARGS {
 }
 
 sub _generate_BUILDALL {
-    my ($class, $meta) = @_;
-    return '' unless $meta->name->can('BUILD');
+    my ($class, $metaclass) = @_;
+    return '' unless $metaclass->name->can('BUILD');
 
     my @code = ();
     push @code, q{no strict 'refs';};
     push @code, q{no warnings 'once';};
     no strict 'refs';
     no warnings 'once';
-    for my $klass ($meta->linearized_isa) {
+    for my $klass ($metaclass->linearized_isa) {
         if (*{ $klass . '::BUILD' }{CODE}) {
             unshift  @code, qq{${klass}::BUILD(\$instance, \$args);};
         }

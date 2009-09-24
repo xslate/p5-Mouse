@@ -281,8 +281,8 @@ sub not_supported{
 
     $feature ||= ( caller(1) )[3]; # subroutine name
 
-    local $Carp::CarpLevel = $Carp::CarpLevel + 2;
-    Carp::croak("Mouse does not currently support $feature");
+    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+    Carp::confess("Mouse does not currently support $feature");
 }
 
 1;

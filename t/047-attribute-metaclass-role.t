@@ -5,6 +5,8 @@ use Test::More tests => 7;
 use lib 't/lib';
 
 do {
+    local $SIG{__WARN__} = sub{ $_[0] =~ /deprecated/ or warn @_ };
+
     package MouseX::AttributeHelpers::Number;
     use Mouse;
     extends 'Mouse::Meta::Attribute';
@@ -89,4 +91,5 @@ do {
     $k->add_number(4);
     is $k->i, 7;
 }
+
 

@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.33_01 Thu Sep 24 16:16:57 2009
+    * Implement traits => [...] in has() (gfx)
+
 0.33 Wed Sep 23 15:06:40 2009
     * Fix RT #49902: 0.32 fails tests reported by GRUBER (gfx)
 

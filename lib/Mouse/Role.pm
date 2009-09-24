@@ -90,11 +90,9 @@ sub augment {
 
 sub has {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
-
     my $name = shift;
-    my %opts = @_;
 
-    $meta->add_attribute($name => \%opts);
+    $meta->add_attribute($_ => @_) for ref($name) ? @{$name} : $name;
 }
 
 sub extends  {
