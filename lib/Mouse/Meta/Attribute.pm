@@ -2,29 +2,179 @@ package Mouse::Meta::Attribute;
 use strict;
 use warnings;
 
+use Carp ();
+use Scalar::Util qw(weaken);
+
 use Mouse::Util;
 
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
 
+#my %valid_attrs = map{ $_ => undef } qw(
+#    name
+#    reader writer accessor clearer predicate
+#    builder init_arg default initializer definition_context
+#
+#    is
+#    isa does
+#    required
+#    lazy
+#    lazy_build
+#    coerce
+#    weak_ref
+#    auto_deref
+#    type_constraint
+#    trigger
+#    handles
+#    documentation
+#    traits
+#);
+
 sub new {
     my ($class, $name, %options) = @_;
 
+    # taken from Class::MOP::Attribute::new
+
+    defined($name)
+        or $class->throw_error('You must provide a name for the attribute');
     $options{name} = $name;
 
-    $options{init_arg} = $name
-        unless exists $options{init_arg};
-
-    my $is = $options{is} ||= '';
-
-    if($is eq 'rw'){
-        $options{accessor} = $name if !exists $options{accessor};
-    }
-    elsif($is eq 'ro'){
-        $options{reader}   = $name if !exists $options{reader};
+    if(!exists $options{init_arg}){
+        $options{init_arg} = $name;
     }
 
-    bless \%options, $class;
+    # 'required' requires eigher 'init_arg', 'builder', or 'default'
+    my $can_be_required = defined( $options{init_arg} );
+
+    if(exists $options{builder}){
+        $class->throw_error('builder must be a defined scalar value which is a method name')
+            if ref $options{builder} || !(defined $options{builder});
+
+        $can_be_required++;
+    }
+    elsif(exists $options{default}){
+        if(ref $options{default} && ref($options{default}) ne 'CODE'){
+            $class->throw_error("References are not allowed as default values, you must "
+                              . "wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])");
+        }
+        $can_be_required++;
+    }
+
+    if( $options{required} && !$can_be_required ) {
+        $class->throw_error("You cannot have a required attribute ($name) without a default, builder, or an init_arg");
+    }
+
+    # taken from Mouse::Meta::Attribute->new and _process_options
+
+    if(exists $options{is}){
+        my $is = $options{is};
+
+        if($is eq 'ro'){
+            $options{reader} ||= $name;
+        }
+        elsif($is eq 'rw'){
+            if(exists $options{writer}){
+                $options{reader} ||= $name;
+             }
+             else{
+                $options{accessor} ||= $name;
+             }
+        }
+        elsif($is eq 'bare'){
+            # do nothing, but don't complain (later) about missing methods
+        }
+        else{
+            $is = 'undef' if !defined $is;
+            $class->throw_error("I do not understand this option (is => $is) on attribute ($name)");
+        }
+    }
+
+    my $tc;
+    if(exists $options{isa}){
+        $options{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($options{isa});
+    }
+    elsif(exists $options{does}){
+        $options{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($options{does});
+    }
+    $tc = $options{type_constraint};
+
+    if($options{coerce}){
+        defined($tc)
+            || $class->throw_error("You cannot have coercion without specifying a type constraint on attribute ($name)");
+
+        $options{weak_ref}
+            && $class->throw_error("You cannot have a weak reference to a coerced value on attribute ($name)");
+    }
+
+    if ($options{lazy_build}) {
+        exists($options{default})
+            && $class->throw_error("You can not use lazy_build and default for the same attribute ($name)");
+
+        $options{lazy}      = 1;
+        $options{builder} ||= "_build_${name}";
+        if ($name =~ /^_/) {
+            $options{clearer}   ||= "_clear${name}";
+            $options{predicate} ||= "_has${name}";
+        }
+        else {
+            $options{clearer}   ||= "clear_${name}";
+            $options{predicate} ||= "has_${name}";
+        }
+    }
+
+    if ($options{auto_deref}) {
+        defined($tc)
+            || $class->throw_error("You cannot auto-dereference without specifying a type constraint on attribute ($name)");
+
+        ( $tc->is_a_type_of('ArrayRef') || $tc->is_a_type_of('HashRef') )
+            || $class->throw_error("You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)");
+    }
+
+    if (exists $options{trigger}) {
+        ('CODE' eq ref $options{trigger})
+            || $class->throw_error("Trigger must be a CODE ref on attribute ($name)");
+    }
+
+    if ($options{lazy}) {
+        (exists $options{default} || defined $options{builder})
+            || $class->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it");
+    }
+
+    if(my $metaclass = delete $options{metaclass}){
+        $class = Mouse::Util::resolve_metaclass_alias( Attribute => $metaclass );
+    }
+
+    if(my $traits_ref = delete $options{traits}){
+        my @traits;
+        for (my $i = 9; $i < @{$traits_ref}; $i++) {
+            my $trait = Mouse::Util::resolve_metaclass_alias(Attribute => $traits_ref->[$i], trait => 1);
+
+            next if $class->does($trait);
+
+            push @traits, $trait;
+
+            # are there options?
+            push @traits, $traits_ref->[++$i]
+                if ref($traits_ref->[$i+1]);
+        }
+
+        if (@traits) {
+            $class = Mouse::Meta::Class->create_anon_class(
+                superclasses => [ $class ],
+                roles        => [ @traits ],
+                cache        => 1,
+            )->name;
+        }
+    }
+
+# XXX: there is no fast way to check attribute validity
+#    my @bad = grep{ !exists $valid_attrs{$_} } keys %options;
+#    if(@bad){
+#        @bad = sort @bad;
+#        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
+#    }
+
+    return bless \%options, $class;
 }
 
 # readers
@@ -47,14 +197,11 @@ sub is_lazy_build        { $_[0]->{lazy_build}             }
 sub is_weak_ref          { $_[0]->{weak_ref}               }
 sub init_arg             { $_[0]->{init_arg}               }
 sub type_constraint      { $_[0]->{type_constraint}        }
-sub find_type_constraint {
-    Carp::carp("This method was deprecated");
-    $_[0]->type_constraint();
-}
+
 sub trigger              { $_[0]->{trigger}                }
 sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
-sub should_coerce        { $_[0]->{should_coerce}          }
+sub should_coerce        { $_[0]->{coerce}                 }
 
 # predicates
 
@@ -80,25 +227,12 @@ sub accessor_metaclass { 'Mouse::Meta::Method::Accessor' }
 sub create {
     my ($self, $class, $name, %args) = @_;
 
-    $args{name}             = $name;
-    $args{associated_class} = $class;
-
-    %args = $self->canonicalize_args($name, %args);
-    $self->validate_args($name, \%args);
-
-    $args{should_coerce} = delete $args{coerce}
-        if exists $args{coerce};
-
-    if (exists $args{isa}) {
-        my $type_constraint = delete $args{isa};
-        $args{type_constraint}= Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($type_constraint);
-    }
-
     my $attribute = $self->new($name, %args);
 
     $attribute->_create_args(\%args);
 
     $class->add_attribute($attribute);
+    weaken($attribute->{associated_class} = $class);
 
     my $associated_methods = 0;
 
@@ -117,65 +251,6 @@ sub create {
     }
 
     return $attribute;
-}
-
-sub canonicalize_args {
-    my $self = shift;
-    my $name = shift;
-    my %args = @_;
-
-    if ($args{lazy_build}) {
-        $args{lazy}      = 1;
-        $args{required}  = 1;
-        $args{builder}   = "_build_${name}"
-            if !exists($args{builder});
-        if ($name =~ /^_/) {
-            $args{clearer}   = "_clear${name}" if !exists($args{clearer});
-            $args{predicate} = "_has${name}" if !exists($args{predicate});
-        }
-        else {
-            $args{clearer}   = "clear_${name}" if !exists($args{clearer});
-            $args{predicate} = "has_${name}" if !exists($args{predicate});
-        }
-    }
-
-    return %args;
-}
-
-sub validate_args {
-    my $self = shift;
-    my $name = shift;
-    my $args = shift;
-
-    $self->throw_error("You can not use lazy_build and default for the same attribute ($name)")
-        if $args->{lazy_build} && exists $args->{default};
-
-    $self->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it")
-        if $args->{lazy}
-        && !exists($args->{default})
-        && !exists($args->{builder});
-
-    $self->throw_error("References are not allowed as default values, you must wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])")
-        if ref($args->{default})
-        && ref($args->{default}) ne 'CODE';
-
-    $self->throw_error("You cannot auto-dereference without specifying a type constraint on attribute ($name)")
-        if $args->{auto_deref} && !exists($args->{isa});
-
-    $self->throw_error("You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)")
-        if $args->{auto_deref}
-        && $args->{isa} !~ /^(?:ArrayRef|HashRef)(?:\[.*\])?$/;
-
-    if ($args->{trigger}) {
-        if (ref($args->{trigger}) eq 'HASH') {
-            $self->throw_error("HASH-based form of trigger has been removed. Only the coderef form of triggers are now supported.");
-        }
-
-        $self->throw_error("Trigger must be a CODE ref on attribute ($name)")
-            if ref($args->{trigger}) ne 'CODE';
-    }
-
-    return 1;
 }
 
 sub verify_against_type_constraint {
@@ -337,3 +412,4 @@ C<AttributeName>.
 
 =cut
 
+    

@@ -6,7 +6,7 @@ use base 'Exporter';
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-use Mouse::Util qw(does_role);
+use Mouse::Util qw(does_role not_supported);
 use Mouse::Meta::Module; # class_of
 use Mouse::Meta::TypeConstraint;
 
@@ -216,7 +216,7 @@ sub class_type {
     if ($conf && $conf->{class}) {
         # No, you're using this wrong
         warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        subtype $name, as => $conf->{class};
+        subtype $name => (as => $conf->{class});
     }
     else {
         subtype $name => (
@@ -229,14 +229,14 @@ sub role_type {
     my($name, $conf) = @_;
     my $role = $conf->{role};
     subtype $name => (
-        $name => where => sub { does_role($_, $role) },
+        where => sub { does_role($_, $role) },
     );
 }
 
 # this is an original method for Mouse
 sub typecast_constraints {
     my($class, $pkg, $types, $value) = @_;
-    Carp::croak("wrong arguments count") unless @_==4;
+    Carp::croak("wrong arguments count") unless @_ == 4;
 
     local $_;
     for my $type ( split /\|/, $types ) {
@@ -274,18 +274,21 @@ sub enum {
 }
 
 sub _build_type_constraint {
+    my($spec) = @_;
 
-    my $spec = shift;
     my $code;
     $spec =~ s/\s+//g;
-    if ($spec =~ /^([^\[]+)\[(.+)\]$/) {
+
+    if ($spec =~ /\A (\w+) \[ (.+) \] \z/xms) {
         # parameterized
         my $constraint = $1;
         my $param      = $2;
         my $parent;
+
         if ($constraint eq 'Maybe') {
             $parent = _build_type_constraint('Undef');
-        } else {
+        }
+        else {
             $parent = _build_type_constraint($constraint);
         }
         my $child = _build_type_constraint($param);
@@ -359,6 +362,10 @@ sub find_type_constraint {
     }
 }
 
+sub find_or_create_does_type_constraint{
+    not_supported;
+}
+
 sub find_or_create_isa_type_constraint {
     my $type_constraint = shift;
 
@@ -369,33 +376,34 @@ sub find_or_create_isa_type_constraint {
            $1 ne 'Maybe'
     ;
 
-    my $code;
 
     $type_constraint =~ s/\s+//g;
 
-    $code = $TYPE{$type_constraint};
-    if (! $code) {
+    my $tc =  find_type_constraint($type_constraint);
+    if (!$tc) {
         my @type_constraints = split /\|/, $type_constraint;
         if (@type_constraints == 1) {
-            $code = $TYPE{$type_constraints[0]} ||
+            $tc = $TYPE{$type_constraints[0]} ||
                 _build_type_constraint($type_constraints[0]);
-        } else {
+        }
+        else {
             my @code_list = map {
                 $TYPE{$_} || _build_type_constraint($_)
             } @type_constraints;
-            $code = Mouse::Meta::TypeConstraint->new(
+
+            $tc = Mouse::Meta::TypeConstraint->new(
+                name => $type_constraint,
+
                 _compiled_type_constraint => sub {
-                    my $i = 0;
-                    for my $code (@code_list) {
+                    foreach my $code (@code_list) {
                         return 1 if $code->check($_[0]);
                     }
                     return 0;
                 },
-                name => $type_constraint,
             );
         }
     }
-    return $code;
+    return $tc;
 }
 
 1;

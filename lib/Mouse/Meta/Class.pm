@@ -192,6 +192,10 @@ sub new_object {
         $trigger->($instance, $value);
     }
 
+    if($self->is_anon_class){
+        $instance->{__METACLASS__} = $self;
+    }
+
     return $instance;
 }
 
