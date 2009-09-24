@@ -81,8 +81,12 @@ sub add_method {
     my($self, $name, $code) = @_;
 
     if(!defined $name){
-        $self->throw_error("You must pass a defined name");
+        $self->throw_error('You must pass a defined name');
     }
+    if(!defined $code){
+        $self->throw_error('You must pass a defined code');
+    }
+
     if(ref($code) ne 'CODE'){
         not_supported 'add_method for a method object';
     }

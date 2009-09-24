@@ -30,7 +30,7 @@ sub does_ok ($$;$) {
     }
     $message ||= "The object does $does";
 
-    if (does_ok($class_or_obj)) {
+    if (does_role($class_or_obj, $does)) {
         return __PACKAGE__->builder->ok(1, $message)
     }
     else {
@@ -71,6 +71,11 @@ sub export_type_constraints_as_functions { # TEST ONLY
     }
     return;
 }
+
+package Mouse::Meta::Attribute;
+
+sub applied_traits{            $_[0]->{traits} } # TEST ONLY
+sub has_applied_traits{ exists $_[0]->{traits} } # TEST ONLY
 
 1;
 

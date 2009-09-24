@@ -36,7 +36,9 @@ sub extends { Mouse::Meta::Class->initialize(scalar caller)->superclasses(@_) }
 
 sub has {
     my $meta = Mouse::Meta::Class->initialize(scalar caller);
-    $meta->add_attribute(@_);
+    my $name = shift;
+
+    $meta->add_attribute($_ => @_) for ref($name) ? @{$name} : $name;
 }
 
 sub before {

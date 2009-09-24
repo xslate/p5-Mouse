@@ -181,15 +181,7 @@ sub _apply_attributes{
 
             my $spec = $role->get_attribute($attr_name);
 
-            my $attr_metaclass = 'Mouse::Meta::Attribute';
-            if ( my $metaclass_name = $spec->{metaclass} ) {
-                $attr_metaclass = Mouse::Util::resolve_metaclass_alias(
-                    'Attribute',
-                    $metaclass_name
-                );
-            }
-
-            $attr_metaclass->create($class, $attr_name => %$spec);
+            $class->add_attribute($attr_name => %{$spec});
         }
     }
     elsif($args->{_to} eq 'role'){
