@@ -6,7 +6,8 @@ use base 'Exporter';
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-use Mouse::Util;
+use Mouse::Util qw(does_role);
+use Mouse::Meta::Module; # class_of
 use Mouse::Meta::TypeConstraint;
 
 our @EXPORT = qw(
@@ -215,10 +216,11 @@ sub class_type {
     if ($conf && $conf->{class}) {
         # No, you're using this wrong
         warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        subtype($name, as => $conf->{class});
-    } else {
-        subtype(
-            $name => where => sub { $_->isa($name) }
+        subtype $name, as => $conf->{class};
+    }
+    else {
+        subtype $name => (
+            where => sub { blessed($_) && $_->isa($name) },
         );
     }
 }
@@ -226,11 +228,8 @@ sub class_type {
 sub role_type {
     my($name, $conf) = @_;
     my $role = $conf->{role};
-    subtype(
-        $name => where => sub {
-            return unless defined $_ && ref($_) && $_->isa('Mouse::Object');
-            $_->meta->does_role($role);
-        }
+    subtype $name => (
+        $name => where => sub { does_role($_, $role) },
     );
 }
 
