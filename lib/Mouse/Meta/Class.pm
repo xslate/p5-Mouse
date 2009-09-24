@@ -14,7 +14,7 @@ use base qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Method' } # required for get_method()
 
-sub _new {
+sub _construct_meta {
     my($class, %args) = @_;
 
     $args{attributes} ||= {};
@@ -29,7 +29,7 @@ sub _new {
     #return Mouse::Meta::Class->initialize($class)->new_object(%args)
     #    if $class ne __PACKAGE__;
 
-    return bless \%args, $class;
+    return bless \%args, ref($class) || $class;
 }
 
 sub create_anon_class{
@@ -51,7 +51,23 @@ sub superclasses {
         @{ $self->{superclasses} } = @_;
     }
 
-    @{ $self->{superclasses} };
+    return @{ $self->{superclasses} };
+}
+
+sub find_method_by_name{
+    my($self, $method_name) = @_;
+    defined($method_name)
+        or $self->throw_error('You must define a method name to find');
+    foreach my $class( $self->linearized_isa ){
+        my $method = $self->initialize($class)->get_method($method_name);
+        return $method if defined $method;
+    }
+    return undef;
+}
+
+sub get_all_methods {
+    my($self) = @_;
+    return map{ $self->find_method_by_name($self) } $self->get_all_method_names;
 }
 
 sub get_all_method_names {

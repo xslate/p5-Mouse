@@ -24,7 +24,7 @@ use Mouse::Util qw/get_code_info not_supported load_class/;
             || $class->throw_error("You must pass a package name and it cannot be blessed");
 
         return $METACLASS_CACHE{$package_name}
-            ||= $class->_new(package => $package_name, @args);
+            ||= $class->_construct_meta(package => $package_name, @args);
     }
 
     sub class_of{
@@ -51,7 +51,6 @@ sub meta{ Mouse::Meta::Class->initialize(ref $_[0] || $_[0]) }
 sub _new{ Carp::croak("Mouse::Meta::Module is an abstract class") }
 
 sub name { $_[0]->{package} }
-sub _method_map{ $_[0]->{methods} }
 
 sub version   { no strict 'refs'; ${shift->name.'::VERSION'}   }
 sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }
@@ -88,7 +87,7 @@ sub add_method {
         not_supported 'add_method for a method object';
     }
 
-    $self->_method_map->{$name}++; # Moose stores meta object here.
+    $self->{methods}->{$name}++; # Moose stores meta object here.
 
     my $pkg = $self->name;
     no strict 'refs';
@@ -108,7 +107,7 @@ sub _code_is_mine { # taken from Class::MOP::Class
 sub has_method {
     my($self, $method_name) = @_;
 
-    return 1 if $self->_method_map->{$method_name};
+    return 1 if $self->{methods}->{$method_name};
     my $code = $self->name->can($method_name);
 
     return $code && $self->_code_is_mine($code);
