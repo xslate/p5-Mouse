@@ -35,7 +35,10 @@
 #!end included /home/s0710509/sperl/lib/5.10.1/ExtUtils/MANIFEST.SKIP
 
 
-xt/
+# Moose specific tests
+xt/compatibility
+t/.*/failing
+
 ^TODO$
 nytprof
 \.out$
