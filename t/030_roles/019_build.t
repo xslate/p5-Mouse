@@ -6,10 +6,6 @@ BEGIN {
     eval "use Test::Output;";
     plan skip_all => "Test::Output is required for this test" if $@;
 
-    unless(eval { require Class::Method::Modifiers::Fast } or eval{ require Class::Method::Modifiers }){
-        plan skip_all => "Class::Method::Modifiers(::Fast)? is required for this test" if $@;
-    }
-
     plan tests => 8;
 }
 

@@ -1,15 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More;
-BEGIN {
-    if (eval {require Class::Method::Modifiers::Fast } || eval {require Class::Method::Modifiers }) {
-        plan tests => 4;
-    }
-    else {
-        plan skip_all => "Class::Method::Modifiers required for this test";
-    }
-}
+use Test::More tests => 4;
 use Test::Exception;
 
 my @calls;

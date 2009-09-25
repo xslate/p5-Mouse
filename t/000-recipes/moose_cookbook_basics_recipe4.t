@@ -3,17 +3,12 @@
 use strict;
 use Test::More;
 BEGIN{
-    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifiers }){
-        eval 'use Regexp::Common; use Locale::US;';
-        if ($@) {
-            plan skip_all => 'Regexp::Common & Locale::US required for this test';
-        }
-        else{
-            plan 'no_plan';
-        }
+    eval 'use Regexp::Common; use Locale::US;';
+    if ($@) {
+        plan skip_all => 'Regexp::Common & Locale::US required for this test';
     }
     else{
-        plan skip_all => 'This test requires Class::Method::Modifiers(::Fast)?';
+        plan 'no_plan';
     }
 }
 

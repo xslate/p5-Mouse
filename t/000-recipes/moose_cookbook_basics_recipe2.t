@@ -1,15 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More;
-BEGIN{
-    if(eval{ require Class::Method::Modifiers::Fast } || eval{ require Class::Method::Modifiers }){
-        plan 'no_plan';
-    }
-    else{
-        plan skip_all => 'This test requires Class::Method::Modifiers(::Fast)?';
-    }
-}
+use Test::More 'no_plan';
 
 use Test::Exception;
 $| = 1;
