@@ -102,7 +102,7 @@ sub _code_is_mine { # taken from Class::MOP::Class
 
     my ( $code_package, $code_name ) = get_code_info($code);
 
-    return $code_package && $code_package eq $self->name
+    return $code_package && $code_package eq $self->{package}
         || ( $code_package eq 'constant' && $code_name eq '__ANON__' );
 }
 
@@ -110,7 +110,8 @@ sub has_method {
     my($self, $method_name) = @_;
 
     return 1 if $self->{methods}->{$method_name};
-    my $code = $self->name->can($method_name);
+
+    my $code = $self->{package}->can($method_name);
 
     return $code && $self->_code_is_mine($code);
 }
