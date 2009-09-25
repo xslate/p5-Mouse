@@ -37,4 +37,5 @@
 
 xt/
 ^TODO$
-
+nytprof
+\.out$
