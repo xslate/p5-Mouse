@@ -5,18 +5,15 @@ use Test::More tests => 7;
 use lib 't/lib';
 
 do {
+    local $SIG{__WARN__} = sub{ $_[0] =~ /deprecated/ or warn @_ };
+
     package MouseX::AttributeHelpers::Number;
     use Mouse;
     extends 'Mouse::Meta::Attribute';
 
-    has provides => (
-        is => 'rw',
-        isa => 'HashRef',
-    );
-
-    after 'install_accessors' => sub{
-        my ($attr) = @_;
-
+    sub create {
+        my ($self, @args) = @_;
+        my $attr = $self->SUPER::create(@args);
         my %provides = %{$attr->{provides}};
         my $method_constructors = {
             add => sub {
@@ -34,8 +31,8 @@ do {
         return $attr;
     };
 
-    package
-        Mouse::Meta::Attribute::Custom::MyNumber;
+    package # hide me from search.cpan.org
+        Mouse::Meta::Attribute::Custom::Number;
     sub register_implementation { 'MouseX::AttributeHelpers::Number' }
 
     1;
@@ -44,7 +41,7 @@ do {
     use Mouse::Role;
 
     has 'i' => (
-        metaclass => 'MyNumber',
+        metaclass => 'Number',
         is => 'rw',
         isa => 'Int',
         provides => {
@@ -57,7 +54,7 @@ do {
     use Mouse::Role;
 
     has 'j' => (
-        metaclass => 'MyNumber',
+        metaclass => 'Number',
         is => 'rw',
         isa => 'Int',
         provides => {

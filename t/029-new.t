@@ -37,9 +37,9 @@ throws_ok {
 Class->meta->make_immutable;
 
 throws_ok {
-    Class->new('non-hashref scalar');
+    Class->new([]);
 } qr/Single parameters to new\(\) must be a HASH ref/;
 
 throws_ok {
-    Class->new(undef);
+    Class->new(Class->new);
 } qr/Single parameters to new\(\) must be a HASH ref/;

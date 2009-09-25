@@ -7,14 +7,17 @@ use Test::More tests => 18;
     use Mouse;
     use Mouse::Util::TypeConstraints;
     type Baz => where { defined($_) && $_ eq 'Baz' };
+
     coerce Baz => from 'ArrayRef', via { 'Baz' };
+
     has 'bar' => ( is => 'rw', isa => 'Str | Baz | Undef', coerce => 1 );
 }
 
 eval {
     Foo->new( bar => +{} );
 };
-like($@, qr/^Attribute \(bar\) does not pass the type constraint because: Validation failed for 'Str\|Baz\|Undef' failed with value HASH\(\w+\)/, 'type constraint and coercion failed');
+like($@, qr/^Attribute \(bar\) does not pass the type constraint because: Validation failed for 'Str\|Baz\|Undef' failed with value HASH\(\w+\)/, 'type constraint and coercion failed')
+    or diag "\$@='$@'";
 
 eval {
     isa_ok(Foo->new( bar => undef ), 'Foo');
@@ -69,7 +72,7 @@ is $foo->foo, 'Name', 'foo is Name';
 
 {
     package KLASS;
-    sub new { bless {}, shift };
+    use Mouse;
 }
 {   
     package Funk;
