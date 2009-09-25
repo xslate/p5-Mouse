@@ -39,3 +39,5 @@ xt/
 ^TODO$
 nytprof
 \.out$
+
+author/benchmarks
