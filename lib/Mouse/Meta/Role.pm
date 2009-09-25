@@ -41,8 +41,7 @@ sub get_required_method_list{
 }
 
 sub add_required_methods {
-    my $self = shift;
-    my @methods = @_;
+    my($self, @methods) = @_;
     push @{$self->{required_methods}}, @methods;
 }
 

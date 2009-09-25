@@ -10,16 +10,16 @@ our @EXPORT_OK = qw(
     find_meta
     does_role
     resolve_metaclass_alias
+    apply_all_roles
     english_list
 
     load_class
     is_class_loaded
 
-    apply_all_roles
-    not_supported
-
     get_linear_isa
     get_code_info
+
+    not_supported
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
@@ -295,9 +295,41 @@ Mouse::Util - features, with or without their dependencies
 
 =head1 IMPLEMENTATIONS FOR
 
-=head2 L<MRO::Compat>
+=head2 Moose::Util
 
-=head3 get_linear_isa
+=head3 C<find_meta>
+
+=head3 C<does_role>
+
+=head3 C<resolve_metaclass_alias>
+
+=head3 C<apply_all_roles>
+
+=head3 C<english_list>
+
+=head2 Class::MOP
+
+=head3 C<is_class_loaded>
+
+=head3 C<load_class>
+
+=head2 MRO::Compat
+
+=head3 C<get_linear_isa>
+
+=head2 Sub::Identify
+
+=head3 C<get_code_info>
+
+=head1 UTILITIES FOR MOUSE
+
+=over 4
+
+=item *
+
+C<not_supported>
+
+=back
 
 =cut
 
