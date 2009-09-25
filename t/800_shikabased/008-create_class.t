@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Mouse ();
-use Test::More tests => 20;
+use Test::More tests => 19;
 use Test::Exception;
 
 # error handling
@@ -26,11 +26,6 @@ throws_ok {
         methods => "foo"
     );
 } qr/You must pass a HASH ref of methods/;
-
-
-throws_ok {
-    Mouse::Meta::Class->create()
-} qr/You must pass a package name/;
 
 # normal cases
 isa_ok(Mouse::Meta::Class->create("FooBar"), "Mouse::Meta::Class");
