@@ -299,7 +299,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::Module - Common base class for Mouse::Meta::Class and Mouse::Meta::Role
+Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Role
 
 =cut
 

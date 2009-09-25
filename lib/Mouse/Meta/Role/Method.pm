@@ -8,3 +8,13 @@ use base qw(Mouse::Meta::Method);
 
 __END__
 
+=head1 NAME
+
+Mouse::Meta::Role::Method - A Mouse Method metaclass for Roles
+
+=head1 SEE ALSO
+
+L<Moose::Meta::Role::Method>
+
+=cut
+

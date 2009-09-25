@@ -247,7 +247,7 @@ We're also going as light on dependencies as possible.
 L<Class::Method::Modifiers::Fast> or L<Class::Method::Modifiers> is required
 if you want support for L</before>, L</after>, and L</around>.
 
-=head2 MOOSE COMPAT
+=head2 MOOSE COMPATIBILITY
 
 Compatibility with Moose has been the utmost concern. Fewer than 1% of the
 tests fail when run against Moose instead of Mouse. Mouse code coverage is also
@@ -281,52 +281,52 @@ If you would like to help maintain this module, please get in touch with us.
 
 =head1 KEYWORDS
 
-=head2 meta -> Mouse::Meta::Class
+=head2 C<< $object->meta -> Mouse::Meta::Class >>
 
 Returns this class' metaclass instance.
 
-=head2 extends superclasses
+=head2 C<< extends superclasses >>
 
 Sets this class' superclasses.
 
-=head2 before (method|methods) => Code
+=head2 C<< before (method|methods) => CodeRef >>
 
 Installs a "before" method modifier. See L<Moose/before> or
 L<Class::Method::Modifiers/before>.
 
 Use of this feature requires L<Class::Method::Modifiers>!
 
-=head2 after (method|methods) => Code
+=head2 C<< after (method|methods) => CodeRef >>
 
 Installs an "after" method modifier. See L<Moose/after> or
 L<Class::Method::Modifiers/after>.
 
 Use of this feature requires L<Class::Method::Modifiers>!
 
-=head2 around (method|methods) => Code
+=head2 C<< around (method|methods) => CodeRef >>
 
 Installs an "around" method modifier. See L<Moose/around> or
 L<Class::Method::Modifiers/around>.
 
 Use of this feature requires L<Class::Method::Modifiers>!
 
-=head2 has (name|names) => parameters
+=head2 C<< has (name|names) => parameters >>
 
 Adds an attribute (or if passed an arrayref of names, multiple attributes) to
 this class. Options:
 
 =over 4
 
-=item is => ro|rw
+=item C<< is => ro|rw|bare >>
 
 If specified, inlines a read-only/read-write accessor with the same name as
 the attribute.
 
-=item isa => TypeConstraint
+=item C<< isa => TypeConstraint >>
 
 Provides type checking in the constructor and accessor. The following types are
-supported. Any unknown type is taken to be a class check (e.g. isa =>
-'DateTime' would accept only L<DateTime> objects).
+supported. Any unknown type is taken to be a class check
+(e.g. C<< isa => 'DateTime' >> would accept only L<DateTime> objects).
 
     Any Item Bool Undef Defined Value Num Int Str ClassName
     Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
@@ -335,85 +335,90 @@ supported. Any unknown type is taken to be a class check (e.g. isa =>
 For more documentation on type constraints, see L<Mouse::Util::TypeConstraints>.
 
 
-=item required => 0|1
+=item C<< required => Bool >>
 
 Whether this attribute is required to have a value. If the attribute is lazy or
 has a builder, then providing a value for the attribute in the constructor is
 optional.
 
-=item init_arg => Str | Undef
+=item C<< init_arg => Str | Undef >>
 
 Allows you to use a different key name in the constructor.  If undef, the
-attribue can't be passed to the constructor.
+attribute can't be passed to the constructor.
 
-=item default => Value | CodeRef
+=item C<< default => Value | CodeRef >>
 
 Sets the default value of the attribute. If the default is a coderef, it will
 be invoked to get the default value. Due to quirks of Perl, any bare reference
 is forbidden, you must wrap the reference in a coderef. Otherwise, all
 instances will share the same reference.
 
-=item lazy => 0|1
+=item C<< lazy => Bool >>
 
 If specified, the default is calculated on demand instead of in the
 constructor.
 
-=item predicate => Str
+=item C<< predicate => Str >>
 
 Lets you specify a method name for installing a predicate method, which checks
 that the attribute has a value. It will not invoke a lazy default or builder
 method.
 
-=item clearer => Str
+=item C<< clearer => Str >>
 
 Lets you specify a method name for installing a clearer method, which clears
 the attribute's value from the instance. On the next read, lazy or builder will
 be invoked.
 
-=item handles => HashRef|ArrayRef
+=item C<< handles => HashRef|ArrayRef >>
 
 Lets you specify methods to delegate to the attribute. ArrayRef forwards the
 given method names to method calls on the attribute. HashRef maps local method
 names to remote method names called on the attribute. Other forms of
 L</handles>, such as regular expression and coderef, are not yet supported.
 
-=item weak_ref => 0|1
+=item C<< weak_ref => Bool >>
 
 Lets you automatically weaken any reference stored in the attribute.
 
 Use of this feature requires L<Scalar::Util>!
 
-=item trigger => CodeRef
+=item C<< trigger => CodeRef >>
 
 Any time the attribute's value is set (either through the accessor or the constructor), the trigger is called on it. The trigger receives as arguments the instance, the new value, and the attribute instance.
 
-Mouse 0.05 supported more complex triggers, but this behavior is now removed.
-
-=item builder => Str
+=item C<< builder => Str >>
 
 Defines a method name to be called to provide the default value of the
 attribute. C<< builder => 'build_foo' >> is mostly equivalent to
 C<< default => sub { $_[0]->build_foo } >>.
 
-=item auto_deref => 0|1
+=item C<< auto_deref => Bool >>
 
 Allows you to automatically dereference ArrayRef and HashRef attributes in list
 context. In scalar context, the reference is returned (NOT the list length or
 bucket status). You must specify an appropriate type constraint to use
 auto_deref.
 
-=item lazy_build => 0|1
+=item C<< lazy_build => Bool >>
 
-Automatically define lazy => 1 as well as builder => "_build_$attr", clearer =>
-"clear_$attr', predicate => 'has_$attr' unless they are already defined.
+Automatically define the following options:
+
+    has $attr => (
+        # ...
+        lazy      => 1
+        builder   => "_build_$attr",
+        clearer   => "clear_$attr",
+        predicate => "has_$attr",
+    );
 
 =back
 
-=head2 confess error -> BOOM
+=head2 C<< confess(message) -> BOOM >>
 
 L<Carp/confess> for your convenience.
 
-=head2 blessed value -> ClassName | undef
+=head2 C<< blessed(value) -> ClassName | undef >>
 
 L<Scalar::Util/blessed> for your convenience.
 
@@ -429,25 +434,21 @@ You may use L</extends> to replace the superclass list.
 Please unimport Mouse (C<no Mouse>) so that if someone calls one of the
 keywords (such as L</extends>) it will break loudly instead breaking subtly.
 
-=head1 FUNCTIONS
-
-=head2 load_class Class::Name
-
-This will load a given C<Class::Name> (or die if it's not loadable).
-This function can be used in place of tricks like
-C<eval "use $module"> or using C<require>.
-
-=head2 is_class_loaded Class::Name -> Bool
-
-Returns whether this class is actually loaded or not. It uses a heuristic which
-involves checking for the existence of C<$VERSION>, C<@ISA>, and any
-locally-defined method.
-
 =head1 SOURCE CODE ACCESS
 
-We have a public git repo:
+We have a public git repository:
 
  git clone git://jules.scsys.co.uk/gitmo/Mouse.git
+
+=head1 DEPENDENCIES
+
+Perl 5.6.2 or later.
+
+=head1 SEE ALSO
+
+L<Moose>
+
+L<Class::MOP>
 
 =head1 AUTHORS
 
@@ -467,13 +468,9 @@ with plenty of code borrowed from L<Class::MOP> and L<Moose>
 
 =head1 BUGS
 
-There is a known issue with Mouse on 5.6.2 regarding the @ISA tests. Until
-this is resolve the minimum version of Perl for Mouse is set to 5.8.0. Patches
-to resolve these tests are more than welcome.
-
-Please report any bugs through RT: email
-C<bug-mouse at rt.cpan.org>, or browse
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Mouse>.
+All complex software has bugs lurking in it, and this module is no exception.
+Please report any bugs to C<bug-mouse at rt.cpan.org>, or through the web
+interface at L<http://rt.cpan.org/Public/Dist/Display.html?Name=Mouse>
 
 =head1 COPYRIGHT AND LICENSE
 

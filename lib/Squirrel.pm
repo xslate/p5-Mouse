@@ -52,7 +52,7 @@ __END__
 
 =head1 NAME
 
-Squirrel - Use L<Mouse>, unless L<Moose> is already loaded.
+Squirrel - Use L<Mouse>, unless L<Moose> is already loaded. (DEPRECATED)
 
 =head1 SYNOPSIS
 
@@ -64,12 +64,12 @@ Squirrel - Use L<Mouse>, unless L<Moose> is already loaded.
 
 =head1 DEPRECATION
 
-L<Squirrel> is deprecated. L<Any::Moose> provides the same functionality,
+C<Squirrel> is deprecated. C<Any::Moose> provides the same functionality,
 but better. :)
 
 =head1 DESCRIPTION
 
-L<Moose> and L<Squirrel> are TEH BEST FRENDS, but if L<Moose> isn't there
+L<Moose> and L<Squirrel> are THE BEST FRIENDS, but if L<Moose> isn't there
 L<Squirrel> will hang out with L<Mouse> as well.
 
 When your own code doesn't actually care whether or not you use L<Moose> or
@@ -78,6 +78,10 @@ L<Mouse> you can use either, and let your users decide for you.
 This lets you run with minimal dependencies and have a faster startup, but if
 L<Moose> is already in use you get all the benefits of using that
 (transformability, introspection, more opportunities for code reuse, etc).
+
+=head1 SEE ALSO
+
+L<Any::Moose>
 
 =cut
 

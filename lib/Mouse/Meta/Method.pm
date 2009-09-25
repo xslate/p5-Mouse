@@ -23,3 +23,13 @@ sub package_name{ $_[0]->{package} }
 1;
 
 __END__
+
+=head1 NAME
+
+Mouse::Meta::Method - A Mouse Method metaclass
+
+=head1 SEE ALSO
+
+L<Moose::Meta::Method>
+
+=cut

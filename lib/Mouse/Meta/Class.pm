@@ -369,7 +369,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::Class - hook into the Mouse MOP
+Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 METHODS
 
@@ -428,11 +428,9 @@ Create a new instance.
 Clones the given C<Instance> which must be an instance governed by this
 metaclass.
 
-=head1 BUGS
+=head1 SEE ALSO
 
-All complex software has bugs lurking in it, and this module is no
-exception. If you find a bug please either email me, or add the bug
-to cpan-RT.
+L<Moose::Meta::Class>
 
 =cut
 

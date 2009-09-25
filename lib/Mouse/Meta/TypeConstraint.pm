@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::TypeConstraint - The Mouse Type Constraint Metaclass
+Mouse::Meta::TypeConstraint - The Mouse Type Constraint metaclass
 
 =head1 DESCRIPTION
 
@@ -105,6 +105,10 @@ Don't use this.
 =item B<name>
 
 =back
+
+=head1 SEE ALSO
+
+L<Moose::Meta::TypeConstraint>
 
 =cut
 

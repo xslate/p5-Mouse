@@ -331,9 +331,17 @@ Mouse::Util - features, with or without their dependencies
 
 =head2 Class::MOP
 
-=head3 C<is_class_loaded>
+=head2 C<< is_class_loaded(ClassName) -> Bool >>
 
-=head3 C<load_class>
+Returns whether C<ClassName> is actually loaded or not. It uses a heuristic which
+involves checking for the existence of C<$VERSION>, C<@ISA>, and any
+locally-defined method.
+
+=head3 C<< load_class(ClassName) >>
+
+This will load a given C<ClassName> (or die if it's not loadable).
+This function can be used in place of tricks like
+C<eval "use $module"> or using C<require>.
 
 =head2 MRO::Compat
 
@@ -352,6 +360,16 @@ Mouse::Util - features, with or without their dependencies
 C<not_supported>
 
 =back
+
+=head1 SEE ALSO
+
+L<Moose::Util>
+
+L<Scalar::Util>
+
+L<Sub::Identify>
+
+L<MRO::Compat>
 
 =cut
 

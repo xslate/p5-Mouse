@@ -161,59 +161,60 @@ __END__
 
 =head1 NAME
 
-Mouse::Role - define a role in Mouse
+Mouse::Role - The Mouse Role
+
+=head1 SYNOPSIS
+
+    package MyRole;
+    use Mouse::Role;
 
 =head1 KEYWORDS
 
-=head2 meta -> Mouse::Meta::Role
+=head2 C<< meta -> Mouse::Meta::Role >>
 
 Returns this role's metaclass instance.
 
-=head2 before (method|methods) => Code
+=head2 C<< before (method|methods) -> CodeRef >>
 
-Sets up a "before" method modifier. See L<Moose/before> or
+Sets up a B<before> method modifier. See L<Moose/before> or
 L<Class::Method::Modifiers/before>.
 
-=head2 after (method|methods) => Code
+=head2 C<< after (method|methods) => CodeRef >>
 
-Sets up an "after" method modifier. See L<Moose/after> or
+Sets up an B<after> method modifier. See L<Moose/after> or
 L<Class::Method::Modifiers/after>.
 
-=head2 around (method|methods) => Code
+=head2 C<< around (method|methods) => CodeRef >>
 
-Sets up an "around" method modifier. See L<Moose/around> or
+Sets up an B<around> method modifier. See L<Moose/around> or
 L<Class::Method::Modifiers/around>.
 
-=over 4
+=head2 C<super>
 
-=item B<super>
+Sets up the B<super> keyword. See L<Moose/super>.
 
-Sets up the "super" keyword. See L<Moose/super>.
+=head2  C<< override method => CodeRef >>
 
-=item B<override ($name, &sub)>
+Sets up an B<override> method modifier. See L<Moose/Role/override>.
 
-Sets up an "override" method modifier. See L<Moose/Role/override>.
+=head2 C<inner>
 
-=item B<inner>
+This is not supported in roles and emits an error. See L<Moose/Role>.
 
-This is not supported and emits an error. See L<Moose/Role>.
+=head2 C<< augment method => CodeRef >>
 
-=item B<augment ($name, &sub)>
+This is not supported in roles and emits an error. See L<Moose/Role>.
 
-This is not supported and emits an error. See L<Moose/Role>.
-
-=back
-
-=head2 has (name|names) => parameters
+=head2 C<< has (name|names) => parameters >>
 
 Sets up an attribute (or if passed an arrayref of names, multiple attributes) to
 this role. See L<Mouse/has>.
 
-=head2 confess error -> BOOM
+=head2 C<< confess(error) -> BOOM >>
 
 L<Carp/confess> for your convenience.
 
-=head2 blessed value -> ClassName | undef
+=head2 C<< blessed(value) -> ClassName | undef >>
 
 L<Scalar::Util/blessed> for your convenience.
 
@@ -225,8 +226,12 @@ Importing Mouse::Role will give you sugar.
 
 =head2 unimport
 
-Please unimport Mouse (C<no Mouse::Role>) so that if someone calls one of the
+Please unimport (C<< no Mouse::Role >>) so that if someone calls one of the
 keywords (such as L</has>) it will break loudly instead breaking subtly.
+
+=head1 SEE ALSO
+
+L<Moose::Role>
 
 =cut
 
