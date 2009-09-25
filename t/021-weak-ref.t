@@ -2,16 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More;
-BEGIN {
-    if (eval "require Scalar::Util; 1") {
-        plan tests => 21;
-    }
-    else {
-        plan skip_all => "Scalar::Util required for this test";
-    }
-}
-
+use Test::More tests => 31;
 use Test::Exception;
 
 my %destroyed;
@@ -35,7 +26,9 @@ do {
             $destroyed{ $self->type }++;
         }
     };
+};
 
+sub do_test{
     my $self = Class->new(type => 'accessor');
     $self->self($self);
 
@@ -47,11 +40,22 @@ do {
         ok(Scalar::Util::isweak($object->{self}), "weak reference");
         ok($object->self->self->self->self, "we've got circularity");
     }
-};
+}
+
+do_test();
 
 is($destroyed{accessor}, 1, "destroyed from the accessor");
 is($destroyed{constructor}, 1, "destroyed from the constructor");
 is($destroyed{middle}, 1, "casuality of war");
+
+Class->meta->make_immutable();
+ok(Class->meta->is_immutable, 'make_immutable made it immutable');
+do_test();
+
+is($destroyed{accessor}, 2, "destroyed from the accessor (after make_immutable)");
+is($destroyed{constructor}, 2, "destroyed from the constructor (after make_immutable)");
+is($destroyed{middle}, 2, "casuality of war (after make_immutable)");
+
 
 ok(!Class->meta->get_attribute('type')->is_weak_ref, "type is not a weakref");
 ok(Class->meta->get_attribute('self')->is_weak_ref, "self IS a weakref");

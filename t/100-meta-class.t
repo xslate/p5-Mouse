@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 22;
+use Test::More tests => 26;
 use Test::Exception;
 {
     package Class;
@@ -95,4 +95,17 @@ ok($child_meta->has_method('child_method'));
 
 is( join(' ', sort $child_meta->get_method_list),
     join(' ', sort qw(meta bishop child_method))
+);
+
+can_ok($child_meta, 'find_method_by_name');
+is $child_meta->find_method_by_name('child_method')->fully_qualified_name, 'Child::child_method';
+is $child_meta->find_method_by_name('pawn')->fully_qualified_name,         'Class::pawn';
+
+
+is( join(' ', sort map{ $_->fully_qualified_name } grep{ $_->package_name ne 'Mouse::Object' } $child_meta->get_all_methods),
+    join(' ', sort qw(
+        Child::bishop Child::child_method Child::meta
+
+        Class::MY_CONST Class::has_pawn Class::pawn Class::stub Class::stub_with_attr
+    ))
 );

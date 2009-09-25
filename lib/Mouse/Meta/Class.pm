@@ -67,7 +67,7 @@ sub find_method_by_name{
 
 sub get_all_methods {
     my($self) = @_;
-    return map{ $self->find_method_by_name($self) } $self->get_all_method_names;
+    return map{ $self->find_method_by_name($_) } $self->get_all_method_names;
 }
 
 sub get_all_method_names {
@@ -441,41 +441,36 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 METHODS
 
-=head2 initialize ClassName -> Mouse::Meta::Class
+=head2 C<< initialize(ClassName) -> Mouse::Meta::Class >>
 
 Finds or creates a Mouse::Meta::Class instance for the given ClassName. Only
 one instance should exist for a given class.
 
-=head2 name -> ClassName
+=head2 C<< name -> ClassName >>
 
 Returns the name of the owner class.
 
-=head2 superclasses -> [ClassName]
+=head2 C<< superclasses -> ClassNames >> C<< superclass(ClassNames) >>
 
 Gets (or sets) the list of superclasses of the owner class.
 
-=head2 add_attribute (name => spec | Mouse::Meta::Attribute)
+=head2 C<< add_attribute(name => spec | Mouse::Meta::Attribute) >>
 
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
 
-=head2 get_all_attributes -> (Mouse::Meta::Attribute)
+=head2 C<< get_all_attributes -> (Mouse::Meta::Attribute) >>
 
 Returns the list of all L<Mouse::Meta::Attribute> instances associated with
 this class and its superclasses.
 
-=head2 get_attribute_map -> { name => Mouse::Meta::Attribute }
-
-Returns a mapping of attribute names to their corresponding
-L<Mouse::Meta::Attribute> objects.
-
-=head2 get_attribute_list -> { name => Mouse::Meta::Attribute }
+=head2 C<< get_attribute_list -> { name => Mouse::Meta::Attribute } >>
 
 This returns a list of attribute names which are defined in the local
 class. If you want a list of all applicable attributes for a class,
 use the C<get_all_attributes> method.
 
-=head2 has_attribute Name -> Bool
+=head2 C<< has_attribute(Name) -> Bool >>
 
 Returns whether we have a L<Mouse::Meta::Attribute> with the given name.
 
@@ -483,15 +478,15 @@ Returns whether we have a L<Mouse::Meta::Attribute> with the given name.
 
 Returns the L<Mouse::Meta::Attribute> with the given name.
 
-=head2 linearized_isa -> [ClassNames]
+=head2 C<< linearized_isa -> [ClassNames] >>
 
 Returns the list of classes in method dispatch order, with duplicates removed.
 
-=head2 new_object Parameters -> Instance
+=head2 C<< new_object(Parameters) -> Instance >>
 
-Create a new instance.
+Creates a new instance.
 
-=head2 clone_object Instance -> Instance
+=head2 C<< clone_object(Instance, Parameters) -> Instance >>
 
 Clones the given C<Instance> which must be an instance governed by this
 metaclass.

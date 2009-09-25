@@ -92,6 +92,7 @@ do {
     sub bar {}
 
     package I;
+    no warnings 'once'; # work around 5.6.2
     our $NOT_CODE = 1;
 };
 

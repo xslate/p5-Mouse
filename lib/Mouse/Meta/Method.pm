@@ -19,6 +19,10 @@ sub body        { $_[0]->{body}    }
 sub name        { $_[0]->{name}    }
 sub package_name{ $_[0]->{package} }
 
+sub fully_qualified_name {
+    my $self = shift;
+    return $self->package_name . '::' . $self->name;
+}
 
 1;
 

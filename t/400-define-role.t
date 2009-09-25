@@ -71,7 +71,8 @@ TODO: {
     eval {
         excludes 'excluded';
     };
-    local our $TODO = "Mouse::Role does not currently support 'excludes'";
+    our $TODO;
+    local $TODO = "Mouse::Role does not currently support 'excludes'";
     ::ok(!$@, "excludes");
 
     no Mouse::Role;

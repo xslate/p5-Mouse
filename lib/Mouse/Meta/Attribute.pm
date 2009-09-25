@@ -376,7 +376,7 @@ It adds the following options to the constructor:
 
 =over 4
 
-=item * C<< is => 'ro', 'rw', 'bare' >>
+=item C<< is => 'ro', 'rw', 'bare' >>
 
 This provides a shorthand for specifying the C<reader>, C<writer>, or
 C<accessor> names. If the attribute is read-only ('ro') then it will
@@ -392,7 +392,7 @@ Use 'bare' when you are deliberately not installing any methods
 Moose will issue a deprecation warning when this attribute is added to a
 metaclass.
 
-=item * C<< isa => Type >>
+=item C<< isa => Type >>
 
 This option accepts a type. The type can be a string, which should be
 a type name. If the type name is unknown, it is assumed to be a class
@@ -404,14 +404,14 @@ If you I<also> provide a C<does> option, then your C<isa> option must
 be a class name, and that class must do the role specified with
 C<does>.
 
-=item * C<< does => Role >>
+=item C<< does => Role >>
 
 This is short-hand for saying that the attribute's type must be an
 object which does the named role.
 
 B<This option is not yet supported.>
 
-=item * C<< coerce => Bool >>
+=item C<< coerce => Bool >>
 
 This option is only valid for objects with a type constraint
 (C<isa>). If this is true, then coercions will be applied whenever
@@ -419,12 +419,12 @@ this attribute is set.
 
 You can make both this and the C<weak_ref> option true.
 
-=item * C<< trigger => CodeRef >>
+=item C<< trigger => CodeRef >>
 
 This option accepts a subroutine reference, which will be called after
 the attribute is set.
 
-=item * C<< required => Bool >>
+=item C<< required => Bool >>
 
 An attribute which is required must be provided to the constructor. An
 attribute which is required can also have a C<default> or C<builder>,
@@ -433,24 +433,24 @@ which will satisfy its required-ness.
 A required attribute must have a C<default>, C<builder> or a
 non-C<undef> C<init_arg>
 
-=item * C<< lazy => Bool >>
+=item C<< lazy => Bool >>
 
 A lazy attribute must have a C<default> or C<builder>. When an
 attribute is lazy, the default value will not be calculated until the
 attribute is read.
 
-=item * C<< weak_ref => Bool >>
+=item C<< weak_ref => Bool >>
 
 If this is true, the attribute's value will be stored as a weak
 reference.
 
-=item * C<< auto_deref => Bool >>
+=item C<< auto_deref => Bool >>
 
 If this is true, then the reader will dereference the value when it is
 called. The attribute must have a type constraint which defines the
 attribute as an array or hash reference.
 
-=item * C<< lazy_build => Bool >>
+=item C<< lazy_build => Bool >>
 
 Setting this to true makes the attribute lazy and provides a number of
 default methods.
@@ -479,7 +479,7 @@ on success, otherwise C<confess>es.
 
 =head2 C<< clone_and_inherit_options(options) -> Mouse::Meta::Attribute >>
 
-Creates a new attribute in OwnerClass, inheriting options from parent classes.
+Creates a new attribute in the owner class, inheriting options from parent classes.
 Accessors and helper methods are installed. Some error checking is done.
 
 =head1 SEE ALSO
