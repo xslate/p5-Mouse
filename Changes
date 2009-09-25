@@ -1,11 +1,13 @@
 Revision history for Mouse
 
-0.33_02
-    * Make sure to work on 5.6.2
+0.34
+    * Make sure to work on 5.6.2 (gfx)
 
-    * Remove Class::Method::Modifiers dependency
+    * Remove Class::Method::Modifiers dependency (gfx)
 
-    * Remove testing modules from inc/
+    * Remove testing modules from inc/ (gfx)
+
+    * Put t/019-handles.t on ice (gfx)
 
 0.33_01 Thu Sep 24 16:16:57 2009
     * Implement traits => [...] in has() (gfx)
