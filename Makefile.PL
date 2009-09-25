@@ -15,6 +15,8 @@ test_requires 'Test::More'      => 0.88;
 test_requires 'Test::Exception' => 0.27;
 test_requires 'Test::Output'    => 0.16;
 
+recommends 'MRO::Compat' if $] < 5.010;
+
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
     require 'lib/Mouse/Spec.pm';
@@ -51,8 +53,6 @@ sub create_moose_compatibility_test {
         '010-isa-or.t'     => 'Mouse has a [BUG]',
         '044-attribute-metaclass.t' => 'Moose::Meta::Attribute does not have a "create"',
         '047-attribute-metaclass-role.t' => 'Moose::Meta::Attribute does not have a "create"',
-        '201-squirrel.t'      => 'skip Squirrel',
-        '202-squirrel-role.t' => 'Squirrel is ...',
         '600-tiny-tiny.t'     => "Moose doesn't support ::Tiny",
         '601-tiny-mouse.t'    => "Moose doesn't support ::Tiny",
         '602-mouse-tiny.t'    => "Moose doesn't support ::Tiny",
@@ -66,7 +66,9 @@ sub create_moose_compatibility_test {
             wanted => sub {
                 return unless -f $_;
 
-                return if /failing/; # skip tests in failing/ directories
+                return if /failing/; # skip tests in failing/ directories which  are Moose specific
+
+                return if /100_with_moose/; # tests with Moose
 
                 my $basename = File::Basename::basename($_);
                 return if $basename =~ /^\./;

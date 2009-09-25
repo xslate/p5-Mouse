@@ -28,7 +28,7 @@ __END__
 
 =head1 NAME
 
-Squirrel::Role - Use Mouse::Role, unless MooseRole is already loaded. (DEPRECATED)
+Squirrel::Role - Use Mouse::Role, unless Moose::Role is already loaded. (DEPRECATED)
 
 =cut
 
