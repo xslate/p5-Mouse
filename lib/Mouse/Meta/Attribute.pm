@@ -203,8 +203,6 @@ sub _create_args {
     $_[0]->{_create_args}
 }
 
-sub accessor_metaclass { 'Mouse::Meta::Method::Accessor' }
-
 sub interpolate_class{
     my($class, $name, $args) = @_;
 
@@ -277,7 +275,7 @@ sub verify_type_constraint_error {
 sub coerce_constraint { ## my($self, $value) = @_;
     my $type = $_[0]->{type_constraint}
         or return $_[1];
-    return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $_[0]->type_constraint, $_[1]);
+    return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $type, $_[1]);
 }
 
 sub _canonicalize_handles {
@@ -299,7 +297,7 @@ sub clone_and_inherit_options{
     my $self = shift;
     my $name = shift;
 
-    return ref($self)->new($name, %{$self}, @_ == 1 ? %{$_[0]} : @_);
+    return ref($self)->new($name, %{$self}, (@_ == 1) ? %{$_[0]} : @_);
 }
 
 sub clone_parent {
@@ -312,7 +310,7 @@ sub clone_parent {
         . "Use \$meta->add_attribute and \$attr->install_accessors instead.");
 
 
-    $self->create($class, $name, %args);
+    $self->clone_and_inherited_args($class, $name, %args);
 }
 
 sub get_parent_args {
@@ -333,17 +331,19 @@ sub install_accessors{
     my($attribute) = @_;
 
     my $metaclass       = $attribute->{associated_class};
-    my $generator_class = $attribute->accessor_metaclass;
 
     foreach my $type(qw(accessor reader writer predicate clearer handles)){
         if(exists $attribute->{$type}){
             my $installer    = '_install_' . $type;
-            $generator_class->$installer($attribute, $attribute->{$type}, $metaclass);
+
+            Mouse::Meta::Method::Accessor->$installer($attribute, $attribute->{$type}, $metaclass);
+
             $attribute->{associated_methods}++;
         }
     }
 
     if($attribute->can('create') != \&create){
+        # backword compatibility
         $attribute->create($metaclass, $attribute->name, %{$attribute});
     }
 

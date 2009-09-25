@@ -4,7 +4,6 @@ use warnings;
 use base qw/Exporter/;
 
 use Carp qw(confess);
-use B ();
 
 our @EXPORT_OK = qw(
     find_meta
@@ -94,6 +93,8 @@ BEGIN {
     sub get_code_info($) {
         my ($coderef) = @_;
         ref($coderef) or return;
+
+        require B;
 
         my $cv = B::svref_2object($coderef);
         $cv->isa('B::CV') or return;
@@ -247,7 +248,7 @@ sub apply_all_roles {
         if ($i + 1 < $max && ref($_[$i + 1])) {
             push @roles, [ $_[$i++] => $_[$i] ];
         } else {
-            push @roles, [ $_[$i] => {} ];
+            push @roles, [ $_[$i]   => undef ];
         }
         my $role_name = $roles[-1][0];
         load_class($role_name);

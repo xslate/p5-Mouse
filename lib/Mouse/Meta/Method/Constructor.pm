@@ -6,17 +6,19 @@ sub generate_constructor_method_inline {
     my ($class, $metaclass) = @_;
 
     my $associated_metaclass_name = $metaclass->name;
-    my @attrs = $metaclass->get_all_attributes;
-    my $buildall = $class->_generate_BUILDALL($metaclass);
-    my $buildargs = $class->_generate_BUILDARGS($metaclass);
-    my $processattrs = $class->_generate_processattrs($metaclass, \@attrs);
+    my @attrs         = $metaclass->get_all_attributes;
+
+    my $buildall      = $class->_generate_BUILDALL($metaclass);
+    my $buildargs     = $class->_generate_BUILDARGS($metaclass);
+    my $processattrs  = $class->_generate_processattrs($metaclass, \@attrs);
+
     my @compiled_constraints = map { $_ ? $_->{_compiled_type_constraint} : undef } map { $_->{type_constraint} } @attrs;
 
     my $code = <<"...";
     sub {
         my \$class = shift;
         return \$class->Mouse::Object::new(\@_)
-            if \$class ne '$associated_metaclass_name';
+            if \$class ne q{$associated_metaclass_name};
         $buildargs;
         my \$instance = bless {}, \$class;
         $processattrs;
@@ -26,7 +28,6 @@ sub generate_constructor_method_inline {
 ...
 
     local $@;
-    #warn $code;
     my $res = eval $code;
     die $@ if $@;
     $res;
@@ -156,7 +157,7 @@ sub _generate_processattrs {
 sub _generate_BUILDARGS {
     my($self, $metaclass) = @_;
 
-    if ($metaclass->name->can('BUILDARGS') && $metaclass->name->can('BUILDARGS') != Mouse::Object->can('BUILDARGS')) {
+    if ($metaclass->name->can('BUILDARGS') && $metaclass->name->can('BUILDARGS') != \&Mouse::Object::BUILDARGS) {
         return 'my $args = $class->BUILDARGS(@_)';
     }
 
@@ -175,16 +176,15 @@ sub _generate_BUILDARGS {
 
 sub _generate_BUILDALL {
     my ($class, $metaclass) = @_;
+
     return '' unless $metaclass->name->can('BUILD');
 
-    my @code = ();
-    push @code, q{no strict 'refs';};
-    push @code, q{no warnings 'once';};
-    no strict 'refs';
-    no warnings 'once';
-    for my $klass ($metaclass->linearized_isa) {
-        if (*{ $klass . '::BUILD' }{CODE}) {
-            unshift  @code, qq{${klass}::BUILD(\$instance, \$args);};
+    my @code;
+    for my $class ($metaclass->linearized_isa) {
+        no strict 'refs';
+
+        if (*{ $class . '::BUILD' }{CODE}) {
+            unshift  @code, qq{${class}::BUILD(\$instance, \$args);};
         }
     }
     return join "\n", @code;

@@ -8,10 +8,10 @@ sub generate_destructor_method_inline {
     my $demolishall = do {
         if ($meta->name->can('DEMOLISH')) {
             my @code = ();
-            no strict 'refs';
-            for my $klass ($meta->linearized_isa) {
-                if (*{$klass . '::DEMOLISH'}{CODE}) {
-                    push @code, "${klass}::DEMOLISH(\$self);";
+            for my $class ($meta->linearized_isa) {
+                no strict 'refs';
+                if (*{$class . '::DEMOLISH'}{CODE}) {
+                    push @code, "${class}::DEMOLISH(\$self);";
                 }
             }
             join "\n", @code;

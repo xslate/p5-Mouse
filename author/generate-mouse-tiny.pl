@@ -16,6 +16,7 @@ find({
         push @files, $_
             if -f $_
             && !/Squirrel/
+            && !/TypeRegistory/
             && !/\bouse/
             && !/\.sw[po]$/
     },

@@ -352,7 +352,7 @@ sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
 
     # load Class::Method::Modifiers first
-    my $no_cmm_fast = $ENV{MOUSE_NO_CMM_FAST} || do{
+    my $no_cmm_fast = do{
         local $@;
         eval q{ require Class::Method::Modifiers::Fast };
         $@;

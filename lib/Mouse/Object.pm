@@ -22,6 +22,7 @@ sub BUILDARGS {
     if (scalar @_ == 1) {
         (ref($_[0]) eq 'HASH')
             || $class->meta->throw_error("Single parameters to new() must be a HASH ref");
+
         return {%{$_[0]}};
     }
     else {
@@ -29,7 +30,11 @@ sub BUILDARGS {
     }
 }
 
-sub DESTROY { shift->DEMOLISHALL }
+sub DESTROY {
+    my $self = shift;
+
+    $self->DEMOLISHALL();
+}
 
 sub BUILDALL {
     my $self = shift;
@@ -38,11 +43,10 @@ sub BUILDALL {
     return unless $self->can('BUILD');
 
     for my $class (reverse $self->meta->linearized_isa) {
-        no strict 'refs';
-        no warnings 'once';
-        my $code = *{ $class . '::BUILD' }{CODE}
+        my $build = do{ no strict 'refs'; *{ $class . '::BUILD' }{CODE} }
             or next;
-        $code->($self, @_);
+
+        $self->$build(@_);
     }
     return;
 }
@@ -59,9 +63,10 @@ sub DEMOLISHALL {
     # that time (at least tests suggest so ;)
 
     foreach my $class (@{ Mouse::Util::get_linear_isa(ref $self) }) {
-        my $demolish = do{ no strict 'refs'; *{"${class}::DEMOLISH"}{CODE} };
-        $self->$demolish()
-            if defined $demolish;
+        my $demolish = do{ no strict 'refs'; *{ $class . '::DEMOLISH'}{CODE} }
+            or next;
+
+        $self->$demolish();
     }
     return;
 }

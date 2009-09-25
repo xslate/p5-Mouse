@@ -82,28 +82,32 @@ is_deeply(
 
 ok($foo_role->has_attribute('bar'), '... FooRole does have the bar attribute');
 
-{
-local $TODO = 'definition_context is not yet implemented';
 my $bar_attr = $foo_role->get_attribute('bar');
 is($bar_attr->{is}, 'rw',
    'bar attribute is rw');
 is($bar_attr->{isa}, 'Foo',
    'bar attribute isa Foo');
-is(ref($bar_attr->{definition_context}), 'HASH',
-   'bar\'s definition context is a hash');
-is($bar_attr->{definition_context}->{package}, 'FooRole',
-   'bar was defined in FooRole');
+{
+    local $TODO = 'definition_context is not yet implemented';
+    is(ref($bar_attr->{definition_context}), 'HASH',
+       'bar\'s definition context is a hash');
+    is($bar_attr->{definition_context}->{package}, 'FooRole',
+       'bar was defined in FooRole');
+}
 
 ok($foo_role->has_attribute('baz'), '... FooRole does have the baz attribute');
 
 my $baz_attr = $foo_role->get_attribute('baz');
 is($baz_attr->{is}, 'ro',
    'baz attribute is ro');
-is(ref($baz_attr->{definition_context}), 'HASH',
-   'bar\'s definition context is a hash');
-is($baz_attr->{definition_context}->{package}, 'FooRole',
-   'baz was defined in FooRole');
-} # end of TODO (definition_context)
+
+{
+    local $TODO = 'definition_context is not yet implemented';
+    is(ref($baz_attr->{definition_context}), 'HASH',
+       'bar\'s definition context is a hash');
+    is($baz_attr->{definition_context}->{package}, 'FooRole',
+       'baz was defined in FooRole');
+}
 
 # method modifiers
 

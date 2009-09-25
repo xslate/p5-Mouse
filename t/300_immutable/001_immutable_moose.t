@@ -41,11 +41,10 @@ use Mouse::Meta::Role;
     is( Foo->new->bazes, 'many bazes',
         "correct value for 'bazes' before inlining constructor" );
     lives_ok { $meta->make_immutable } "Foo is imutable";
-    SKIP: {
-        skip "Mouse doesn't supports ->identifier, add_role", 2;
-        lives_ok { $meta->identifier } "->identifier on metaclass lives";
-        dies_ok { $meta->add_role($foo_role) } "Add Role is locked";
-    };
+
+    lives_ok { $meta->identifier } "->identifier on metaclass lives";
+    dies_ok { $meta->add_role($foo_role) } "Add Role is locked";
+
     lives_ok { Foo->new } "Inlined constructor works with lazy_build";
     is( Foo->new->foos, 'many foos',
         "correct value for 'foos'  after inlining constructor" );
