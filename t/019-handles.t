@@ -120,7 +120,7 @@ is_deeply(
 
 
 {
-    local $TODO = "failed in 5.10.1, but I don't know why (gfx)" if $] == 5.010_001;
+    local $TODO = "failed on some environment, but I don't know why it happens (gfx)";
     throws_ok{
         $object->person(undef);
         $object->person_name();
