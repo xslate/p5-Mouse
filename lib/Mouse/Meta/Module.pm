@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
 
-use Mouse::Util qw/get_code_info not_supported load_class/;
+use Mouse::Util qw/get_code_info not_supported load_class :meta/;
 
 {
     my %METACLASS_CACHE;
@@ -45,8 +45,6 @@ use Mouse::Util qw/get_code_info not_supported load_class/;
     sub remove_metaclass_by_name    { delete $METACLASS_CACHE{$_[0]}  }
 
 }
-
-sub meta{ Mouse::Meta::Class->initialize(ref $_[0] || $_[0]) }
 
 sub _new{ Carp::croak("Mouse::Meta::Module is an abstract class") }
 

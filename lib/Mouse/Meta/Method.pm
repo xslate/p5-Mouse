@@ -2,6 +2,8 @@ package Mouse::Meta::Method;
 use strict;
 use warnings;
 
+use Mouse::Util qw(:meta);
+
 use overload
     '&{}' => 'body',
     fallback => 1,

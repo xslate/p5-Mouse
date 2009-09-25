@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Scalar::Util qw(weaken);
 
-use Mouse::Util;
+use Mouse::Util qw(:meta);
 
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
@@ -152,16 +152,6 @@ sub new {
 
     return $instance
 }
-
-sub does {
-    my ($self, $role_name) = @_;
-    my $meta = Mouse::Meta::Class->initialize(ref($self) || $self);
-
-    (defined $role_name)
-        || $meta->throw_error("You must supply a role name to does()");
-
-    return $meta->does_role($role_name);
-};
 
 # readers
 

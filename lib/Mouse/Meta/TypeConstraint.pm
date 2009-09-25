@@ -7,7 +7,7 @@ use overload '""'     => sub { shift->{name} },   # stringify to tc name
 
 use Carp ();
 
-use Mouse::Util ();
+use Mouse::Util qw(:meta);
 
 sub new {
     my $class = shift;

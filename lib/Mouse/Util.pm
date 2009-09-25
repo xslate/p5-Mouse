@@ -20,9 +20,12 @@ our @EXPORT_OK = qw(
     get_code_info
 
     not_supported
+
+    does meta dump
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
+    meta => [qw(does meta dump)],
 );
 
 # Moose::Util compatible utilities
@@ -32,13 +35,14 @@ sub find_meta{
 }
 
 sub does_role{
-    my ($class_or_obj, $role) = @_;
+    my ($class_or_obj, $role_name) = @_;
 
     my $meta = Mouse::Meta::Module::class_of($class_or_obj);
 
-    return 0 unless defined $meta;
-    return 1 if $meta->does_role($role);
-    return 0;
+    (defined $role_name)
+        || ($meta || 'Mouse::Meta::Class')->throw_error("You must supply a role name to does()");
+
+    return defined($meta) && $meta->does_role($role_name);
 }
 
 
@@ -145,7 +149,6 @@ sub load_first_existing_class {
     my @classes = @_
       or return;
 
-    my $found;
     my %exceptions;
     for my $class (@classes) {
         my $e = _try_load_one_class($class);
@@ -154,12 +157,11 @@ sub load_first_existing_class {
             $exceptions{$class} = $e;
         }
         else {
-            $found = $class;
-            last;
+            return $class;
         }
     }
-    return $found if $found;
 
+    # not found
     confess join(
         "\n",
         map {
@@ -276,6 +278,9 @@ sub english_list {
     return join q{, }, @items, "and $tail";
 }
 
+
+# common utilities
+
 sub not_supported{
     my($feature) = @_;
 
@@ -284,6 +289,23 @@ sub not_supported{
     local $Carp::CarpLevel = $Carp::CarpLevel + 1;
     Carp::confess("Mouse does not currently support $feature");
 }
+
+sub meta{
+    return Mouse::Meta::Class->initialize($_[0]);
+}
+
+sub dump { 
+    my($self, $maxdepth) = @_;
+
+    require 'Data/Dumper.pm'; # we don't want to create its namespace
+    my $dd = Data::Dumper->new([$self]);
+    $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 2);
+    $dd->Indent(1);
+    return $dd->Dump();
+}
+
+sub does :method;
+*does = \&does_role; # alias
 
 1;
 

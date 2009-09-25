@@ -2,7 +2,7 @@ package Mouse::Object;
 use strict;
 use warnings;
 
-use Mouse::Util;
+use Mouse::Util qw(does dump);
 
 sub new {
     my $class = shift;
@@ -65,25 +65,6 @@ sub DEMOLISHALL {
     }
     return;
 }
-
-sub dump { 
-    my($self, $maxdepth) = @_;
-
-    require 'Data/Dumper.pm'; # we don't want to create its namespace
-    my $dd = Data::Dumper->new([$self]);
-    $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 2);
-    $dd->Indent(1);
-    return $dd->Dump();
-}
-
-
-sub does {
-    my ($self, $role_name) = @_;
-    (defined $role_name)
-        || $self->meta->throw_error("You must supply a role name to does()");
-
-    return $self->meta->does_role($role_name);
-};
 
 1;
 
