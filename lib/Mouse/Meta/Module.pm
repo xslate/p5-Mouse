@@ -304,3 +304,4 @@ __END__
 Mouse::Meta::Module - Common base class for Mouse::Meta::Class and Mouse::Meta::Role
 
 =cut
+

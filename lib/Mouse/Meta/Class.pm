@@ -230,18 +230,10 @@ sub _initialize_instance{
 sub clone_object {
     my $class    = shift;
     my $instance = shift;
+    my %params   = (@_ == 1) ? %{$_[0]} : @_;
 
     (blessed($instance) && $instance->isa($class->name))
         || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($instance)");
-
-    $class->clone_instance($instance, @_);
-}
-
-sub clone_instance {
-    my ($class, $instance, %params) = @_;
-
-    (blessed($instance))
-        || $class->throw_error("You can only clone instances, ($instance) is not a blessed instance");
 
     my $clone = bless { %$instance }, ref $instance;
 
@@ -254,7 +246,13 @@ sub clone_instance {
     }
 
     return $clone;
+}
 
+sub clone_instance {
+    my ($class, $instance, %params) = @_;
+
+    Carp::cluck('clone_instance has been deprecated. Use clone_object instead');
+    return $class->clone_object($instance, %params);
 }
 
 sub make_immutable {
@@ -380,10 +378,6 @@ Mouse::Meta::Class - hook into the Mouse MOP
 Finds or creates a Mouse::Meta::Class instance for the given ClassName. Only
 one instance should exist for a given class.
 
-=head2 new %args -> Mouse::Meta::Class
-
-Creates a new Mouse::Meta::Class. Don't call this directly.
-
 =head2 name -> ClassName
 
 Returns the name of the owner class.
@@ -392,7 +386,7 @@ Returns the name of the owner class.
 
 Gets (or sets) the list of superclasses of the owner class.
 
-=head2 add_attribute (Mouse::Meta::Attribute| name => spec)
+=head2 add_attribute (name => spec | Mouse::Meta::Attribute)
 
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
@@ -425,15 +419,20 @@ Returns the L<Mouse::Meta::Attribute> with the given name.
 
 Returns the list of classes in method dispatch order, with duplicates removed.
 
+=head2 new_object Parameters -> Instance
+
+Create a new instance.
+
 =head2 clone_object Instance -> Instance
 
 Clones the given C<Instance> which must be an instance governed by this
 metaclass.
 
-=head2 clone_instance Instance, Parameters -> Instance
+=head1 BUGS
 
-The clone_instance method has been made private.
-The public version is deprecated.
+All complex software has bugs lurking in it, and this module is no
+exception. If you find a bug please either email me, or add the bug
+to cpan-RT.
 
 =cut
 
