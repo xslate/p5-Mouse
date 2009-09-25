@@ -10,26 +10,8 @@ use Mouse::Util;
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
 
-sub BUILDARGS{
-    my $class = shift;
-    my $name  = shift;
-    my %args  = (@_ == 1) ? %{$_[0]} : @_;
-
-    $args{name} = $name;
-
-    # XXX: for backward compatibility (with method modifiers)
-    if($class->can('canonicalize_args') != \&canonicalize_args){
-        %args = $class->canonicalize_args($name, %args);
-    }
-
-    return \%args;
-}
-
-sub new {
-    my $class = shift;
-    my $args  = $class->BUILDARGS(@_);
-
-    my $name = $args->{name};
+sub _process_options{
+    my($class, $name, $args) = @_;
 
     # taken from Class::MOP::Attribute::new
 
@@ -137,11 +119,28 @@ sub new {
             || $class->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it");
     }
 
-    my $instance = bless $args, $class;
+    # XXX: for backward compatibility (with method modifiers)
+    if($class->can('canonicalize_args') != \&canonicalize_args){
+        %{$args} = $class->canonicalize_args($name, %{$args});
+    }
+    return;
+}
+
+sub new {
+    my $class = shift;
+    my $name  = shift;
+
+    my %args  = (@_ == 1) ? %{ $_[0] } : @_;
+
+    $class->_process_options($name, \%args);
+
+    $args{name} = $name;
+
+    my $instance = bless \%args, $class;
 
     # extra attributes
     if($class ne __PACKAGE__){
-        $class->meta->_initialize_instance($instance, $args);
+        $class->meta->_initialize_instance($instance,\%args);
     }
 
 # XXX: there is no fast way to check attribute validity
@@ -217,16 +216,16 @@ sub _create_args {
 
 sub accessor_metaclass { 'Mouse::Meta::Method::Accessor' }
 
-sub interpolate_class_and_new{
+sub interpolate_class{
     my($class, $name, $args) = @_;
 
     if(my $metaclass = delete $args->{metaclass}){
         $class = Mouse::Util::resolve_metaclass_alias( Attribute => $metaclass );
     }
 
-
+    my @traits;
     if(my $traits_ref = delete $args->{traits}){
-        my @traits;
+
         for (my $i = 0; $i < @{$traits_ref}; $i++) {
             my $trait = Mouse::Util::resolve_metaclass_alias(Attribute => $traits_ref->[$i], trait => 1);
 
@@ -245,19 +244,17 @@ sub interpolate_class_and_new{
                 roles        => \@traits,
                 cache        => 1,
             )->name;
-
-            $args->{traits} = \@traits;
         }
     }
 
-    return $class->new($name, $args);
+    return( $class, @traits );
 }
 
 sub canonicalize_args{
     my ($self, $name, %args) = @_;
 
     Carp::cluck("$self->canonicalize_args has been deprecated."
-        . "Use \$self->BUILDARGS instead.");
+        . "Use \$self->_process_options instead.");
 
     return %args;
 }

@@ -78,40 +78,48 @@ sub get_all_method_names {
             $self->linearized_isa;
 }
 
-sub _process_attribute{
-    my $self = shift;
-    my $name = shift;
-
-    my $args = (@_ == 1) ? $_[0] : { @_ };
-
-    defined($name)
-        or $self->throw_error('You must provide a name for the attribute');
-
-    if ($name =~ s/^\+//) {
-        my $inherited_attr;
-
-        foreach my $class($self->linearized_isa){
-            my $meta = Mouse::Meta::Module::get_metaclass_by_name($class) or next;
-            $inherited_attr = $meta->get_attribute($name) and last;
-        }
-
-        defined($inherited_attr)
-            or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
-
-        return $inherited_attr->clone_and_inherit_options($name, $args);
-    }
-    else{
-        return Mouse::Meta::Attribute->interpolate_class_and_new($name, $args);
-    }
-}
-
 sub add_attribute {
     my $self = shift;
 
-    my $attr = blessed($_[0]) ? $_[0] : $self->_process_attribute(@_);
+    my($attr, $name);
 
-    $attr->isa('Mouse::Meta::Attribute')
-        || $self->throw_error("Your attribute must be an instance of Mouse::Meta::Attribute (or a subclass)");
+    if(blessed $_[0]){
+        $attr = $_[0];
+
+        $attr->isa('Mouse::Meta::Attribute')
+            || $self->throw_error("Your attribute must be an instance of Mouse::Meta::Attribute (or a subclass)");
+
+        $name = $attr->name;
+    }
+    else{
+        # _process_attribute
+        $name = shift;
+
+        my %args = (@_ == 1) ? %{$_[0]} : @_;
+
+        defined($name)
+            or $self->throw_error('You must provide a name for the attribute');
+
+        if ($name =~ s/^\+//) { # inherited attributes
+            my $inherited_attr;
+
+            foreach my $class($self->linearized_isa){
+                my $meta = Mouse::Meta::Module::get_metaclass_by_name($class) or next;
+                $inherited_attr = $meta->get_attribute($name) and last;
+            }
+
+            defined($inherited_attr)
+                or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
+
+            $attr = $inherited_attr->clone_and_inherit_options($name, \%args);
+        }
+        else{
+            my($attribute_class, @traits) = Mouse::Meta::Attribute->interpolate_class($name, \%args);
+            $args{traits} = \@traits if @traits;
+
+            $attr = $attribute_class->new($name, \%args);
+        }
+    }
 
     weaken( $attr->{associated_class} = $self );
 
