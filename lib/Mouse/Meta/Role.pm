@@ -4,8 +4,7 @@ use warnings;
 
 use Mouse::Util qw(not_supported english_list);
 use Mouse::Meta::Module;
-
-use base qw(Mouse::Meta::Module);
+our @ISA = qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
 

@@ -1,7 +1,8 @@
 package Mouse::Util::TypeConstraints;
 use strict;
 use warnings;
-use base 'Exporter';
+
+use Exporter;
 
 use Carp ();
 use Scalar::Util qw/blessed looks_like_number openhandle/;
@@ -10,6 +11,7 @@ use Mouse::Util qw(does_role not_supported);
 use Mouse::Meta::Module; # class_of
 use Mouse::Meta::TypeConstraint;
 
+our @ISA    = qw(Exporter);
 our @EXPORT = qw(
     as where message from via type subtype coerce class_type role_type enum
     find_type_constraint

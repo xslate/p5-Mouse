@@ -2,7 +2,8 @@ package Mouse::Meta::Role::Method;
 use strict;
 use warnings;
 
-use base qw(Mouse::Meta::Method);
+use Mouse::Meta::Method;
+our @ISA = qw(Mouse::Meta::Method);
 
 1;
 

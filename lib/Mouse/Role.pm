@@ -1,13 +1,16 @@
 package Mouse::Role;
 use strict;
 use warnings;
-use base 'Exporter';
+
+use Exporter;
 
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
 use Mouse::Util qw(load_class not_supported);
 use Mouse ();
+
+our @ISA = qw(Exporter);
 
 our @EXPORT = qw(
     extends with

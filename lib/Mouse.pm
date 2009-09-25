@@ -4,9 +4,9 @@ use 5.006_002;
 use strict;
 use warnings;
 
-use base 'Exporter';
-
 our $VERSION = '0.33_01';
+
+use Exporter;
 
 use Carp 'confess';
 use Scalar::Util 'blessed';
@@ -19,6 +19,8 @@ use Mouse::Meta::Role;
 use Mouse::Meta::Attribute;
 use Mouse::Object;
 use Mouse::Util::TypeConstraints ();
+
+our @ISA = qw(Exporter);
 
 our @EXPORT = qw(
     extends with

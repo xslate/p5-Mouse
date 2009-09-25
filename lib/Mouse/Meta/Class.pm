@@ -9,8 +9,7 @@ use Mouse::Util qw/get_linear_isa not_supported/;
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
 use Mouse::Meta::Module;
-
-use base qw(Mouse::Meta::Module);
+our @ISA = qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Method' } # required for get_method()
 

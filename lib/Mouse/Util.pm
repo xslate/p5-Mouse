@@ -1,10 +1,12 @@
 package Mouse::Util;
 use strict;
 use warnings;
-use base qw/Exporter/;
+
+use Exporter;
 
 use Carp qw(confess);
 
+our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(
     find_meta
     does_role
