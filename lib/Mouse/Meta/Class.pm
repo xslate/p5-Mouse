@@ -283,27 +283,90 @@ sub make_mutable { not_supported }
 sub is_immutable {  $_[0]->{is_immutable} }
 sub is_mutable   { !$_[0]->{is_immutable} }
 
+sub _install_modifier_pp{
+    my( $self, $into, $type, $name, $code ) = @_;
+
+    my $original = $into->can($name)
+        or $self->throw_error("The method '$name' is not found in the inheritance hierarchy for class $into");
+
+    my $modifier_table = $self->{modifiers}{$name};
+
+    if(!$modifier_table){
+        my(@before, @after, @around, $cache, $modified);
+
+        $cache = $original;
+
+        $modified = sub {
+            for my $c (@before) { $c->(@_) }
+
+            if(wantarray){ # list context
+                my @rval = $cache->(@_);
+
+                for my $c(@after){ $c->(@_) }
+                return @rval;
+            }
+            elsif(defined wantarray){ # scalar context
+                my $rval = $cache->(@_);
+
+                for my $c(@after){ $c->(@_) }
+                return $rval;
+            }
+            else{ # void context
+                $cache->(@_);
+
+                for my $c(@after){ $c->(@_) }
+                return;
+            }
+        };
+
+        $self->{modifiers}{$name} = $modifier_table = {
+            original => $original,
+
+            before   => \@before,
+            after    => \@after,
+            around   => \@around,
+
+            cache    => \$cache, # cache for around modifiers
+        };
+
+        $self->add_method($name => $modified);
+    }
+
+    if($type eq 'before'){
+        unshift @{$modifier_table->{before}}, $code;
+    }
+    elsif($type eq 'after'){
+        push @{$modifier_table->{after}}, $code;
+    }
+    else{ # around
+        push @{$modifier_table->{around}}, $code;
+
+        my $next = ${ $modifier_table->{cache} };
+        ${ $modifier_table->{cache} } = sub{ $code->($next, @_) };
+    }
+
+    return;
+}
+
 sub _install_modifier {
     my ( $self, $into, $type, $name, $code ) = @_;
 
-    # which is modifer class available?
-    my $modifier_class = do {
-        if (eval "require Class::Method::Modifiers::Fast; 1") {
-            'Class::Method::Modifiers::Fast';
-        } elsif (eval "require Class::Method::Modifiers; 1") {
-            'Class::Method::Modifiers';
-        } else {
-            Carp::croak("Method modifiers require the use of Class::Method::Modifiers or Class::Method::Modifiers::Fast. Please install it from CPAN and file a bug report with this application.");
-        }
+    # load Class::Method::Modifiers first
+    my $no_cmm_fast = $ENV{MOUSE_NO_CMM_FAST} || do{
+        local $@;
+        eval q{ require Class::Method::Modifiers::Fast };
+        $@;
     };
-    my $modifier = $modifier_class->can('_install_modifier');
 
-    # replace this method itself :)
-    {
-        no warnings 'redefine';
-        *_install_modifier = sub {
+    my $impl;
+    if($no_cmm_fast){
+        $impl = \&_install_modifier_pp;
+    }
+    else{
+        my $install_modifier = Class::Method::Modifiers::Fast->can('_install_modifier');
+        $impl = sub {
             my ( $self, $into, $type, $name, $code ) = @_;
-            $modifier->(
+            $install_modifier->(
                 $into,
                 $type,
                 $name,
@@ -314,8 +377,13 @@ sub _install_modifier {
         };
     }
 
-    # call me. for first time.
-    $self->_install_modifier( $into, $type, $name, $code );
+    # replace this method itself :)
+    {
+        no warnings 'redefine';
+        *_install_modifier = $impl;
+    }
+
+    $self->$impl( $into, $type, $name, $code );
 }
 
 sub add_before_method_modifier {
