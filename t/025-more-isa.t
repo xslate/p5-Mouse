@@ -74,7 +74,7 @@ do {
     package A;
     our @VERSION;
 
-    package B;
+    package Bx; # 'B' conflicts the B module
     our $VERSION = 1;
 
     package C;
@@ -105,7 +105,7 @@ do {
     );
 };
 
-for ('B', 'D'..'E', 'G::H') {
+for ('Bx', 'D'..'E', 'G::H') {
     lives_ok {
         ClassNameTests->new(class => $_);
     };
