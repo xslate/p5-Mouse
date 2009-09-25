@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use Carp ();
-use Scalar::Util qw(weaken);
 
 use Mouse::Util qw(:meta);
 
