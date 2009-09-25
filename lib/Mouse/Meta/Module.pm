@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
 
-use Mouse::Util qw/get_code_info not_supported load_class :meta/;
+use Mouse::Util qw/:meta get_code_info not_supported load_class/;
 
 {
     my %METACLASS_CACHE;

@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use inc::Module::Install;
-use 5.008;
 
 name     'Mouse';
 all_from 'lib/Mouse.pm';
@@ -12,8 +11,9 @@ tests 't/*.t t/*/*.t';
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
-test_requires 'Test::Exception' => 0.21;
-test_requires 'Test::More'      => 0.80;
+test_requires 'Test::More'      => 0.88;
+test_requires 'Test::Exception' => 0.27;
+test_requires 'Test::Output'    => 0.16;
 
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
@@ -33,8 +33,7 @@ if ($Module::Install::AUTHOR) {
     system("author/generate-mouse-tiny.pl");
 }
 
-auto_include;
-WriteAll;
+WriteAll check_nmake => 0;
 
 sub create_moose_compatibility_test {
     require File::Path;

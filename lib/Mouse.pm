@@ -1,7 +1,9 @@
 package Mouse;
+use 5.006_002;
+
 use strict;
 use warnings;
-use 5.006;
+
 use base 'Exporter';
 
 our $VERSION = '0.33_01';
