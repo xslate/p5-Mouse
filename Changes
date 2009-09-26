@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.35 Sat Sep 26 12:38:27 2009
+    * Work around Test::Exception 0.27_0x by including authorized ver. (gfx)
+
 0.34 Fri Sep 25 21:55:48 2009
     * Make sure to work on 5.6.2 (gfx)
 
