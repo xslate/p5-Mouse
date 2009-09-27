@@ -12,6 +12,12 @@ use Mouse::Meta::Method::Accessor;
 sub _process_options{
     my($class, $name, $args) = @_;
 
+
+    # XXX: for backward compatibility (with method modifiers)
+    if($class->can('canonicalize_args') != \&canonicalize_args){
+        %{$args} = $class->canonicalize_args($name, %{$args});
+    }
+
     # taken from Class::MOP::Attribute::new
 
     defined($name)
@@ -119,10 +125,6 @@ sub _process_options{
             || $class->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it");
     }
 
-    # XXX: for backward compatibility (with method modifiers)
-    if($class->can('canonicalize_args') != \&canonicalize_args){
-        %{$args} = $class->canonicalize_args($name, %{$args});
-    }
     return;
 }
 
@@ -242,7 +244,8 @@ sub canonicalize_args{
     my ($self, $name, %args) = @_;
 
     Carp::cluck("$self->canonicalize_args has been deprecated."
-        . "Use \$self->_process_options instead.");
+        . "Use \$self->_process_options instead.")
+            if _MOUSE_VERBOSE;
 
     return %args;
 }
@@ -251,7 +254,8 @@ sub create {
     my ($self, $class, $name, %args) = @_;
 
     Carp::cluck("$self->create has been deprecated."
-        . "Use \$meta->add_attribute and \$attr->install_accessors instead.");
+        . "Use \$meta->add_attribute and \$attr->install_accessors instead.")
+            if _MOUSE_VERBOSE;
 
     # noop
     return $self;
@@ -308,8 +312,8 @@ sub clone_parent {
     my %args  = ($self->get_parent_args($class, $name), @_);
 
     Carp::cluck("$self->clone_parent has been deprecated."
-        . "Use \$meta->add_attribute and \$attr->install_accessors instead.");
-
+        . "Use \$meta->add_attribute and \$attr->install_accessors instead.")
+        if _MOUSE_VERBOSE;
 
     $self->clone_and_inherited_args($class, $name, %args);
 }
@@ -326,6 +330,12 @@ sub get_parent_args {
     }
 
     $self->throw_error("Could not find an attribute by the name of '$name' to inherit from");
+}
+
+sub associate_method{
+    my ($attribute, $method) = @_;
+    $attribute->{associated_methods}++;
+    return;
 }
 
 sub install_accessors{

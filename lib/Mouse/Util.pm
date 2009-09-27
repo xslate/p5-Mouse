@@ -6,6 +6,8 @@ use Exporter;
 
 use Carp qw(confess);
 
+use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
+
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(
     find_meta
@@ -23,10 +25,11 @@ our @EXPORT_OK = qw(
     not_supported
 
     does meta dump
+    _MOUSE_VERBOSE
 );
 our %EXPORT_TAGS = (
     all  => \@EXPORT_OK,
-    meta => [qw(does meta dump)],
+    meta => [qw(does meta dump _MOUSE_VERBOSE)],
 );
 
 # Moose::Util compatible utilities

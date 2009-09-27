@@ -4,7 +4,7 @@ use warnings;
 
 use Scalar::Util qw/blessed weaken/;
 
-use Mouse::Util qw/get_linear_isa not_supported/;
+use Mouse::Util qw/:meta get_linear_isa not_supported/;
 
 use Mouse::Meta::Method::Constructor;
 use Mouse::Meta::Method::Destructor;
@@ -125,7 +125,7 @@ sub add_attribute {
     $self->{attributes}{$attr->name} = $attr;
     $attr->install_accessors();
 
-    if(!$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
+    if(_MOUSE_VERBOSE && !$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
         Carp::cluck(qq{Attribute (}.$attr->name.qq{) of class }.$self->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
     return $attr;
@@ -250,7 +250,8 @@ sub clone_object {
 sub clone_instance {
     my ($class, $instance, %params) = @_;
 
-    Carp::cluck('clone_instance has been deprecated. Use clone_object instead');
+    Carp::cluck('clone_instance has been deprecated. Use clone_object instead')
+        if _MOUSE_VERBOSE;
     return $class->clone_object($instance, %params);
 }
 

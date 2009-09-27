@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.36 Sun Sep 27 16:53:06 2009
+    * Fix an issue that breaks backward compatibility (gfx)
+      - MouseX::Attribute does work, although make tests doesn't pass
+
 0.35 Sat Sep 26 12:38:27 2009
     * Work around Test::Exception 0.27_0x by including authorized ver. (gfx)
 

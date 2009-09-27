@@ -2,7 +2,7 @@ package Mouse::Meta::Role;
 use strict;
 use warnings;
 
-use Mouse::Util qw(not_supported english_list);
+use Mouse::Util qw(:meta not_supported english_list);
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
