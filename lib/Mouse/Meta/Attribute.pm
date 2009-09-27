@@ -31,8 +31,12 @@ sub _process_options{
     my $can_be_required = defined( $args->{init_arg} );
 
     if(exists $args->{builder}){
+        # XXX:
+        # Moose refuses a CODE ref builder, but Mouse doesn't for backward compatibility
+        # This feature will be changed in a future. (gfx)
         $class->throw_error('builder must be a defined scalar value which is a method name')
-            if ref $args->{builder} || !(defined $args->{builder});
+            #if ref $args->{builder} || !defined $args->{builder};
+            if !defined $args->{builder};
 
         $can_be_required++;
     }
