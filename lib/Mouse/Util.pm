@@ -350,7 +350,7 @@ Mouse::Util - features, with or without their dependencies
 
 =head2 Class::MOP
 
-=head2 C<< is_class_loaded(ClassName) -> Bool >>
+=head3 C<< is_class_loaded(ClassName) -> Bool >>
 
 Returns whether C<ClassName> is actually loaded or not. It uses a heuristic which
 involves checking for the existence of C<$VERSION>, C<@ISA>, and any
