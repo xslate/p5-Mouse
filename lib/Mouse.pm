@@ -454,9 +454,9 @@ L<Class::MOP>
 
 =head1 AUTHORS
 
-Shawn M Moore, C<< <sartak at gmail.com> >>
+Shawn M Moore, E<lt>sartak at gmail.comE<gt>
 
-Yuval Kogman, C<< <nothingmuch at woobling.org> >>
+Yuval Kogman, E<lt>nothingmuch at woobling.orgE<gt>
 
 tokuhirom
 
@@ -464,7 +464,7 @@ Yappo
 
 wu-lee
 
-Goro Fuji (gfx) C<< <gfuji at cpan.org> >>
+Goro Fuji (gfx) E<lt>gfuji at cpan.orgE<gt>
 
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 

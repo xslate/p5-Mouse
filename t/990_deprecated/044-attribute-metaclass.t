@@ -31,6 +31,15 @@ do {
         return $attr;
     };
 
+    around 'canonicalize_args' => sub {
+        my ($next, $self, $name, %args) = @_;
+
+        %args = $next->($self, $name, %args);
+        $args{is}  = 'rw'               unless exists $args{is};
+
+        return %args;
+    };
+
     package # hide me from search.cpan.org
         Mouse::Meta::Attribute::Custom::Number;
     sub register_implementation { 'MouseX::AttributeHelpers::Number' }
@@ -40,9 +49,8 @@ do {
     package Klass;
     use Mouse;
 
-    has 'i' => (
+    has 'number' => (
         metaclass => 'Number',
-        is => 'rw',
         isa => 'Int',
         provides => {
             'add' => 'add_number'
@@ -50,8 +58,8 @@ do {
     );
 };
 
-can_ok 'Klass', 'add_number';
+can_ok 'Klass', 'add_number', 'number';
 my $k = Klass->new(i=>3);
 $k->add_number(4);
-is $k->i, 7;
+is $k->number, 7;
 
