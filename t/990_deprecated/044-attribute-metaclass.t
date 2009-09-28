@@ -35,7 +35,7 @@ do {
         my ($next, $self, $name, %args) = @_;
 
         %args = $next->($self, $name, %args);
-        $args{is}  = 'rw'               unless exists $args{is};
+        $args{is}  = 'rw'  unless exists $args{is};
 
         return %args;
     };
@@ -59,7 +59,7 @@ do {
 };
 
 can_ok 'Klass', 'add_number', 'number';
-my $k = Klass->new(i=>3);
+my $k = Klass->new(number => 3);
 $k->add_number(4);
 is $k->number, 7;
 
