@@ -4,10 +4,22 @@ use FindBin qw($Bin);
 use autodie;
 
 my %dist = (
-    'HTTP-Engine' => q{git://github.com/http-engine/HTTP-Engine.git},
-    'Ark'         => q{git://github.com/typester/ark-perl.git},
+    'HTTP-Engine'  => q{git://github.com/http-engine/HTTP-Engine.git},
+    'HTTP-Engine-Middleware'
+                   => q{git://github.com/http-engine/HTTP-Engine-Middleware.git},
 
-#    'Any-Moose'   => q{git://github.com/sartak/any-moose.git}, # has no Makefile.PL :(
+    'Ark'          => q{git://github.com/typester/ark-perl.git},
+    'Object-Container'
+                    => q{git://github.com/typester/object-container-perl.git},
+
+    'MouseX-Types'  => q{git://github.com/yappo/p5-mousex-types.git},
+
+    'Data-Localize' => q{git://github.com/lestrrat/Data-Localize.git},
+
+    'AnyEvent-ReverseHTTP'
+                    => q{git://github.com/miyagawa/AnyEvent-ReverseHTTP.git},
+
+    'HTML-Shakan'   => q{git://github.com/tokuhirom/html-shakan.git},
 );
 
 my $distdir = 'externals';
@@ -32,8 +44,11 @@ while(my($name, $repo) = each %dist){
     }
 
     print "$^X Makefile.PL\n";
-    system("$^X Makefile.PL");
+    system("$^X Makefile.PL 2>&1 |tee ../$name.log");
+
+    print "make\n";
+    system("make 2>&1 >>../$name.log");
 
     print "make test\n";
-    system "make test";
+    system("make test 2>&1 |tee -a ../$name.log")
 }
