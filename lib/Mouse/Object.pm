@@ -77,7 +77,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Object - we don't need to steenkin' constructor
+Mouse::Object - The base object for Mouse classes
 
 =head1 METHODS
 

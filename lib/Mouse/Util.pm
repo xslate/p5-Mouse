@@ -332,7 +332,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Util - features, with or without their dependencies
+Mouse::Util - Features, with or without their dependencies
 
 =head1 IMPLEMENTATIONS FOR
 
@@ -372,13 +372,7 @@ C<eval "use $module"> or using C<require>.
 
 =head1 UTILITIES FOR MOUSE
 
-=over 4
-
-=item *
-
-C<not_supported>
-
-=back
+=head3 C<not_supported>
 
 =head1 SEE ALSO
 

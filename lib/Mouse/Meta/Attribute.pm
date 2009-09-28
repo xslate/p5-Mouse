@@ -378,7 +378,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::Attribute - attribute metaclass
+Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 =head1 METHODS
 
