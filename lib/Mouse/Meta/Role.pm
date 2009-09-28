@@ -8,17 +8,6 @@ our @ISA = qw(Mouse::Meta::Module);
 
 sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
 
-# XXX: for backward compatibility
-my %foreign = map{ $_ => undef } qw(Mouse::Role Carp Scalar::Util UNIVERSAL);
-sub _code_is_mine{
-    my($self, $code) = @_;
-
-    my($package, $name) = get_code_info($code);
-
-    return $package && !exists $foreign{$package};
-}
-
-
 sub _construct_meta {
     my $class = shift;
 

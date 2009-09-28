@@ -11,7 +11,7 @@ use Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
-use Mouse::Util qw(load_class is_class_loaded not_supported);
+use Mouse::Util qw(load_class is_class_loaded get_code_package not_supported);
 
 use Mouse::Meta::Module;
 use Mouse::Meta::Class;
@@ -190,7 +190,7 @@ sub unimport {
         my $code;
         if(exists $is_removable{$keyword}
             && ($code = $caller->can($keyword))
-            && (Mouse::Util::get_code_info($code))[0] eq __PACKAGE__){
+            && get_code_package($code) eq __PACKAGE__){
 
             delete $stash->{$keyword};
         }

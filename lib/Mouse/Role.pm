@@ -7,7 +7,7 @@ use Exporter;
 use Carp 'confess';
 use Scalar::Util 'blessed';
 
-use Mouse::Util qw(load_class not_supported);
+use Mouse::Util qw(load_class get_code_package not_supported);
 use Mouse ();
 
 our @ISA = qw(Exporter);
@@ -150,7 +150,7 @@ sub unimport {
         my $code;
         if(exists $is_removable{$keyword}
             && ($code = $caller->can($keyword))
-            && (Mouse::Util::get_code_info($code))[0] eq __PACKAGE__){
+            && get_code_package($code) eq __PACKAGE__){
 
             delete $stash->{$keyword};
         }

@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
 
-use Mouse::Util qw/:meta get_code_info not_supported load_class/;
+use Mouse::Util qw/:meta get_code_package not_supported load_class/;
 
 {
     my %METACLASS_CACHE;
@@ -97,13 +97,17 @@ sub add_method {
     *{ $pkg . '::' . $name } = $code;
 }
 
-sub _code_is_mine { # taken from Class::MOP::Class
-    my ( $self, $code ) = @_;
+# XXX: for backward compatibility
+my %foreign = map{ $_ => undef } qw(
+    Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
+    Carp Scalar::Util
+);
+sub _code_is_mine{
+    my($self, $code) = @_;
 
-    my ( $code_package, $code_name ) = get_code_info($code);
+    my $package = get_code_package($code);
 
-    return $code_package && $code_package eq $self->{package}
-        || ( $code_package eq 'constant' && $code_name eq '__ANON__' );
+    return !exists $foreign{$package};
 }
 
 sub has_method {
@@ -111,7 +115,7 @@ sub has_method {
 
     return 1 if $self->{methods}->{$method_name};
 
-    my $code = $self->{package}->can($method_name);
+    my $code = do{ no strict 'refs'; *{$self->{package} . '::' . $method_name}{CODE} };
 
     return $code && $self->_code_is_mine($code);
 }

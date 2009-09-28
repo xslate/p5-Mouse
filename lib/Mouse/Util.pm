@@ -5,6 +5,7 @@ use warnings;
 use Exporter;
 
 use Carp qw(confess);
+use B ();
 
 use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
 
@@ -21,6 +22,8 @@ our @EXPORT_OK = qw(
 
     get_linear_isa
     get_code_info
+
+    get_code_package
 
     not_supported
 
@@ -99,8 +102,6 @@ BEGIN {
         my ($coderef) = @_;
         ref($coderef) or return;
 
-        require B;
-
         my $cv = B::svref_2object($coderef);
         $cv->isa('B::CV') or return;
 
@@ -108,6 +109,18 @@ BEGIN {
         $gv->isa('B::GV') or return;
 
         return ($gv->STASH->NAME, $gv->NAME);
+    }
+
+    sub get_code_package{
+        my($coderef) = @_;
+
+        my $cv = B::svref_2object($coderef);
+        $cv->isa('B::CV') or return '';
+
+        my $gv = $cv->GV;
+        $gv->isa('B::GV') or return '';
+
+        return $gv->STASH->NAME;
     }
 }
 
