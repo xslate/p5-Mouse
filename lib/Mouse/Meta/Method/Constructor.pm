@@ -182,6 +182,7 @@ sub _generate_BUILDALL {
     my @code;
     for my $class ($metaclass->linearized_isa) {
         no strict 'refs';
+        no warnings 'once';
 
         if (*{ $class . '::BUILD' }{CODE}) {
             unshift  @code, qq{${class}::BUILD(\$instance, \$args);};
