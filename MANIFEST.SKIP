@@ -44,3 +44,4 @@ nytprof
 \.out$
 
 author/benchmarks
+author/externals

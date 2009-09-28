@@ -16,3 +16,4 @@ xt/compatibility/
 cover_db/*
 nytprof*
 *.out
+author/externals/
