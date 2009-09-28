@@ -6,6 +6,8 @@ use autodie;
 my %dist = (
     'HTTP-Engine' => q{git://github.com/http-engine/HTTP-Engine.git},
     'Ark'         => q{git://github.com/typester/ark-perl.git},
+
+#    'Any-Moose'   => q{git://github.com/sartak/any-moose.git}, # has no Makefile.PL :(
 );
 
 my $distdir = 'externals';
@@ -30,7 +32,7 @@ while(my($name, $repo) = each %dist){
     }
 
     print "$^X Makefile.PL\n";
-    system("$^X Makefile.PL") != 0 or next;
+    system("$^X Makefile.PL");
 
     print "make test\n";
     system "make test";
