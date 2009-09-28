@@ -308,7 +308,11 @@ Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Rol
 
 =head1 SEE ALSO
 
-L<Class::MOP>
+L<Class::MOP::Class>
+
+L<Class::MOP::Module>
+
+L<Class::MOP::Package>
 
 =cut
 

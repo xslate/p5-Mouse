@@ -81,21 +81,21 @@ Mouse::Object - we don't need to steenkin' constructor
 
 =head1 METHODS
 
-=head2 C<< new arguments -> Object >>
+=head2 C<< new (Arguments) -> Object >>
 
 Instantiates a new C<Mouse::Object>. This is obviously intended for subclasses.
 
-=head2 C<< BUILDARGS(@args) -> HashRef >>
+=head2 C<< BUILDARGS (Arguments) -> HashRef >>
 
 Lets you override the arguments that C<new> takes. Return a hashref of
 parameters.
 
-=head2 C<< BUILDALL \%args >>
+=head2 C<< BUILDALL (\%args) >>
 
 Calls C<BUILD> on each class in the class hierarchy. This is called at the
 end of C<new>.
 
-=head2 C<< BUILD \%args >>
+=head2 C<< BUILD (\%args) >>
 
 You may put any business logic initialization in BUILD methods. You don't
 need to redispatch or return any specific value.

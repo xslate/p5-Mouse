@@ -486,6 +486,13 @@ is equivalent to this:
 
 =back
 
+=head2 C<< associate_method(Method) >>
+
+Associates a method with the attribute. Typically, this is called internally
+when an attribute generates its accessors.
+
+Currently the argument I<Method> is ignored in Mouse.
+
 =head2 C<< verify_against_type_constraint(Item) -> TRUE | ERROR >>
 
 Checks that the given value passes this attribute's type constraint. Returns C<true>
@@ -499,6 +506,8 @@ Accessors and helper methods are installed. Some error checking is done.
 =head1 SEE ALSO
 
 L<Moose::Meta::Attribute>
+
+L<Class::MOP::Attribute>
 
 =cut
 

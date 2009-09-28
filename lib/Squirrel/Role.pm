@@ -30,5 +30,18 @@ __END__
 
 Squirrel::Role - Use Mouse::Role, unless Moose::Role is already loaded. (DEPRECATED)
 
+=head1 SYNOPSIS
+
+    use Squirrel::Role;
+
+=head1 DEPRECATION
+
+C<Squirrel::Role> is deprecated. C<Any::Moose> provides the same functionality,
+but better. :)
+
+=head1 SEE ALSO
+
+L<Any::Moose>
+
 =cut
 

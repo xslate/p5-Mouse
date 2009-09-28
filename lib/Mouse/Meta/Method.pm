@@ -36,4 +36,6 @@ Mouse::Meta::Method - A Mouse Method metaclass
 
 L<Moose::Meta::Method>
 
+L<Class::MOP::Method>
+
 =cut

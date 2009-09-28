@@ -52,11 +52,11 @@ __END__
 
 =head1 NAME
 
-Squirrel - Use L<Mouse>, unless L<Moose> is already loaded. (DEPRECATED)
+Squirrel - Use Mouse, unless Moose is already loaded. (DEPRECATED)
 
 =head1 SYNOPSIS
 
-	use Squirrel;
+    use Squirrel;
 
     has goggles => (
         is => "rw", 

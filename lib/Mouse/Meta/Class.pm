@@ -443,7 +443,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head2 C<< initialize(ClassName) -> Mouse::Meta::Class >>
 
-Finds or creates a Mouse::Meta::Class instance for the given ClassName. Only
+Finds or creates a C<Mouse::Meta::Class> instance for the given ClassName. Only
 one instance should exist for a given class.
 
 =head2 C<< name -> ClassName >>
@@ -454,29 +454,54 @@ Returns the name of the owner class.
 
 Gets (or sets) the list of superclasses of the owner class.
 
+=head2 C<< add_method(name => CodeRef) >>
+
+Adds a method to the owner class.
+
+=head2 C<< has_method(name) -> Bool >>
+
+Returns whether we have a method with the given name.
+
+=head2 C<< get_method(name) -> Mouse::Meta::Method | undef >>
+
+Returns a L<Mouse::Meta::Method> with the given name.
+
+Note that you can also use C<< $metaclass->name->can($name) >> for a method body.
+
+=head2 C<< get_method_list -> Names >>
+
+Returns a list of method names which are defined in the local class.
+If you want a list of all applicable methods for a class, use the
+C<get_all_methods> method.
+
+=head2 C<< get_all_methods -> (Mouse::Meta::Method) >>
+
+Return the list of all L<Mouse::Meta::Method> instances associated with
+the class and its superclasses.
+
 =head2 C<< add_attribute(name => spec | Mouse::Meta::Attribute) >>
 
 Begins keeping track of the existing L<Mouse::Meta::Attribute> for the owner
 class.
 
-=head2 C<< get_all_attributes -> (Mouse::Meta::Attribute) >>
-
-Returns the list of all L<Mouse::Meta::Attribute> instances associated with
-this class and its superclasses.
-
-=head2 C<< get_attribute_list -> { name => Mouse::Meta::Attribute } >>
-
-This returns a list of attribute names which are defined in the local
-class. If you want a list of all applicable attributes for a class,
-use the C<get_all_attributes> method.
-
 =head2 C<< has_attribute(Name) -> Bool >>
 
 Returns whether we have a L<Mouse::Meta::Attribute> with the given name.
 
-=head2 get_attribute Name -> Mouse::Meta::Attribute | undef
+=head2 C<< get_attribute Name -> Mouse::Meta::Attribute | undef >>
 
 Returns the L<Mouse::Meta::Attribute> with the given name.
+
+=head2 C<< get_attribute_list -> Names >>
+
+Returns a list of attribute names which are defined in the local
+class. If you want a list of all applicable attributes for a class,
+use the C<get_all_attributes> method.
+
+=head2 C<< get_all_attributes -> (Mouse::Meta::Attribute) >>
+
+Returns the list of all L<Mouse::Meta::Attribute> instances associated with
+this class and its superclasses.
 
 =head2 C<< linearized_isa -> [ClassNames] >>
 
@@ -488,12 +513,18 @@ Creates a new instance.
 
 =head2 C<< clone_object(Instance, Parameters) -> Instance >>
 
-Clones the given C<Instance> which must be an instance governed by this
+Clones the given instance which must be an instance governed by this
 metaclass.
+
+=head2 C<< throw_error(Message, Parameters) >>
+
+Throws an error with the given message.
 
 =head1 SEE ALSO
 
 L<Moose::Meta::Class>
+
+L<Class::MOP::Class>
 
 =cut
 
