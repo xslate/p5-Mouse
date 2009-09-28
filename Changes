@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.37 Mon Sep 28 10:31:36 2009
+    * Ensure backward compatibility by author/test-externa.pl (gfx)
+
+    * Change the algorithm of has_method() for backward compatibility (gfx)
+
+    * Add $ENV{MOUSE_VERBOSE} for Moose-compatible warnings (gfx)
+
 0.36 Sun Sep 27 16:53:06 2009
     * Fix an issue that breaks backward compatibility (gfx)
       - MouseX::Attribute does work, although make tests doesn't pass
