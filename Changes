@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+
+
+    * Refactor the type parser to parse 'ArrayRef[Object|Int]'
+
 0.37 Mon Sep 28 10:48:27 2009
     * Ensure backward compatibility by author/test-externa.pl (gfx)
 
