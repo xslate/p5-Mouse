@@ -20,8 +20,8 @@ sub new {
 
     my $check = $args{_compiled_type_constraint} || $args{constraint};
 
-    # FIXME
     if(blessed($check)){
+        Carp::cluck("'constraint' must be a CODE reference");
         $check = $check->{_compiled_type_constraint};
     }
 
