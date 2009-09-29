@@ -281,7 +281,7 @@ sub _find_or_create_regular_type{
 
     my $check;
     my $type;
-    if($meta && $meta->isa('Mouse::Meta::Role')){
+    if($meta->isa('Mouse::Meta::Role')){
         $check = sub{
             return blessed($_[0]) && $_[0]->does($spec);
         };
@@ -361,7 +361,7 @@ sub _find_or_create_parameterized_type{
     }
 }
 sub _find_or_create_union_type{
-    my @types              = map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
+    my @types = map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
 
     my $name = join '|', map{ $_->name } @types;
 
@@ -400,7 +400,7 @@ sub _parse_type{
         my $char = substr($spec, $i, 1);
 
         if($char eq '['){
-            my $base = _find_or_create_regular_type( substr($spec, $start, $i - $start))
+            my $base = _find_or_create_regular_type( substr($spec, $start, $i - $start) )
                 or return;
 
             ($i, $subtype) = _parse_type($spec, $i+1)
@@ -414,8 +414,16 @@ sub _parse_type{
             last;
         }
         elsif($char eq '|'){
-            my $type = _find_or_create_regular_type( substr($spec, $start, $i - $start))
-                or return;
+            my $type = _find_or_create_regular_type( substr($spec, $start, $i - $start) );
+
+            # XXX: Currently Mouse create an anonymous type for backward compatibility
+            if(!defined $type){
+                my $class = substr($spec, $start, $i - $start);
+                $type = Mouse::Meta::TypeConstraint->new(
+                    name                      => $class,
+                    _compiled_type_constraint => sub{ blessed($_[0]) && $_[0]->isa($class) },
+                );
+            }
 
             push @list, $type;
 
