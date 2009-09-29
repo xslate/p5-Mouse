@@ -569,7 +569,6 @@ that hierarchy represented visually.
               GlobRef
                 FileHandle
               Object
-                Role
 
 B<NOTE:> Any type followed by a type parameter C<[`a]> can be
 parameterized, this means you can say:
