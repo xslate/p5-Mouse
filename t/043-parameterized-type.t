@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More tests => 46;
 use Test::Exception;
 
 {
@@ -98,7 +98,7 @@ use Test::Exception;
         package Bar;
         use Mouse;
         use Mouse::Util::TypeConstraints;
-        
+
         subtype 'Bar::List'
             => as 'ArrayRef[HashRef]'
         ;
@@ -127,5 +127,60 @@ use Test::Exception;
     } qr/Attribute \(list\) does not pass the type constraint because: Validation failed for 'Bar::List' failed with value/, "Bad coercion parameter throws an error";
 }
 
+use Mouse::Util::TypeConstraints;
+
+my $t = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('Maybe[Int]');
+ok $t->is_a_type_of($t),            "$t is a type of $t";
+ok $t->is_a_type_of('Maybe'),       "$t is a type of Maybe";
+
+# XXX: how about 'MaybeInt[ Int ]'?
+ok $t->is_a_type_of('Maybe[Int]'),  "$t is a type of Maybe[Int]";
+
+ok!$t->is_a_type_of('Int');
+
+ok $t->check(10);
+ok $t->check(undef);
+ok!$t->check(3.14);
+
+my $u = subtype 'MaybeInt', as 'Maybe[Int]';
+ok $u->is_a_type_of($t),             "$t is a type of $t";
+ok $u->is_a_type_of('Maybe'),        "$t is a type of Maybe";
+
+# XXX: how about 'MaybeInt[ Int ]'?
+ok $u->is_a_type_of('Maybe[Int]'),   "$t is a type of Maybe[Int]";
+
+ok!$u->is_a_type_of('Int');
+
+ok $u->check(10);
+ok $u->check(undef);
+ok!$u->check(3.14);
+
+# XXX: undefined hehaviour
+# ok $t->is_a_type_of($u);
+# ok $u->is_a_type_of($t);
+
+my $w = subtype as 'Maybe[ ArrayRef | HashRef ]';
+
+ok $w->check(undef);
+ok $w->check([]);
+ok $w->check({});
+ok!$w->check(sub{});
+
+ok $w->is_a_type_of('Maybe');
+ok $w->is_a_type_of('Maybe[ArrayRef|HashRef]');
+ok!$w->is_a_type_of('ArrayRef');
+
+my $x = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('ArrayRef[ ArrayRef[ Int | Undef ] ]');
+
+ok $x->is_a_type_of('ArrayRef');
+ok $x->is_a_type_of('ArrayRef[ArrayRef[Int|Undef]]');
+ok!$x->is_a_type_of('ArrayRef[ArrayRef[Str]]');
+
+ok $x->check([]);
+ok $x->check([[]]);
+ok $x->check([[10]]);
+ok $x->check([[10, undef]]);
+ok!$x->check([[10, 3.14]]);
+ok!$x->check({});
 
 
