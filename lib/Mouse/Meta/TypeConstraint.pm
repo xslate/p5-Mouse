@@ -37,7 +37,13 @@ sub new {
 
 sub create_child_type{
     my $self = shift;
-    return ref($self)->new(@_, parent => $self);
+    # XXX: FIXME
+    return ref($self)->new(
+        %{$self},                            # pass the inherit parent attributes
+        _compiled_type_constraint => undef,  # ... other than compiled type constraint
+        @_,                                  # ... and args
+        parent => $self                      # ... and the parent
+   );
 }
 
 sub name    { $_[0]->{name}    }

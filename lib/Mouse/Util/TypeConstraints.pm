@@ -134,7 +134,7 @@ sub _create_type{
     if($mode eq 'subtype'){
         my $parent = exists($args{as}) ? delete($args{as}) : delete($args{name});
 
-        $parent = blessed($parent) ? $parent : find_or_create_isa_type_constraint($parent);
+        $parent     = find_or_create_isa_type_constraint($parent);
         $constraint = $parent->create_child_type(%args);
     }
     else{
@@ -166,7 +166,7 @@ sub coerce {
 
     my $package_defined_in = caller;
 
-    while (my($from, $code) = splice @_, 0, 2) {
+    while (my($from, $action) = splice @_, 0, 2) {
         $from =~ s/\s+//g;
 
         confess "A coercion action already exists for '$from'"
@@ -180,7 +180,7 @@ sub coerce {
         warn "# REGISTER COERCE $name, from $type\n" if _DEBUG;
 
         push @{ $COERCE_KEYS{$name} }, $type;
-        $COERCE{$name}->{$from} = $code;
+        $COERCE{$name}->{$from} = $action;
     }
     return;
 }
@@ -221,12 +221,12 @@ sub typecast_constraints {
     Carp::croak("wrong arguments count") unless @_ == 4;
 
     local $_;
-    for my $type ($types, ($types->{type_constraints} ? @{$types->{type_constraints}} : ()) ) {
+    for my $type ($types->{type_constraints} ? @{$types->{type_constraints}} : $types ) {
         for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
 
             if(_DEBUG){
                 warn sprintf "# COERCE: from %s to %s for %s (%s)\n",
-                    $coerce_type, $type, defined($value) ? $value : 'undef',
+                    $coerce_type, $type, defined($value) ? "'$value'" : 'undef',
                     $coerce_type->check($value) ? "try" : "skip";
             }
 
@@ -234,17 +234,18 @@ sub typecast_constraints {
 
             # try to coerce
             $_ = $value;
-            $_ = $COERCE{$type}->{$coerce_type}->($_); # coerce
+            my $coerced = $COERCE{$type}->{$coerce_type}->($value); # coerce
 
             if(_DEBUG){
                 warn sprintf "# COERCE: got %s, which is%s %s\n",
-                    defined($_) ? $_ : 'undef', $types->check($_) ? '' : ' not', $types;
+                    defined($coerced) ? $coerced : 'undef', $types->check($coerced) ? '' : ' not', $types;
             }
 
-            return $_ if $types->check($_); # check for $types, not $constraint
+            # check with $types, not $constraint
+            return $coerced if $types->check($coerced);
         }
     }
-    return $value;
+    return $value; # returns original $value
 }
 
 sub enum {
@@ -367,9 +368,10 @@ sub _find_or_create_union_type{
     $TYPE{$name} ||= do{
         warn "# CREATE a Union type for ", Mouse::Util::english_list(@types),"\n" if _DEBUG;
 
+        my @checks = map{ $_->{_compiled_type_constraint} } @types;
         my $check = sub{
-            foreach my $type(@types){
-                return 1 if $type->check($_[0]);
+            foreach my $c(@checks){
+                return 1 if $c->($_[0]);
             }
             return 0;
         };
@@ -443,7 +445,7 @@ sub _parse_type{
 
 sub find_type_constraint {
     my($spec) = @_;
-    return $spec if blessed($spec);
+    return $spec if blessed($spec) && $spec->isa('Mouse::Meta::TypeConstraint');
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec};
@@ -451,8 +453,7 @@ sub find_type_constraint {
 
 sub find_or_parse_type_constraint {
     my($spec) = @_;
-
-    return $spec if blessed($spec);
+    return $spec if blessed($spec) && $spec->isa('Mouse::Meta::TypeConstraint');
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec} || do{
