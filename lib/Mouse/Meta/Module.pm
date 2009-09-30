@@ -46,8 +46,6 @@ use Mouse::Util qw/:meta get_code_package not_supported load_class/;
 
 }
 
-sub _new{ Carp::croak("Mouse::Meta::Module is an abstract class") }
-
 sub name { $_[0]->{package} }
 
 sub version   { no strict 'refs'; ${shift->name.'::VERSION'}   }
