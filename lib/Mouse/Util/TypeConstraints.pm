@@ -189,10 +189,11 @@ sub role_type {
     );
 }
 
-# this is an original method for Mouse
 sub typecast_constraints {
     my($class, $pkg, $type, $value) = @_;
     Carp::croak("wrong arguments count") unless @_ == 4;
+
+    Carp::cluck("typecast_constraints() has been deprecated, which was an internal utility anyway");
 
     return $type->coerce($value);
 }

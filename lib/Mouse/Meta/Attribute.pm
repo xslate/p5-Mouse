@@ -301,6 +301,9 @@ sub verify_type_constraint_error {
 sub coerce_constraint { ## my($self, $value) = @_;
     my $type = $_[0]->{type_constraint}
         or return $_[1];
+
+    Carp::cluck("coerce_constraint() has been deprecated, which was an internal utility anyway");
+
     return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $type, $_[1]);
 }
 
