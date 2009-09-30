@@ -8,7 +8,7 @@ use Carp qw(confess);
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
 use Mouse::Util qw(does_role not_supported);
-use Mouse::Meta::Module; # class_of
+use Mouse::Meta::Module; # get_metaclass_by_name()
 use Mouse::Meta::TypeConstraint;
 
 our @ISA    = qw(Exporter);
@@ -221,7 +221,7 @@ sub _find_or_create_regular_type{
 
     return $TYPE{$spec} if exists $TYPE{$spec};
 
-    my $meta  = Mouse::Meta::Module::class_of($spec);
+    my $meta  = Mouse::Meta::Module::get_metaclass_by_name($spec);
 
     if(!$meta){
         return;

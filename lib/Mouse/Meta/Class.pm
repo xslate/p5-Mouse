@@ -409,7 +409,7 @@ sub does_role {
         || $self->throw_error("You must supply a role name to look for");
 
     for my $class ($self->linearized_isa) {
-        my $meta = Mouse::Meta::Module::class_of($class);
+        my $meta = Mouse::Meta::Module::get_metaclass_by_name($class);
         next unless $meta && $meta->can('roles');
 
         for my $role (@{ $meta->roles }) {
