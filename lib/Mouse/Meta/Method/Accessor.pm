@@ -40,9 +40,9 @@ sub _install_accessor{
                 
         my $value = '$_[1]';
 
-        if ($constraint) {
+        if (defined $constraint) {
             if(!$compiled_type_constraint){
-                Carp::confess("[BUG]Missing compiled type constraint for $constraint");
+                Carp::confess("[BUG] Missing compiled type constraint for $constraint");
             }
             if ($should_coerce) {
                 $accessor .=
@@ -51,21 +51,12 @@ sub _install_accessor{
                     'my $val = $constraint->coerce('.$value.');';
                 $value = '$val';
             }
-            if ($compiled_type_constraint) {
-                $accessor .= 
-                    "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($compiled_type_constraint->('.$value.')) {
-                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
-                    }' . "\n";
-            } else {
-                $accessor .= 
-                    "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'unless ($constraint->check('.$value.')) {
-                        $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
-                    }' . "\n";
-            }
+            $accessor .= 
+                "\n".
+                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                'unless ($compiled_type_constraint->('.$value.')) {
+                    $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
+                }' . "\n";
         }
 
         # if there's nothing left to do for the attribute we can return during
@@ -94,11 +85,16 @@ sub _install_accessor{
     if ($attribute->is_lazy) {
         $accessor .= $self.'->{'.$key.'} = ';
 
-        $accessor .= $attribute->has_builder
-                ? $self.'->$builder'
-                    : ref($default) eq 'CODE'
-                    ? '$default->('.$self.')'
-                    : '$default';
+        if($should_coerce && defined($constraint)){
+            $accessor .= '$attribute->_coerce_and_verify(';
+        }
+        $accessor .=   $attribute->has_builder ? $self.'->$builder'
+                     : ref($default) eq 'CODE' ? '$default->('.$self.')'
+                     :                           '$default';
+
+        if($should_coerce && defined $constraint){
+            $accessor .= ')';
+        }
         $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
     }
 
