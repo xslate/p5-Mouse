@@ -72,9 +72,8 @@ BEGIN {
 
     while (my ($name, $code) = each %builtins) {
         $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
-            name                      => $name,
-            _compiled_type_constraint => $code,
-            package_defined_in        => __PACKAGE__,
+            name      => $name,
+            optimized => $code,
         );
     }
 
@@ -125,10 +124,8 @@ sub _create_type{
               . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
     }
 
-    $args{constraint}                = delete($args{where})
-        if exists $args{where};
-    $args{_compiled_type_constraint} = delete $args{optimized_as}
-        if exists $args{optimized_as};
+    $args{constraint} = delete($args{where})      if exists $args{where};
+    $args{optimized} = delete $args{optimized_as} if exists $args{optimized_as};
 
     my $constraint;
     if($mode eq 'subtype'){
@@ -297,16 +294,16 @@ sub _find_or_create_regular_type{
     warn "#CREATE a $type type for $spec\n" if _DEBUG;
 
     return $TYPE{$spec} = Mouse::Meta::TypeConstraint->new(
-        name                      => $spec,
-        _compiled_type_constraint => $check,
+        name      => $spec,
+        optimized => $check,
 
-        type                      => $type,
+        type      => $type,
     );
 }
 
 $TYPE{ArrayRef}{constraint_generator} = sub {
     my($type_parameter) = @_;
-    my $check = $type_parameter->{_compiled_type_constraint};
+    my $check = $type_parameter->_compiled_type_constraint;
 
     return sub{
         foreach my $value (@{$_}) {
@@ -317,7 +314,7 @@ $TYPE{ArrayRef}{constraint_generator} = sub {
 };
 $TYPE{HashRef}{constraint_generator} = sub {
     my($type_parameter) = @_;
-    my $check = $type_parameter->{_compiled_type_constraint};
+    my $check = $type_parameter->_compiled_type_constraint;
 
     return sub{
         foreach my $value(values %{$_}){
@@ -330,7 +327,7 @@ $TYPE{HashRef}{constraint_generator} = sub {
 # 'Maybe' type accepts 'Any', so it requires parameters
 $TYPE{Maybe}{constraint_generator} = sub {
     my($type_parameter) = @_;
-    my $check = $type_parameter->{_compiled_type_constraint};
+    my $check = $type_parameter->_compiled_type_constraint;
 
     return sub{
         return !defined($_) || $check->($_);
@@ -368,20 +365,11 @@ sub _find_or_create_union_type{
     $TYPE{$name} ||= do{
         warn "# CREATE a Union type for ", Mouse::Util::english_list(@types),"\n" if _DEBUG;
 
-        my @checks = map{ $_->{_compiled_type_constraint} } @types;
-        my $check = sub{
-            foreach my $c(@checks){
-                return 1 if $c->($_[0]);
-            }
-            return 0;
-        };
-
         return Mouse::Meta::TypeConstraint->new(
-            name                      => $name,
-            _compiled_type_constraint => $check,
-            type_constraints          => \@types,
+            name              => $name,
+            type_constraints  => \@types,
 
-            type                      => 'Union',
+            type              => 'Union',
         );
     };
 }
@@ -416,13 +404,9 @@ sub _parse_type{
         elsif($char eq '|'){
             my $type = _find_or_create_regular_type( substr($spec, $start, $i - $start) );
 
-            # XXX: Currently Mouse create an anonymous type for backward compatibility
             if(!defined $type){
-                my $class = substr($spec, $start, $i - $start);
-                $type = Mouse::Meta::TypeConstraint->new(
-                    name                      => $class,
-                    _compiled_type_constraint => sub{ blessed($_[0]) && $_[0]->isa($class) },
-                );
+                # XXX: Mouse creates a new class type, but Moose does not.
+                $type = class_type( substr($spec, $start, $i - $start) );
             }
 
             push @list, $type;

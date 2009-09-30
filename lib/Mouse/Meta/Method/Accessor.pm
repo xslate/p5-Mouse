@@ -15,7 +15,7 @@ sub _install_accessor{
     my $should_deref  = $attribute->should_auto_deref;
     my $should_coerce = $attribute->should_coerce;
 
-    my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
+    my $compiled_type_constraint    = $constraint ? $constraint->_compiled_type_constraint : undef;
 
     my $self  = '$_[0]';
     my $key   = sprintf q{"%s"}, quotemeta $name;

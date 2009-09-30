@@ -12,7 +12,8 @@ sub generate_constructor_method_inline {
     my $buildargs     = $class->_generate_BUILDARGS($metaclass);
     my $processattrs  = $class->_generate_processattrs($metaclass, \@attrs);
 
-    my @compiled_constraints = map { $_ ? $_->{_compiled_type_constraint} : undef } map { $_->{type_constraint} } @attrs;
+    my @compiled_constraints = map { $_->_compiled_type_constraint }
+                               map { $_->{type_constraint} ? $_->{type_constraint} : () } @attrs;
 
     my $code = <<"...";
     sub {
@@ -57,11 +58,7 @@ sub _generate_processattrs {
             }
 
             if ($attr->has_type_constraint) {
-                if ($attr->type_constraint->{_compiled_type_constraint}) {
-                    $code .= "unless (\$compiled_constraints[$index](\$value)) {";
-                } else {
-                    $code .= "unless (\$attrs[$index]->{type_constraint}->check(\$value)) {";
-                }
+                $code .= "unless (\$compiled_constraints[$index](\$value)) {";
                 $code .= "
                         \$attrs[$index]->verify_type_constraint_error(
                             q{$key}, \$value, \$attrs[$index]->type_constraint

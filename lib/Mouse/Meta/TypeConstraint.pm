@@ -18,19 +18,38 @@ sub new {
 
     $args{name} = '__ANON__' if !defined $args{name};
 
-    my $check = $args{_compiled_type_constraint} || $args{constraint};
+    my $check = delete $args{optimized};
+
+    if($args{_compiled_type_constraint}){
+        Carp::cluck("'_compiled_type_constraint' has been deprecated, use 'optimized' instead");
+        $check = $args{_compiled_type_constraint};
+
+        if(blessed($check)){
+            Carp::cluck("Constraint must be a CODE reference");
+            $check = $check->{compiled_type_constraint};
+        }
+    }
+
+    if($check){
+        $args{hand_optimized_type_constraint} = $check;
+        $args{compiled_type_constraint}       = $check;
+    }
+
+    $check = $args{constraint};
 
     if(blessed($check)){
-        Carp::cluck("'constraint' must be a CODE reference");
-        $check = $check->{_compiled_type_constraint};
+        Carp::cluck("Constraint for $args{name} must be a CODE reference");
+        $check = $check->{compiled_type_constraint};
     }
 
     if(defined($check) && ref($check) ne 'CODE'){
-        confess("Type constraint for $args{name} is not a CODE reference");
+        confess("Constraint for $args{name} is not a CODE reference");
     }
 
+    $args{package_defined_in} ||= caller;
+
     my $self = bless \%args, $class;
-    $self->{_compiled_type_constraint} ||= $self->_compile();
+    $self->compile_type_constraint() if !$self->{hand_optimized_type_constraint};
 
     return $self;
 }
@@ -39,10 +58,18 @@ sub create_child_type{
     my $self = shift;
     # XXX: FIXME
     return ref($self)->new(
-        %{$self},                            # pass the inherit parent attributes
-        _compiled_type_constraint => undef,  # ... other than compiled type constraint
-        @_,                                  # ... and args
-        parent => $self                      # ... and the parent
+        # a child inherits its parent's attributes
+        %{$self},
+
+        # but does not inherit 'compiled_type_constraint' and 'hand_optimized_type_constraint'
+        compiled_type_constraint       => undef,
+        hand_optimized_type_constraint => undef,
+
+        # and is given child-specific args, of course.
+        @_,
+
+        # and its parent
+        parent => $self,
    );
 }
 
@@ -50,14 +77,16 @@ sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
 sub message { $_[0]->{message} }
 
+sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
+
 sub check {
     my $self = shift;
-    $self->{_compiled_type_constraint}->(@_);
+    $self->_compiled_type_constraint->(@_);
 }
 
 sub validate {
     my ($self, $value) = @_;
-    if ($self->{_compiled_type_constraint}->($value)) {
+    if ($self->_compiled_type_constraint->($value)) {
         return undef;
     }
     else {
@@ -112,39 +141,49 @@ sub is_a_type_of{
     return 0;
 }
 
-sub _compile{
+sub compile_type_constraint{
     my($self) = @_;
 
     # add parents first
     my @checks;
     for(my $parent = $self->parent; defined $parent; $parent = $parent->parent){
-        if($parent->{constraint}){
+         if($parent->{hand_optimized_type_constraint}){
+            push @checks, $parent->{hand_optimized_type_constraint};
+            last; # a hand optimized constraint must include all the parents
+        }
+        elsif($parent->{constraint}){
             push @checks, $parent->{constraint};
-         }
-         elsif($parent->{_compiled_type_constraint} && $parent->{_compiled_type_constraint} != $null_check){
-            # hand-optimized constraint
-            push @checks, $parent->{_compiled_type_constraint};
-            last;
         }
     }
+
     # then add child
     if($self->{constraint}){
         push @checks, $self->{constraint};
     }
 
+    if($self->{type_constraints}){ # Union
+        my @types = map{ $_->_compiled_type_constraint } @{ $self->{type_constraints} };
+        push @checks, sub{
+            foreach my $c(@types){
+                return 1 if $c->($_[0]);
+            }
+            return 0;
+        };
+    }
+
     if(@checks == 0){
-        return $null_check;
+        $self->{compiled_type_constraint} = $null_check;
     }
     elsif(@checks == 1){
         my $c = $checks[0];
-        return sub{
+        $self->{compiled_type_constraint} = sub{
             my(@args) = @_;
             local $_ = $args[0];
             return $c->(@args);
         };
     }
     else{
-        return sub{
+        $self->{compiled_type_constraint} =  sub{
             my(@args) = @_;
             local $_ = $args[0];
             foreach my $c(@checks){
@@ -153,6 +192,7 @@ sub _compile{
             return 1;
         };
     }
+    return;
 }
 
 1;

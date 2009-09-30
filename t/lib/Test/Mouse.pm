@@ -63,7 +63,7 @@ sub export_type_constraints_as_functions { # TEST ONLY
     my $into = caller;
 
     foreach my $type( list_all_type_constraints() ) {
-        my $tc = find_type_constraint($type)->{_compiled_type_constraint};
+        my $tc = find_type_constraint($type)->_compiled_type_constraint;
         my $as = $into . '::' . $type;
 
         no strict 'refs';
