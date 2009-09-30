@@ -185,17 +185,12 @@ sub _initialize_instance{
                 unless ($attribute->is_lazy) {
                     my $default = $attribute->default;
                     my $builder = $attribute->builder;
-                    my $value = $attribute->has_builder
-                              ? $instance->$builder
-                              : ref($default) eq 'CODE'
-                                  ? $default->($instance)
-                                  : $default;
+                    my $value =   $builder                ? $instance->$builder()
+                                : ref($default) eq 'CODE' ? $instance->$default()
+                                :                           $default;
 
-                    $value = $attribute->coerce_constraint($value)
-                        if $attribute->should_coerce;
-                    $attribute->verify_against_type_constraint($value);
-
-                    $instance->{$key} = $value;
+                    # XXX: we cannot use $attribute->set_value() because it invokes triggers.
+                    $instance->{$key} = $attribute->_coerce_and_verify($value, $instance);;
 
                     weaken($instance->{$key})
                         if ref($instance->{$key}) && $attribute->is_weak_ref;

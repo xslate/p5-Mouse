@@ -12,8 +12,8 @@ sub generate_constructor_method_inline {
     my $buildargs     = $class->_generate_BUILDARGS($metaclass);
     my $processattrs  = $class->_generate_processattrs($metaclass, \@attrs);
 
-    my @compiled_constraints = map { $_->_compiled_type_constraint }
-                               map { $_->{type_constraint} ? $_->{type_constraint} : () } @attrs;
+    my @compiled_constraints = map { $_ ? $_->_compiled_type_constraint : undef }
+                               map { $_->type_constraint } @attrs;
 
     my $code = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
     sub {
