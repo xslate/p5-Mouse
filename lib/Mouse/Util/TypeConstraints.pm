@@ -124,15 +124,15 @@ sub _create_type{
               . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
     }
 
-    $args{constraint} = delete($args{where})      if exists $args{where};
-    $args{optimized} = delete $args{optimized_as} if exists $args{optimized_as};
+    $args{constraint} = delete($args{where})       if exists $args{where};
+    $args{optimized}  = delete $args{optimized_as} if exists $args{optimized_as};
 
     my $constraint;
     if($mode eq 'subtype'){
-        my $parent = exists($args{as}) ? delete($args{as}) : delete($args{name});
+        my $parent = delete($args{as})
+            or confess('A subtype cannot consist solely of a name, it must have a parent');
 
-        $parent     = find_or_create_isa_type_constraint($parent);
-        $constraint = $parent->create_child_type(%args);
+        $constraint = find_or_create_isa_type_constraint($parent)->create_child_type(%args);
     }
     else{
         $constraint = Mouse::Meta::TypeConstraint->new(%args);
@@ -634,9 +634,13 @@ related C<eq_deeply> function.
 
 =head1 METHODS
 
-=head2 optimized_constraints -> HashRef[CODE]
+=head2 C<< list_all_builtin_type_constraints -> (Names) >>
 
-Returns the simple type constraints that Mouse understands.
+Returns the names of builtin type constraints.
+
+=head2 C<< list_all_type_constraints -> (Names) >>
+
+Returns the names of all the type constraints.
 
 =head1 FUNCTIONS
 
