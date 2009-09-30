@@ -11,8 +11,6 @@ use Mouse::Util qw(does_role not_supported);
 use Mouse::Meta::Module; # class_of
 use Mouse::Meta::TypeConstraint;
 
-use constant _DEBUG => !!$ENV{TC_DEBUG};
-
 our @ISA    = qw(Exporter);
 our @EXPORT = qw(
     as where message from via type subtype coerce class_type role_type enum
@@ -244,8 +242,6 @@ sub _find_or_create_regular_type{
         $type = 'Class';
     }
 
-    warn "#CREATE a $type type for $spec\n" if _DEBUG;
-
     return $TYPE{$spec} = Mouse::Meta::TypeConstraint->new(
         name      => $spec,
         optimized => $check,
@@ -293,8 +289,6 @@ sub _find_or_create_parameterized_type{
     my $name = sprintf '%s[%s]', $base->name, $param->name;
 
     $TYPE{$name} ||= do{
-        warn "#CREATE a Parameterized type for $name\n" if _DEBUG;
-
         my $generator = $base->{constraint_generator};
 
         if(!$generator){
@@ -316,8 +310,6 @@ sub _find_or_create_union_type{
     my $name = join '|', map{ $_->name } @types;
 
     $TYPE{$name} ||= do{
-        warn "# CREATE a Union type for ", Mouse::Util::english_list(@types),"\n" if _DEBUG;
-
         return Mouse::Meta::TypeConstraint->new(
             name              => $name,
             type_constraints  => \@types,
