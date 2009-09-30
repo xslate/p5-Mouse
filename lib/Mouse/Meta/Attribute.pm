@@ -156,7 +156,7 @@ sub new {
 #        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
 #    }
 
-    return $instance
+    return $instance;
 }
 
 # readers
