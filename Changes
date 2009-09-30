@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-
+    * Refactor type coercions
 
     * Refactor the type parser to parse 'ArrayRef[Object|Int]'
 
