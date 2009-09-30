@@ -48,6 +48,7 @@ BEGIN {
     # create the alias
 
     my $st = subtype 'IO::StringOrFile' => as 'IO::String | IO::File';
+    #::diag $st->dump;
 
     # attributes
 
