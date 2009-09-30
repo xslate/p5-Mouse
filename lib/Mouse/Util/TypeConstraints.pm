@@ -150,35 +150,12 @@ sub subtype {
 }
 
 sub coerce {
-    my $name = shift;
+    my $type_name = shift;
 
-    $name =~ s/\s+//g;
-    confess "Cannot find type '$name', perhaps you forgot to load it."
-        unless $TYPE{$name};
+    my $type = find_type_constraint($type_name)
+        or confess("Cannot find type '$type_name', perhaps you forgot to load it.");
 
-    unless ($COERCE{$name}) {
-        $COERCE{$name}      = {};
-        $COERCE_KEYS{$name} = [];
-    }
-
-    my $package_defined_in = caller;
-
-    while (my($from, $action) = splice @_, 0, 2) {
-        $from =~ s/\s+//g;
-
-        confess "A coercion action already exists for '$from'"
-            if $COERCE{$name}->{$from};
-
-        my $type = find_or_parse_type_constraint($from, $package_defined_in);
-        if (!$type) {
-            confess "Could not find the type constraint ($from) to coerce from"
-        }
-
-        warn "# REGISTER COERCE $name, from $type\n" if _DEBUG;
-
-        push @{ $COERCE_KEYS{$name} }, $type;
-        $COERCE{$name}->{$from} = $action;
-    }
+    $type->_add_type_coercions(@_);
     return;
 }
 
@@ -214,35 +191,10 @@ sub role_type {
 
 # this is an original method for Mouse
 sub typecast_constraints {
-    my($class, $pkg, $types, $value) = @_;
+    my($class, $pkg, $type, $value) = @_;
     Carp::croak("wrong arguments count") unless @_ == 4;
 
-    local $_;
-    for my $type ($types->{type_constraints} ? @{$types->{type_constraints}} : $types ) {
-        for my $coerce_type (@{ $COERCE_KEYS{$type}}) {
-
-            if(_DEBUG){
-                warn sprintf "# COERCE: from %s to %s for %s (%s)\n",
-                    $coerce_type, $type, defined($value) ? "'$value'" : 'undef',
-                    $coerce_type->check($value) ? "try" : "skip";
-            }
-
-            next if !$coerce_type->check($value);
-
-            # try to coerce
-            $_ = $value;
-            my $coerced = $COERCE{$type}->{$coerce_type}->($value); # coerce
-
-            if(_DEBUG){
-                warn sprintf "# COERCE: got %s, which is%s %s\n",
-                    defined($coerced) ? $coerced : 'undef', $types->check($coerced) ? '' : ' not', $types;
-            }
-
-            # check with $types, not $constraint
-            return $coerced if $types->check($coerced);
-        }
-    }
-    return $value; # returns original $value
+    return $type->coerce($value);
 }
 
 sub enum {

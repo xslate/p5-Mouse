@@ -171,18 +171,13 @@ sub _initialize_instance{
         my $key  = $attribute->name;
 
         if (defined($from) && exists($args->{$from})) {
-            $args->{$from} = $attribute->coerce_constraint($args->{$from})
-                if $attribute->should_coerce;
-
-            $attribute->verify_against_type_constraint($args->{$from});
-
-            $instance->{$key} = $args->{$from};
+            $instance->{$key} = $attribute->_coerce_and_verify($args->{$from});
 
             weaken($instance->{$key})
                 if ref($instance->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                push @triggers_queue, [ $attribute->trigger, $args->{$from} ];
+                push @triggers_queue, [ $attribute->trigger, $instance->{$from} ];
             }
         }
         else {

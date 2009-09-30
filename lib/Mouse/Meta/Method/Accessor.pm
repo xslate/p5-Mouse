@@ -15,7 +15,7 @@ sub _install_accessor{
     my $should_deref  = $attribute->should_auto_deref;
     my $should_coerce = $attribute->should_coerce;
 
-    my $compiled_type_constraint    = $constraint ? $constraint->_compiled_type_constraint : undef;
+    my $compiled_type_constraint = $constraint ? $constraint->_compiled_type_constraint : undef;
 
     my $self  = '$_[0]';
     my $key   = sprintf q{"%s"}, quotemeta $name;
@@ -41,11 +41,14 @@ sub _install_accessor{
         my $value = '$_[1]';
 
         if ($constraint) {
+            if(!$compiled_type_constraint){
+                Carp::confess("[BUG]Missing compiled type constraint for $constraint");
+            }
             if ($should_coerce) {
                 $accessor .=
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                    'my $val = Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
+                    'my $val = $constraint->coerce('.$value.');';
                 $value = '$val';
             }
             if ($compiled_type_constraint) {

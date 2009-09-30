@@ -51,6 +51,25 @@ sub new {
     my $self = bless \%args, $class;
     $self->compile_type_constraint() if !$self->{hand_optimized_type_constraint};
 
+    if($self->{type_constraints}){ # Union
+        my @coercions;
+        foreach my $type(@{$self->{type_constraints}}){
+            if($type->has_coercion){
+                push @coercions, $type;
+            }
+        }
+        if(@coercions){
+            $self->{_compiled_type_coercion} = sub {
+                my($thing) = @_;
+                foreach my $type(@coercions){
+                    my $value = $type->coerce($thing);
+                    return $value if $self->check($value);
+                }
+                return $thing;
+            };
+        }
+    }
+
     return $self;
 }
 
@@ -79,6 +98,7 @@ sub message { $_[0]->{message} }
 
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 
+sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
 
 sub compile_type_constraint{
     my($self) = @_;
@@ -134,9 +154,60 @@ sub compile_type_constraint{
     return;
 }
 
+sub _add_type_coercions{
+    my $self = shift;
+
+    my $coercions = ($self->{_coercion_map} ||= []);
+    my %has       = map{ $_->[0] => undef } @{$coercions};
+
+    for(my $i = 0; $i < @_; $i++){
+        my $from   = $_[  $i];
+        my $action = $_[++$i];
+
+        if(exists $has{$from}){
+            confess("A coercion action already exists for '$from'");
+        }
+
+        my $type = Mouse::Util::TypeConstraints::find_or_parse_type_constraint($from)
+            or confess("Could not find the type constraint ($from) to coerce from");
+
+        push @{$coercions}, [ $type => $action ];
+    }
+
+    # compile
+    if(exists $self->{type_constraints}){ # union type
+        confess("Cannot add additional type coercions to Union types");
+    }
+    else{
+        $self->{_compiled_type_coercion} = sub {
+           my($thing) = @_;
+           foreach my $pair (@{$coercions}) {
+                #my ($constraint, $converter) = @$pair;
+                if ($pair->[0]->check($thing)) {
+                  local $_ = $thing;
+                  return $pair->[1]->($thing);
+                }
+           }
+           return $thing;
+        };
+    }
+    return;
+}
+
 sub check {
     my $self = shift;
-    $self->_compiled_type_constraint->(@_);
+    return $self->_compiled_type_constraint->(@_);
+}
+
+sub coerce {
+    my $self = shift;
+    if(!$self->{_compiled_type_coercion}){
+        confess("Cannot coerce without a type coercion ($self)");
+    }
+
+    return $_[0] if $self->_compiled_type_constraint->(@_);
+
+    return $self->{_compiled_type_coercion}->(@_);
 }
 
 sub get_message {
