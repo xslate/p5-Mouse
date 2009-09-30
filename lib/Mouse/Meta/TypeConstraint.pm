@@ -79,67 +79,6 @@ sub message { $_[0]->{message} }
 
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 
-sub check {
-    my $self = shift;
-    $self->_compiled_type_constraint->(@_);
-}
-
-sub validate {
-    my ($self, $value) = @_;
-    if ($self->_compiled_type_constraint->($value)) {
-        return undef;
-    }
-    else {
-        $self->get_message($value);
-    }
-}
-
-sub assert_valid {
-    my ($self, $value) = @_;
-
-    my $error = $self->validate($value);
-    return 1 if ! defined $error;
-
-    confess($error);
-}
-
-sub get_message {
-    my ($self, $value) = @_;
-    if ( my $msg = $self->message ) {
-        local $_ = $value;
-        return $msg->($value);
-    }
-    else {
-        $value = ( defined $value ? overload::StrVal($value) : 'undef' );
-        return
-            "Validation failed for '"
-          . $self->name
-          . "' failed with value $value";
-    }
-}
-
-sub is_a_type_of{
-    my($self, $other) = @_;
-
-    # ->is_a_type_of('__ANON__') is always false
-    return 0 if !blessed($other) && $other eq '__ANON__';
-
-    (my $other_name = $other) =~ s/\s+//g;
-
-    return 1 if $self->name eq $other_name;
-
-    if(exists $self->{type_constraints}){ # union
-        foreach my $type(@{$self->{type_constraints}}){
-            return 1 if $type->name eq $other_name;
-        }
-    }
-
-    for(my $parent = $self->parent; defined $parent; $parent = $parent->parent){
-        return 1 if $parent->name eq $other_name;
-    }
-
-    return 0;
-}
 
 sub compile_type_constraint{
     my($self) = @_;
@@ -194,6 +133,47 @@ sub compile_type_constraint{
     }
     return;
 }
+
+sub check {
+    my $self = shift;
+    $self->_compiled_type_constraint->(@_);
+}
+
+sub get_message {
+    my ($self, $value) = @_;
+    if ( my $msg = $self->message ) {
+        local $_ = $value;
+        return $msg->($value);
+    }
+    else {
+        $value = ( defined $value ? overload::StrVal($value) : 'undef' );
+        return "Validation failed for '$self' failed with value $value";
+    }
+}
+
+sub is_a_type_of{
+    my($self, $other) = @_;
+
+    # ->is_a_type_of('__ANON__') is always false
+    return 0 if !blessed($other) && $other eq '__ANON__';
+
+    (my $other_name = $other) =~ s/\s+//g;
+
+    return 1 if $self->name eq $other_name;
+
+    if(exists $self->{type_constraints}){ # union
+        foreach my $type(@{$self->{type_constraints}}){
+            return 1 if $type->name eq $other_name;
+        }
+    }
+
+    for(my $parent = $self->parent; defined $parent; $parent = $parent->parent){
+        return 1 if $parent->name eq $other_name;
+    }
+
+    return 0;
+}
+
 
 1;
 __END__
