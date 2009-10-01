@@ -1,9 +1,20 @@
 Revision history for Mouse
 
-0.38
+0.37_01
     * Type coercions are stored to type constraints
 
     * Refactor the type parser to parse 'ArrayRef[Object|Int]'
+
+    * Remove Class::MOP specific methods/functions from Mouse::Meta::Module,
+      but they might be added if it breaks compatibility
+        - version, authority, identifier,
+          get_all_metaclasses, store_metaclass_by_name,
+          weaken_metaclass, does_metaclass_exist, remove_metaclass_by_name
+
+    * Add new public utilities to Mouse::Util
+        - class_of, the counterpart for Class::MOP::class_of
+        - get_metaclass_by_name for Class::MOP::get_metaclass_by_name
+
 
 0.37 Mon Sep 28 10:48:27 2009
     * Ensure backward compatibility by author/test-externa.pl (gfx)
