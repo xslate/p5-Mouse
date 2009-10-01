@@ -204,6 +204,7 @@ sub load_first_existing_class {
 }
 
 # taken from Class/MOP.pm
+my %is_class_loaded_cache;
 sub _try_load_one_class {
     my $class = shift;
 
@@ -212,7 +213,7 @@ sub _try_load_one_class {
         confess "Invalid class name ($display)";
     }
 
-    return if is_class_loaded($class);
+    return undef if $is_class_loaded_cache{$class} ||= is_class_loaded($class);
 
     my $file = $class . '.pm';
     $file =~ s{::}{/}g;
@@ -233,13 +234,11 @@ sub load_class {
     return 1;
 }
 
-my %is_class_loaded_cache;
+
 sub is_class_loaded {
     my $class = shift;
 
     return 0 if ref($class) || !defined($class) || !length($class);
-
-    return 1 if $is_class_loaded_cache{$class};
 
     # walk the symbol table tree to avoid autovififying
     # \*{${main::}{"Foo::"}} == \*main::Foo::
@@ -252,15 +251,15 @@ sub is_class_loaded {
     }
 
     # check for $VERSION or @ISA
-    return ++$is_class_loaded_cache{$class} if exists $pack->{VERSION}
+    return 1 if exists $pack->{VERSION}
              && defined *{$pack->{VERSION}}{SCALAR} && defined ${ $pack->{VERSION} };
-    return ++$is_class_loaded_cache{$class} if exists $pack->{ISA}
+    return 1 if exists $pack->{ISA}
              && defined *{$pack->{ISA}}{ARRAY} && @{ $pack->{ISA} } != 0;
 
     # check for any method
     foreach my $name( keys %{$pack} ) {
         my $entry = \$pack->{$name};
-        return ++$is_class_loaded_cache{$class} if ref($entry) ne 'GLOB' || defined *{$entry}{CODE};
+        return 1 if ref($entry) ne 'GLOB' || defined *{$entry}{CODE};
     }
 
     # fail
