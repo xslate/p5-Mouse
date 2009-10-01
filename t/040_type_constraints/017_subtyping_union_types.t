@@ -3,11 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 21;
+use Test::More tests => 19;
 use Test::Exception;
 
 BEGIN {
-    use_ok("Moose::Util::TypeConstraints");
+    use_ok("Mouse::Util::TypeConstraints");
 }
 
 lives_ok {
@@ -16,13 +16,13 @@ lives_ok {
 
 {
     my $t = find_type_constraint('MyCollections');
-    isa_ok($t, 'Moose::Meta::TypeConstraint');
+    isa_ok($t, 'Mouse::Meta::TypeConstraint');
 
     is($t->name, 'MyCollections', '... name is correct');
 
     my $p = $t->parent;
-    isa_ok($p, 'Moose::Meta::TypeConstraint::Union');
-    isa_ok($p, 'Moose::Meta::TypeConstraint');
+#    isa_ok($p, 'Mouse::Meta::TypeConstraint::Union');
+    isa_ok($p, 'Mouse::Meta::TypeConstraint');
 
     is($p->name, 'ArrayRef|HashRef', '... parent name is correct');
 
@@ -47,13 +47,13 @@ lives_ok {
 
 {
     my $t = find_type_constraint('MyCollectionsExtended');
-    isa_ok($t, 'Moose::Meta::TypeConstraint');
+    isa_ok($t, 'Mouse::Meta::TypeConstraint');
 
     is($t->name, 'MyCollectionsExtended', '... name is correct');
 
     my $p = $t->parent;
-    isa_ok($p, 'Moose::Meta::TypeConstraint::Union');
-    isa_ok($p, 'Moose::Meta::TypeConstraint');
+#    isa_ok($p, 'Mouse::Meta::TypeConstraint::Union');
+    isa_ok($p, 'Mouse::Meta::TypeConstraint');
 
     is($p->name, 'ArrayRef|HashRef', '... parent name is correct');
 
