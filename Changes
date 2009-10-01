@@ -1,6 +1,7 @@
 Revision history for Mouse
 
-    * Refactor type coercions
+0.38
+    * Type coercions are stored to type constraints
 
     * Refactor the type parser to parse 'ArrayRef[Object|Int]'
 
