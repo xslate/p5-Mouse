@@ -8,13 +8,13 @@ use Scalar::Util qw/blessed weaken/;
 use Mouse::Util qw/:meta get_code_package not_supported load_class/;
 
 
-my %METACLASS_CACHE;
+my %METAS;
 
 # because Mouse doesn't introspect existing classes, we're forced to
 # only pay attention to other Mouse classes
 sub _metaclass_cache {
     my($class, $name) = @_;
-    return $METACLASS_CACHE{$name};
+    return $METAS{$name};
 }
 
 sub initialize {
@@ -23,26 +23,26 @@ sub initialize {
     ($package_name && !ref($package_name))
         || $class->throw_error("You must pass a package name and it cannot be blessed");
 
-    return $METACLASS_CACHE{$package_name}
+    return $METAS{$package_name}
         ||= $class->_construct_meta(package => $package_name, @args);
 }
 
 sub class_of{
     my($class_or_instance) = @_;
     return undef unless defined $class_or_instance;
-    return $METACLASS_CACHE{ blessed($class_or_instance) || $class_or_instance };
+    return $METAS{ blessed($class_or_instance) || $class_or_instance };
 }
 
 # Means of accessing all the metaclasses that have
 # been initialized thus far
-#sub get_all_metaclasses         {        %METACLASS_CACHE         }
-sub get_all_metaclass_instances { values %METACLASS_CACHE         }
-sub get_all_metaclass_names     { keys   %METACLASS_CACHE         }
-sub get_metaclass_by_name       { $METACLASS_CACHE{$_[0]}         }
-#sub store_metaclass_by_name     { $METACLASS_CACHE{$_[0]} = $_[1] }
-#sub weaken_metaclass            { weaken($METACLASS_CACHE{$_[0]}) }
-#sub does_metaclass_exist        { defined $METACLASS_CACHE{$_[0]} }
-#sub remove_metaclass_by_name    { delete $METACLASS_CACHE{$_[0]}  }
+#sub get_all_metaclasses         {        %METAS         }
+sub get_all_metaclass_instances { values %METAS         }
+sub get_all_metaclass_names     { keys   %METAS         }
+sub get_metaclass_by_name       { $METAS{$_[0]}         }
+#sub store_metaclass_by_name     { $METAS{$_[0]} = $_[1] }
+#sub weaken_metaclass            { weaken($METAS{$_[0]}) }
+#sub does_metaclass_exist        { defined $METAS{$_[0]} }
+#sub remove_metaclass_by_name    { delete $METAS{$_[0]}  }
 
 
 
@@ -220,7 +220,7 @@ sub get_method_list {
         )};
         my $meta = $class->initialize( $package_name, %initialize_options, @extra_options);
 
-        weaken $METACLASS_CACHE{$package_name}
+        weaken $METAS{$package_name}
             if $mortal;
 
         # FIXME totally lame
@@ -275,7 +275,7 @@ sub get_method_list {
 
         @{$self->{superclasses}} = () if exists $self->{superclasses};
         %{$stash} = ();
-        delete $METACLASS_CACHE{$self->name};
+        delete $METAS{$self->name};
 
         no strict 'refs';
         delete ${$ANON_PREFIX}{ $serial_id . '::' };
