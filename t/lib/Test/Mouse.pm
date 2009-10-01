@@ -55,6 +55,20 @@ sub has_attribute_ok ($$;$) {
 
 # Moose compatible methods/functions
 
+package Mouse::Meta::Module;
+
+sub version   { no strict 'refs'; ${shift->name.'::VERSION'}   }
+sub authority { no strict 'refs'; ${shift->name.'::AUTHORITY'} }
+sub identifier {
+    my $self = shift;
+    return join '-' => (
+       $self->name,
+        ($self->version   || ()),
+        ($self->authority || ()),
+    );
+}
+
+
 package Mouse::Util::TypeConstraints;
 
 use Mouse::Util::TypeConstraints ();

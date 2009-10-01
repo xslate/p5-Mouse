@@ -6,6 +6,9 @@ use warnings;
 use Test::More tests => 40;
 use Test::Exception;
 
+use lib 't/lib';
+use Test::Mouse; # Mouse::Meta::Module->version
+
 =pod
 
 NOTE:

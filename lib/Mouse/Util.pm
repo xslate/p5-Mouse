@@ -35,24 +35,31 @@ our %EXPORT_TAGS = (
     meta => [qw(does meta dump _MOUSE_VERBOSE)],
 );
 
+# aliases as public APIs
+
+BEGIN{
+    *class_of                    = \&Mouse::Meta::Module::class_of;
+    *get_metaclass_by_name       = \&Mouse::Meta::Module::get_metaclass_by_name;
+    *get_all_metaclass_instances = \&Mouse::Meta::Module::get_all_metaclass_instances;
+    *get_all_metaclass_names     = \&Mouse::Meta::Module::get_all_metaclass_names;
+}
+
 # Moose::Util compatible utilities
 
 sub find_meta{
-    return Mouse::Meta::Module::class_of( $_[0] );
+    return class_of( $_[0] );
 }
 
 sub does_role{
     my ($class_or_obj, $role_name) = @_;
 
-    my $meta = Mouse::Meta::Module::class_of($class_or_obj);
+    my $meta = class_of($class_or_obj);
 
     (defined $role_name)
         || ($meta || 'Mouse::Meta::Class')->throw_error("You must supply a role name to does()");
 
     return defined($meta) && $meta->does_role($role_name);
 }
-
-
 
 BEGIN {
     my $impl;
@@ -150,6 +157,9 @@ BEGIN {
         };
     }
 }
+
+# Utilities from Class::MOP
+
 
 # taken from Class/MOP.pm
 sub is_valid_class_name {
@@ -358,9 +368,17 @@ locally-defined method.
 
 =head3 C<< load_class(ClassName) >>
 
-This will load a given C<ClassName> (or die if it's not loadable).
+This will load a given C<ClassName> (or die if it is not loadable).
 This function can be used in place of tricks like
 C<eval "use $module"> or using C<require>.
+
+=head2 C<< Mouse::Util::class_of(ClassName) >>
+
+The counterpart of C<Class::MOP::class_of()>. This is not exportable.
+
+=head2 C<< Mouse::Util::get_metaclass_by_name(ClassName) >>
+
+The counterpart of C<Class::MOP::get_metaclass_by_name()>. This is not exportable.
 
 =head2 MRO::Compat
 
