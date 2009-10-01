@@ -30,7 +30,7 @@ sub initialize {
 sub class_of{
     my($class_or_instance) = @_;
     return undef unless defined $class_or_instance;
-    return $METAS{ blessed($class_or_instance) || $class_or_instance };
+    return $METAS{ ref($class_or_instance) || $class_or_instance };
 }
 
 # Means of accessing all the metaclasses that have
