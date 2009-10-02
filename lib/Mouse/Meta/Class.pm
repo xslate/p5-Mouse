@@ -27,7 +27,7 @@ sub _construct_meta {
 
     my $self = bless \%args, ref($class) || $class;
     if($class ne __PACKAGE__){
-        $self->_initialize_object($self, \%args);
+        $self->meta->_initialize_object($self, \%args);
     }
     return $self;
 }

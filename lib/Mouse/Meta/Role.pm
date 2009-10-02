@@ -18,10 +18,12 @@ sub _construct_meta {
     $args{required_methods} ||= [];
     $args{roles}            ||= [];
 
-#    return Mouse::Meta::Class->initialize($class)->new_object(%args)
-#        if $class ne __PACKAGE__;
+    my $self = bless \%args, ref($class) || $class;
+    if($class ne __PACKAGE__){
+        $self->meta->_initialize_object($self, \%args);
+    }
 
-    return bless \%args, ref($class) || $class;
+    return $self;
 }
 
 sub create_anon_role{
