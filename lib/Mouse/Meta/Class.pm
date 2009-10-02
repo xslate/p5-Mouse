@@ -131,16 +131,20 @@ sub add_attribute {
     return $attr;
 }
 
-sub compute_all_applicable_attributes { shift->get_all_attributes(@_) }
+sub compute_all_applicable_attributes {
+    Carp::cluck('compute_all_applicable_attributes() has been deprecated');
+    return shift->get_all_attributes(@_)
+}
+
 sub get_all_attributes {
     my $self = shift;
     my (@attr, %seen);
 
     for my $class ($self->linearized_isa) {
-        my $meta = $self->_metaclass_cache($class)
+        my $meta = Mouse::Util::get_metaclass_by_name($class)
             or next;
 
-        for my $name (keys %{ $meta->get_attribute_map }) {
+        for my $name ($meta->get_attribute_list) {
             next if $seen{$name}++;
             push @attr, $meta->get_attribute($name);
         }

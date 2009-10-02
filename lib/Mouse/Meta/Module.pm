@@ -63,7 +63,11 @@ sub name { $_[0]->{package} }
 
 # add_attribute is an abstract method
 
-sub get_attribute_map {        $_[0]->{attributes}          }
+sub get_attribute_map {
+    Carp::cluck('get_attribute_map() has been deprecated');
+    return $_[0]->{attributes};
+}
+
 sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
 sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
