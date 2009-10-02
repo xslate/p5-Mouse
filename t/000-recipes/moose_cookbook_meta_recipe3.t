@@ -42,9 +42,8 @@ $| = 1;
 
       my $dump = '';
 
-      my %attributes = %{ $self->meta->get_attribute_map };
-      for my $name ( sort keys %attributes ) {
-          my $attribute = $attributes{$name};
+      for my $name ( $self->meta->get_attribute_list ) {
+          my $attribute = $self->meta->get_attribute($name);
 
           if (   $attribute->does('MyApp::Meta::Attribute::Trait::Labeled')
               && $attribute->has_label ) {

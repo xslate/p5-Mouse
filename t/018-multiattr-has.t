@@ -19,7 +19,7 @@ do {
 };
 
 can_ok(Class => qw/a b c/);
-is(keys %{ Class->meta->get_attribute_map }, 3, "three attributes created");
+is_deeply([sort Class->meta->get_attribute_list], [sort qw/a b c/], "three attributes created");
 Class->new(a => 1, b => 2);
 
 is_deeply(\%trigger, { a => 1, b => 1 }, "correct triggers called");
