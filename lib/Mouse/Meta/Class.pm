@@ -159,14 +159,14 @@ sub new_object {
     my $self = shift;
     my %args = (@_ == 1 ? %{$_[0]} : @_);
 
-    my $instance = bless {}, $self->name;
+    my $object = bless {}, $self->name;
 
-    $self->_initialize_instance($instance, \%args);
-    return $instance;
+    $self->_initialize_object($object, \%args);
+    return $object;
 }
 
-sub _initialize_instance{
-    my($self, $instance, $args) = @_;
+sub _initialize_object{
+    my($self, $object, $args) = @_;
 
     my @triggers_queue;
 
@@ -175,13 +175,13 @@ sub _initialize_instance{
         my $key  = $attribute->name;
 
         if (defined($from) && exists($args->{$from})) {
-            $instance->{$key} = $attribute->_coerce_and_verify($args->{$from});
+            $object->{$key} = $attribute->_coerce_and_verify($args->{$from});
 
-            weaken($instance->{$key})
-                if ref($instance->{$key}) && $attribute->is_weak_ref;
+            weaken($object->{$key})
+                if ref($object->{$key}) && $attribute->is_weak_ref;
 
             if ($attribute->has_trigger) {
-                push @triggers_queue, [ $attribute->trigger, $instance->{$from} ];
+                push @triggers_queue, [ $attribute->trigger, $object->{$key} ];
             }
         }
         else {
@@ -189,15 +189,15 @@ sub _initialize_instance{
                 unless ($attribute->is_lazy) {
                     my $default = $attribute->default;
                     my $builder = $attribute->builder;
-                    my $value =   $builder                ? $instance->$builder()
-                                : ref($default) eq 'CODE' ? $instance->$default()
+                    my $value =   $builder                ? $object->$builder()
+                                : ref($default) eq 'CODE' ? $object->$default()
                                 :                           $default;
 
                     # XXX: we cannot use $attribute->set_value() because it invokes triggers.
-                    $instance->{$key} = $attribute->_coerce_and_verify($value, $instance);;
+                    $object->{$key} = $attribute->_coerce_and_verify($value, $object);;
 
-                    weaken($instance->{$key})
-                        if ref($instance->{$key}) && $attribute->is_weak_ref;
+                    weaken($object->{$key})
+                        if ref($object->{$key}) && $attribute->is_weak_ref;
                 }
             }
             else {
@@ -210,35 +210,28 @@ sub _initialize_instance{
 
     foreach my $trigger_and_value(@triggers_queue){
         my($trigger, $value) = @{$trigger_and_value};
-        $trigger->($instance, $value);
+        $trigger->($object, $value);
     }
 
     if($self->is_anon_class){
-        $instance->{__METACLASS__} = $self;
+        $object->{__METACLASS__} = $self;
     }
 
-    return $instance;
+    return $object;
 }
 
 sub clone_object {
-    my $class    = shift;
-    my $instance = shift;
-    my %params   = (@_ == 1) ? %{$_[0]} : @_;
+    my $class  = shift;
+    my $object = shift;
+    my %params = (@_ == 1) ? %{$_[0]} : @_;
 
-    (blessed($instance) && $instance->isa($class->name))
-        || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($instance)");
+    (blessed($object) && $object->isa($class->name))
+        || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
 
-    my $clone = bless { %$instance }, ref $instance;
+    my $cloned = bless { %$object }, ref $object;
+    $class->_initialize_object($cloned, \%params);
 
-    foreach my $attr ($class->get_all_attributes()) {
-        if ( defined( my $init_arg = $attr->init_arg ) ) {
-            if (exists $params{$init_arg}) {
-                $clone->{ $attr->name } = $params{$init_arg};
-            }
-        }
-    }
-
-    return $clone;
+    return $cloned;
 }
 
 sub clone_instance {

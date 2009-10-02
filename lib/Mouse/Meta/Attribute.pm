@@ -142,11 +142,11 @@ sub new {
 
     $args{name} = $name;
 
-    my $instance = bless \%args, $class;
+    my $self = bless \%args, $class;
 
     # extra attributes
     if($class ne __PACKAGE__){
-        $class->meta->_initialize_instance($instance,\%args);
+        $class->meta->_initialize_object($self, \%args);
     }
 
 # XXX: there is no fast way to check attribute validity
@@ -156,7 +156,7 @@ sub new {
 #        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
 #    }
 
-    return $instance;
+    return $self;
 }
 
 # readers
