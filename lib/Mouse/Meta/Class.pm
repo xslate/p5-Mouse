@@ -25,10 +25,11 @@ sub _construct_meta {
         \@{ $args{package} . '::ISA' };
     };
 
-    #return Mouse::Meta::Class->initialize($class)->new_object(%args)
-    #    if $class ne __PACKAGE__;
-
-    return bless \%args, ref($class) || $class;
+    my $self = bless \%args, ref($class) || $class;
+    if($class ne __PACKAGE__){
+        $self->_initialize_object($self, \%args);
+    }
+    return $self;
 }
 
 sub create_anon_class{
