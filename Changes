@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.37_02 Fri Oct  2 21:00:46 2009
+    * Mouse::Meta::Attribute
+        - Add get_read_method_ref() and get_write_method_ref()
+
 0.37_01 Thu Oct  1 15:32:58 2009
     * Type coercions are stored to type constraints
 
