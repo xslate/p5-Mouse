@@ -53,7 +53,7 @@ $| = 1;
               $dump .= $name;
           }
 
-          my $reader = $attribute->get_read_method;
+          my $reader = $attribute->get_read_method_ref;
           $dump .= ": " . $self->$reader . "\n";
       }
 

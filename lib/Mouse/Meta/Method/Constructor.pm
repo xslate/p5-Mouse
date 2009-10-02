@@ -2,8 +2,8 @@ package Mouse::Meta::Method::Constructor;
 use strict;
 use warnings;
 
-sub generate_constructor_method_inline {
-    my ($class, $metaclass) = @_;
+sub _generate_constructor_method {
+    my ($class, $metaclass, $args) = @_;
 
     my $associated_metaclass_name = $metaclass->name;
     my @attrs         = $metaclass->get_all_attributes;
@@ -15,17 +15,21 @@ sub generate_constructor_method_inline {
     my @compiled_constraints = map { $_ ? $_->_compiled_type_constraint : undef }
                                map { $_->type_constraint } @attrs;
 
+    my $constructor_name = defined($args->{constructor_name})
+        ? $associated_metaclass_name . '::' . $args->{constructor_name}
+        : '';
+
     my $code = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
-    sub {
-        my \$class = shift;
-        return \$class->Mouse::Object::new(\@_)
-            if \$class ne q{$associated_metaclass_name};
-        $buildargs;
-        my \$instance = bless {}, \$class;
-        $processattrs;
-        $buildall;
-        return \$instance;
-    }
+        sub $constructor_name \{
+            my \$class = shift;
+            return \$class->Mouse::Object::new(\@_)
+                if \$class ne q{$associated_metaclass_name};
+            $buildargs;
+            my \$instance = bless {}, \$class;
+            $processattrs;
+            $buildall;
+            return \$instance;
+        }
 ...
 
     local $@;

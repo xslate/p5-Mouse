@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Scalar::Util qw(blessed);
 
-sub _install_accessor{
+sub _generate_accessor{
     my (undef, $attribute, $method_name, $class, $type) = @_;
 
     my $name          = $attribute->name;
@@ -24,7 +24,8 @@ sub _install_accessor{
 
     my $accessor = 
         '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-        "sub {\n";
+        sprintf("sub %s {\n", defined($method_name) ? $class->name . '::' . $method_name : '');
+
     if ($type eq 'accessor' || $type eq 'writer') {
         if($type eq 'accessor'){
             $accessor .= 
@@ -34,7 +35,7 @@ sub _install_accessor{
         else{ # writer
             $accessor .= 
                 '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                'if(@_ < 2){ Carp::confess("Not enough arguments for writer '.$method_name.'") }'.
+                'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of '.$name.'") }'.
                 '{' . "\n";
         }
                 
@@ -117,27 +118,29 @@ sub _install_accessor{
     $accessor .= 'return '.$self.'->{'.$key."};\n}";
 
     #print $accessor, "\n";
-    my $code = eval $accessor;
-    $attribute->throw_error($@) if $@;
+    my $code;
+    my $e = do{
+        local $@;
+        $code = eval $accessor;
+        $@;
+    };
+    die $e if $e;
 
-    $class->add_method($method_name => $code);
-    return;
+    return $code; # returns a CODE ref unless $method_name is passed
 }
 
-sub _install_reader{
+sub _generate_reader{
     my $class = shift;
-    $class->_install_accessor(@_, 'reader');
-    return;
+    return $class->_generate_accessor(@_, 'reader');
 }
 
-sub _install_writer{
+sub _generate_writer{
     my $class = shift;
-    $class->_install_accessor(@_, 'writer');
-    return;
+    return $class->_generate_accessor(@_, 'writer');
 }
 
 
-sub _install_predicate {
+sub _generate_predicate {
     my (undef, $attribute, $method_name, $class) = @_;
 
     my $slot = $attribute->name;
@@ -148,7 +151,7 @@ sub _install_predicate {
     return;
 }
 
-sub _install_clearer {
+sub _generate_clearer {
     my (undef, $attribute, $method_name, $class) = @_;
 
     my $slot = $attribute->name;
@@ -159,7 +162,7 @@ sub _install_clearer {
     return;
 }
 
-sub _install_handles {
+sub _generate_handles {
     my (undef, $attribute, $handles, $class) = @_;
 
     my $reader  = $attribute->reader || $attribute->accessor

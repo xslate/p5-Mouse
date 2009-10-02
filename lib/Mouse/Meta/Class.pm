@@ -117,7 +117,7 @@ sub add_attribute {
             my($attribute_class, @traits) = Mouse::Meta::Attribute->interpolate_class($name, \%args);
             $args{traits} = \@traits if @traits;
 
-            $attr = $attribute_class->new($name, \%args);
+            $attr = $attribute_class->new($name, %args);
         }
     }
 
@@ -248,17 +248,20 @@ sub make_immutable {
     my %args = (
         inline_constructor => 1,
         inline_destructor  => 1,
+        constructor_name   => 'new',
         @_,
     );
 
     $self->{is_immutable}++;
 
     if ($args{inline_constructor}) {
-        $self->add_method('new' => Mouse::Meta::Method::Constructor->generate_constructor_method_inline( $self ));
+        # generate and install
+        Mouse::Meta::Method::Constructor->_generate_constructor_method($self, \%args);
     }
 
     if ($args{inline_destructor}) {
-        $self->add_method('DESTROY' => Mouse::Meta::Method::Destructor->generate_destructor_method_inline( $self ));
+        # generate and install
+        Mouse::Meta::Method::Destructor->_generate_destructor_method($self, \%args);
     }
 
     # Moose's make_immutable returns true allowing calling code to skip setting an explicit true value

@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 7;
 use lib 't/lib';
 
 do {
@@ -56,8 +56,8 @@ do {
 
     # extend the parents stuff to make sure
     # certain bits are now required ...
-    #has '+default'         => (required => 1);
-    #has '+type_constraint' => (required => 1);
+    #has 'default'         => (required => 1);
+    has 'type_constraint' => (required => 1);
 
     ## Methods called prior to instantiation
 
@@ -131,8 +131,8 @@ do {
         # grab the reader and writer methods
         # as well, this will be useful for
         # our method provider constructors
-        my $attr_reader = $attr->get_read_method;
-        my $attr_writer = $attr->get_write_method;
+        my $attr_reader = $attr->get_read_method_ref;
+        my $attr_writer = $attr->get_write_method_ref;
 
 
         # before we install them, lets
@@ -213,6 +213,10 @@ do {
                     my ($attr, $reader, $writer) = @_;
                     return sub { $_[0]->$writer($_[1]) };
                 },
+                get => sub {
+                    my ($attr, $reader, $writer) = @_;
+                    return sub { $_[0]->$reader() };
+                },
                 add => sub {
                     my ($attr, $reader, $writer) = @_;
                     return sub { $_[0]->$writer($_[0]->$reader() + $_[1]) };
@@ -273,11 +277,12 @@ do {
     use Mouse;
 
     has 'ii' => (
-        is  => 'rw',
         isa => 'Num',
         provides => {
             sub => 'ii_minus',
             abs => 'ii_abs',
+            get => 'get_ii',
+            set => 'set_ii',
        },
 
        traits => [qw(MyNumber)],
@@ -293,6 +298,10 @@ can_ok 'MyClassWithTraits', qw(ii_minus ii_abs);
 
 $k = MyClassWithTraits->new(ii => 10);
 $k->ii_minus(100);
-is $k->ii,    -90;
-is $k->ii_abs, 90;
+is $k->get_ii, -90;
+is $k->ii_abs,  90;
+
+$k->set_ii(10);
+is $k->get_ii, 10;
+is $k->ii_abs, 10;
 

@@ -185,9 +185,6 @@ sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
 sub should_coerce        { $_[0]->{coerce}                 }
 
-sub get_read_method      { $_[0]->{reader} || $_[0]->{accessor} }
-sub get_write_method     { $_[0]->{writer} || $_[0]->{accessor} }
-
 # predicates
 
 sub has_accessor         { exists $_[0]->{accessor}        }
@@ -356,6 +353,44 @@ sub get_parent_args {
     $self->throw_error("Could not find an attribute by the name of '$name' to inherit from");
 }
 
+
+#sub get_read_method      { $_[0]->{reader} || $_[0]->{accessor} }
+#sub get_write_method     { $_[0]->{writer} || $_[0]->{accessor} }
+
+sub get_read_method_ref{
+    my($self) = @_;
+
+    $self->{_read_method_ref} ||= do{
+        my $metaclass = $self->associated_class
+            or $self->throw_error('No asocciated class for ' . $self->name);
+
+        my $reader = $self->{reader} || $self->{accessor};
+        if($reader){
+            $metaclass->name->can($reader);
+        }
+        else{
+            Mouse::Meta::Method::Accessor->_generate_reader($self, undef, $metaclass);
+        }
+    };
+}
+
+sub get_write_method_ref{
+    my($self) = @_;
+
+    $self->{_write_method_ref} ||= do{
+        my $metaclass = $self->associated_class
+            or $self->throw_error('No asocciated class for ' . $self->name);
+
+        my $reader = $self->{writer} || $self->{accessor};
+        if($reader){
+            $metaclass->name->can($reader);
+        }
+        else{
+            Mouse::Meta::Method::Accessor->_generate_writer($self, undef, $metaclass);
+        }
+    };
+}
+
 sub associate_method{
     my ($attribute, $method) = @_;
     $attribute->{associated_methods}++;
@@ -369,7 +404,7 @@ sub install_accessors{
 
     foreach my $type(qw(accessor reader writer predicate clearer handles)){
         if(exists $attribute->{$type}){
-            my $installer    = '_install_' . $type;
+            my $installer    = '_generate_' . $type;
 
             Mouse::Meta::Method::Accessor->$installer($attribute, $attribute->{$type}, $metaclass);
 
