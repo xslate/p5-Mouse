@@ -42,7 +42,7 @@ $| = 1;
 
       my $dump = '';
 
-      for my $name ( $self->meta->get_attribute_list ) {
+      for my $name ( sort $self->meta->get_attribute_list ) {
           my $attribute = $self->meta->get_attribute($name);
 
           if (   $attribute->does('MyApp::Meta::Attribute::Trait::Labeled')
