@@ -562,9 +562,9 @@ on success, otherwise C<confess>es.
 Creates a new attribute in the owner class, inheriting options from parent classes.
 Accessors and helper methods are installed. Some error checking is done.
 
-=item C<< get_read_method_ref >>
+=head2 C<< get_read_method_ref >>
 
-=item C<< get_write_method_ref >>
+=head2 C<< get_write_method_ref >>
 
 Returns the subroutine reference of a method suitable for reading or
 writing the attribute's value in the associated class. These methods

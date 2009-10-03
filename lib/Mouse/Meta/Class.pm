@@ -11,7 +11,8 @@ use Mouse::Meta::Method::Destructor;
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
-sub method_metaclass(){ 'Mouse::Meta::Method' } # required for get_method()
+sub method_metaclass()    { 'Mouse::Meta::Method'    }
+sub attribute_metaclass() { 'Mouse::Meta::Attribute' }
 
 sub _construct_meta {
     my($class, %args) = @_;
@@ -114,7 +115,7 @@ sub add_attribute {
             $attr = $inherited_attr->clone_and_inherit_options($name, \%args);
         }
         else{
-            my($attribute_class, @traits) = Mouse::Meta::Attribute->interpolate_class($name, \%args);
+            my($attribute_class, @traits) = $self->attribute_metaclass->interpolate_class($name, \%args);
             $args{traits} = \@traits if @traits;
 
             $attr = $attribute_class->new($name, %args);

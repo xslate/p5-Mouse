@@ -74,7 +74,7 @@ BEGIN {
         );
     }
 
-    sub optimized_constraints {
+    sub optimized_constraints { # DEPRECATED
         Carp::cluck('optimized_constraints() has been deprecated');
         return \%TYPE;
     }
@@ -186,7 +186,7 @@ sub role_type {
     );
 }
 
-sub typecast_constraints {
+sub typecast_constraints { # DEPRECATED
     my($class, $pkg, $type, $value) = @_;
     Carp::croak("wrong arguments count") unless @_ == 4;
 

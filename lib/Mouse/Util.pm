@@ -37,7 +37,7 @@ our %EXPORT_TAGS = (
 
 # aliases as public APIs
 
-# it must be 'require', because Mouse::Meta::Module depends on Mouse::Util
+# it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
 require Mouse::Meta::Module; # for the entities of metaclass cache utilities
 
 BEGIN {

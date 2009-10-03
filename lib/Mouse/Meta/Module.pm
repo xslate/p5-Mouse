@@ -10,9 +10,7 @@ use Mouse::Util qw/:meta get_code_package not_supported load_class/;
 
 my %METAS;
 
-# because Mouse doesn't introspect existing classes, we're forced to
-# only pay attention to other Mouse classes
-sub _metaclass_cache {
+sub _metaclass_cache { # DEPRECATED
     my($class, $name) = @_;
     return $METAS{$name};
 }
@@ -63,7 +61,7 @@ sub name { $_[0]->{package} }
 
 # add_attribute is an abstract method
 
-sub get_attribute_map {
+sub get_attribute_map { # DEPRECATED
     Carp::cluck('get_attribute_map() has been deprecated');
     return $_[0]->{attributes};
 }
