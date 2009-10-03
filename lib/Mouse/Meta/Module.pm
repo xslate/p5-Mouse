@@ -152,36 +152,37 @@ sub get_method_list {
     my %IMMORTALS;
 
     sub create {
-        my($class, $package_name, %options) = @_;
+        my($self, $package_name, %options) = @_;
 
-        $class->throw_error('You must pass a package name') if @_ < 2;
+        my $class = ref($self) || $self;
+        $self->throw_error('You must pass a package name') if @_ < 2;
 
         my $superclasses;
         if(exists $options{superclasses}){
-            if($class->isa('Mouse::Meta::Role')){
+            if($self->isa('Mouse::Meta::Role')){
                 delete $options{superclasses};
             }
             else{
                 $superclasses = delete $options{superclasses};
                 (ref $superclasses eq 'ARRAY')
-                    || $class->throw_error("You must pass an ARRAY ref of superclasses");
+                    || $self->throw_error("You must pass an ARRAY ref of superclasses");
             }
         }
 
         my $attributes = delete $options{attributes};
         if(defined $attributes){
             (ref $attributes eq 'ARRAY' || ref $attributes eq 'HASH')
-                || $class->throw_error("You must pass an ARRAY ref of attributes");
+                || $self->throw_error("You must pass an ARRAY ref of attributes");
         }
         my $methods = delete $options{methods};
         if(defined $methods){
             (ref $methods eq 'HASH')
-                || $class->throw_error("You must pass a HASH ref of methods");
+                || $self->throw_error("You must pass a HASH ref of methods");
         }
         my $roles = delete $options{roles};
         if(defined $roles){
             (ref $roles eq 'ARRAY')
-                || $class->throw_error("You must pass an ARRAY ref of roles");
+                || $self->throw_error("You must pass an ARRAY ref of roles");
         }
         my $mortal;
         my $cache_key;
@@ -209,14 +210,13 @@ sub get_method_list {
             ${ $package_name . '::AUTHORITY' } = delete $options{authority} if exists $options{authority};
         }
 
-        my $meta = $class->initialize( $package_name, %options);
+        my $meta = $self->initialize( $package_name, %options);
 
         weaken $METAS{$package_name}
             if $mortal;
 
-        # FIXME totally lame
-        $meta->add_method('meta' => sub {
-            $class->initialize(ref($_[0]) || $_[0]);
+        $meta->add_method(meta => sub{
+            $self->initialize(ref($_[0]) || $_[0]);
         });
 
         $meta->superclasses(@{$superclasses})
