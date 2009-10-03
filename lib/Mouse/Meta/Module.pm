@@ -266,16 +266,18 @@ sub get_method_list {
 
         return if !$serial_id;
 
-        @{$self->{superclasses}} = (); # clear @ISA
-        %{$self->namespace}      = (); # clear the stash
+        # @ISA is a magical variable, so we clear it manually.
+        @{$self->{superclasses}} = () if exists $self->{superclasses};
+
+        # Then, clear the symbol table hash
+        %{$self->namespace} = ();
 
         my $name = $self->name;
         delete $METAS{$name};
 
-        $name =~ s/::\d+$//;
+        $name =~ s/ $serial_id \z//xms;
 
         no strict 'refs';
-
         delete ${$name}{ $serial_id . '::' };
 
         return;

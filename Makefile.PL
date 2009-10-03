@@ -54,6 +54,7 @@ sub create_moose_compatibility_test {
         '010-isa-or.t'     => "Mouse has a [BUG]",
 
         '052-undefined-type-in-union.t' => "Mouse accepts undefined type as a member of union types",
+        '054-anon-leak.t'     => 'Moose has memory leaks',
 
         '600-tiny-tiny.t'     => "Moose doesn't support ::Tiny",
         '601-tiny-mouse.t'    => "Moose doesn't support ::Tiny",
