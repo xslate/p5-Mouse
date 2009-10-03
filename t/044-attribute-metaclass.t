@@ -5,7 +5,7 @@ use Test::More tests => 7;
 use lib 't/lib';
 
 do {
-    # copied from  MouseX::AttributeHelpers;
+    # copied from  MooseX::AttributeHelpers;
     package MouseX::AttributeHelpers::Trait::Base;
     use Mouse::Role;
     use Mouse::Util::TypeConstraints;
@@ -57,7 +57,7 @@ do {
     # extend the parents stuff to make sure
     # certain bits are now required ...
     #has 'default'         => (required => 1);
-    has 'type_constraint' => (required => 1);
+    has 'type_constraint' => (is => 'rw', required => 1);
 
     ## Methods called prior to instantiation
 
@@ -210,40 +210,41 @@ do {
         default => sub {
             return +{
                 set => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $_[1] ) };
                 },
                 get => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$reader() };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $reader->( $_[0] ) };
                 },
                 add => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[0]->$reader() + $_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $reader->( $_[0] ) + $_[1] ) };
                 },
                 sub => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[0]->$reader() - $_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $reader->( $_[0] ) - $_[1] ) };
                 },
                 mul => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[0]->$reader() * $_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $reader->( $_[0] ) * $_[1] ) };
                 },
                 div => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[0]->$reader() / $_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $reader->( $_[0] ) / $_[1] ) };
                 },
                 mod => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer($_[0]->$reader() % $_[1]) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], $reader->( $_[0] ) % $_[1] ) };
                 },
                 abs => sub {
-                    my ($attr, $reader, $writer) = @_;
-                    return sub { $_[0]->$writer(abs($_[0]->$reader()) ) };
+                    my ( $attr, $reader, $writer ) = @_;
+                    return sub { $writer->( $_[0], abs( $reader->( $_[0] ) ) ) };
                 },
-            }
+            };
         }
     );
+
 
     package MouseX::AttributeHelpers::Number;
     use Mouse;
@@ -278,6 +279,8 @@ do {
 
     has 'ii' => (
         isa => 'Num',
+        predicate => 'has_ii',
+
         provides => {
             sub => 'ii_minus',
             abs => 'ii_abs',
@@ -299,9 +302,11 @@ can_ok 'MyClassWithTraits', qw(ii_minus ii_abs);
 $k = MyClassWithTraits->new(ii => 10);
 $k->ii_minus(100);
 is $k->get_ii, -90;
-is $k->ii_abs,  90;
+$k->ii_abs;
+is $k->get_ii,  90;
 
 $k->set_ii(10);
 is $k->get_ii, 10;
-is $k->ii_abs, 10;
+$k->ii_abs;
+is $k->get_ii, 10;
 

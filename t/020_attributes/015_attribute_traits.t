@@ -25,7 +25,7 @@ use Test::Mouse;
 
         $self->associated_class->add_method(
             $self->alias_to,
-            sub { shift->$reader(@_) },
+            $reader,
         );
     };
 }

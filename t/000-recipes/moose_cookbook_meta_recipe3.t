@@ -54,7 +54,7 @@ $| = 1;
           }
 
           my $reader = $attribute->get_read_method_ref;
-          $dump .= ": " . $self->$reader . "\n";
+          $dump .= ": " . $reader->($self) . "\n";
       }
 
       return $dump;
