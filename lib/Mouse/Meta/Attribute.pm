@@ -202,7 +202,7 @@ sub has_builder          { exists $_[0]->{builder}         }
 sub has_read_method      { exists $_[0]->{reader} || exists $_[0]->{accessor} }
 sub has_write_method     { exists $_[0]->{writer} || exists $_[0]->{accessor} }
 
-sub _create_args {
+sub _create_args { # DEPRECATED
     $_[0]->{_create_args} = $_[1] if @_ > 1;
     $_[0]->{_create_args}
 }
@@ -241,7 +241,7 @@ sub interpolate_class{
     return( $class, @traits );
 }
 
-sub canonicalize_args{
+sub canonicalize_args{ # DEPRECATED
     my ($self, $name, %args) = @_;
 
     Carp::cluck("$self->canonicalize_args has been deprecated."
@@ -295,7 +295,7 @@ sub verify_type_constraint_error {
     $self->throw_error("Attribute ($name) does not pass the type constraint because: " . $type->get_message($value));
 }
 
-sub coerce_constraint { ## my($self, $value) = @_;
+sub coerce_constraint { # DEPRECATED
     my $type = $_[0]->{type_constraint}
         or return $_[1];
 
@@ -326,7 +326,7 @@ sub clone_and_inherit_options{
     return ref($self)->new($name, %{$self}, (@_ == 1) ? %{$_[0]} : @_);
 }
 
-sub clone_parent {
+sub clone_parent { # DEPRECATED
     my $self  = shift;
     my $class = shift;
     my $name  = shift;
@@ -339,7 +339,7 @@ sub clone_parent {
     $self->clone_and_inherited_args($class, $name, %args);
 }
 
-sub get_parent_args {
+sub get_parent_args { # DEPRECATED
     my $self  = shift;
     my $class = shift;
     my $name  = shift;
@@ -354,8 +354,12 @@ sub get_parent_args {
 }
 
 
-#sub get_read_method      { $_[0]->{reader} || $_[0]->{accessor} }
-#sub get_write_method     { $_[0]->{writer} || $_[0]->{accessor} }
+sub get_read_method { # DEPRECATED
+    $_[0]->{reader} || $_[0]->{accessor}
+}
+sub get_write_method { # DEPRECATED
+    $_[0]->{writer} || $_[0]->{accessor}
+}
 
 sub get_read_method_ref{
     my($self) = @_;
@@ -557,6 +561,15 @@ on success, otherwise C<confess>es.
 
 Creates a new attribute in the owner class, inheriting options from parent classes.
 Accessors and helper methods are installed. Some error checking is done.
+
+=item C<< get_read_method_ref >>
+
+=item C<< get_write_method_ref >>
+
+Returns the subroutine reference of a method suitable for reading or
+writing the attribute's value in the associated class. These methods
+always return a subroutine reference, regardless of whether or not the
+attribute is read- or write-only.
 
 =head1 SEE ALSO
 
