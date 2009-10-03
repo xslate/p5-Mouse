@@ -322,7 +322,7 @@ sub not_supported{
 }
 
 sub meta{
-    return Mouse::Meta::Class->initialize($_[0]);
+    return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
 }
 
 sub dump { 
