@@ -15,12 +15,10 @@ sub _generate_constructor_method {
     my @compiled_constraints = map { $_ ? $_->_compiled_type_constraint : undef }
                                map { $_->type_constraint } @attrs;
 
-    my $constructor_name = defined($args->{constructor_name})
-        ? $associated_metaclass_name . '::' . $args->{constructor_name}
-        : '';
 
-    my $code = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
-        sub $constructor_name \{
+
+    my $source = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
+        sub \{
             my \$class = shift;
             return \$class->Mouse::Object::new(\@_)
                 if \$class ne q{$associated_metaclass_name};
@@ -32,10 +30,16 @@ sub _generate_constructor_method {
         }
 ...
 
-    local $@;
-    my $res = eval $code;
-    die $@ if $@;
-    $res;
+    my $code;
+    my $e = do{
+        local $@;
+        $code = eval $source;
+        $@;
+    };
+    die $e if $e;
+
+    $metaclass->add_method($args->{constructor_name} => $code);
+    return;
 }
 
 sub _generate_processattrs {

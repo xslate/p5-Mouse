@@ -24,7 +24,7 @@ sub _generate_destructor_method {
     };
 
     my $destructor_name = $metaclass->name . '::DESTROY';
-    my $code = sprintf("#line %d %s\n", __LINE__, __FILE__) . <<"...";
+    my $source = sprintf("#line %d %s\n", __LINE__, __FILE__) . <<"...";
     sub $destructor_name \{
         my \$self = shift;
         $demolishall;
@@ -33,10 +33,10 @@ sub _generate_destructor_method {
 
     my $e = do{
         local $@;
-        eval $code;
+        eval $source;
         $@;
     };
-    die $@ if $@;
+    die $e if $e;
     return;
 }
 

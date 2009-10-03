@@ -230,6 +230,7 @@ sub interpolate_class{
         }
 
         if (@traits) {
+            warn "traits [@traits] for $class\n";
             $class = Mouse::Meta::Class->create_anon_class(
                 superclasses => [ $class ],
                 roles        => \@traits,

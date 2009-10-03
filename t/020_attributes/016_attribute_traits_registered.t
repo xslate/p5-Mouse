@@ -5,13 +5,13 @@ use warnings;
 
 use Test::More tests => 23;
 use Test::Exception;
-use Test::Moose;
 
-
+use lib 't/lib';
+use Test::Mouse;
 
 {
     package My::Attribute::Trait;
-    use Moose::Role;
+    use Mouse::Role;
 
     has 'alias_to' => (is => 'ro', isa => 'Str');
 
@@ -25,13 +25,13 @@ use Test::Moose;
         );
     };
 
-    package Moose::Meta::Attribute::Custom::Trait::Aliased;
+    package Mouse::Meta::Attribute::Custom::Trait::Aliased;
     sub register_implementation { 'My::Attribute::Trait' }
 }
 
 {
     package My::Other::Attribute::Trait;
-    use Moose::Role;
+    use Mouse::Role;
 
     my $method = sub {
         42;
@@ -47,13 +47,13 @@ use Test::Moose;
         );
     };
 
-    package Moose::Meta::Attribute::Custom::Trait::Other;
+    package Mouse::Meta::Attribute::Custom::Trait::Other;
     sub register_implementation { 'My::Other::Attribute::Trait' }
 }
 
 {
     package My::Class;
-    use Moose;
+    use Mouse;
 
     has 'bar' => (
         traits   => [qw/Aliased/],
@@ -65,7 +65,7 @@ use Test::Moose;
 
 {
     package My::Derived::Class;
-    use Moose;
+    use Mouse;
 
     extends 'My::Class';
 

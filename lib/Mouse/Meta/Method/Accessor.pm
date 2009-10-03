@@ -24,7 +24,7 @@ sub _generate_accessor{
 
     my $accessor = 
         '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-        sprintf("sub %s {\n", defined($method_name) ? $class->name . '::' . $method_name : '');
+        "sub {\n";
 
     if ($type eq 'accessor' || $type eq 'writer') {
         if($type eq 'accessor'){
@@ -126,7 +126,11 @@ sub _generate_accessor{
     };
     die $e if $e;
 
-    return $code; # returns a CODE ref unless $method_name is passed
+    if(defined $method_name){
+        $class->add_method($method_name => $code);
+    }
+
+    return $code;
 }
 
 sub _generate_reader{
