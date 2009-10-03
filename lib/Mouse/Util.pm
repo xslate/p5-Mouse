@@ -374,13 +374,13 @@ This will load a given C<ClassName> (or die if it is not loadable).
 This function can be used in place of tricks like
 C<eval "use $module"> or using C<require>.
 
-=head2 C<< Mouse::Util::class_of(ClassName) >>
+=head3 C<< Mouse::Util::class_of(ClassName or Object) >>
 
-The counterpart of C<Class::MOP::class_of()>. This is not exportable.
+=head3 C<< Mouse::Util::get_metaclass_by_name(ClassName) >>
 
-=head2 C<< Mouse::Util::get_metaclass_by_name(ClassName) >>
+=head3 C<< Mouse::Util::get_all_metaclass_instances() >>
 
-The counterpart of C<Class::MOP::get_metaclass_by_name()>. This is not exportable.
+=head3 C<< Mouse::Util::get_all_metaclass_names() >>
 
 =head2 MRO::Compat
 
@@ -398,7 +398,7 @@ The counterpart of C<Class::MOP::get_metaclass_by_name()>. This is not exportabl
 
 L<Moose::Util>
 
-L<Scalar::Util>
+L<Class::MOP>
 
 L<Sub::Identify>
 
