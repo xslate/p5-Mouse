@@ -2,20 +2,23 @@ Revision history for Mouse
 
 0.37_02
     * Mouse::Meta::Attribute
-        - Add get_read_method_ref() and get_write_method_ref()
+        - Add get_read_method_ref() and get_write_method_ref() (gfx)
+        - Fix clone_and_inherit_options() to deal with 'traits' (gfx)
+    * Mouse::Util
+        - Fix meta() method, which was not tested (gfx)
 
 0.37_01 Thu Oct  1 15:32:58 2009
-    * Type coercions are stored to type constraints
+    * Type coercions are stored to type constraints (gfx)
 
-    * Refactor the type parser to parse 'ArrayRef[Object|Int]'
+    * Refactor the type parser to parse 'ArrayRef[Object|Int]' (gfx)
 
-    * Remove Class::MOP specific methods/functions from Mouse::Meta::Module
+    * Remove Class::MOP specific subroutines from Mouse::Meta::Module (gfx)
       (this change might be reverted in the release version)
         - version, authority, identifier,
           get_all_metaclasses, store_metaclass_by_name,
           weaken_metaclass, does_metaclass_exist, remove_metaclass_by_name
 
-    * Add new public utilities to Mouse::Util
+    * Add new public utilities to Mouse::Util (gfx)
         - class_of, the counterpart for Class::MOP::class_of
         - get_metaclass_by_name for Class::MOP::get_metaclass_by_name
 
