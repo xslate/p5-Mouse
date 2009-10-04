@@ -46,7 +46,7 @@ throws_ok {
     );
 } qr/You must pass an ARRAY ref of roles/;
 
-ok !Made::Of::Fail->isa('UNIVERSAL'), "did not create Made::Of::Fail";
+ok !Mouse::Util::is_class_loaded('Made::Of::Fail'), "did not create Made::Of::Fail";
 
 dies_ok {
     Mouse::Meta::Class->create(

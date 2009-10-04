@@ -1,8 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More tests => 18;
 use Test::Exception;
+
+use lib 't/lib';
+use Test::Mouse;
 
 do {
     package Class;
@@ -29,6 +32,10 @@ do {
 
 ok(!Class->can('x'), "No accessor is injected if 'is' has no value");
 can_ok('Class', 'y', 'z');
+
+has_attribute_ok 'Class', 'x';
+has_attribute_ok 'Class', 'y';
+has_attribute_ok 'Class', 'z';
 
 my $object = Class->new;
 
