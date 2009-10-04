@@ -88,7 +88,7 @@ sub add_method {
     }
 
     if(ref($code) ne 'CODE'){
-        not_supported 'add_method for a method object';
+        $code = \&{$code}; # coerce
     }
 
     $self->{methods}->{$name}++; # Moose stores meta object here.
@@ -114,6 +114,9 @@ sub _code_is_mine{
 
 sub has_method {
     my($self, $method_name) = @_;
+
+    defined($method_name)
+        or $self->throw_error('You must define a method name');
 
     return 1 if $self->{methods}->{$method_name};
 
