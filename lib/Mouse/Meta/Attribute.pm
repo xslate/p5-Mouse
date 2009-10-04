@@ -208,7 +208,7 @@ sub _create_args { # DEPRECATED
 }
 
 sub interpolate_class{
-    my($class, $name, $args) = @_;
+    my($class, $args) = @_;
 
     if(my $metaclass = delete $args->{metaclass}){
         $class = Mouse::Util::resolve_metaclass_alias( Attribute => $metaclass );
@@ -230,7 +230,6 @@ sub interpolate_class{
         }
 
         if (@traits) {
-            warn "traits [@traits] for $class\n";
             $class = Mouse::Meta::Class->create_anon_class(
                 superclasses => [ $class ],
                 roles        => \@traits,
@@ -321,10 +320,12 @@ sub _canonicalize_handles {
 }
 
 sub clone_and_inherit_options{
-    my $self = shift;
-    my $name = shift;
+    my($self, %args) = @_;
 
-    return ref($self)->new($name, %{$self}, (@_ == 1) ? %{$_[0]} : @_);
+    my($attribute_class, @traits) = ref($self)->interpolate_class(\%args);
+
+    $args{traits} = \@traits if @traits;
+    return $attribute_class->new($self->name, %{$self}, %args);
 }
 
 sub clone_parent { # DEPRECATED

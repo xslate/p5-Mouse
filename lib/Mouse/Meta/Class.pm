@@ -104,6 +104,7 @@ sub add_attribute {
         if ($name =~ s/^\+//) { # inherited attributes
             my $inherited_attr;
 
+            # find_attribute_by_name
             foreach my $class($self->linearized_isa){
                 my $meta = Mouse::Util::get_metaclass_by_name($class) or next;
                 $inherited_attr = $meta->get_attribute($name) and last;
@@ -112,10 +113,10 @@ sub add_attribute {
             defined($inherited_attr)
                 or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
 
-            $attr = $inherited_attr->clone_and_inherit_options($name, \%args);
+            $attr = $inherited_attr->clone_and_inherit_options(%args);
         }
         else{
-            my($attribute_class, @traits) = $self->attribute_metaclass->interpolate_class($name, \%args);
+            my($attribute_class, @traits) = $self->attribute_metaclass->interpolate_class(\%args);
             $args{traits} = \@traits if @traits;
 
             $attr = $attribute_class->new($name, %args);
