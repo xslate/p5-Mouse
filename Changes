@@ -1,11 +1,16 @@
 Revision history for Mouse
 
 0.37_02
+    * Mouse
+        - Implement the argument/inner keywords
     * Mouse::Meta::Attribute
         - Add get_read_method_ref() and get_write_method_ref() (gfx)
+        - Add find_attribute_by_name() (gfx)
         - Fix clone_and_inherit_options() to deal with 'traits' (gfx)
     * Mouse::Util
         - Fix meta() method, which was not tested (gfx)
+    * Tests
+        - Port t/010_basics/*.t from Moose
 
 0.37_01 Thu Oct  1 15:32:58 2009
     * Type coercions are stored to type constraints (gfx)
