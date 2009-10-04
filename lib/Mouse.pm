@@ -96,8 +96,26 @@ sub override {
     Mouse::Meta::Class->initialize(scalar caller)->add_override_method_modifier(@_);
 }
 
-sub inner  { not_supported }
-sub augment{ not_supported }
+our %INNER_BODY;
+our %INNER_ARGS;
+
+sub inner {
+    my $pkg = caller();
+    if ( my $body = $INNER_BODY{$pkg} ) {
+        my $args = $INNER_ARGS{$pkg};
+        local $INNER_ARGS{$pkg};
+        local $INNER_BODY{$pkg};
+        return $body->(@{$args});
+    }
+    else {
+        return;
+    }
+}
+
+sub augment {
+    #my($name, $method) = @_;
+    Mouse::Meta::Class->initialize(scalar caller)->add_augment_method_modifier(@_);
+}
 
 sub init_meta {
     shift;
@@ -466,3 +484,4 @@ under the same terms as Perl itself.
 
 =cut
 
+                

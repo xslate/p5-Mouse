@@ -416,6 +416,26 @@ sub add_override_method_modifier {
     return;
 }
 
+sub add_augment_method_modifier {
+    my ($self, $name, $code) = @_;
+    if($self->has_method($name)){
+        $self->throw_error("Cannot add an augment method if a local method is already present");
+    }
+
+    my $super = $self->find_method_by_name($name)
+        or $self->throw_error("You cannot augment '$name' because it has no super method");
+
+    my $super_package = $super->package_name;
+    my $super_body    = $super->body;
+
+    $self->add_method($name => sub{
+        local $Mouse::INNER_BODY{$super_package} = $code;
+        local $Mouse::INNER_ARGS{$super_package} = [@_];
+        $super_body->(@_);
+    });
+    return;
+}
+
 sub does_role {
     my ($self, $role_name) = @_;
 
