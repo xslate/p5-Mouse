@@ -17,8 +17,6 @@ our @EXPORT = qw(
 );
 
 my %TYPE;
-my %COERCE;
-my %COERCE_KEYS;
 
 sub as ($) {
     return(as => $_[0]);
