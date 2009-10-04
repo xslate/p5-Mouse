@@ -79,6 +79,16 @@ sub get_all_method_names {
             $self->linearized_isa;
 }
 
+sub find_attribute_by_name{
+    my($self, $name) = @_;
+    my $attr;
+    foreach my $class($self->linearized_isa){
+        my $meta = Mouse::Util::get_metaclass_by_name($class) or next;
+        $attr = $meta->get_attribute($name) and last;
+    }
+    return $attr;
+}
+
 sub add_attribute {
     my $self = shift;
 
@@ -102,15 +112,7 @@ sub add_attribute {
             or $self->throw_error('You must provide a name for the attribute');
 
         if ($name =~ s/^\+//) { # inherited attributes
-            my $inherited_attr;
-
-            # find_attribute_by_name
-            foreach my $class($self->linearized_isa){
-                my $meta = Mouse::Util::get_metaclass_by_name($class) or next;
-                $inherited_attr = $meta->get_attribute($name) and last;
-            }
-
-            defined($inherited_attr)
+            my $inherited_attr = $self->find_attribute_by_name($name)
                 or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
 
             $attr = $inherited_attr->clone_and_inherit_options(%args);
