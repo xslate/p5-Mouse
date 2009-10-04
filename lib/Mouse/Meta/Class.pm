@@ -397,12 +397,23 @@ sub add_after_method_modifier {
 sub add_override_method_modifier {
     my ($self, $name, $code) = @_;
 
+    if($self->has_method($name)){
+        $self->throw_error("Cannot add an override method if a local method is already present");
+    }
+
     my $package = $self->name;
 
-    my $body = $package->can($name)
+    my $super_body = $package->can($name)
         or $self->throw_error("You cannot override '$name' because it has no super method");
 
-    $self->add_method($name => sub { $code->($package, $body, @_) });
+    $self->add_method($name => sub {
+        local $Mouse::SUPER_PACKAGE = $package;
+        local $Mouse::SUPER_BODY    = $super_body;
+        local @Mouse::SUPER_ARGS    = @_;
+
+        $code->(@_);
+    });
+    return;
 }
 
 sub does_role {

@@ -57,29 +57,13 @@ sub around {
 
 
 sub super {
-    return unless $Mouse::SUPER_BODY; 
+    return if !defined $Mouse::SUPER_BODY;
     $Mouse::SUPER_BODY->(@Mouse::SUPER_ARGS);
 }
 
 sub override {
-    my $classname = caller;
-    my $meta = Mouse::Meta::Role->initialize($classname);
-
-    my $name = shift;
-    my $code = shift;
-    my $fullname = "${classname}::${name}";
-
-    defined &$fullname
-        && $meta->throw_error("Cannot add an override of method '$fullname' "
-                            . "because there is a local version of '$fullname'");
-
-    $meta->add_override_method_modifier($name => sub {
-        local $Mouse::SUPER_PACKAGE = shift;
-        local $Mouse::SUPER_BODY = shift;
-        local @Mouse::SUPER_ARGS = @_;
-
-        $code->(@_);
-    });
+    # my($name, $code) = @_;
+    Mouse::Meta::Role->initialize(scalar caller)->add_override_method_modifier(@_);
 }
 
 # We keep the same errors messages as Moose::Role emits, here.

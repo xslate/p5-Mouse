@@ -86,27 +86,14 @@ our @SUPER_ARGS;
 sub super {
     # This check avoids a recursion loop - see
     # t/100_bugs/020_super_recursion.t
-    return if defined $SUPER_PACKAGE && $SUPER_PACKAGE ne caller();
-    return unless $SUPER_BODY; $SUPER_BODY->(@SUPER_ARGS);
+    return if  defined $SUPER_PACKAGE && $SUPER_PACKAGE ne caller();
+    return if !defined $SUPER_BODY;
+    $SUPER_BODY->(@SUPER_ARGS);
 }
 
 sub override {
-    my $meta = Mouse::Meta::Class->initialize(caller);
-    my $pkg = $meta->name;
-
-    my $name = shift;
-    my $code = shift;
-
-    my $body = $pkg->can($name)
-        or confess "You cannot override '$name' because it has no super method";
-
-    $meta->add_method($name => sub {
-        local $SUPER_PACKAGE = $pkg;
-        local @SUPER_ARGS = @_;
-        local $SUPER_BODY = $body;
-
-        $code->(@_);
-    });
+    # my($name, $method) = @_;
+    Mouse::Meta::Class->initialize(scalar caller)->add_override_method_modifier(@_);
 }
 
 sub inner  { not_supported }
