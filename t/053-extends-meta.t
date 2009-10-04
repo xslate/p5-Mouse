@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Test::Exception;
 {
     package My::Meta::Class;
@@ -32,6 +32,7 @@ use Test::Exception;
 
 my $meta = My::Meta::Class->initialize('Foo');
 isa_ok $meta, 'My::Meta::Class';
+isa_ok $meta->meta, 'Mouse::Meta::Class';
 can_ok $meta, qw(name my_class_attr);
 is $meta->name, 'Foo';
 lives_and{
@@ -40,6 +41,7 @@ lives_and{
 
 $meta = My::Meta::Role->initialize('Bar');
 isa_ok $meta, 'My::Meta::Role';
+isa_ok $meta->meta, 'Mouse::Meta::Class';
 can_ok $meta, qw(name my_role_attr);
 is $meta->name, 'Bar';
 lives_and{
