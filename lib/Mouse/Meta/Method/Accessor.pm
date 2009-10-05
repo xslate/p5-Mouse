@@ -4,7 +4,7 @@ use warnings;
 use Scalar::Util qw(blessed);
 
 sub _generate_accessor{
-    my (undef, $attribute, $method_name, $class, $type) = @_;
+    my (undef, $attribute, $class, $type) = @_;
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
@@ -126,10 +126,6 @@ sub _generate_accessor{
     };
     die $e if $e;
 
-    if(defined $method_name){
-        $class->add_method($method_name => $code);
-    }
-
     return $code;
 }
 
@@ -145,58 +141,44 @@ sub _generate_writer{
 
 
 sub _generate_predicate {
-    my (undef, $attribute, $method_name, $class) = @_;
+    my (undef, $attribute, $class) = @_;
 
     my $slot = $attribute->name;
-
-    $class->add_method($method_name => sub{
+    return sub{
         return exists $_[0]->{$slot};
-    });
-    return;
+    };
 }
 
 sub _generate_clearer {
-    my (undef, $attribute, $method_name, $class) = @_;
+    my (undef, $attribute, $class) = @_;
 
     my $slot = $attribute->name;
 
-    $class->add_method($method_name => sub{
+   return sub{
         delete $_[0]->{$slot};
-    });
-    return;
+    };
 }
 
-sub _generate_handles {
-    my (undef, $attribute, $handles, $class) = @_;
+sub _generate_delegation{
+    my (undef, $attribute, $class, $reader, $handle_name, $method_to_call) = @_;
 
-    my $reader  = $attribute->reader || $attribute->accessor
-        or $class->throw_error("You must pass a reader method for '".$attribute->name."'");
+    return sub {
+        my $instance = shift;
+        my $proxy    = $instance->$reader();
 
-    my %handles = $attribute->_canonicalize_handles($handles);
-
-    foreach my $handle_name (keys %handles) {
-        my $method_to_call = $handles{$handle_name};
-
-        my $code = sub {
-            my $instance = shift;
-            my $proxy    = $instance->$reader();
-
-            my $error = !defined($proxy)                ? ' is not defined'
-                      : ref($proxy) && !blessed($proxy) ? qq{ is not an object (got '$proxy')}
-                                                        : undef;
-            if ($error) {
-                $instance->meta->throw_error(
-                    "Cannot delegate $handle_name to $method_to_call because "
-                        . "the value of "
-                        . $attribute->name
-                        . $error
-                 );
-            }
-            $proxy->$method_to_call(@_);
-        };
-        $class->add_method($handle_name => $code);
-    }
-    return;
+        my $error = !defined($proxy)                ? ' is not defined'
+                  : ref($proxy) && !blessed($proxy) ? qq{ is not an object (got '$proxy')}
+                                                    : undef;
+        if ($error) {
+            $instance->meta->throw_error(
+                "Cannot delegate $handle_name to $method_to_call because "
+                    . "the value of "
+                    . $attribute->name
+                    . $error
+             );
+        }
+        $proxy->$method_to_call(@_);
+    };
 }
 
 

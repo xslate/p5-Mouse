@@ -9,6 +9,7 @@ use Mouse::Util qw(:meta);
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;
 
+
 sub _process_options{
     my($class, $name, $args) = @_;
 
@@ -304,21 +305,6 @@ sub coerce_constraint { # DEPRECATED
     return Mouse::Util::TypeConstraints->typecast_constraints($_[0]->associated_class->name, $type, $_[1]);
 }
 
-sub _canonicalize_handles {
-    my $self    = shift;
-    my $handles = shift;
-
-    if (ref($handles) eq 'HASH') {
-        return %$handles;
-    }
-    elsif (ref($handles) eq 'ARRAY') {
-        return map { $_ => $_ } @$handles;
-    }
-    else {
-        $self->throw_error("Unable to canonicalize the 'handles' option with $handles");
-    }
-}
-
 sub clone_and_inherit_options{
     my($self, %args) = @_;
 
@@ -375,7 +361,7 @@ sub get_read_method_ref{
             $metaclass->name->can($reader);
         }
         else{
-            Mouse::Meta::Method::Accessor->_generate_reader($self, undef, $metaclass);
+            $self->accessor_metaclass->_generate_reader($self, $metaclass);
         }
     };
 }
@@ -392,10 +378,25 @@ sub get_write_method_ref{
             $metaclass->name->can($reader);
         }
         else{
-            Mouse::Meta::Method::Accessor->_generate_writer($self, undef, $metaclass);
+            $self->accessor_metaclass->_generate_writer($self, $metaclass);
         }
     };
 }
+
+sub _canonicalize_handles {
+    my($self, $handles) = @_;
+
+    if (ref($handles) eq 'HASH') {
+        return %$handles;
+    }
+    elsif (ref($handles) eq 'ARRAY') {
+        return map { $_ => $_ } @$handles;
+    }
+    else {
+        $self->throw_error("Unable to canonicalize the 'handles' option with $handles");
+    }
+}
+
 
 sub associate_method{
     my ($attribute, $method) = @_;
@@ -403,20 +404,37 @@ sub associate_method{
     return;
 }
 
+sub accessor_metaclass(){ 'Mouse::Meta::Method::Accessor' }
+
 sub install_accessors{
     my($attribute) = @_;
 
-    my $metaclass       = $attribute->{associated_class};
+    my $metaclass      = $attribute->{associated_class};
+    my $accessor_class = $attribute->accessor_metaclass;
 
-    foreach my $type(qw(accessor reader writer predicate clearer handles)){
+    foreach my $type(qw(accessor reader writer predicate clearer)){
         if(exists $attribute->{$type}){
-            my $installer    = '_generate_' . $type;
-
-            Mouse::Meta::Method::Accessor->$installer($attribute, $attribute->{$type}, $metaclass);
-
-            $attribute->{associated_methods}++;
+            my $generator = '_generate_' . $type;
+            my $code      = $accessor_class->$generator($attribute, $metaclass);
+            $metaclass->add_method($attribute->{$type} => $code);
+            $attribute->associate_method($code);
         }
     }
+
+    # install delegation
+    if(exists $attribute->{handles}){
+        my %handles = $attribute->_canonicalize_handles($attribute->{handles});
+        my $reader  = $attribute->get_read_method_ref;
+
+        while(my($handle_name, $method_to_call) = each %handles){
+            my $code = $accessor_class->_generate_delegation($attribute, $metaclass,
+                $reader, $handle_name, $method_to_call);
+
+            $metaclass->add_method($handle_name => $code);
+            $attribute->associate_method($code);
+        }
+    }
+
 
     if($attribute->can('create') != \&create){
         # backword compatibility
