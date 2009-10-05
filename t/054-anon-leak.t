@@ -32,7 +32,7 @@ leaks_cmp_ok {
 
 leaks_cmp_ok {
     Mouse::Meta::Class->create_anon_class(attributes => [
-        Mouse::Meta::Attribute->new('foo', is => 'rw'),
+        Mouse::Meta::Attribute->new('foo', is => 'bare'),
     ]);
 } '<=', $expected, 'create_anon_class() with attributes';
 
