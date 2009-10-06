@@ -2,31 +2,29 @@ package Mouse::Role;
 use strict;
 use warnings;
 
-use Exporter;
+use Carp ();
+use Scalar::Util ();
 
-use Carp 'confess';
-use Scalar::Util 'blessed';
-
-use Mouse::Util qw(load_class get_code_package not_supported);
+use Mouse::Util qw(not_supported);
 use Mouse ();
 
-our @ISA = qw(Exporter);
+use Mouse::Exporter;
 
-our @EXPORT = qw(
-    extends with
-    has
-    before after around
-    override super
-    augment  inner
+Mouse::Exporter->setup_import_methods(
+    as_is => [qw(
+        extends with
+        has
+        before after around
+        override super
+        augment  inner
 
-    requires excludes
-
-    blessed confess
+        requires excludes
+    ),
+        \&Scalar::Util::blessed,
+        \&Carp::confess,
+    ],
 );
 
-our %is_removable = map{ $_ => undef } @EXPORT;
-delete $is_removable{confess};
-delete $is_removable{blessed};
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
@@ -101,45 +99,21 @@ sub excludes {
     not_supported;
 }
 
-sub import {
-    my $class = shift;
+sub init_meta{
+    my($class, %args) = @_;
 
-    strict->import;
-    warnings->import;
+    my $for_class = $args{for_class}
+        or Carp::confess("Cannot call init_meta without specifying a for_class");
 
-    my $caller = caller;
+    my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Role';
 
-    # we should never export to main
-    if ($caller eq 'main') {
-        warn qq{$class does not export its sugar to the 'main' package.\n};
-        return;
-    }
+    my $meta = $metaclass->initialize($for_class);
 
-    Mouse::Meta::Role->initialize($caller)->add_method(meta => sub {
-        return Mouse::Meta::Role->initialize(ref($_[0]) || $_[0]);
+    $meta->add_method(meta => sub{
+        $metaclass->initialize(ref($_[0]) || $_[0]);
     });
 
-    Mouse::Role->export_to_level(1, @_);
-}
-
-sub unimport {
-    my $caller = caller;
-
-    my $stash = do{
-        no strict 'refs';
-        \%{$caller . '::'}
-    };
-
-    for my $keyword (@EXPORT) {
-        my $code;
-        if(exists $is_removable{$keyword}
-            && ($code = $caller->can($keyword))
-            && get_code_package($code) eq __PACKAGE__){
-
-            delete $stash->{$keyword};
-        }
-    }
-    return;
+    return $meta;
 }
 
 1;
