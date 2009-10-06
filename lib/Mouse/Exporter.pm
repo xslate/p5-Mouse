@@ -35,35 +35,39 @@ sub setup_import_methods{
     {
         my %exports;
         my @removables;
+        my @all;
 
         foreach my $package(@export_from){
             my $spec = $SPEC{$package} or next;
 
             if(my $as_is = $spec->{as_is}){
                 foreach my $thingy (@{$as_is}){
-                    my($name, $code);
+                    my($code_package, $code_name, $code);
 
                     if(ref($thingy)){
-                        my $code_package;
                         $code = $thingy;
-                        ($code_package, $name) = get_code_info($code);
+                        ($code_package, $code_name) = get_code_info($code);
                     }
                     else{
                         no strict 'refs';
-                        $name = $thingy;
-                        $code = \&{ $package . '::' . $name };
+                        $code_package = $package;
+                        $code_name    = $thingy;
+                        $code         = \&{ $code_package . '::' . $code_name };
                    }
 
-                    $exports{$name} = $code;
-                    push @removables, $name;
+                    push @all, $code_name;
+                    $exports{$code_name} = $code;
+                    if($code_package eq $package){
+                        push @removables, $code_name;
+                    }
                 }
             }
         }
         $args{EXPORTS}    = \%exports;
         $args{REMOVABLES} = \@removables;
 
-        $args{group}{default} ||= \@removables;
-        $args{group}{all}     ||= \@removables;
+        $args{group}{default} ||= \@all;
+        $args{group}{all}     ||= \@all;
     }
 
     no strict 'refs';
@@ -165,7 +169,10 @@ sub do_unimport {
     };
 
     for my $keyword (@{ $spec->{REMOVABLES} }) {
-        delete $stash->{$keyword};
+        my $gv = \$stash->{$keyword};
+        if(ref($gv) eq 'GLOB' && *{$gv}{CODE} == $spec->{EXPORTS}{$keyword}){ # make sure it is from us
+            delete $stash->{$keyword};
+        }
     }
     return;
 }
