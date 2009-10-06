@@ -5,7 +5,45 @@ use warnings;
 use Carp 'confess';
 use Scalar::Util qw(looks_like_number);
 
-use Mouse::Util qw(not_supported);
+use Mouse::Util ();
+
+my %SPEC;
+
+sub setup_import_methods{
+    my($class, %args) = @_;
+
+    my $exporting_package = $args{exporting_package} ||= caller();
+
+    my $spec = $SPEC{$exporting_package} = {};
+
+    # canonicalize args
+    my @export_from = ($exporting_package);
+    {
+        my %seen  = ($exporting_package => 1);
+        my @stack = ($exporting_package);
+
+        while(my $current = shift @stack){
+            push @export_from, $current;
+
+            my $also = $args{also} or next;
+            unshift @stack, grep{ ++$seen{$_} == 1 } @{ $also };
+        }
+    }
+
+    print "[@export_from]\n";
+
+    my $import    = sub{ _do_import   ($spec, @_) };
+    my $unimport  = sub{ _do_unimport ($spec, @_) };
+    my $init_meta = sub{ _do_init_meta($spec, @_) };
+
+    no strict 'refs';
+
+    *{$exporting_package . '::import'}    = $import;
+    *{$exporting_package . '::unimport'}  = $unimport;
+    *{$exporting_package . '::init_meta'} = $init_meta;
+
+    return;
+}
 
 sub init_meta {
     shift;
@@ -35,7 +73,7 @@ sub init_meta {
     return $meta;
 }
 
-sub do_import {
+sub _do_import {
     my($class, $spec, @args) = @_;
 
     my $command;
@@ -72,13 +110,15 @@ sub do_import {
 
     foreach my $keyword(@{$exports_ref}){
         no strict 'refs';
-        *{$caller.'::'.$keyword} = $spec->{exports}{$keyword}
-            or confess(qq{"$keyword" is not exported by the $class module};
+        *{$into.'::'.$keyword} = $spec->{exports}{$keyword}
+            or confess(qq{"$keyword" is not exported by the $class module});
     }
     return;
 }
 
-sub do_unimport {
+sub _do_unimport {
+    my($class, $spec) = @_;
+
     my $caller = caller;
 
     my $stash = do{
@@ -86,9 +126,9 @@ sub do_unimport {
         \%{$caller . '::'}
     };
 
-    for my $keyword (@EXPORT) {
+    for my $keyword (@{ $spec->{exports} }) {
         my $code;
-        if(exists $is_removable{$keyword}
+        if(exists $spec->{is_removable}{$keyword}
             && ($code = $caller->can($keyword))
             && (Mouse::Util::get_code_info($code))[0] eq __PACKAGE__){
 
