@@ -1,8 +1,8 @@
 package Mouse::Role;
 use Mouse::Util qw(not_supported); # enables strict and warnings
 
-use Carp ();
-use Scalar::Util ();
+use Carp qw(confess);
+use Scalar::Util qw(blessed);
 
 use Mouse ();
 use Mouse::Exporter;
@@ -22,6 +22,18 @@ Mouse::Exporter->setup_import_methods(
     ],
 );
 
+# XXX: for backward compatibility
+our @EXPORT = qw(
+    extends with
+    has
+    before after around
+    override super
+    augment  inner
+
+    requires excludes
+
+    blessed confess
+);
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);

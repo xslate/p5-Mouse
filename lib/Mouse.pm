@@ -6,7 +6,7 @@ use Mouse::Exporter; # enables strict and warnings
 our $VERSION = '0.37_02';
 
 use Carp qw(confess);
-use Scalar::Util ();
+use Scalar::Util qw(blessed);
 
 use Mouse::Util qw(load_class is_class_loaded get_code_package not_supported);
 
@@ -28,6 +28,16 @@ Mouse::Exporter->setup_import_methods(
         \&Scalar::Util::blessed,
         \&Carp::confess,
    ],
+);
+
+# XXX: for backward compatibility
+our @EXPORT = qw(
+    extends with
+    has
+    before after around
+    override super
+    augment  inner
+    blessed confess
 );
 
 sub extends { Mouse::Meta::Class->initialize(scalar caller)->superclasses(@_) }
