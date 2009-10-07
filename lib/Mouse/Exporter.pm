@@ -124,6 +124,7 @@ sub do_import {
     my $into = _get_caller_package(ref($args[0]) ? shift @args : undef);
 
     my @exports;
+
     foreach my $arg(@args){
         if($arg =~ s/^-//){
             Mouse::Util::not_supported("-$arg");
@@ -194,20 +195,20 @@ sub do_unimport {
     return;
 }
 
+# 1 extra level because it's called by import so there's a layer
+# of indirection
+sub _LEVEL(){ 1 }
+
 sub _get_caller_package {
     my($arg) = @_;
 
-    # 2 extra level because it's called by import so there's a layer
-    # of indirection
-    my $offset = 1;
-
     if(ref $arg){
         return defined($arg->{into})       ? $arg->{into}
-             : defined($arg->{into_level}) ? scalar caller($offset + $arg->{into_level})
-             :                               scalar caller($offset);
+             : defined($arg->{into_level}) ? scalar caller(_LEVEL + $arg->{into_level})
+             :                               scalar caller(_LEVEL);
     }
     else{
-        return scalar caller($offset);
+        return scalar caller(_LEVEL);
     }
 }
 
@@ -217,19 +218,49 @@ __END__
 
 =head1 NAME
 
-Mouse - The Mouse Exporter
+Mouse::Exporter - make an import() and unimport() just like Mouse.pm
 
 =head1 SYNOPSIS
 
-    package MouseX::Foo;
+    package MyApp::Mouse;
+
+    use Mouse ();
     use Mouse::Exporter;
 
     Mouse::Exporter->setup_import_methods(
-
+      as_is     => [ 'has_rw', 'other_sugar', \&Some::Random::thing ],
+      also      => 'Mouse',
     );
+
+    sub has_rw {
+        my $meta = caller->meta;
+        my ( $name, %options ) = @_;
+        $meta->add_attribute(
+          $name,
+          is => 'rw',
+          %options,
+        );
+    }
+
+    # then later ...
+    package MyApp::User;
+
+    use MyApp::Mouse;
+
+    has 'name';
+    has_rw 'size';
+    thing;
+
+    no MyApp::Mouse;
 
 =head1 DESCRIPTION
 
+This module encapsulates the exporting of sugar functions in a
+C<Mouse.pm>-like manner. It does this by building custom C<import>,
+C<unimport> methods for your module, based on a spec you provide.
+
+Note that C<Mouse::Exporter> does not provide the C<with_meta> option,
+but you can easily get the metaclass by C<< caller->meta >> as L</SYNOPSIS> shows.
 
 =head1 SEE ALSO
 
