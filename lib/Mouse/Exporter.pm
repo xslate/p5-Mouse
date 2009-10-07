@@ -4,11 +4,18 @@ use warnings;
 
 use Carp qw(confess);
 
-use Mouse::Util qw(get_code_info not_supported);
+# it must be "require", because Mouse::Util depends on Mouse::Exporter
+require Mouse::Util;
 
 my %SPEC;
 
 my $strict_bits = strict::bits(qw(subs refs vars));
+
+sub import{
+    $^H              |= $strict_bits;         # strict->import;
+    ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
+    return;
+}
 
 sub setup_import_methods{
     my($class, %args) = @_;
@@ -50,7 +57,7 @@ sub setup_import_methods{
 
                     if(ref($thingy)){
                         $code = $thingy;
-                        ($code_package, $code_name) = get_code_info($code);
+                        ($code_package, $code_name) = Mouse::Util::get_code_info($code);
                     }
                     else{
                         no strict 'refs';
@@ -76,9 +83,9 @@ sub setup_import_methods{
         $args{EXPORTS}    = \%exports;
         $args{REMOVABLES} = \@removables;
 
-        $args{group}{all}     ||= \@all;
+        $args{groups}{all}     ||= \@all;
 
-        if(my $default_list = $args{group}{default}){
+        if(my $default_list = $args{groups}{default}){
             my %default;
             foreach my $keyword(@{$default_list}){
                 $default{$keyword} = $exports{$keyword}
@@ -87,8 +94,8 @@ sub setup_import_methods{
             $args{DEFAULT} = \%default;
         }
         else{
-            $args{group}{default} ||= \@all;
-            $args{DEFAULT}          = $args{EXPORTS};
+            $args{groups}{default} ||= \@all;
+            $args{DEFAULT}           = $args{EXPORTS};
         }
 
         if(@init_meta_methods){
@@ -117,10 +124,10 @@ sub do_import {
     my @exports;
     foreach my $arg(@args){
         if($arg =~ s/^-//){
-            not_supported "-$arg";
+            Mouse::Util::not_supported("-$arg");
         }
         elsif($arg =~ s/^://){
-            my $group = $spec->{group}{$arg}
+            my $group = $spec->{groups}{$arg}
                 || confess(qq{The $package package does not export the group "$arg"});
             push @exports, @{$group};
         }
