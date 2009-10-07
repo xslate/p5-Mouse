@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 10;
+use Test::More tests => 15;
 
 # for classes ...
 {
@@ -45,8 +45,6 @@ use Test::More tests => 10;
         ::like($warn, qr/Argument \"hello\" isn\'t numeric in addition \(\+\)/, '.. and it is the right warning');
     }
 }
-__END__
-# Mouse::Export does not yet exist
 
 # and for exporters
 {
