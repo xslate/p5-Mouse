@@ -58,10 +58,8 @@ can_ok('Bar', $_) for @moose_type_constraint_exports;
     die $@ if $@;
 }
 
-{
-    local $TODO = 'Mouse::Util::TypeConstraints->unimport is not yet supported';
-    ok(!Bar->can($_), '... Bar can no longer do ' . $_) for @moose_type_constraint_exports;
-}
+
+ok(!Bar->can($_), '... Bar can no longer do ' . $_) for @moose_type_constraint_exports;
 
 {
     package Baz;
