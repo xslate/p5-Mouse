@@ -3,7 +3,7 @@ use 5.006_002;
 
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = '0.37_02';
+our $VERSION = '0.37_03';
 
 use Carp qw(confess);
 use Scalar::Util qw(blessed);
