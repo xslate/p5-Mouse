@@ -303,9 +303,9 @@ sub _find_or_create_parameterized_type{
     }
 }
 sub _find_or_create_union_type{
-    my @types = map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
+    my @types = sort{ $a cmp $b } map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
 
-    my $name = join '|', map{ $_->name } @types;
+    my $name = join '|', @types;
 
     $TYPE{$name} ||= do{
         return Mouse::Meta::TypeConstraint->new(
