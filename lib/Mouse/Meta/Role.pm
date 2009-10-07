@@ -59,16 +59,22 @@ sub add_attribute {
 sub _canonicalize_apply_args{
     my($self, $applicant, %args) = @_;
 
-    if($applicant->isa('Mouse::Meta::Class')){
+    if($applicant->isa('Mouse::Meta::Class')){ # Application::ToClass
         $args{_to} = 'class';
     }
-    elsif($applicant->isa('Mouse::Meta::Role')){
+    elsif($applicant->isa('Mouse::Meta::Role')){ # Application::ToRole
         $args{_to} = 'role';
     }
-    else{
-        $args{_to} = 'instance';
+    else{ # Appplication::ToInstance
+        $args{_to} = 'class';
 
-        not_supported 'Application::ToInstance';
+        my $metaclass = $applicant->meta->create_anon_class(
+            superclasses => [ref $applicant],
+            cache        => 1,
+        );
+        bless $applicant, $metaclass->name; # rebless
+
+        $applicant = $metaclass;
     }
 
     if($args{alias} && !exists $args{-alias}){
@@ -88,7 +94,7 @@ sub _canonicalize_apply_args{
         }
     }
 
-    return \%args;
+    return( $applicant, \%args );
 }
 
 sub _check_required_methods{
@@ -121,7 +127,7 @@ sub _check_required_methods{
                 . " to be implemented by '$class_name'");
         }
     }
-    elsif($args->{_to} eq 'role'){
+    else {
         # apply role($role) to role($class)
         foreach my $method_name($role->get_required_method_list){
             next if $class->has_method($method_name); # already has it
@@ -182,7 +188,7 @@ sub _apply_attributes{
             $class->add_attribute($attr_name => %{$spec});
         }
     }
-    elsif($args->{_to} eq 'role'){
+    else {
         # apply role to role
         for my $attr_name ($role->get_attribute_list) {
             next if $class->has_attribute($attr_name);
@@ -228,8 +234,9 @@ sub _append_roles{
 sub apply {
     my $self      = shift;
     my $applicant = shift;
+    my $args;
 
-    my $args = $self->_canonicalize_apply_args($applicant, @_);
+    ($applicant, $args) = $self->_canonicalize_apply_args($applicant, @_);
 
     $self->_check_required_methods($applicant, $args);
     $self->_apply_methods($applicant, $args);
@@ -240,11 +247,9 @@ sub apply {
 }
 
 sub combine_apply {
-    my(undef, $class, @roles) = @_;
+    my($role_class, $applicant, @roles) = @_;
 
-    if($class->isa('Mouse::Object')){
-        not_supported 'Application::ToInstance';
-    }
+    ($applicant) = $role_class->_canonicalize_apply_args($applicant);
 
     # check conflicting
     my %method_provided;
@@ -258,7 +263,7 @@ sub combine_apply {
 
         # methods
         foreach my $method_name($role->get_method_list){
-            next if $class->has_method($method_name); # manually resolved
+            next if $applicant->has_method($method_name); # manually resolved
 
             my $code = do{ no strict 'refs'; \&{ $role_name . '::' . $method_name } };
 
@@ -278,7 +283,7 @@ sub combine_apply {
             my $attr = $role->get_attribute($attr_name);
             my $c    = $attr_provided{$attr_name};
             if($c && $c != $attr){
-                $class->throw_error("We have encountered an attribute conflict with '$attr_name' "
+                $role_class->throw_error("We have encountered an attribute conflict with '$attr_name' "
                                    . "during composition. This is fatal error and cannot be disambiguated.")
             }
             else{
@@ -291,7 +296,7 @@ sub combine_apply {
             my $override = $role->get_override_method_modifier($method_name);
             my $c        = $override_provided{$method_name};
             if($c && $c != $override){
-                $class->throw_error( "We have encountered an 'override' method conflict with '$method_name' during "
+                $role_class->throw_error( "We have encountered an 'override' method conflict with '$method_name' during "
                                    . "composition (Two 'override' methods of the same name encountered). "
                                    . "This is fatal error.")
             }
@@ -305,9 +310,9 @@ sub combine_apply {
 
         if(@method_conflicts == 1){
             my($code, $method_name, @roles) = @{$method_conflicts[0]};
-            $class->throw_error(
+            $role_class->throw_error(
                 sprintf q{Due to a method name conflict in roles %s, the method '%s' must be implemented or excluded by '%s'},
-                    english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $class->name
+                    english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $applicant->name
             );
         }
         else{
@@ -318,9 +323,9 @@ sub combine_apply {
                 map{ my($code, $method_name, @roles) = @{$_}; @roles } @method_conflicts
             );
 
-            $class->throw_error(
+            $role_class->throw_error(
                 sprintf q{Due to method name conflicts in roles %s, the methods %s must be implemented or excluded by '%s'},
-                    $roles, $methods, $class->name
+                    $roles, $methods, $applicant->name
             );
         }
     }
@@ -330,13 +335,13 @@ sub combine_apply {
 
         my $role = $role_name->meta;
 
-        $args = $role->_canonicalize_apply_args($class, %{$args});
+        ($applicant, $args) = $role->_canonicalize_apply_args($applicant, %{$args});
 
-        $role->_check_required_methods($class, $args, @roles);
-        $role->_apply_methods($class, $args);
-        $role->_apply_attributes($class, $args);
-        $role->_apply_modifiers($class, $args);
-        $role->_append_roles($class, $args);
+        $role->_check_required_methods($applicant, $args, @roles);
+        $role->_apply_methods($applicant, $args);
+        $role->_apply_attributes($applicant, $args);
+        $role->_apply_modifiers($applicant, $args);
+        $role->_append_roles($applicant, $args);
     }
     return;
 }
