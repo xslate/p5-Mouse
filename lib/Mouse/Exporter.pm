@@ -4,18 +4,20 @@ use warnings;
 
 use Carp qw(confess);
 
-# it must be "require", because Mouse::Util depends on Mouse::Exporter
-require Mouse::Util;
-
 my %SPEC;
 
 my $strict_bits = strict::bits(qw(subs refs vars));
+
+# it must be "require", because Mouse::Util depends on Mouse::Exporter,
+# which depends on Mouse::Util::import()
+require Mouse::Util;
 
 sub import{
     $^H              |= $strict_bits;         # strict->import;
     ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
     return;
 }
+
 
 sub setup_import_methods{
     my($class, %args) = @_;
@@ -34,7 +36,7 @@ sub setup_import_methods{
             push @export_from, $current;
 
             my $also = $SPEC{$current}{also} or next;
-            push @stack, grep{ !$seen{$_}++ } @{ $also };
+            push @stack, grep{ !$seen{$_}++ } ref($also) ? @{ $also } : $also;
         }
     }
     else{
@@ -139,7 +141,7 @@ sub do_import {
     $^H              |= $strict_bits;         # strict->import;
     ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
 
-    if($into eq 'main' && !$spec->{_not_export_to_main}){
+    if($into eq 'main' && !$spec->{_export_to_main}){
         warn qq{$package does not export its sugar to the 'main' package.\n};
         return;
     }
