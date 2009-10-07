@@ -1,7 +1,7 @@
 package Mouse::Meta::Method::Constructor;
 use Mouse::Util; # enables strict and warnings
 
-sub _generate_constructor_method {
+sub _generate_constructor {
     my ($class, $metaclass, $args) = @_;
 
     my $associated_metaclass_name = $metaclass->name;
@@ -38,9 +38,7 @@ sub _generate_constructor_method {
         $@;
     };
     die $e if $e;
-
-    $metaclass->add_method($args->{constructor_name} => $code);
-    return;
+    return $code;
 }
 
 sub _generate_processattrs {

@@ -1,42 +1,38 @@
 package Mouse::Meta::Method::Destructor;
 use Mouse::Util; # enables strict and warnings
 
-sub _empty_destroy{ }
+sub _empty_DESTROY{ }
 
-sub _generate_destructor_method {
-    my ($class, $metaclass) = @_;
+sub _generate_destructor{
+    my (undef, $metaclass) = @_;
 
-    my $demolishall = do {
-        if ($metaclass->name->can('DEMOLISH')) {
-            my @code = ();
-            for my $class ($metaclass->linearized_isa) {
-                no strict 'refs';
-                if (*{$class . '::DEMOLISH'}{CODE}) {
-                    push @code, "${class}::DEMOLISH(\$self);";
-                }
-            }
-            join "\n", @code;
-        } else {
-            $metaclass->add_method(DESTROY => \&_empty_destroy);
-            return;
+    if(!$metaclass->name->can('DEMOLISH')){
+        return \&_empty_DESTROY;
+    }
+
+    my $demolishall = '';
+    for my $class ($metaclass->linearized_isa) {
+        no strict 'refs';
+        if (*{$class . '::DEMOLISH'}{CODE}) {
+            $demolishall .= "${class}::DEMOLISH(\$self);\n";
         }
-    };
+    }
 
-    my $destructor_name = $metaclass->name . '::DESTROY';
     my $source = sprintf("#line %d %s\n", __LINE__, __FILE__) . <<"...";
-    sub $destructor_name \{
+    sub {
         my \$self = shift;
         $demolishall;
     }
 ...
 
+    my $code;
     my $e = do{
         local $@;
-        eval $source;
+        $code = eval $source;
         $@;
     };
     die $e if $e;
-    return;
+    return $code;
 }
 
 1;
