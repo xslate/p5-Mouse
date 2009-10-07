@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.37_03 
+    * Add Mouse::Exporter (gfx)
+ 
+
 0.37_02 Sun Oct  4 17:29:15 2009
     * Mouse
         - Implement the argument/inner keywords
