@@ -4,9 +4,11 @@ use warnings;
 
 use Carp qw(confess);
 
-use Mouse::Util qw(get_code_info);
+use Mouse::Util qw(get_code_info not_supported);
 
 my %SPEC;
+
+my $strict_bits = strict::bits(qw(subs refs vars));
 
 sub setup_import_methods{
     my($class, %args) = @_;
@@ -37,6 +39,8 @@ sub setup_import_methods{
         my @removables;
         my @all;
 
+        my @init_meta_methods;
+
         foreach my $package(@export_from){
             my $spec = $SPEC{$package} or next;
 
@@ -62,12 +66,34 @@ sub setup_import_methods{
                     }
                 }
             }
+
+            if(my $init_meta = $package->can('init_meta')){
+                if(!grep{ $_ == $init_meta } @init_meta_methods){
+                    unshift @init_meta_methods, $init_meta;
+                }
+            }
         }
         $args{EXPORTS}    = \%exports;
         $args{REMOVABLES} = \@removables;
 
-        $args{group}{default} ||= \@all;
         $args{group}{all}     ||= \@all;
+
+        if(my $default_list = $args{group}{default}){
+            my %default;
+            foreach my $keyword(@{$default_list}){
+                $default{$keyword} = $exports{$keyword}
+                    || confess(qq{The $exporting_package package does not export "$keyword"});
+            }
+            $args{DEFAULT} = \%default;
+        }
+        else{
+            $args{group}{default} ||= \@all;
+            $args{DEFAULT}          = $args{EXPORTS};
+        }
+
+        if(@init_meta_methods){
+            $args{INIT_META} = \@init_meta_methods;
+        }
     }
 
     no strict 'refs';
@@ -75,50 +101,27 @@ sub setup_import_methods{
     *{$exporting_package . '::import'}    = \&do_import;
     *{$exporting_package . '::unimport'}  = \&do_unimport;
 
-    if(!defined &{$exporting_package . '::init_meta'}){
-        *{$exporting_package . '::init_meta'} = \&do_init_meta;
-    }
     return;
 }
 
-# the entity of general init_meta()
-sub do_init_meta {
-    my($class, %args) = @_;
-
-    my $spec = $SPEC{$class}
-        or confess("The package $class does not use Mouse::Exporter");
-
-    my $for_class = $args{for_class}
-        or confess("Cannot call init_meta without specifying a for_class");
-
-    my $base_class = $args{base_class} || 'Mouse::Object';
-    my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Class';
-
-    my $meta = $metaclass->initialize($for_class);
-
-    $meta->add_method(meta => sub{
-        $metaclass->initialize(ref($_[0]) || $_[0]);
-    });
-
-    $meta->superclasses($base_class)
-        unless $meta->superclasses;
-
-    return $meta;
-}
 
 # the entity of general import()
 sub do_import {
-    my($class, @args) = @_;
+    my($package, @args) = @_;
 
-    my $spec = $SPEC{$class}
-        or confess("The package $class does not use Mouse::Exporter");
+    my $spec = $SPEC{$package}
+        || confess("The package $package package does not use Mouse::Exporter");
 
     my $into = _get_caller_package(ref($args[0]) ? shift @args : undef);
 
     my @exports;
     foreach my $arg(@args){
-        if($arg =~ s/^[-:]//){
-            my $group = $spec->{group}{$arg} or confess(qq{group "$arg" is not exported by the $class module});
+        if($arg =~ s/^-//){
+            not_supported "-$arg";
+        }
+        elsif($arg =~ s/^://){
+            my $group = $spec->{group}{$arg}
+                || confess(qq{The $package package does not export the group "$arg"});
             push @exports, @{$group};
         }
         else{
@@ -126,40 +129,45 @@ sub do_import {
         }
     }
 
-    strict->import;
-    warnings->import;
+    $^H              |= $strict_bits;         # strict->import;
+    ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
 
     if($into eq 'main' && !$spec->{_not_export_to_main}){
-        warn qq{$class does not export its sugar to the 'main' package.\n};
+        warn qq{$package does not export its sugar to the 'main' package.\n};
         return;
     }
 
-    if($class->can('init_meta')){
-        my $meta = $class->init_meta(
-            for_class  => $into,
-        );
+    if($spec->{INIT_META}){
+        foreach my $init_meta(@{$spec->{INIT_META}}){
+            $into->$init_meta(for_class => $into);
+        }
 
-        # TODO: process -metaclass and -traits
-        # ...
+        # _apply_meta_traits($into); # TODO
     }
 
-
-    my $exports_ref = @exports ? \@exports : $spec->{group}{default};
-
-    foreach my $keyword(@{$exports_ref}){
-        no strict 'refs';
-        *{$into.'::'.$keyword} = $spec->{EXPORTS}{$keyword}
-            or confess(qq{"$keyword" is not exported by the $class module});
+    if(@exports){
+        foreach my $keyword(@exports){
+            no strict 'refs';
+            *{$into.'::'.$keyword} = $spec->{EXPORTS}{$keyword}
+                || confess(qq{The $package package does not export "$keyword"});
+        }
+    }
+    else{
+        my $default = $spec->{DEFAULT};
+        while(my($keyword, $code) = each %{$default}){
+            no strict 'refs';
+            *{$into.'::'.$keyword} = $code;
+        }
     }
     return;
 }
 
 # the entity of general unimport()
 sub do_unimport {
-    my($class, $arg) = @_;
+    my($package, $arg) = @_;
 
-    my $spec = $SPEC{$class}
-        or confess("The package $class does not use Mouse::Exporter");
+    my $spec = $SPEC{$package}
+        || confess("The package $package does not use Mouse::Exporter");
 
     my $from = _get_caller_package($arg);
 
