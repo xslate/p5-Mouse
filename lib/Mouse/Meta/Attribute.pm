@@ -80,8 +80,7 @@ sub _process_options{
         $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($args->{isa});
     }
     elsif(exists $args->{does}){
-        # TODO
-        # $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($args->{does});
+        $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($args->{does});
     }
     $tc = $args->{type_constraint};
 
