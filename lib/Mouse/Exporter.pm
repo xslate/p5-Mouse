@@ -113,7 +113,7 @@ sub setup_import_methods{
     # for backward compatibility
 
     *{$exporting_package . '::export_to_level'} = sub{
-        my($package, $level, @args) = @_;
+        my($package, $level, undef, @args) = @_; # the third argument is redundant
         do_import($package, { into_level => $level + 1 }, @args);
     };
     *{$exporting_package . '::export'} = sub{
