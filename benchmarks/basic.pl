@@ -8,8 +8,13 @@ for my $klass (qw/Moose Mouse/) {
         package ${klass}One;
         use $klass;
         has n => (
-            is  => 'rw',
-            isa => 'Int',
+            is     => 'rw',
+            isa    => 'Int',
+        );
+        has m => (
+            is      => 'rw',
+            isa     => 'Int',
+            default => 42,
         );
         no $klass;
         __PACKAGE__->meta->make_immutable;
