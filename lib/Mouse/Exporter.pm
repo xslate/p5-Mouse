@@ -110,6 +110,17 @@ sub setup_import_methods{
     *{$exporting_package . '::import'}    = \&do_import;
     *{$exporting_package . '::unimport'}  = \&do_unimport;
 
+    # for backward compatibility
+
+    *{$exporting_package . '::export_to_level'} = sub{
+        my($package, $level, @args) = @_;
+        do_import($package, { into_level => $level + 1 }, @args);
+    };
+    *{$exporting_package . '::export'} = sub{
+        my($package, $into, @args) = @_;
+        do_import($package, { into => $into }, @args);
+    };
+
     return;
 }
 
