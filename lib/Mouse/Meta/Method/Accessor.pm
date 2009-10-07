@@ -12,28 +12,26 @@ sub _generate_accessor{
     my $trigger       = $attribute->trigger;
     my $is_weak       = $attribute->is_weak_ref;
     my $should_deref  = $attribute->should_auto_deref;
-    my $should_coerce = $attribute->should_coerce;
+    my $should_coerce = (defined($constraint) && $constraint->has_coercion && $attribute->should_coerce);
 
-    my $compiled_type_constraint = $constraint ? $constraint->_compiled_type_constraint : undef;
+    my $compiled_type_constraint = defined($constraint) ? $constraint->_compiled_type_constraint : undef;
 
     my $self  = '$_[0]';
-    my $key   = sprintf q{"%s"}, quotemeta $name;
+    my $key   = "q{$name}";
+    my $slot  = "$self\->{$key}";
 
     $type ||= 'accessor';
 
-    my $accessor = 
-        '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-        "sub {\n";
+    my $accessor = sprintf(qq{#line 1 "%s for %s (%s)"\n}, $type, $name, __FILE__)
+                 . "sub {\n";
 
     if ($type eq 'accessor' || $type eq 'writer') {
         if($type eq 'accessor'){
             $accessor .= 
-                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 'if (scalar(@_) >= 2) {' . "\n";
         }
         else{ # writer
             $accessor .= 
-                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
                 'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of '.$name.'") }'.
                 '{' . "\n";
         }
@@ -41,32 +39,26 @@ sub _generate_accessor{
         my $value = '$_[1]';
 
         if (defined $constraint) {
-            if(!$compiled_type_constraint){
-                Carp::confess("[BUG] Missing compiled type constraint for $constraint");
-            }
             if ($should_coerce) {
                 $accessor .=
                     "\n".
-                    '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
                     'my $val = $constraint->coerce('.$value.');';
                 $value = '$val';
             }
             $accessor .= 
                 "\n".
-                '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
-                'unless ($compiled_type_constraint->('.$value.')) {
-                    $attribute->verify_type_constraint_error($name, '.$value.', $attribute->{type_constraint});
-                }' . "\n";
+                '$compiled_type_constraint->('.$value.') or
+                    $attribute->verify_type_constraint_error($name, '.$value.', $constraint);' . "\n";
         }
 
         # if there's nothing left to do for the attribute we can return during
         # this setter
         $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
-        $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
+        $accessor .= "$slot = $value;\n";
 
         if ($is_weak) {
-            $accessor .= 'Scalar::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
+            $accessor .= "Scalar::Util::weaken($slot) if ref $slot;\n";
         }
 
         if ($trigger) {
@@ -83,38 +75,38 @@ sub _generate_accessor{
     }
 
     if ($attribute->is_lazy) {
-        $accessor .= $self.'->{'.$key.'} = ';
+        my $value;
 
-        if($should_coerce && defined($constraint)){
-            $accessor .= '$attribute->_coerce_and_verify(';
+        if (defined $builder){
+            $value = "$self->\$builder()";
         }
-        $accessor .=   $attribute->has_builder ? $self.'->$builder'
-                     : ref($default) eq 'CODE' ? '$default->('.$self.')'
-                     :                           '$default';
+        elsif (ref($default) eq 'CODE'){
+            $value = "$self->\$default()";
+        }
+        else{
+            $value = '$default';
+        }
 
-        if($should_coerce && defined $constraint){
-            $accessor .= ')';
+        if($should_coerce){
+            $value = "\$constraint->coerce($value)";
         }
-        $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
+
+        $accessor .= "$slot = $value if !exists $slot;\n";
     }
 
     if ($should_deref) {
         if ($constraint->is_a_type_of('ArrayRef')) {
-            $accessor .= 'if (wantarray) {
-                return @{ '.$self.'->{'.$key.'} || [] };
-            }';
+            $accessor .= "return \@{ $slot || [] } if wantarray;\n";
         }
         elsif($constraint->is_a_type_of('HashRef')){
-            $accessor .= 'if (wantarray) {
-                return %{ '.$self.'->{'.$key.'} || {} };
-            }';
+            $accessor .= "return \%{ $slot || {} } if wantarray;\n";
         }
         else{
             $class->throw_error("Can not auto de-reference the type constraint " . $constraint->name);
         }
     }
 
-    $accessor .= 'return '.$self.'->{'.$key."};\n}";
+    $accessor .= "return $slot;\n}\n";
 
     #print $accessor, "\n";
     my $code;
