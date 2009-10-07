@@ -74,7 +74,8 @@ sub _generate_accessor{
         $class->throw_error("Unknown accessor type '$type'");
     }
 
-    if ($attribute->is_lazy) {
+    # XXX: an anon class can be a runtime created class
+    if ($attribute->is_lazy || $class->is_anon_class) {
         my $value;
 
         if (defined $builder){
@@ -108,7 +109,7 @@ sub _generate_accessor{
 
     $accessor .= "return $slot;\n}\n";
 
-    #print $accessor, "\n";
+    #print "# class ", $class->name, "\n", $accessor, "\n";
     my $code;
     my $e = do{
         local $@;
