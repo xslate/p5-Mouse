@@ -1,19 +1,20 @@
 package Mouse::Util::TypeConstraints;
-use strict;
-use warnings;
-
-use Exporter;
+use Mouse::Util qw(does_role not_supported); # enables strict and warnings
 
 use Carp qw(confess);
 use Scalar::Util qw/blessed looks_like_number openhandle/;
 
-use Mouse::Util qw(does_role not_supported);
 use Mouse::Meta::TypeConstraint;
+use Mouse::Exporter;
 
-our @ISA    = qw(Exporter);
-our @EXPORT = qw(
-    as where message from via type subtype coerce class_type role_type enum
-    find_type_constraint
+Mouse::Exporter->setup_import_methods(
+    as_is => [qw(
+        as where message from via
+        type subtype coerce class_type role_type enum
+        find_type_constraint
+    )],
+
+    _export_to_main => 1,
 );
 
 my %TYPE;

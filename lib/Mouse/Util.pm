@@ -1,42 +1,40 @@
 package Mouse::Util;
-use strict;
-use warnings;
-
-use Exporter;
+use Mouse::Exporter; # enables strict and warnings
 
 use Carp qw(confess);
 use B ();
 
 use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
 
-our @ISA       = qw(Exporter);
-our @EXPORT_OK = qw(
-    find_meta
-    does_role
-    resolve_metaclass_alias
-    apply_all_roles
-    english_list
+Mouse::Exporter->setup_import_methods(
+    as_is => [qw(
+        find_meta
+        does_role
+        resolve_metaclass_alias
+        apply_all_roles
+        english_list
 
-    load_class
-    is_class_loaded
+        load_class
+        is_class_loaded
 
-    get_linear_isa
-    get_code_info
+        get_linear_isa
+        get_code_info
 
-    get_code_package
+        get_code_package
 
-    not_supported
+        not_supported
 
-    does meta dump
-    _MOUSE_VERBOSE
-);
-our %EXPORT_TAGS = (
-    all  => \@EXPORT_OK,
-    meta => [qw(does meta dump _MOUSE_VERBOSE)],
+        does meta dump
+        _MOUSE_VERBOSE
+    )],
+    groups => {
+        default => [], # export no functions by default
+        meta    => [qw(does meta dump _MOUSE_VERBOSE)],
+    },
+    _export_to_main => 1,
 );
 
 # aliases as public APIs
-
 # it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
 require Mouse::Meta::Module; # for the entities of metaclass cache utilities
 

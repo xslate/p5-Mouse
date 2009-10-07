@@ -1,6 +1,5 @@
 package Mouse::Meta::Method::Destructor;
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 
 sub _empty_destroy{ }
 

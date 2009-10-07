@@ -1,12 +1,8 @@
 package Mouse::Meta::Module;
-use strict;
-use warnings;
+use Mouse::Util qw/:meta get_code_package load_class not_supported/; # enables strict and warnings
 
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
-
-use Mouse::Util qw/:meta get_code_package not_supported load_class/;
-
 
 my %METAS;
 

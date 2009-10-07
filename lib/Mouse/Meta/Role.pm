@@ -1,8 +1,6 @@
 package Mouse::Meta::Role;
-use strict;
-use warnings;
+use Mouse::Util qw(:meta not_supported english_list); # enables strict and warnings
 
-use Mouse::Util qw(:meta not_supported english_list get_code_info);
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 

@@ -1,13 +1,10 @@
 package Mouse::Role;
-use strict;
-use warnings;
+use Mouse::Util qw(not_supported); # enables strict and warnings
 
 use Carp ();
 use Scalar::Util ();
 
-use Mouse::Util qw(not_supported);
 use Mouse ();
-
 use Mouse::Exporter;
 
 Mouse::Exporter->setup_import_methods(

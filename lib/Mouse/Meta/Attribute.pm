@@ -1,10 +1,7 @@
 package Mouse::Meta::Attribute;
-use strict;
-use warnings;
+use Mouse::Util qw(:meta); # enables strict and warnings
 
 use Carp ();
-
-use Mouse::Util qw(:meta);
 
 use Mouse::Meta::TypeConstraint;
 use Mouse::Meta::Method::Accessor;

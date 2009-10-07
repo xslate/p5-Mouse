@@ -1,6 +1,5 @@
 package Mouse::Meta::TypeConstraint;
-use strict;
-use warnings;
+use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
     '""'     => sub { shift->{name} },   # stringify to tc name
@@ -8,8 +7,6 @@ use overload
 
 use Carp qw(confess);
 use Scalar::Util qw(blessed reftype);
-
-use Mouse::Util qw(:meta);
 
 my $null_check = sub { 1 };
 

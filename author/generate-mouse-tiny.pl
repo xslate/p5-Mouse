@@ -64,6 +64,8 @@ print { $handle } << 'EOF';
 package Mouse::Tiny;
 use base 'Mouse';
 
+Mouse::Exporter->setup_import_methods(also => 'Mouse');
+
 EOF
 
 print { $handle } "1;\n\n";

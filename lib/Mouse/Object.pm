@@ -1,8 +1,5 @@
 package Mouse::Object;
-use strict;
-use warnings;
-
-use Mouse::Util qw(does dump);
+use Mouse::Util qw(does dump); # enables strict and warnings
 
 sub new {
     my $class = shift;

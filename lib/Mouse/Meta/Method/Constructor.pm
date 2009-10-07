@@ -1,6 +1,5 @@
 package Mouse::Meta::Method::Constructor;
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 
 sub _generate_constructor_method {
     my ($class, $metaclass, $args) = @_;

@@ -1,8 +1,7 @@
 package Mouse;
 use 5.006_002;
 
-use strict;
-use warnings;
+use Mouse::Exporter; # enables strict and warnings
 
 our $VERSION = '0.37_02';
 
@@ -17,7 +16,6 @@ use Mouse::Meta::Role;
 use Mouse::Meta::Attribute;
 use Mouse::Object;
 use Mouse::Util::TypeConstraints ();
-use Mouse::Exporter;
 
 Mouse::Exporter->setup_import_methods(
     as_is => [qw(

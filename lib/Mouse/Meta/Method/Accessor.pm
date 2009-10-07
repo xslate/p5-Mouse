@@ -1,6 +1,5 @@
 package Mouse::Meta::Method::Accessor;
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 use Scalar::Util qw(blessed);
 
 sub _generate_accessor{
