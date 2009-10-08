@@ -280,3 +280,4 @@ but you can easily get the metaclass by C<< caller->meta >> as L</SYNOPSIS> show
 L<Moose::Exporter>
 
 =cut
+
