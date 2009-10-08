@@ -1,10 +1,10 @@
 Revision history for Mouse
 
-0.37_04
+0.37_04 Thu Oct  8 20:49:11 2009
     * Mouse::Meta::Role::Composite
         - Fix and improve role composition mechanism (gfx)
 
-    * Import a number of tests from Moose (gfx)
+    * Import a number of tests from Moose, and fix various bugs (gfx)
 
 0.37_03 Wed Oct  7 21:10:05 2009
     * Mouse::Exporter
