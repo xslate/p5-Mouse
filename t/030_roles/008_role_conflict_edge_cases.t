@@ -88,10 +88,15 @@ ok(Role::Base2->meta->has_override_method_modifier('foo'), '... have the method 
 ok(Role::Derived3->meta->has_override_method_modifier('foo'), '... have the method foo as expected');
 ok(Role::Derived4->meta->has_override_method_modifier('foo'), '... have the method foo as expected');
 ok(My::Test::Class2->meta->has_method('foo'), '... have the method foo as expected');
+{
+local $TODO = 'Not a Mouse::Meta::Method::Overriden';
 isa_ok(My::Test::Class2->meta->get_method('foo'), 'Mouse::Meta::Method::Overridden');
+}
 ok(My::Test::Class2::Base->meta->has_method('foo'), '... have the method foo as expected');
+{
+local $TODO = 'Not a Class::MOP::Method';
 isa_ok(My::Test::Class2::Base->meta->get_method('foo'), 'Class::MOP::Method');
-
+}
 is(My::Test::Class2::Base->foo, 'My::Test::Class2::Base', '... got the right value from method');
 is(My::Test::Class2->foo, 'My::Test::Class2::Base -> Role::Base::foo', '... got the right value from method');
 
@@ -141,10 +146,15 @@ ok(Role::Base3->meta->has_around_method_modifiers('foo'), '... have the method f
 ok(Role::Derived5->meta->has_around_method_modifiers('foo'), '... have the method foo as expected');
 ok(Role::Derived6->meta->has_around_method_modifiers('foo'), '... have the method foo as expected');
 ok(My::Test::Class3->meta->has_method('foo'), '... have the method foo as expected');
+{
+local $TODO = 'Not a Class::MOP::Method::Wrapped';
 isa_ok(My::Test::Class3->meta->get_method('foo'), 'Class::MOP::Method::Wrapped');
+}
 ok(My::Test::Class3::Base->meta->has_method('foo'), '... have the method foo as expected');
+{
+local $TODO = 'Not a Class::MOP::Method';
 isa_ok(My::Test::Class3::Base->meta->get_method('foo'), 'Class::MOP::Method');
-
+}
 is(My::Test::Class3::Base->foo, 'My::Test::Class3::Base', '... got the right value from method');
 is(My::Test::Class3->foo, 'Role::Base::foo(My::Test::Class3::Base)', '... got the right value from method');
 
