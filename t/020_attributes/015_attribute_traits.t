@@ -3,11 +3,11 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+
 use Test::More tests => 12;
 use Test::Exception;
 use Test::Mouse;
-
-
 
 {
     package My::Attribute::Trait;

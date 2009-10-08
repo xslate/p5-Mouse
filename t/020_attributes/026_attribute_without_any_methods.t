@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-
+BEGIN{ $ENV{MOUSE_VERBOSE} = 1 }
 use strict;
 use warnings;
 
