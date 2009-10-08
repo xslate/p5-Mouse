@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.37_04
+    * Mouse::Meta::Role::Composite
+        - Fix and improve role composition mechanism (gfx)
+
+
 0.37_03 Wed Oct  7 21:10:05 2009
     * Mouse::Exporter
         - Add Mouse::Exporter (gfx)
