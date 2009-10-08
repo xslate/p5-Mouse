@@ -2,9 +2,20 @@
 use strict;
 use warnings;
 use File::Find;
-use File::Slurp 'slurp';
-use List::MoreUtils 'uniq';
-use autodie;
+use Fatal qw(open close);
+#use File::Slurp 'slurp';
+#use List::MoreUtils 'uniq';
+#use autodie;
+
+sub slurp {
+    open my $in, '<', $_[0];
+    local $/;
+    return scalar <$in>;
+}
+sub uniq{
+    my %seen;
+    return grep{ !$seen{$_}++ } @_;
+}
 
 require 'lib/Mouse/Spec.pm';
 
