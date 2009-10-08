@@ -121,6 +121,19 @@ sub has_method {
     return $code && $self->_code_is_mine($code);
 }
 
+sub get_method_body{
+    my($self, $method_name) = @_;
+
+    defined($method_name)
+        or $self->throw_error('You must define a method name');
+
+    return $self->{methods}{$method_name} ||= do{
+        my $code = do{ no strict 'refs'; *{$self->{package} . '::' . $method_name}{CODE} };
+
+        $code && $self->_code_is_mine($code) && $code;
+    };
+}
+
 sub get_method{
     my($self, $method_name) = @_;
 
