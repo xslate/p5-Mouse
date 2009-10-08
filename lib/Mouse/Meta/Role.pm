@@ -65,20 +65,22 @@ sub _check_required_methods{
         $applicant->add_required_methods($role->get_required_method_list);
     }
     else{ # to class or instance
-        my $class_name = $applicant->name;
-        my $role_name  = $role->name;
+        my $applicant_class_name = $applicant->name;
+
         my @missing;
         foreach my $method_name(@{$role->{required_methods}}){
-            if(!($class_name->can($method_name) || exists $args->{to_be_provided}{$method_name})){
-                push @missing, $method_name;
-            }
+            next if exists $args->{aliased_methods}{$method_name};
+            next if exists $role->{methods}{$method_name};
+            next if $applicant_class_name->can($method_name);
+
+            push @missing, $method_name;
         }
         if(@missing){
-            $role->throw_error("'$role_name' requires the "
-                . (@missing == 1 ? 'method' : 'methods')
-                . " "
-                . english_list(map{ sprintf q{'%s'}, $_ } @missing)
-                . " to be implemented by '$class_name'");
+            $role->throw_error(sprintf "'%s' requires the method%s %s to be implemented by '%s'",
+                $role->name,
+                (@missing == 1 ? '' : 's'), # method or methods
+                english_list(map{ sprintf q{'%s'}, $_ } @missing),
+                $applicant_class_name);
         }
     }
 
@@ -88,9 +90,6 @@ sub _check_required_methods{
 sub _apply_methods{
     my($role, $applicant, $args) = @_;
 
-    my $role_name  = $role->name;
-    my $class_name = $applicant->name;
-
     my $alias    = $args->{-alias};
     my $excludes = $args->{-excludes};
 
@@ -99,14 +98,14 @@ sub _apply_methods{
 
         my $code = $role->get_method_body($method_name);
 
-        if($excludes && !exists $excludes->{$method_name}){
+        if(!exists $excludes->{$method_name}){
             if(!$applicant->has_method($method_name)){
-                # The third argument, $role, is used in Role::Composite
+                # The third argument $role is used in Role::Composite
                 $applicant->add_method($method_name => $code, $role);
             }
         }
 
-        if($alias && $alias->{$method_name}){
+        if(exists $alias->{$method_name}){
             my $dstname = $alias->{$method_name};
 
             my $dstcode = $applicant->get_method_body($dstname);
@@ -137,16 +136,21 @@ sub _apply_attributes{
 sub _apply_modifiers{
     my($role, $applicant, $args) = @_;
 
-    for my $modifier_type (qw/override before around after/) {
+    if(my $modifiers = $role->{override_method_modifiers}){
+        foreach my $method_name (keys %{$modifiers}){
+            $applicant->add_override_method_modifier($method_name => $modifiers->{$method_name});
+        }
+    }
+
+    for my $modifier_type (qw/before around after/) {
         my $modifiers = $role->{"${modifier_type}_method_modifiers"}
             or next;
 
         my $add_modifier = "add_${modifier_type}_method_modifier";
 
         foreach my $method_name (keys %{$modifiers}){
-            my $modifier_codes = $modifiers->{$method_name};
-            foreach my $code(ref($modifier_codes) eq 'ARRAY' ? @{$modifier_codes} : $modifier_codes){
-                next if $applicant->{"_$modifier_type"}{$code}++; # skip applied modifiers
+            foreach my $code(@{ $modifiers->{$method_name} }){
+                next if $applicant->{"_applied_$modifier_type"}{$method_name, $code}++; # skip applied modifiers
                 $applicant->$add_modifier($method_name => $code);
             }
         }
@@ -199,12 +203,10 @@ sub apply {
         $args{-excludes} = $args{excludes};
     }
 
-    # In Moose it is called 'aliased methods'
-    $args{to_be_provided} = {};
+    $args{aliased_methods} = {};
     if(my $alias = $args{-alias}){
-        @{$args{to_be_provided}}{ values %{$alias} } = ();
+        @{$args{aliased_methods}}{ values %{$alias} } = ();
     }
-    @{ $args{to_be_provided} }{ $self->get_method_list } = ();
 
     if(my $excludes = $args{-excludes}){
         $args{-excludes} = {}; # replace with a hash ref
