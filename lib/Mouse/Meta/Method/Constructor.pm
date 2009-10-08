@@ -83,7 +83,7 @@ sub _generate_processattrs {
             $code .= "if (exists $value) {\n";
 
             if($need_coercion){
-                $value = "$instance_slot = $constraint_var->coerce($value);\n";
+                $value = "$constraint_var->coerce($value)";
             }
 
             $code .= "$instance_slot = $value;\n";
@@ -91,7 +91,7 @@ sub _generate_processattrs {
 
             if ($attr->has_trigger) {
                 $has_triggers++;
-                $code .= "push \@triggers, [$attr_var\->{trigger}, $value];\n";
+                $code .= "push \@triggers, [$attr_var\->{trigger}, $instance_slot];\n";
             }
 
             $code .= "\n} else {\n";
