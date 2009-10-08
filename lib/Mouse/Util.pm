@@ -275,19 +275,20 @@ sub apply_all_roles {
     my $max = scalar(@_);
     for (my $i = 0; $i < $max ; $i++) {
         if ($i + 1 < $max && ref($_[$i + 1])) {
-            push @roles, [ $_[$i++] => $_[$i] ];
+            push @roles, [ $_[$i] => $_[++$i] ];
         } else {
-            push @roles, [ $_[$i]   => undef ];
+            push @roles, [ $_[$i] => undef ];
         }
         my $role_name = $roles[-1][0];
         load_class($role_name);
-        ( $role_name->can('meta') && $role_name->meta->isa('Mouse::Meta::Role') )
+        my $metarole = get_metaclass_by_name($role_name);
+        ( $metarole && $metarole->isa('Mouse::Meta::Role') )
             || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
     }
 
     if ( scalar @roles == 1 ) {
-        my ( $role, $params ) = @{ $roles[0] };
-        $role->meta->apply( $applicant, ( defined $params ? %$params : () ) );
+        my ( $role_name, $params ) = @{ $roles[0] };
+        get_metaclass_by_name($role_name)->apply( $applicant, defined $params ? $params : () );
     }
     else {
         Mouse::Meta::Role->combine(@roles)->apply($applicant);
