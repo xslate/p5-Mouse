@@ -46,6 +46,9 @@ sub has {
     my $meta = Mouse::Meta::Class->initialize(scalar caller);
     my $name = shift;
 
+    $meta->throw_error(q{Usage: has 'name' => ( key => value, ... )})
+        if @_ % 2; # odd number of arguments
+
     $meta->add_attribute($_ => @_) for ref($name) ? @{$name} : $name;
 }
 

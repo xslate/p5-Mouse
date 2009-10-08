@@ -369,12 +369,8 @@ sub _install_modifier {
         $impl = sub {
             my ( $self, $type, $name, $code ) = @_;
             my $into = $self->name;
-            $install_modifier->(
-                $into,
-                $type,
-                $name,
-                $code
-            );
+            $install_modifier->($into, $type, $name, $code);
+
             $self->add_method($name => do{
                 no strict 'refs';
                 \&{ $into . '::' . $name };
@@ -456,8 +452,8 @@ sub does_role {
         || $self->throw_error("You must supply a role name to look for");
 
     for my $class ($self->linearized_isa) {
-        my $meta = Mouse::Util::get_metaclass_by_name($class);
-        next unless $meta && $meta->can('roles');
+        my $meta = Mouse::Util::get_metaclass_by_name($class)
+            or next;
 
         for my $role (@{ $meta->roles }) {
 
@@ -469,7 +465,6 @@ sub does_role {
 }
 
 1;
-
 __END__
 
 =head1 NAME

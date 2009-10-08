@@ -88,11 +88,20 @@ sub _generate_accessor{
             $value = '$default';
         }
 
+        $accessor .= "if(!exists $slot){\n";
         if($should_coerce){
-            $value = "\$constraint->coerce($value)";
+            $accessor .= "$slot = \$constraint->coerce($value)";
         }
-
-        $accessor .= "$slot = $value if !exists $slot;\n";
+        elsif(defined $constraint){
+            $accessor .= "my \$tmp = $value;\n";
+            $accessor .= "\$compiled_type_constraint->(\$tmp)";
+            $accessor .= "or \$attribute->verify_type_constraint_error(\$name, \$tmp, \$constraint);\n";
+            $accessor .= "$slot = \$tmp;\n";
+        }
+        else{
+            $accessor .= "$slot = $value;\n";
+        }
+        $accessor .= "}\n";
     }
 
     if ($should_deref) {
