@@ -321,11 +321,13 @@ sub not_supported{
     Carp::confess("Mouse does not currently support $feature");
 }
 
-sub meta{
+# general meta() method
+sub meta :method{
     return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
 }
 
-sub dump { 
+# general dump() method
+sub dump :method {
     my($self, $maxdepth) = @_;
 
     require 'Data/Dumper.pm'; # we don't want to create its namespace
@@ -335,6 +337,7 @@ sub dump {
     return $dd->Dump();
 }
 
+# general does() method
 sub does :method;
 *does = \&does_role; # alias
 
