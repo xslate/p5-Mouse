@@ -279,7 +279,8 @@ sub is_immutable {  $_[0]->{is_immutable} }
 sub is_mutable   { !$_[0]->{is_immutable} }
 
 sub _install_modifier_pp{
-    my( $self, $into, $type, $name, $code ) = @_;
+    my( $self, $type, $name, $code ) = @_;
+    my $into = $self->name;
 
     my $original = $into->can($name)
         or $self->throw_error("The method '$name' is not found in the inheritance hierarchy for class $into");
@@ -344,7 +345,7 @@ sub _install_modifier_pp{
 }
 
 sub _install_modifier {
-    my ( $self, $into, $type, $name, $code ) = @_;
+    my ( $self, $type, $name, $code ) = @_;
 
     # load Class::Method::Modifiers first
     my $no_cmm_fast = do{
@@ -360,14 +361,18 @@ sub _install_modifier {
     else{
         my $install_modifier = Class::Method::Modifiers::Fast->can('_install_modifier');
         $impl = sub {
-            my ( $self, $into, $type, $name, $code ) = @_;
+            my ( $self, $type, $name, $code ) = @_;
+            my $into = $self->name;
             $install_modifier->(
                 $into,
                 $type,
                 $name,
                 $code
             );
-            $self->{methods}{$name}++; # register it to the method map
+            $self->add_method($name => do{
+                no strict 'refs';
+                \&{ $into . '::' . $name };
+            });
             return;
         };
     }
@@ -378,22 +383,22 @@ sub _install_modifier {
         *_install_modifier = $impl;
     }
 
-    $self->$impl( $into, $type, $name, $code );
+    $self->$impl( $type, $name, $code );
 }
 
 sub add_before_method_modifier {
     my ( $self, $name, $code ) = @_;
-    $self->_install_modifier( $self->name, 'before', $name, $code );
+    $self->_install_modifier( 'before', $name, $code );
 }
 
 sub add_around_method_modifier {
     my ( $self, $name, $code ) = @_;
-    $self->_install_modifier( $self->name, 'around', $name, $code );
+    $self->_install_modifier( 'around', $name, $code );
 }
 
 sub add_after_method_modifier {
     my ( $self, $name, $code ) = @_;
-    $self->_install_modifier( $self->name, 'after', $name, $code );
+    $self->_install_modifier( 'after', $name, $code );
 }
 
 sub add_override_method_modifier {

@@ -87,7 +87,7 @@ sub add_method {
         $code = \&{$code}; # coerce
     }
 
-    $self->{methods}->{$name}++; # Moose stores meta object here.
+    $self->{methods}->{$name} = $code; # Moose stores meta object here.
 
     my $pkg = $self->name;
     no strict 'refs';
