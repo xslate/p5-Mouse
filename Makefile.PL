@@ -19,6 +19,8 @@ include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wr
 
 recommends 'MRO::Compat' if $] < 5.010;
 
+makemaker_args PL_FILES => { 'author/generate-mouse-tiny.pl' => 'lib/Mouse/Tiny.pm' };
+
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
     require 'lib/Mouse/Spec.pm';
@@ -34,7 +36,6 @@ if ($Module::Install::AUTHOR) {
     } else {
         print "you don't have Moose $require_version. skipping moose compatibility test\n";
     }
-    system("author/generate-mouse-tiny.pl");
 }
 
 WriteAll check_nmake => 0;
