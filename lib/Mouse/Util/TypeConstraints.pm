@@ -111,6 +111,14 @@ sub _create_type{
     }
 
     $args{name} = $name;
+    my $parent;
+    if($mode eq 'subtype'){
+        $parent = delete $args{as};
+        if(!$parent){
+            $parent = delete $args{name};
+            $name   = '__ANON__';
+        }
+    }
 
     my $package_defined_in = $args{package_defined_in} ||= caller(1);
 
@@ -120,14 +128,11 @@ sub _create_type{
               . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
     }
 
-    $args{constraint} = delete($args{where})       if exists $args{where};
+    $args{constraint} = delete $args{where}        if exists $args{where};
     $args{optimized}  = delete $args{optimized_as} if exists $args{optimized_as};
 
     my $constraint;
     if($mode eq 'subtype'){
-        my $parent = delete($args{as})
-            or confess('A subtype cannot consist solely of a name, it must have a parent');
-
         $constraint = find_or_create_isa_type_constraint($parent)->create_child_type(%args);
     }
     else{
