@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More tests => 7;
 use Test::Exception;
-
-use lib 't/lib';
 use Test::Mouse;
+
+
 
 {
     package My::Meta::Attribute::DefaultReadOnly;

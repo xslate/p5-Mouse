@@ -1,11 +1,9 @@
 #!/usr/bin/perl
-use lib 't/lib';
 
 use strict;
 use warnings;
 
 use Test::More tests => 12;
-
 use Test::Exception;
 use Test::Mouse;
 
@@ -21,11 +19,9 @@ use Test::Mouse;
 
     after 'install_accessors' => sub {
         my $self = shift;
-        my $reader = $self->get_read_method_ref;
-
         $self->associated_class->add_method(
             $self->alias_to,
-            $reader,
+            $self->get_read_method_ref
         );
     };
 }
@@ -58,7 +54,6 @@ can_ok($c, 'baz');
 is($c->baz, 100, '... got the right value for baz');
 
 my $bar_attr = $c->meta->get_attribute('bar');
-
 does_ok($bar_attr, 'My::Attribute::Trait');
 ok($bar_attr->has_applied_traits, '... got the applied traits');
 is_deeply($bar_attr->applied_traits, [qw/My::Attribute::Trait/], '... got the applied traits');

@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More tests => 23;
 use Test::Exception;
-
-use lib 't/lib';
 use Test::Mouse;
+
+
 
 {
     package My::Attribute::Trait;
@@ -87,10 +87,7 @@ does_ok($bar_attr, 'My::Attribute::Trait');
 is($bar_attr->foo, "blah", "attr initialized");
 
 ok(!$bar_attr->meta->does_role('Aliased'), "does_role ignores aliases for sanity");
-{
-    local $TODO = 'Mouse does not support ->does($aliased)';
-    ok($bar_attr->does('Aliased'), "attr->does uses aliases");
-}
+ok($bar_attr->does('Aliased'), "attr->does uses aliases");
 ok(!$bar_attr->meta->does_role('Fictional'), "does_role returns false for nonexistent roles");
 ok(!$bar_attr->does('Fictional'), "attr->does returns false for nonexistent roles");
 
@@ -111,10 +108,7 @@ does_ok($derived_bar_attr, 'My::Other::Attribute::Trait' );
 is($derived_bar_attr->the_other_attr, "oink", "attr initialized" );
 
 ok(!$derived_bar_attr->meta->does_role('Aliased'), "does_role ignores aliases for sanity");
-{
-    local $TODO = 'Mouse does not support ->does($aliased)';
-    ok($derived_bar_attr->does('Aliased'), "attr->does uses aliases");
-}
+ok($derived_bar_attr->does('Aliased'), "attr->does uses aliases");
 ok(!$derived_bar_attr->meta->does_role('Fictional'), "does_role returns false for nonexistent roles");
 ok(!$derived_bar_attr->does('Fictional'), "attr->does returns false for nonexistent roles");
 
