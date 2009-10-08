@@ -94,8 +94,11 @@ sub _generate_accessor{
         }
         elsif(defined $constraint){
             $accessor .= "my \$tmp = $value;\n";
+            #XXX: The following 'defined and' check is for backward compatibility
+            $accessor .= "defined(\$tmp) and ";
+
             $accessor .= "\$compiled_type_constraint->(\$tmp)";
-            $accessor .= "or \$attribute->verify_type_constraint_error(\$name, \$tmp, \$constraint);\n";
+            $accessor .= " || \$attribute->verify_type_constraint_error(\$name, \$tmp, \$constraint);\n";
             $accessor .= "$slot = \$tmp;\n";
         }
         else{
