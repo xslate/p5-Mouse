@@ -20,6 +20,7 @@ include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wr
 recommends 'MRO::Compat' if $] < 5.010;
 
 makemaker_args PL_FILES => { 'author/generate-mouse-tiny.pl' => 'lib/Mouse/Tiny.pm' };
+system 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm';
 
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
