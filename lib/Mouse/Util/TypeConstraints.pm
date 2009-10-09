@@ -399,12 +399,7 @@ sub find_or_parse_type_constraint {
 }
 
 sub find_or_create_does_type_constraint{
-    my $type = find_or_parse_type_constraint(@_) || role_type(@_);
-
-    if($type->{type} && $type->{type} ne 'Role'){
-        Carp::cluck("$type is not a role type");
-    }
-    return $type;
+    return find_or_parse_type_constraint(@_) || role_type(@_);
 }
 
 sub find_or_create_isa_type_constraint {
