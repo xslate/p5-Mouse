@@ -1,7 +1,11 @@
 Revision history for Mouse
 
 0.37_05
-    * Add notes about Moose::Cookbook to Mouse::Spec (gfx)
+    * Mouse::Exporter
+        - Add build_import_methods() (gfx)
+
+    * Mouse::Spec
+    * Add notes about Moose::Cookbook (gfx)
 
     * Fix some minor bugs (gfx)
 
