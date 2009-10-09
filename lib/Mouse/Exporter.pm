@@ -102,7 +102,7 @@ sub build_import_methods{
 
             if(my $init_meta = $package->can('init_meta')){
                 if(!grep{ $_ == $init_meta } @init_meta_methods){
-                    unshift @init_meta_methods, $init_meta;
+                    push @init_meta_methods, $init_meta;
                 }
             }
         }
