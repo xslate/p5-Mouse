@@ -87,8 +87,8 @@ my $hundred = US::Currency->new( amount => 100.00 );
 isa_ok( $hundred, 'US::Currency' );
 {
 local $TODO = 'UNIVERSAL::DOES is not supported';
-ok( $hundred->DOES("US::Currency"), "UNIVERSAL::DOES for class" );
-ok( $hundred->DOES("Comparable"),   "UNIVERSAL::DOES for role" );
+ok( eval{ $hundred->DOES("US::Currency") }, "UNIVERSAL::DOES for class" );
+ok( eval{ $hundred->DOES("Comparable") },   "UNIVERSAL::DOES for role" );
 }
 can_ok( $hundred, 'amount' );
 is( $hundred->amount, 100, '... got the right amount' );
