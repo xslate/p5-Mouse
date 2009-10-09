@@ -90,9 +90,12 @@ my $obj;
     $obj = $anon->name->new();
 }
 
-isa_ok $obj, 'Mouse::Object';
-can_ok $obj, 'meta';
-lives_and{
-    isa_ok $obj->meta, 'Mouse::Meta::Class';
-};
+SKIP:{
+    skip 'Moose has a bug', 3 if 'Mouse' eq 'Moose';
 
+    isa_ok $obj, 'Mouse::Object';
+    can_ok $obj, 'meta';
+    lives_and{
+        isa_ok $obj->meta, 'Mouse::Meta::Class';
+    };
+}

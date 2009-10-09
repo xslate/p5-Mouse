@@ -52,7 +52,7 @@ use Test::Exception;
     use Mouse;
 
     #extends 'Class::MOP::Attribute';
-    extends 'Mouse::Meta::Attribute';
+    extends 'Foo::Meta::Attribute';
 
     package Bar;
     use Mouse;
