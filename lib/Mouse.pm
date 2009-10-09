@@ -157,6 +157,10 @@ __END__
 
 Mouse - Moose minus the antlers
 
+=head1 VERSION
+
+This document describes Mouse version 0.037_04
+
 =head1 SYNOPSIS
 
     package Point;
