@@ -18,13 +18,10 @@ sub new {
     my $check = delete $args{optimized};
 
     if($args{_compiled_type_constraint}){
-        Carp::cluck("'_compiled_type_constraint' has been deprecated, use 'optimized' instead");
-        $check = $args{_compiled_type_constraint};
+        Carp::cluck("'_compiled_type_constraint' has been deprecated, use 'optimized' instead")
+            if _MOUSE_VERBOSE;
 
-        if(blessed($check)){
-            Carp::cluck("Constraint must be a CODE reference");
-            $check = $check->{compiled_type_constraint};
-        }
+        $check = $args{_compiled_type_constraint};
     }
 
     if($check){

@@ -36,3 +36,4 @@ sub _generate_destructor{
 }
 
 1;
+__END__

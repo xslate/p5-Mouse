@@ -30,6 +30,8 @@ Mouse::Exporter->setup_import_methods(
     )],
     groups => {
         default => [], # export no functions by default
+
+        # The ':meta' group is 'use metaclass' for Mouse
         meta    => [qw(does meta dump _MOUSE_VERBOSE)],
     },
     _export_to_main => 1,
@@ -281,6 +283,7 @@ sub apply_all_roles {
         }
         my $role_name = $roles[-1][0];
         load_class($role_name);
+
         my $metarole = get_metaclass_by_name($role_name);
         ( $metarole && $metarole->isa('Mouse::Meta::Role') )
             || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");

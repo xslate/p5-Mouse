@@ -338,10 +338,10 @@ sub get_parent_args { # DEPRECATED
 }
 
 
-sub get_read_method { # DEPRECATED
+sub get_read_method {
     $_[0]->{reader} || $_[0]->{accessor}
 }
-sub get_write_method { # DEPRECATED
+sub get_write_method {
     $_[0]->{writer} || $_[0]->{accessor}
 }
 

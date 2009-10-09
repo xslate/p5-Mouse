@@ -65,6 +65,7 @@ sub find_method_by_name{
     my($self, $method_name) = @_;
     defined($method_name)
         or $self->throw_error('You must define a method name to find');
+
     foreach my $class( $self->linearized_isa ){
         my $method = $self->initialize($class)->get_method($method_name);
         return $method if defined $method;
@@ -143,7 +144,8 @@ sub add_attribute {
 }
 
 sub compute_all_applicable_attributes {
-    Carp::cluck('compute_all_applicable_attributes() has been deprecated');
+    Carp::cluck('compute_all_applicable_attributes() has been deprecated')
+        if _MOUSE_VERBOSE;
     return shift->get_all_attributes(@_)
 }
 

@@ -183,3 +183,4 @@ sub _generate_BUILDALL {
 }
 
 1;
+__END__

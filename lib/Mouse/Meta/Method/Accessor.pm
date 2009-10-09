@@ -187,3 +187,4 @@ sub _generate_delegation{
 
 
 1;
+__END__
