@@ -133,7 +133,7 @@ sub _generate_processattrs {
     }
 
     if($metaclass->is_anon_class){
-        push @res, q{$instnace->{__METACLASS__} = $metaclass;};
+        push @res, q{$instance->{__METACLASS__} = $metaclass;};
     }
 
     if($has_triggers){
