@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.37_05
+0.37_05 Fri Oct  9 15:21:43 2009
     * Mouse::Exporter
         - Add build_import_methods() (gfx)
 
