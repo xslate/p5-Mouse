@@ -7,6 +7,8 @@ use Fatal qw(open close);
 #use List::MoreUtils 'uniq';
 #use autodie;
 
+print "Generate Mouse::Tiny ...\n";
+
 sub slurp {
     open my $in, '<', $_[0];
     local $/;
@@ -100,3 +102,5 @@ Mouse::Exporter->setup_import_methods(also => 'Mouse');
 EOF
 
 close $handle;
+
+print "done.\n";
