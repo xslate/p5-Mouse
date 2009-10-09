@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use inc::Module::Install;
 
+system($^X, 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
+    or warn "Cannot generate Mouse::Tiny: $!";
+
 name     'Mouse';
 all_from 'lib/Mouse.pm';
 
@@ -18,9 +21,6 @@ test_requires 'Test::Exception' => 0.27;
 include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
 
 recommends 'MRO::Compat' if $] < 5.010;
-
-makemaker_args PL_FILES => { 'author/generate-mouse-tiny.pl' => 'lib/Mouse/Tiny.pm' };
-system 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm';
 
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
