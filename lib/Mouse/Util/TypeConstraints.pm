@@ -9,7 +9,8 @@ use Mouse::Exporter;
 
 Mouse::Exporter->setup_import_methods(
     as_is => [qw(
-        as where message from via
+        as where message optimize_as
+        from via
         type subtype coerce class_type role_type enum
         find_type_constraint
     )],
@@ -19,15 +20,10 @@ Mouse::Exporter->setup_import_methods(
 
 my %TYPE;
 
-sub as ($) {
-    return(as => $_[0]);
-}
-sub where (&) {
-    return(where => $_[0])
-}
-sub message (&) {
-    return(message => $_[0])
-}
+sub as          ($) { (as => $_[0]) }
+sub where       (&) { (where => $_[0]) }
+sub message     (&) { (message => $_[0]) }
+sub optimize_as (&) { (optimize_as => $_[0]) }
 
 sub from    { @_ }
 sub via (&) { $_[0] }
