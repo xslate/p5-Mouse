@@ -6,6 +6,9 @@ use warnings;
 use Test::More tests => 32;
 use Test::Exception;
 
+use lib 't/lib';
+use Test::Mouse;
+
 =pod
 
 Check for repeated inheritance causing

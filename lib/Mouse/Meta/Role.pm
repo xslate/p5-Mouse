@@ -56,6 +56,7 @@ sub add_attribute {
     my $name = shift;
 
     $self->{attributes}->{$name} = (@_ == 1) ? $_[0] : { @_ };
+    return;
 }
 
 sub _check_required_methods{
@@ -244,17 +245,14 @@ sub combine {
 for my $modifier_type (qw/before after around/) {
 
     my $modifier = "${modifier_type}_method_modifiers";
+
     my $add_method_modifier =  sub {
         my ($self, $method_name, $method) = @_;
 
         push @{ $self->{$modifier}->{$method_name} ||= [] }, $method;
         return;
     };
-    my $has_method_modifiers = sub{
-        my($self, $method_name) = @_;
-        my $m = $self->{$modifier}->{$method_name};
-        return $m && @{$m} != 0;
-    };
+
     my $get_method_modifiers = sub {
         my ($self, $method_name) = @_;
         return @{ $self->{$modifier}->{$method_name} ||= [] }
@@ -262,8 +260,9 @@ for my $modifier_type (qw/before after around/) {
 
     no strict 'refs';
     *{ 'add_' . $modifier_type . '_method_modifier'  } = $add_method_modifier;
-    *{ 'has_' . $modifier_type . '_method_modifiers' } = $has_method_modifiers;
     *{ 'get_' . $modifier_type . '_method_modifiers' } = $get_method_modifiers;
+
+    # has_${modifier_type}_method_modifiers is moved into t::lib::Test::Mouse
 }
 
 sub add_override_method_modifier{
@@ -280,23 +279,11 @@ sub add_override_method_modifier{
     $self->{override_method_modifiers}->{$method_name} = $method;
 }
 
-sub has_override_method_modifier {
-    my ($self, $method_name) = @_;
-    return exists $self->{override_method_modifiers}->{$method_name};
-}
-
 sub get_override_method_modifier {
     my ($self, $method_name) = @_;
     return $self->{override_method_modifiers}->{$method_name};
 }
 
-sub get_method_modifier_list {
-    my($self, $modifier_type) = @_;
-
-    return keys %{ $self->{$modifier_type . '_method_modifiers'} };
-}
-
-# This is currently not passing all the Moose tests.
 sub does_role {
     my ($self, $role_name) = @_;
 
@@ -312,9 +299,7 @@ sub does_role {
     return 0;
 }
 
-
 1;
-
 __END__
 
 =head1 NAME
