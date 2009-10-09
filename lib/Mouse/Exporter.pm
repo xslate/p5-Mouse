@@ -24,6 +24,30 @@ sub setup_import_methods{
 
     my $exporting_package = $args{exporting_package} ||= caller();
 
+    my($import, $unimport) = $class->build_import_methods(%args);
+
+    no strict 'refs';
+
+    *{$exporting_package . '::import'}    = $import;
+    *{$exporting_package . '::unimport'}  = $unimport;
+
+    # for backward compatibility
+    *{$exporting_package . '::export_to_level'} = sub{
+        my($package, $level, undef, @args) = @_; # the third argument is redundant
+        $package->import({ into_level => $level + 1 }, @args);
+    };
+    *{$exporting_package . '::export'} = sub{
+        my($package, $into, @args) = @_;
+        $package->import({ into => $into }, @args);
+    };
+    return;
+}
+
+sub build_import_methods{
+    my($class, %args) = @_;
+
+    my $exporting_package = $args{exporting_package} ||= caller();
+
     $SPEC{$exporting_package} = \%args;
 
     # canonicalize args
@@ -105,23 +129,7 @@ sub setup_import_methods{
         }
     }
 
-    no strict 'refs';
-
-    *{$exporting_package . '::import'}    = \&do_import;
-    *{$exporting_package . '::unimport'}  = \&do_unimport;
-
-    # for backward compatibility
-
-    *{$exporting_package . '::export_to_level'} = sub{
-        my($package, $level, undef, @args) = @_; # the third argument is redundant
-        do_import($package, { into_level => $level + 1 }, @args);
-    };
-    *{$exporting_package . '::export'} = sub{
-        my($package, $into, @args) = @_;
-        do_import($package, { into => $into }, @args);
-    };
-
-    return;
+    return (\&do_import, \&do_unimport);
 }
 
 
@@ -274,6 +282,12 @@ C<unimport> methods for your module, based on a spec you provide.
 
 Note that C<Mouse::Exporter> does not provide the C<with_meta> option,
 but you can easily get the metaclass by C<< caller->meta >> as L</SYNOPSIS> shows.
+
+=head1 METHODS
+
+=head2 C<< setup_import_methods( ARGS ) >>
+
+=head2 C<< build_import_methods( ARGS ) -> (\&import, \&unimport) >>
 
 =head1 SEE ALSO
 
