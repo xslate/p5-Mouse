@@ -71,7 +71,7 @@ L<Moose::Cookbook::Roles::Recipe1> - The Moose::Role example
 
 =item *
 
-L<Moose::Cookbook::Roles::Recipe2> - Advanced Role Composition - method exclusion and aliasin
+L<Moose::Cookbook::Roles::Recipe2> - Advanced Role Composition - method exclusion and aliasing
 
 =item *
 
