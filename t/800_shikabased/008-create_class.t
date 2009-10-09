@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Mouse ();
-use Test::More tests => 19;
+use Test::More tests => 23;
 use Test::Exception;
 
 # error handling
@@ -82,4 +82,17 @@ ok !$anon_pkg1->can('dooo');
 ok !$anon_pkg1->can('meta');
 
 ok $anon_pkg2->can('meta'), 'cache => 1 makes it immortal';
+
+my $obj;
+{
+    my $anon = Mouse::Meta::Class->create_anon_class(superclasses => ['Mouse::Object']);
+    lives_ok{ $anon->make_immutable() } 'make anon class immutable';
+    $obj = $anon->name->new();
+}
+
+isa_ok $obj, 'Mouse::Object';
+can_ok $obj, 'meta';
+lives_and{
+    isa_ok $obj->meta, 'Mouse::Meta::Class';
+};
 
