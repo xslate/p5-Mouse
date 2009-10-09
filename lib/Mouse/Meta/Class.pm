@@ -204,7 +204,6 @@ sub _initialize_object{
                                 : ref($default) eq 'CODE' ? $object->$default()
                                 :                           $default;
 
-                    # XXX: we cannot use $attribute->set_value() because it invokes triggers.
                     $object->{$key} = $attribute->_coerce_and_verify($value, $object);;
 
                     weaken($object->{$key})
