@@ -130,12 +130,9 @@ sub init_meta {
 
     my $class = $args{for_class}
                     or confess("Cannot call init_meta without specifying a for_class");
+
     my $base_class = $args{base_class} || 'Mouse::Object';
     my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Class';
-
-    # make a subtype for each Mouse class
-    Mouse::Util::TypeConstraints::class_type($class)
-        unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
     my $meta = $metaclass->initialize($class);
 
@@ -145,6 +142,10 @@ sub init_meta {
 
     $meta->superclasses($base_class)
         unless $meta->superclasses;
+
+    # make a class type for each Mouse class
+    Mouse::Util::TypeConstraints::class_type($class)
+        unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
     return $meta;
 }
