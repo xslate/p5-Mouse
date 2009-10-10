@@ -19,7 +19,7 @@ use Test::Exception;
     has 'bar' => (is => 'rw', does => 'Bar::Role');
     has 'baz' => (
         is   => 'rw',
-        does => role_type('Bar::Role')
+        does => 'Bar::Role'
     );
 
     package Bar::Role;
