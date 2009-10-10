@@ -5,7 +5,7 @@ Revision history for Mouse
         - Add build_import_methods() (gfx)
 
     * Mouse::Spec
-    * Add notes about Moose::Cookbook (gfx)
+        - Add notes about Moose::Cookbook (gfx)
 
     * Fix some minor bugs (gfx)
 
