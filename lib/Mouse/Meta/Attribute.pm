@@ -388,6 +388,15 @@ sub _canonicalize_handles {
     elsif (ref($handles) eq 'ARRAY') {
         return map { $_ => $_ } @$handles;
     }
+    elsif (ref($handles) eq 'Regexp') {
+        my $class_or_role = ($self->{isa} || $self->{does})
+            || $self->throw_error("Cannot delegate methods based on a Regexp without a type constraint (isa)");
+
+        my $meta = Mouse::Meta::Class->initialize("$class_or_role"); # "" for stringify
+        return map  { $_ => $_ }
+               grep { $_ ne 'meta' && !Mouse::Object->can($_) && $_ =~ $handles }
+                   $meta->isa('Mouse::Meta::Class') ? $meta->get_all_method_names : $meta->get_method_list;
+    }
     else {
         $self->throw_error("Unable to canonicalize the 'handles' option with $handles");
     }
