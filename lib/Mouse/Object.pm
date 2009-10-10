@@ -30,7 +30,18 @@ sub BUILDARGS {
 sub DESTROY {
     my $self = shift;
 
-    $self->DEMOLISHALL();
+    local $?;
+
+    my $e = do{
+        local $@;
+        eval{
+            $self->DEMOLISHALL();
+        };
+        $@;
+    };
+
+    no warnings 'misc';
+    die $e if $e; # rethrow
 }
 
 sub BUILDALL {

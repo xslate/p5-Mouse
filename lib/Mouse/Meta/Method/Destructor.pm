@@ -21,7 +21,17 @@ sub _generate_destructor{
     my $source = sprintf("#line %d %s\n", __LINE__, __FILE__) . <<"...";
     sub {
         my \$self = shift;
-        $demolishall;
+        local \$?;
+
+        my \$e = do{
+            local \$@;
+            eval{
+                $demolishall;
+            };
+            \$@;
+        };
+        no warnings 'misc';
+        die \$e if \$e; # rethrow
     }
 ...
 
