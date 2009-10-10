@@ -109,18 +109,23 @@ sub excludes {
 }
 
 sub init_meta{
-    my($class, %args) = @_;
+    shift;
+    my %args = @_;
 
-    my $for_class = $args{for_class}
+    my $class = $args{for_class}
         or Carp::confess("Cannot call init_meta without specifying a for_class");
 
     my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Role';
 
-    my $meta = $metaclass->initialize($for_class);
+    my $meta = $metaclass->initialize($class);
 
     $meta->add_method(meta => sub{
         $metaclass->initialize(ref($_[0]) || $_[0]);
     });
+
+    # make a role type for each Mouse role
+    Mouse::Util::TypeConstraints::role_type($class)
+        unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
     return $meta;
 }
