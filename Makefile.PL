@@ -74,7 +74,8 @@ sub create_moose_compatibility_test {
 
                 return if /failing/; # skip tests in failing/ directories which  are Moose specific
 
-                return if /100_with_moose/; # tests with Moose
+                return if /with_moose/; # tests with Moose
+                return if /100_bugs/;   # some tests require Mouse specific files
                 return if /deprecated/;
 
                 my $basename = File::Basename::basename($_);
