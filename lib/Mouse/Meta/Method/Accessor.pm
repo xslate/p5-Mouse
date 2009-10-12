@@ -74,8 +74,7 @@ sub _generate_accessor{
         $class->throw_error("Unknown accessor type '$type'");
     }
 
-    # XXX: an anon class can be a runtime created class
-    if ($attribute->is_lazy || $class->is_anon_class) {
+    if ($attribute->is_lazy) {
         my $value;
 
         if (defined $builder){

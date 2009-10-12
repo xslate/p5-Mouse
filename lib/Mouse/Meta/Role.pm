@@ -179,6 +179,8 @@ sub apply {
 
     my %args = (@_ == 1) ? %{ $_[0] } : @_;
 
+    my $instance;
+
     if($applicant->isa('Mouse::Meta::Class')){  # Application::ToClass
         $args{_to} = 'class';
     }
@@ -187,14 +189,12 @@ sub apply {
     }
     else{                                       # Appplication::ToInstance
         $args{_to} = 'instance';
+        $instance = $applicant;
 
-        my $metaclass = (Mouse::Util::class_of($applicant) || 'Mouse::Meta::Class')->create_anon_class(
-            superclasses => [ref $applicant],
+        $applicant = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')->create_anon_class(
+            superclasses => [ref $instance],
             cache        => 1,
         );
-        bless $applicant, $metaclass->name; # rebless
-
-        $applicant = $metaclass;
     }
 
     if($args{alias} && !exists $args{-alias}){
@@ -224,6 +224,14 @@ sub apply {
     $self->_apply_methods($applicant, \%args);
     $self->_apply_modifiers($applicant, \%args);
     $self->_append_roles($applicant, \%args);
+
+
+    if(defined $instance){ # Application::ToInstance
+        # rebless instance
+        bless $instance, $applicant->name;
+        $applicant->_initialize_object($instance, $instance);
+    }
+
     return;
 }
 
