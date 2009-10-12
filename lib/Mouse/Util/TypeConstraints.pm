@@ -151,7 +151,7 @@ sub subtype {
 
     $name = '__ANON__' if !defined $name;
 
-    my $pkg = caller($conf{_caller_level} || 1);
+    my $pkg = caller;
 
     if ($TYPE{$name} && $TYPE_SOURCE{$name} ne $pkg) {
         Carp::croak "The type constraint '$name' has already been created in $TYPE_SOURCE{$name} and cannot be created again in $pkg";
@@ -218,15 +218,11 @@ sub class_type {
     if ($conf && $conf->{class}) {
         # No, you're using this wrong
         warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        subtype $name => (
-            as => $conf->{class},
-            caller_level => (($conf->{_caller_level}||0) + 1),
-        );
+        subtype $name => (as => $conf->{class});
     }
     else {
         subtype $name => (
             where => sub { blessed($_) && $_->isa($name) },
-            caller_level => (($conf->{_caller_level}||0) + 1),
         );
     }
 }
@@ -236,7 +232,6 @@ sub role_type {
     my $role = $conf->{role};
     subtype $name => (
         where => sub { does_role($_, $role) },
-        caller_level => (($conf->{_caller_level}||0) + 1),
     );
 }
 
@@ -275,9 +270,8 @@ sub enum {
     my $name = shift;
     my %is_valid = map { $_ => 1 } @_;
 
-    subtype $name => (
-        where => sub { $is_valid{$_} },
-        _caller_level => 1,
+    subtype(
+        $name => where => sub { $is_valid{$_} }
     );
 }
 
