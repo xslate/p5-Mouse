@@ -248,7 +248,7 @@ sub canonicalize_args{ # DEPRECATED
     return %args;
 }
 
-sub create {
+sub create { # DEPRECATED
     my ($self, $class, $name, %args) = @_;
 
     Carp::cluck("$self->create has been deprecated."
