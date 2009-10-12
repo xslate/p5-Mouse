@@ -1,13 +1,14 @@
 Revision history for Mouse
 
-
-
-0.37_06
+0.37_06 Mon Oct 12 16:34:18 2009
     * Mouse::Meta::Attribute
         - Support handles => qr/pattern/ in has() (gfx)
 
     * Mouse::Meta::Method::Destructor
         - Locallize $@ and $? in DESTROY as Moose does (gfx)
+
+    * Mouse::Meta::Role
+        - Fix role application to instances (gfx)
 
     * Tests
         - Move t/*.t to t/001_moose/
