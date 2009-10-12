@@ -47,3 +47,6 @@ author/benchmarks
 author/externals
 
 lib/Mouse/Tiny\.pm$
+
+# Mouse distributions
+Mouse-
