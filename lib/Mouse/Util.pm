@@ -1,58 +1,69 @@
 package Mouse::Util;
-use strict;
-use warnings;
-
-use Exporter;
+use Mouse::Exporter; # enables strict and warnings
 
 use Carp qw(confess);
+use Scalar::Util qw(blessed);
 use B ();
 
 use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
 
-our @ISA       = qw(Exporter);
-our @EXPORT_OK = qw(
-    find_meta
-    does_role
-    resolve_metaclass_alias
-    apply_all_roles
-    english_list
+Mouse::Exporter->setup_import_methods(
+    as_is => [qw(
+        find_meta
+        does_role
+        resolve_metaclass_alias
+        apply_all_roles
+        english_list
 
-    load_class
-    is_class_loaded
+        load_class
+        is_class_loaded
 
-    get_linear_isa
-    get_code_info
+        get_linear_isa
+        get_code_info
 
-    get_code_package
+        get_code_package
 
-    not_supported
+        not_supported
 
-    does meta dump
-    _MOUSE_VERBOSE
+        does meta dump
+        _MOUSE_VERBOSE
+    )],
+    groups => {
+        default => [], # export no functions by default
+
+        # The ':meta' group is 'use metaclass' for Mouse
+        meta    => [qw(does meta dump _MOUSE_VERBOSE)],
+    },
+    _export_to_main => 1,
 );
-our %EXPORT_TAGS = (
-    all  => \@EXPORT_OK,
-    meta => [qw(does meta dump _MOUSE_VERBOSE)],
-);
+
+# aliases as public APIs
+# it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
+require Mouse::Meta::Module; # for the entities of metaclass cache utilities
+
+BEGIN {
+    *class_of                    = \&Mouse::Meta::Module::class_of;
+    *get_metaclass_by_name       = \&Mouse::Meta::Module::get_metaclass_by_name;
+    *get_all_metaclass_instances = \&Mouse::Meta::Module::get_all_metaclass_instances;
+    *get_all_metaclass_names     = \&Mouse::Meta::Module::get_all_metaclass_names;
+}
 
 # Moose::Util compatible utilities
 
 sub find_meta{
-    return Mouse::Meta::Module::class_of( $_[0] );
+    return class_of( $_[0] );
 }
 
 sub does_role{
     my ($class_or_obj, $role_name) = @_;
 
-    my $meta = Mouse::Meta::Module::class_of($class_or_obj);
+    my $meta = class_of($class_or_obj);
 
     (defined $role_name)
         || ($meta || 'Mouse::Meta::Class')->throw_error("You must supply a role name to does()");
 
     return defined($meta) && $meta->does_role($role_name);
 }
-
-
 
 BEGIN {
     my $impl;
@@ -151,6 +162,9 @@ BEGIN {
     }
 }
 
+# Utilities from Class::MOP
+
+
 # taken from Class/MOP.pm
 sub is_valid_class_name {
     my $class = shift;
@@ -191,6 +205,7 @@ sub load_first_existing_class {
 }
 
 # taken from Class/MOP.pm
+my %is_class_loaded_cache;
 sub _try_load_one_class {
     my $class = shift;
 
@@ -199,7 +214,7 @@ sub _try_load_one_class {
         confess "Invalid class name ($display)";
     }
 
-    return if is_class_loaded($class);
+    return undef if $is_class_loaded_cache{$class} ||= is_class_loaded($class);
 
     my $file = $class . '.pm';
     $file =~ s{::}{/}g;
@@ -220,13 +235,11 @@ sub load_class {
     return 1;
 }
 
-my %is_class_loaded_cache;
+
 sub is_class_loaded {
     my $class = shift;
 
     return 0 if ref($class) || !defined($class) || !length($class);
-
-    return 1 if $is_class_loaded_cache{$class};
 
     # walk the symbol table tree to avoid autovififying
     # \*{${main::}{"Foo::"}} == \*main::Foo::
@@ -239,15 +252,15 @@ sub is_class_loaded {
     }
 
     # check for $VERSION or @ISA
-    return ++$is_class_loaded_cache{$class} if exists $pack->{VERSION}
+    return 1 if exists $pack->{VERSION}
              && defined *{$pack->{VERSION}}{SCALAR} && defined ${ $pack->{VERSION} };
-    return ++$is_class_loaded_cache{$class} if exists $pack->{ISA}
+    return 1 if exists $pack->{ISA}
              && defined *{$pack->{ISA}}{ARRAY} && @{ $pack->{ISA} } != 0;
 
     # check for any method
     foreach my $name( keys %{$pack} ) {
         my $entry = \$pack->{$name};
-        return ++$is_class_loaded_cache{$class} if ref($entry) ne 'GLOB' || defined *{$entry}{CODE};
+        return 1 if ref($entry) ne 'GLOB' || defined *{$entry}{CODE};
     }
 
     # fail
@@ -256,7 +269,7 @@ sub is_class_loaded {
 
 
 sub apply_all_roles {
-    my $meta = Mouse::Meta::Class->initialize(shift);
+    my $applicant = blessed($_[0]) ? shift : Mouse::Meta::Class->initialize(shift);
 
     my @roles;
 
@@ -264,22 +277,24 @@ sub apply_all_roles {
     my $max = scalar(@_);
     for (my $i = 0; $i < $max ; $i++) {
         if ($i + 1 < $max && ref($_[$i + 1])) {
-            push @roles, [ $_[$i++] => $_[$i] ];
+            push @roles, [ $_[$i] => $_[++$i] ];
         } else {
-            push @roles, [ $_[$i]   => undef ];
+            push @roles, [ $_[$i] => undef ];
         }
         my $role_name = $roles[-1][0];
         load_class($role_name);
-        ( $role_name->can('meta') && $role_name->meta->isa('Mouse::Meta::Role') )
-            || $meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
+
+        my $metarole = get_metaclass_by_name($role_name);
+        ( $metarole && $metarole->isa('Mouse::Meta::Role') )
+            || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
     }
 
     if ( scalar @roles == 1 ) {
-        my ( $role, $params ) = @{ $roles[0] };
-        $role->meta->apply( $meta, ( defined $params ? %$params : () ) );
+        my ( $role_name, $params ) = @{ $roles[0] };
+        get_metaclass_by_name($role_name)->apply( $applicant, defined $params ? $params : () );
     }
     else {
-        Mouse::Meta::Role->combine_apply($meta, @roles);
+        Mouse::Meta::Role->combine(@roles)->apply($applicant);
     }
     return;
 }
@@ -309,11 +324,13 @@ sub not_supported{
     Carp::confess("Mouse does not currently support $feature");
 }
 
-sub meta{
-    return Mouse::Meta::Class->initialize($_[0]);
+# general meta() method
+sub meta :method{
+    return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
 }
 
-sub dump { 
+# general dump() method
+sub dump :method {
     my($self, $maxdepth) = @_;
 
     require 'Data/Dumper.pm'; # we don't want to create its namespace
@@ -323,6 +340,7 @@ sub dump {
     return $dd->Dump();
 }
 
+# general does() method
 sub does :method;
 *does = \&does_role; # alias
 
@@ -358,9 +376,17 @@ locally-defined method.
 
 =head3 C<< load_class(ClassName) >>
 
-This will load a given C<ClassName> (or die if it's not loadable).
+This will load a given C<ClassName> (or die if it is not loadable).
 This function can be used in place of tricks like
 C<eval "use $module"> or using C<require>.
+
+=head3 C<< Mouse::Util::class_of(ClassName or Object) >>
+
+=head3 C<< Mouse::Util::get_metaclass_by_name(ClassName) >>
+
+=head3 C<< Mouse::Util::get_all_metaclass_instances() >>
+
+=head3 C<< Mouse::Util::get_all_metaclass_names() >>
 
 =head2 MRO::Compat
 
@@ -378,7 +404,7 @@ C<eval "use $module"> or using C<require>.
 
 L<Moose::Util>
 
-L<Scalar::Util>
+L<Class::MOP>
 
 L<Sub::Identify>
 

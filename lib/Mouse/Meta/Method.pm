@@ -1,8 +1,5 @@
 package Mouse::Meta::Method;
-use strict;
-use warnings;
-
-use Mouse::Util qw(:meta);
+use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
     '&{}' => 'body',

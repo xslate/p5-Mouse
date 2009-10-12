@@ -1,8 +1,5 @@
 package Mouse::Object;
-use strict;
-use warnings;
-
-use Mouse::Util qw(does dump);
+use Mouse::Util qw(does dump); # enables strict and warnings
 
 sub new {
     my $class = shift;
@@ -33,7 +30,18 @@ sub BUILDARGS {
 sub DESTROY {
     my $self = shift;
 
-    $self->DEMOLISHALL();
+    local $?;
+
+    my $e = do{
+        local $@;
+        eval{
+            $self->DEMOLISHALL();
+        };
+        $@;
+    };
+
+    no warnings 'misc';
+    die $e if $e; # rethrow
 }
 
 sub BUILDALL {

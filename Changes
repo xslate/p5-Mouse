@@ -1,5 +1,71 @@
 Revision history for Mouse
 
+0.37_06 Mon Oct 12 16:34:18 2009
+    * Mouse::Meta::Attribute
+        - Support handles => qr/pattern/ in has() (gfx)
+
+    * Mouse::Meta::Method::Destructor
+        - Locallize $@ and $? in DESTROY as Moose does (gfx)
+
+    * Mouse::Meta::Role
+        - Fix role application to instances (gfx)
+
+    * Tests
+        - Move t/*.t to t/001_moose/
+
+0.37_05 Fri Oct  9 15:21:43 2009
+    * Mouse::Exporter
+        - Add build_import_methods() (gfx)
+
+    * Mouse::Spec
+        - Add notes about Moose::Cookbook (gfx)
+
+    * Fix some minor bugs (gfx)
+
+0.37_04 Thu Oct  8 20:49:11 2009
+    * Mouse::Meta::Role::Composite
+        - Fix and improve role composition mechanism (gfx)
+
+    * Import a number of tests from Moose, and fix various bugs (gfx)
+
+    * Mouse::Tiny is always generated in Makefile.PL (gfx)
+
+0.37_03 Wed Oct  7 21:10:05 2009
+    * Mouse::Exporter
+        - Add Mouse::Exporter (gfx)
+    * Mouse::Meta::Method::Constructor
+        - Optimize generated constructors (gfx)
+    * Mouse::Meta::Role
+        - Implement role application to instances (gfx)
+
+0.37_02 Sun Oct  4 17:29:15 2009
+    * Mouse
+        - Implement the argument/inner keywords
+    * Mouse::Meta::Attribute
+        - Add get_read_method_ref() and get_write_method_ref() (gfx)
+        - Add find_attribute_by_name() (gfx)
+        - Fix clone_and_inherit_options() to deal with 'traits' (gfx)
+    * Mouse::Util
+        - Fix meta() method, which was not tested (gfx)
+    * Tests
+        - Port t/010_basics/*.t from Moose
+
+0.37_01 Thu Oct  1 15:32:58 2009
+    * Type coercions are stored to type constraints (gfx)
+
+    * Refactor the type parser to parse 'ArrayRef[Object|Int]' (gfx)
+
+    * Remove Class::MOP specific subroutines from Mouse::Meta::Module (gfx)
+      (this change might be reverted in the release version)
+        - version, authority, identifier,
+          get_all_metaclasses, store_metaclass_by_name,
+          weaken_metaclass, does_metaclass_exist, remove_metaclass_by_name
+
+    * Add new public utilities to Mouse::Util (gfx)
+        - class_of, the counterpart for Class::MOP::class_of
+        - get_metaclass_by_name for Class::MOP::get_metaclass_by_name
+
+
 0.37 Mon Sep 28 10:48:27 2009
     * Ensure backward compatibility by author/test-externa.pl (gfx)
 

@@ -1,36 +1,49 @@
 package Mouse::Meta::Method::Destructor;
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 
-sub generate_destructor_method_inline {
-    my ($class, $meta) = @_;
+sub _empty_DESTROY{ }
 
-    my $demolishall = do {
-        if ($meta->name->can('DEMOLISH')) {
-            my @code = ();
-            for my $class ($meta->linearized_isa) {
-                no strict 'refs';
-                if (*{$class . '::DEMOLISH'}{CODE}) {
-                    push @code, "${class}::DEMOLISH(\$self);";
-                }
-            }
-            join "\n", @code;
-        } else {
-            return sub { }; # no demolish =)
+sub _generate_destructor{
+    my (undef, $metaclass) = @_;
+
+    if(!$metaclass->name->can('DEMOLISH')){
+        return \&_empty_DESTROY;
+    }
+
+    my $demolishall = '';
+    for my $class ($metaclass->linearized_isa) {
+        no strict 'refs';
+        if (*{$class . '::DEMOLISH'}{CODE}) {
+            $demolishall .= "${class}::DEMOLISH(\$self);\n";
         }
-    };
+    }
 
-    my $code = <<"...";
+    my $source = sprintf("#line %d %s\n", __LINE__, __FILE__) . <<"...";
     sub {
         my \$self = shift;
-        $demolishall;
+        local \$?;
+
+        my \$e = do{
+            local \$@;
+            eval{
+                $demolishall;
+            };
+            \$@;
+        };
+        no warnings 'misc';
+        die \$e if \$e; # rethrow
     }
 ...
 
-    local $@;
-    my $res = eval $code;
-    die $@ if $@;
-    return $res;
+    my $code;
+    my $e = do{
+        local $@;
+        $code = eval $source;
+        $@;
+    };
+    die $e if $e;
+    return $code;
 }
 
 1;
+__END__

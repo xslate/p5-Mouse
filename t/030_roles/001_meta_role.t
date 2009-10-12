@@ -6,6 +6,8 @@ use warnings;
 use Test::More tests => 26;
 use Test::Exception;
 
+use lib 't/lib';
+use Test::Mouse; # Mouse::Meta::Module->version
 use Mouse::Meta::Role;
 
 {

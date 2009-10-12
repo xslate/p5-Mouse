@@ -16,8 +16,8 @@ my %dist = (
 
     'Data-Localize' => q{git://github.com/lestrrat/Data-Localize.git},
 
-    'AnyEvent-ReverseHTTP'
-                    => q{git://github.com/miyagawa/AnyEvent-ReverseHTTP.git},
+    'MouseX-AttributeHelpers'
+                    => q{git://github.com/masaki/mousex-attributehelpers.git},
 
     'HTML-Shakan'   => q{git://github.com/tokuhirom/html-shakan.git},
 );

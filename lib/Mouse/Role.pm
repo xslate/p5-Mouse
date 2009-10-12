@@ -1,17 +1,28 @@
 package Mouse::Role;
-use strict;
-use warnings;
+use Mouse::Util qw(not_supported); # enables strict and warnings
 
-use Exporter;
+use Carp qw(confess);
+use Scalar::Util qw(blessed);
 
-use Carp 'confess';
-use Scalar::Util 'blessed';
-
-use Mouse::Util qw(load_class get_code_package not_supported);
 use Mouse ();
+use Mouse::Exporter;
 
-our @ISA = qw(Exporter);
+Mouse::Exporter->setup_import_methods(
+    as_is => [qw(
+        extends with
+        has
+        before after around
+        override super
+        augment  inner
 
+        requires excludes
+    ),
+        \&Scalar::Util::blessed,
+        \&Carp::confess,
+    ],
+);
+
+# XXX: for backward compatibility
 our @EXPORT = qw(
     extends with
     has
@@ -23,10 +34,6 @@ our @EXPORT = qw(
 
     blessed confess
 );
-
-our %is_removable = map{ $_ => undef } @EXPORT;
-delete $is_removable{confess};
-delete $is_removable{blessed};
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
@@ -57,29 +64,13 @@ sub around {
 
 
 sub super {
-    return unless $Mouse::SUPER_BODY; 
+    return if !defined $Mouse::SUPER_BODY;
     $Mouse::SUPER_BODY->(@Mouse::SUPER_ARGS);
 }
 
 sub override {
-    my $classname = caller;
-    my $meta = Mouse::Meta::Role->initialize($classname);
-
-    my $name = shift;
-    my $code = shift;
-    my $fullname = "${classname}::${name}";
-
-    defined &$fullname
-        && $meta->throw_error("Cannot add an override of method '$fullname' "
-                            . "because there is a local version of '$fullname'");
-
-    $meta->add_override_method_modifier($name => sub {
-        local $Mouse::SUPER_PACKAGE = shift;
-        local $Mouse::SUPER_BODY = shift;
-        local @Mouse::SUPER_ARGS = @_;
-
-        $code->(@_);
-    });
+    # my($name, $code) = @_;
+    Mouse::Meta::Role->initialize(scalar caller)->add_override_method_modifier(@_);
 }
 
 # We keep the same errors messages as Moose::Role emits, here.
@@ -117,45 +108,26 @@ sub excludes {
     not_supported;
 }
 
-sub import {
-    my $class = shift;
+sub init_meta{
+    shift;
+    my %args = @_;
 
-    strict->import;
-    warnings->import;
+    my $class = $args{for_class}
+        or Carp::confess("Cannot call init_meta without specifying a for_class");
 
-    my $caller = caller;
+    my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Role';
 
-    # we should never export to main
-    if ($caller eq 'main') {
-        warn qq{$class does not export its sugar to the 'main' package.\n};
-        return;
-    }
+    my $meta = $metaclass->initialize($class);
 
-    Mouse::Meta::Role->initialize($caller)->add_method(meta => sub {
-        return Mouse::Meta::Role->initialize(ref($_[0]) || $_[0]);
+    $meta->add_method(meta => sub{
+        $metaclass->initialize(ref($_[0]) || $_[0]);
     });
 
-    Mouse::Role->export_to_level(1, @_);
-}
+    # make a role type for each Mouse role
+    Mouse::Util::TypeConstraints::role_type($class)
+        unless Mouse::Util::TypeConstraints::find_type_constraint($class);
 
-sub unimport {
-    my $caller = caller;
-
-    my $stash = do{
-        no strict 'refs';
-        \%{$caller . '::'}
-    };
-
-    for my $keyword (@EXPORT) {
-        my $code;
-        if(exists $is_removable{$keyword}
-            && ($code = $caller->can($keyword))
-            && get_code_package($code) eq __PACKAGE__){
-
-            delete $stash->{$keyword};
-        }
-    }
-    return;
+    return $meta;
 }
 
 1;

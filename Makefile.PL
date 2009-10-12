@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use inc::Module::Install;
 
+system($^X, 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
+    or warn "Cannot generate Mouse::Tiny: $!";
+
 name     'Mouse';
 all_from 'lib/Mouse.pm';
 
@@ -34,7 +37,6 @@ if ($Module::Install::AUTHOR) {
     } else {
         print "you don't have Moose $require_version. skipping moose compatibility test\n";
     }
-    system("author/generate-mouse-tiny.pl");
 }
 
 WriteAll check_nmake => 0;
@@ -51,7 +53,10 @@ sub create_moose_compatibility_test {
     # some test does not pass... currently skip it.
     my %SKIP_TEST = (
         '016-trigger.t'    => "trigger's argument is incompatble :(",
-        '010-isa-or.t'     => 'Mouse has a [BUG]',
+        '010-isa-or.t'     => "Mouse has a [BUG]",
+
+        '052-undefined-type-in-union.t' => "Mouse accepts undefined type as a member of union types",
+        '054-anon-leak.t'     => 'Moose has memory leaks',
 
         '600-tiny-tiny.t'     => "Moose doesn't support ::Tiny",
         '601-tiny-mouse.t'    => "Moose doesn't support ::Tiny",
@@ -69,7 +74,8 @@ sub create_moose_compatibility_test {
 
                 return if /failing/; # skip tests in failing/ directories which  are Moose specific
 
-                return if /100_with_moose/; # tests with Moose
+                return if /with_moose/; # tests with Moose
+                return if /100_bugs/;   # some tests require Mouse specific files
                 return if /deprecated/;
 
                 my $basename = File::Basename::basename($_);

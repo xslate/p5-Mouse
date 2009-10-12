@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 14;
 use Test::Exception;
 
-use Mouse::Meta::Role::Application::RoleSummation;
+#use Mouse::Meta::Role::Application::RoleSummation;
 use Mouse::Meta::Role::Composite;
 
 {

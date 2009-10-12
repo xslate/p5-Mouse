@@ -1,12 +1,10 @@
 package Mouse::Meta::Role::Method;
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 
 use Mouse::Meta::Method;
 our @ISA = qw(Mouse::Meta::Method);
 
 1;
-
 __END__
 
 =head1 NAME
