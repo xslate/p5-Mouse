@@ -101,13 +101,12 @@ can_ok($child_meta, 'find_method_by_name');
 is $child_meta->find_method_by_name('child_method')->fully_qualified_name, 'Child::child_method';
 is $child_meta->find_method_by_name('pawn')->fully_qualified_name,         'Class::pawn';
 
-{
-    local $TODO = 'should be Class::MY_CONST';
-    is( join(' ', sort map{ $_->fully_qualified_name } grep{ $_->package_name ne 'Mouse::Object' } $child_meta->get_all_methods),
-        join(' ', sort qw(
-            Child::bishop Child::child_method Child::meta
 
-            Class::MY_CONST Class::has_pawn Class::pawn Class::stub Class::stub_with_attr
-        ))
-    );
-}
+is( join(' ', sort map{ $_->fully_qualified_name } grep{ $_->package_name ne 'Mouse::Object' } $child_meta->get_all_methods),
+    join(' ', sort qw(
+        Child::bishop Child::child_method Child::meta
+
+        Class::MY_CONST Class::has_pawn Class::pawn Class::stub Class::stub_with_attr
+    ))
+);
+
