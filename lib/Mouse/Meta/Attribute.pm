@@ -263,14 +263,11 @@ sub _coerce_and_verify {
     my($self, $value, $instance) = @_;
 
     my $type_constraint = $self->{type_constraint};
-
-    return $value if !$type_constraint;
+    return $value if !defined $type_constraint;
 
     if ($self->should_coerce && $type_constraint->has_coercion) {
         $value = $type_constraint->coerce($value);
     }
-
-    return $value if $type_constraint->check($value);
 
     $self->verify_against_type_constraint($value);
 
@@ -281,7 +278,7 @@ sub verify_against_type_constraint {
     my ($self, $value) = @_;
 
     my $type_constraint = $self->{type_constraint};
-    return 1 if !$type_constraint;;
+    return 1 if !$type_constraint;
     return 1 if $type_constraint->check($value);
 
     $self->verify_type_constraint_error($self->name, $value, $type_constraint);
@@ -289,7 +286,8 @@ sub verify_against_type_constraint {
 
 sub verify_type_constraint_error {
     my($self, $name, $value, $type) = @_;
-    $self->throw_error("Attribute ($name) does not pass the type constraint because: " . $type->get_message($value));
+    $self->throw_error("Attribute ($name) does not pass the type constraint because: "
+        . $type->get_message($value));
 }
 
 sub coerce_constraint { # DEPRECATED

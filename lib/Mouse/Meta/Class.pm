@@ -188,7 +188,7 @@ sub _initialize_object{
         my $key  = $attribute->name;
 
         if (defined($from) && exists($args->{$from})) {
-            $object->{$key} = $attribute->_coerce_and_verify($args->{$from});
+            $object->{$key} = $attribute->_coerce_and_verify($args->{$from}, $object);
 
             weaken($object->{$key})
                 if ref($object->{$key}) && $attribute->is_weak_ref;
@@ -206,7 +206,7 @@ sub _initialize_object{
                                 : ref($default) eq 'CODE' ? $object->$default()
                                 :                           $default;
 
-                    $object->{$key} = $attribute->_coerce_and_verify($value, $object);;
+                    $object->{$key} = $attribute->_coerce_and_verify($value, $object);
 
                     weaken($object->{$key})
                         if ref($object->{$key}) && $attribute->is_weak_ref;
