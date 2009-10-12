@@ -188,7 +188,7 @@ sub apply {
     else{                                       # Appplication::ToInstance
         $args{_to} = 'instance';
 
-        my $metaclass = $applicant->meta->create_anon_class(
+        my $metaclass = (Mouse::Util::class_of($applicant) || 'Mouse::Meta::Class')->create_anon_class(
             superclasses => [ref $applicant],
             cache        => 1,
         );
