@@ -11,6 +11,10 @@ __END__
 
 Mouse::Meta::Role::Method - A Mouse Method metaclass for Roles
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 SEE ALSO
 
 L<Moose::Meta::Role::Method>

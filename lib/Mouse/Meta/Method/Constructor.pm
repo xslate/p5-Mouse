@@ -184,3 +184,17 @@ sub _generate_BUILDALL {
 
 1;
 __END__
+
+=head1 NAME
+
+Mouse::Meta::Method::Constructor - A Mouse method generator for constructors
+
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
+=head1 SEE ALSO
+
+L<Moose::Meta::Method::Constructor>
+
+=cut

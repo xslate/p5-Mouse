@@ -462,6 +462,10 @@ __END__
 
 Mouse::Meta::Attribute - The Mouse attribute metaclass
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 METHODS
 
 =head2 C<< new(%options) -> Mouse::Meta::Attribute >>

@@ -314,6 +314,10 @@ __END__
 
 Mouse::Meta::Role - The Mouse Role metaclass
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 SEE ALSO
 
 L<Moose::Meta::Role>

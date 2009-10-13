@@ -187,3 +187,17 @@ sub _generate_delegation{
 
 1;
 __END__
+
+=head1 NAME
+
+Mouse::Meta::Method::Accessor - A Mouse method generator for accessors
+
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
+=head1 SEE ALSO
+
+L<Moose::Meta::Method::Accessor>
+
+=cut

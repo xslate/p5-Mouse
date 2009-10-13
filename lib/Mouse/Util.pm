@@ -352,6 +352,10 @@ __END__
 
 Mouse::Util - Features, with or without their dependencies
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 IMPLEMENTATIONS FOR
 
 =head2 Moose::Util

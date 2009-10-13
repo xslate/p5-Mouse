@@ -87,6 +87,10 @@ __END__
 
 Mouse::Object - The base object for Mouse classes
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 METHODS
 
 =head2 C<< new (Arguments) -> Object >>

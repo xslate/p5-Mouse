@@ -138,6 +138,10 @@ __END__
 
 Mouse::Role - The Mouse Role
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 SYNOPSIS
 
     package MyRole;

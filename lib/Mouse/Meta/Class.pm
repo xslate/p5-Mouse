@@ -472,6 +472,10 @@ __END__
 
 Mouse::Meta::Class - The Mouse class metaclass
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 METHODS
 
 =head2 C<< initialize(ClassName) -> Mouse::Meta::Class >>

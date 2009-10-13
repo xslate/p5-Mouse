@@ -17,7 +17,12 @@ __END__
 
 Mouse::Spec - To what extent Mouse is compatible with Moose
 
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
 =head1 DESCRIPTION
+
 
 =head2 Notes about Moose::Cookbook
 

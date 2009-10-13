@@ -47,3 +47,17 @@ sub _generate_destructor{
 
 1;
 __END__
+
+=head1 NAME
+
+Mouse::Meta::Method::Accessor - A Mouse method generator for destructors
+
+=head1 VERSION
+
+This document describes Mouse version 0.37_06
+
+=head1 SEE ALSO
+
+L<Moose::Meta::Method::Destructor>
+
+=cut
