@@ -120,7 +120,7 @@ Mouse::Meta::Role::Composite - An object to represent the set of roles
 
 =head1 VERSION
 
-This document describes Mouse version 0.38
+This document describes Mouse version 0.39
 
 =head1 SEE ALSO
 
