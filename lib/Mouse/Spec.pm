@@ -31,12 +31,21 @@ This document describes Mouse version 0.37_06
 
 =head3 Meta object protocols
 
-Currently any MOP has no attributes, so
-C<< $metaclass->meta->make_immutable() >> will not work as you expect.
+Any MOP has no attributes, so
+C<< $metaclass->meta->make_immutable() >> will not yet work as you expect.
 
 =head3 C<Mouse::Meta::Instance>
 
-Meta instance mechanism will not be implemented.
+Meta instance mechanism is not implemented.
+
+=head3 Role exclusion
+
+Role exclusion, C<exclude()>, is not implemented.
+
+=head3 C<-traits> and C<-metaclass> in Mouse::Exporter
+
+C<< use Mouse -traits => ... >> and C<< use Mouse -metaclass => ... >> are not
+yet implemented.
 
 =head2 Notes about Moose::Cookbook
 
