@@ -1,7 +1,9 @@
 Revision history for Mouse
 
 0.38
-    SUMMARY from 0.37-0.38
+    SUMMARY from 0.37 to 0.38
+
+    * Add documents about compatiblity and incompatibility to Mouse::Spec
 
     * Refactor type constraints and type coercions
         - Now ArrayRef[Foo | Bar] is parsed correctly
