@@ -2,7 +2,7 @@ package Mouse::Spec;
 use strict;
 use warnings;
 
-our $VERSION = '0.37_06';
+our $VERSION = '0.38';
 
 our $MouseVersion = $VERSION;
 our $MooseVersion = '0.90';
@@ -19,7 +19,7 @@ Mouse::Spec - To what extent Mouse is compatible with Moose
 
 =head1 VERSION
 
-This document describes Mouse version 0.37_06
+This document describes Mouse version 0.38
 
 =head1 SYNOPSIS
 
