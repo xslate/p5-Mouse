@@ -364,7 +364,16 @@ sub _parse_type{
         }
     }
     if($i - $start){
-        push @list, _find_or_create_regular_type(substr $spec, $start, $i - $start);
+        my $type = _find_or_create_regular_type( substr $spec, $start, $i - $start );
+
+        if(defined $type){
+            push @list, $type;
+        }
+        elsif($start != 0) {
+            # RT #50421
+            # create a new class type
+            push @list, class_type( substr $spec, $start, $i - $start );
+        }
     }
 
     if(@list == 0){
