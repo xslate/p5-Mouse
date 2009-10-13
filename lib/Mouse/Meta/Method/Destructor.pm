@@ -13,6 +13,7 @@ sub _generate_destructor{
     my $demolishall = '';
     for my $class ($metaclass->linearized_isa) {
         no strict 'refs';
+        no warnings 'once';
         if (*{$class . '::DEMOLISH'}{CODE}) {
             $demolishall .= "${class}::DEMOLISH(\$self);\n";
         }
