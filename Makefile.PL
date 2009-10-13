@@ -39,6 +39,8 @@ if ($Module::Install::AUTHOR) {
     }
 }
 
+clean_files 'lib/Mouse/Tiny.pm';
+
 WriteAll check_nmake => 0;
 
 sub create_moose_compatibility_test {
