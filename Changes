@@ -1,6 +1,10 @@
 Revision history for Mouse
 
-0.38
+0.39 Tue Oct 13 16:42:31 2009
+    * Fix RT #50421 (Thanks Michael G Schwern)
+    * Fix RT #50422 (Thanks Michael G Schwern)
+
+0.38 Tue Oct 13 15:40:39 2009
     * No code changes from 0.37_06
 
     * SUMMARY from 0.37 to 0.38
