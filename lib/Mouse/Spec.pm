@@ -23,6 +23,20 @@ This document describes Mouse version 0.37_06
 
 =head1 DESCRIPTION
 
+(TODO)
+
+=head2 Compatibility with Moose
+
+=head2 Incompatibility with Moose
+
+=head3 Meta object protocols
+
+Currently any MOP has no attributes, so
+C<< $metaclass->meta->make_immutable() >> will not work as you expect.
+
+=head3 C<Mouse::Meta::Instance>
+
+Meta instance mechanism will not be implemented.
 
 =head2 Notes about Moose::Cookbook
 
