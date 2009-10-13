@@ -5,16 +5,17 @@ Revision history for Mouse
 
     * Refactor type constraints and type coercions
         - Now ArrayRef[Foo | Bar] is parsed correctly
+        - Type coercions are stored in type constraint objects
 
     * Add Mouse::Exporter for import/unimport methods
-
-    * Add Mouse::Meta::Role::Composite for role summation
 
     * Make roles applicable to instances
 
     * Implement inner/augment keywords
 
-    * Fix various bugs found by porting a lot of Moose's tests
+    * Port a lot of Moose's tests
+
+    * Fix a lot of bugs
 
 
 0.37_06 Mon Oct 12 16:34:18 2009
