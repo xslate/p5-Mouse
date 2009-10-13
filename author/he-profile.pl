@@ -3,21 +3,25 @@
 
 use strict;
 
-my $script = 'bench/foo.pl';
+my $script = 'author/use-he.pl';
 
 my $branch = do{
-	open my $in, '.git/HEAD' or die "Cannot open .git/HEAD: $!";
-	my $s = scalar <$in>;
-	chomp $s;
-	$s =~ s{^ref: \s+ refs/heads/}{}xms;
-	$s =~ s{/}{_}xmsg;
-	$s;
+    if(open my $in, '.git/HEAD'){
+        my $s = scalar <$in>;
+        chomp $s;
+        $s =~ s{^ref: \s+ refs/heads/}{}xms;
+        $s =~ s{/}{_}xmsg;
+        $s;
+    }
+    else{
+        require 'lib/Mouse/Spec.pm';
+        Mouse::Spec->VERSION;
+    }
 };
 
 print "Profiling $branch ...\n";
 
-my @cmd = ($^X, '-Iblib/lib', '-Iblib/arch', '-d:NYTProf', '-e',
-    'require HTTP::Engine; require HTTP::Engine::Interface::CGI');
+my @cmd = ($^X, '-Iblib/lib', '-Iblib/arch', '-d:NYTProf', $script);
 
 print "> @cmd\n";
 system(@cmd) == 0 or die "Cannot profile";
