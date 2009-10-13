@@ -32,7 +32,7 @@ This document describes Mouse version 0.37_06
 =head3 Meta object protocols
 
 Any MOP has no attributes, so
-C<< $metaclass->meta->make_immutable() >> will not yet work as you expect.
+C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
 
 =head3 C<Mouse::Meta::Instance>
 
