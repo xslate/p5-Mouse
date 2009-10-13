@@ -21,6 +21,13 @@ Mouse::Spec - To what extent Mouse is compatible with Moose
 
 This document describes Mouse version 0.37_06
 
+=head1 SYNOPSIS
+
+    use Mouse::Spec;
+
+    printf "Mouse/%s is compatible with Moose/%s\n",
+        Mouse::Spec->MouseVersion, Mouse::Spec->MooseVersion;
+
 =head1 DESCRIPTION
 
 (TODO)
