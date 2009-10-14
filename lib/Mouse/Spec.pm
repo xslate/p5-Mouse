@@ -41,7 +41,7 @@ This document describes Mouse version 0.39
 Any MOP has no attributes, so
 C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
 
-=head3 C<Mouse::Meta::Instance>
+=head3 Mouse::Meta::Instance
 
 Meta instance mechanism is not implemented.
 
@@ -49,7 +49,7 @@ Meta instance mechanism is not implemented.
 
 Role exclusion, C<exclude()>, is not implemented.
 
-=head3 C<-traits> and C<-metaclass> in Mouse::Exporter
+=head3 -traits and -metaclass in Mouse::Exporter
 
 C<< use Mouse -traits => ... >> and C<< use Mouse -metaclass => ... >> are not
 yet implemented.
@@ -129,6 +129,12 @@ L<Moose::Cookbook::Extending::Recipe3> - Providing an alternate base object clas
 =head1 SEE ALSO
 
 L<Mouse>
+
+L<Moose>
+
+L<Moose::Manual>
+
+L<Moose::Cookbook>
 
 =cut
 
