@@ -4,7 +4,7 @@ use Mouse::Util qw(does dump); # enables strict and warnings
 sub new {
     my $class = shift;
 
-    $class->throw_error('Cannot call new() on an instance') if ref $class;
+    $class->meta->throw_error('Cannot call new() on an instance') if ref $class;
 
     my $args = $class->BUILDARGS(@_);
 
