@@ -323,7 +323,7 @@ Mouse::Meta::Role - The Mouse Role metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 SEE ALSO
 
