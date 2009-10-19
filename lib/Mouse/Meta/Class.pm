@@ -44,6 +44,13 @@ sub is_anon_class{
 
 sub roles { $_[0]->{roles} }
 
+sub calculate_all_roles {
+    my $self = shift;
+    my %seen;
+    return grep { !$seen{ $_->name }++ }
+           map  { $_->calculate_all_roles } @{ $self->roles };
+}
+
 sub superclasses {
     my $self = shift;
 
