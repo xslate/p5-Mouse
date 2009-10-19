@@ -14,8 +14,6 @@ Mouse::Exporter->setup_import_methods(
         type subtype coerce class_type role_type enum
         find_type_constraint
     )],
-
-    _export_to_main => 1,
 );
 
 my %TYPE;

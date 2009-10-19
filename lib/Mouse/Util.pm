@@ -34,7 +34,6 @@ Mouse::Exporter->setup_import_methods(
         # The ':meta' group is 'use metaclass' for Mouse
         meta    => [qw(does meta dump _MOUSE_VERBOSE)],
     },
-    _export_to_main => 1,
 );
 
 # aliases as public APIs

@@ -161,11 +161,6 @@ sub do_import {
     $^H              |= _strict_bits;         # strict->import;
     ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
 
-    if($into eq 'main' && !$spec->{_export_to_main}){
-        warn qq{$package does not export its sugar to the 'main' package.\n};
-        return;
-    }
-
     if($spec->{INIT_META}){
         foreach my $init_meta(@{$spec->{INIT_META}}){
             $into->$init_meta(for_class => $into);
