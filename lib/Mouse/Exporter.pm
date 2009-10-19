@@ -143,10 +143,17 @@ sub do_import {
     my $into = _get_caller_package(ref($args[0]) ? shift @args : undef);
 
     my @exports;
+    my @traits;
 
-    foreach my $arg(@args){
+    while(@args){
+        my $arg = shift @args;
         if($arg =~ s/^-//){
-            Mouse::Util::not_supported("-$arg");
+            if($arg eq 'traits'){
+                push @traits, @{shift(@args)};
+            }
+            else {
+                Mouse::Util::not_supported("-$arg");
+            }
         }
         elsif($arg =~ s/^://){
             my $group = $spec->{groups}{$arg}
@@ -167,11 +174,26 @@ sub do_import {
     }
 
     if($spec->{INIT_META}){
+        my $meta;
         foreach my $init_meta(@{$spec->{INIT_META}}){
-            $into->$init_meta(for_class => $into);
+            $meta = $into->$init_meta(for_class => $into);
         }
 
-        # _apply_meta_traits($into); # TODO
+        if(@traits){
+            my $type = (split /::/, ref $meta)[-1]; # e.g. "Class" for "My::Meta::Class"
+            @traits =
+                map{ ref($_) ? $_ : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1) }
+                @traits;
+
+            print "[@traits]\n";
+
+            not_supported('-traits');
+            require Mouse::Util::MetaRole;
+            Mouse::Util::MetaRole::apply_metaclass_roles(
+                for_class       => $into,
+                metaclass_roles => \@traits,
+            );
+        }
     }
 
     if(@exports){
