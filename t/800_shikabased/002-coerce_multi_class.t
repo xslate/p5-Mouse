@@ -18,7 +18,7 @@ use Test::More tests => 13;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
-    type 'Headers' => where { defined $_ && eval { $_->isa('Response::Headers') } };
+    subtype 'Headers' => as 'Object', where { $_->isa('Response::Headers') };
     coerce 'Headers' =>
         from 'HashRef' => via {
             Response::Headers->new(%{ $_ });

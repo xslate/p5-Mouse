@@ -13,7 +13,7 @@ use Test::More tests => 6;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
-    subtype 'HeadersType' => as 'Object' => where { defined $_ && eval { $_->isa('Headers') } };
+    subtype 'HeadersType' => as 'Object' => where { $_->isa('Headers') };
     coerce 'HeadersType' =>
         from 'ScalarRef' => via {
             Headers->new();
