@@ -214,21 +214,17 @@ sub interpolate_class{
     my @traits;
     if(my $traits_ref = delete $args->{traits}){
 
-        local $@;
-        eval{
-            for (my $i = 0; $i < @{$traits_ref}; $i++) {
-                my $trait = Mouse::Util::resolve_metaclass_alias(Attribute => $traits_ref->[$i], trait => 1);
+        for (my $i = 0; $i < @{$traits_ref}; $i++) {
+            my $trait = Mouse::Util::resolve_metaclass_alias(Attribute => $traits_ref->[$i], trait => 1);
 
-                next if $class->does($trait);
+            next if $class->does($trait);
 
-                push @traits, $trait;
+            push @traits, $trait;
 
-                # are there options?
-                push @traits, $traits_ref->[++$i]
-                    if ref($traits_ref->[$i+1]);
-            }
-        };
-        warn "Fatal error in traits: $@" if _MOUSE_VERBOSE;
+            # are there options?
+            push @traits, $traits_ref->[++$i]
+                if ref($traits_ref->[$i+1]);
+        }
 
         if (@traits) {
             $class = Mouse::Meta::Class->create_anon_class(
