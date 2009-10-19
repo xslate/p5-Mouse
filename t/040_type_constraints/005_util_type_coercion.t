@@ -6,6 +6,9 @@ use warnings;
 use Test::More tests => 26;
 use Test::Exception;
 
+use lib 't/lib';
+use Test::Mouse;
+
 BEGIN {
 	use_ok('Mouse::Util::TypeConstraints');
 }
@@ -48,11 +51,12 @@ lives_ok {
             => via { HTTPHeader->new(hash => $_[0]) };
 } 'coercion of anonymous subtype succeeds';
 
+=pod
+
 foreach my $coercion (
     find_type_constraint('Header')->coercion,
     $anon_type->coercion
     ) {
-
     isa_ok($coercion, 'Mouse::Meta::TypeCoercion');
 
     {
@@ -88,6 +92,8 @@ foreach my $coercion (
         is($coerced, "Foo", '... got back what we put in');
     }
 }
+
+=cut
 
 subtype 'StrWithTrailingX'
     => as 'Str'
