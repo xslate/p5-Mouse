@@ -32,7 +32,7 @@ coerce 'C',
         is => 'ro',
         isa => 'C',
         coerce => 1,
-        requried => 1,
+        required => 1,
     );
 }
 
