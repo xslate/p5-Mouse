@@ -51,3 +51,5 @@ lib/Mouse/Tiny\.pm$
 
 # Mouse distributions
 Mouse-
+
+ppport\.h
