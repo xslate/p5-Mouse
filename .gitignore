@@ -17,3 +17,9 @@ cover_db/*
 nytprof*
 *.out
 author/externals/
+ppport.h
+*.bs
+*.o
+*.obj
+*.c
+
