@@ -1,9 +1,31 @@
 package Mouse::Util;
 use Mouse::Exporter; # enables strict and warnings
 
+BEGIN{
+    # Because Mouse::Util is loaded first in all the Mouse sub-modules,
+    # XS loader is placed here, not in Mouse.pm.
+
+    our $VERSION = '0.40';
+
+    my $need_pp = !!$ENV{MOUSE_PUREPERL};
+
+    if(!$need_pp && !exists $INC{'Mouse/PurePerl.pm'}){
+        local $@;
+        $need_pp = !eval{
+            require XSLoader;
+            XSLoader::load('Mouse', $VERSION);
+        };
+        warn $@ if $@; # for DEBUGGING
+    }
+
+    if($need_pp){
+        require 'Mouse/PurePerl.pm'; # we don't want to create its namespace
+    }
+}
+
+
 use Carp qw(confess);
 use Scalar::Util qw(blessed);
-use B ();
 
 use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
 
@@ -107,32 +129,6 @@ BEGIN {
     *get_linear_isa = $impl;
 }
 
-{ # taken from Sub::Identify
-    sub get_code_info($) {
-        my ($coderef) = @_;
-        ref($coderef) or return;
-
-        my $cv = B::svref_2object($coderef);
-        $cv->isa('B::CV') or return;
-
-        my $gv = $cv->GV;
-        $gv->isa('B::GV') or return;
-
-        return ($gv->STASH->NAME, $gv->NAME);
-    }
-
-    sub get_code_package{
-        my($coderef) = @_;
-
-        my $cv = B::svref_2object($coderef);
-        $cv->isa('B::CV') or return '';
-
-        my $gv = $cv->GV;
-        $gv->isa('B::GV') or return '';
-
-        return $gv->STASH->NAME;
-    }
-}
 
 # taken from Mouse::Util (0.90)
 {
@@ -163,6 +159,8 @@ BEGIN {
 
 # Utilities from Class::MOP
 
+sub get_code_info;
+sub get_code_package;
 
 # taken from Class/MOP.pm
 sub is_valid_class_name {
@@ -234,37 +232,7 @@ sub load_class {
     return 1;
 }
 
-
-sub is_class_loaded {
-    my $class = shift;
-
-    return 0 if ref($class) || !defined($class) || !length($class);
-
-    # walk the symbol table tree to avoid autovififying
-    # \*{${main::}{"Foo::"}} == \*main::Foo::
-
-    my $pack = \%::;
-    foreach my $part (split('::', $class)) {
-        my $entry = \$pack->{$part . '::'};
-        return 0 if ref($entry) ne 'GLOB';
-        $pack = *{$entry}{HASH} or return 0;
-    }
-
-    # check for $VERSION or @ISA
-    return 1 if exists $pack->{VERSION}
-             && defined *{$pack->{VERSION}}{SCALAR} && defined ${ $pack->{VERSION} };
-    return 1 if exists $pack->{ISA}
-             && defined *{$pack->{ISA}}{ARRAY} && @{ $pack->{ISA} } != 0;
-
-    # check for any method
-    foreach my $name( keys %{$pack} ) {
-        my $entry = \$pack->{$name};
-        return 1 if ref($entry) ne 'GLOB' || defined *{$entry}{CODE};
-    }
-
-    # fail
-    return 0;
-}
+sub is_class_loaded;
 
 
 sub apply_all_roles {
