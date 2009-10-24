@@ -22,6 +22,31 @@ include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wr
 
 recommends 'MRO::Compat' if $] < 5.010;
 
+my $use_xs;
+
+for (@ARGV) {
+    /^--pp$/ and $use_xs = 0;
+    /^--xs$/ and $use_xs = 1;
+}
+
+if(!defined $use_xs){
+    configure_requires 'ExtUtils::CBuilder';
+    require ExtUtils::CBuilder;
+    $use_xs = ExtUtils::CBuilder->new(quiet => 1)->have_compiler();
+}
+
+if($use_xs){
+    require Module::Install::XSUtil;
+    use_ppport(3.19);
+    cc_warnings();
+    cc_src_paths('xs-src');
+
+    print "Mouse configured in XS (--xs)\n";
+}
+else{
+    print "Mouse configured in Pure Perl (--pp)\n";
+}
+
 if ($Module::Install::AUTHOR) {
     local @INC = ('lib', @INC);
     require 'lib/Mouse/Spec.pm';
