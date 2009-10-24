@@ -44,6 +44,7 @@ my $mouse_tiny = '';
 for my $file (uniq
         'lib/Mouse/Exporter.pm',
         'lib/Mouse/Util.pm',
+        'lib/Mouse/PurePerl.pm',
         'lib/Mouse/Meta/TypeConstraint.pm',
         'lib/Mouse/Util/TypeConstraints.pm',
             sort @files) {
@@ -70,6 +71,7 @@ EOF
 print { $handle } << 'EOF';
 # if regular Mouse is loaded, bail out
 unless ($INC{'Mouse.pm'}) {
+    # tell Perl we already have all of the Mouse files loaded:
 EOF
 
 for my $file (@files) {
@@ -79,8 +81,6 @@ for my $file (@files) {
 
 print { $handle } << 'EOF';
 eval sprintf("#line %d %s\n", __LINE__, __FILE__) . <<'END_OF_TINY';
-
-# tell Perl we already have all of the Mouse files loaded:
 EOF
 
 print { $handle } "\n# and now their contents\n\n";
