@@ -31,11 +31,6 @@ sub new {
 
     $check = $args{constraint};
 
-    if(blessed($check)){
-        Carp::cluck("Constraint for $args{name} must be a CODE reference");
-        $check = $check->{compiled_type_constraint};
-    }
-
     if(defined($check) && ref($check) ne 'CODE'){
         confess("Constraint for $args{name} is not a CODE reference");
     }
