@@ -7,7 +7,7 @@ use Carp         qw(confess);
 use Scalar::Util qw(blessed);
 
 use Mouse::Util  qw(not_supported);
-
+use Mouse::Meta::Role;
 use Mouse ();
 
 Mouse::Exporter->setup_import_methods(

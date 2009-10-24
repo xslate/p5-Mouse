@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
-use Mouse ();
+use Mouse::Role ();
 
 my $role = Mouse::Meta::Role->create(
     'MyItem::Role::Equipment',
