@@ -14,8 +14,6 @@ Mouse::Exporter->setup_import_methods(
         type subtype coerce class_type role_type enum
         find_type_constraint
     )],
-
-    _export_to_main => 1,
 );
 
 my %TYPE;
@@ -425,7 +423,7 @@ Mouse::Util::TypeConstraints - Type constraint system for Mouse
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head2 SYNOPSIS
 

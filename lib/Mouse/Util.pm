@@ -34,7 +34,6 @@ Mouse::Exporter->setup_import_methods(
         # The ':meta' group is 'use metaclass' for Mouse
         meta    => [qw(does meta dump _MOUSE_VERBOSE)],
     },
-    _export_to_main => 1,
 );
 
 # aliases as public APIs
@@ -354,7 +353,7 @@ Mouse::Util - Features, with or without their dependencies
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 IMPLEMENTATIONS FOR
 

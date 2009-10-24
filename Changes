@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.40 Mon Oct 19 18:30:32 2009
+    * Mouse::Meta::TypeConstraint
+        - Fix a subtyping issue (Thanks miyagawa san)
+    * Mouse/Mouse::Role
+        - Now export their sugars to the "main" package
+
 0.39 Tue Oct 13 16:42:31 2009
     * Fix RT #50421 (Thanks Michael G Schwern)
     * Fix RT #50422 (Thanks Michael G Schwern)

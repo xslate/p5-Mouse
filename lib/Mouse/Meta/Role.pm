@@ -35,6 +35,13 @@ sub is_anon_role{
 
 sub get_roles { $_[0]->{roles} }
 
+sub calculate_all_roles {
+    my $self = shift;
+    my %seen;
+    return grep { !$seen{ $_->name }++ }
+           ($self, map  { $_->calculate_all_roles } @{ $self->get_roles });
+}
+
 sub get_required_method_list{
     return @{ $_[0]->{required_methods} };
 }
@@ -316,7 +323,7 @@ Mouse::Meta::Role - The Mouse Role metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 SEE ALSO
 

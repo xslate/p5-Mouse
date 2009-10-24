@@ -37,6 +37,7 @@
 
 # Moose specific tests
 xt/compatibility
+xt/external
 t/.*/failing
 
 ^TODO$

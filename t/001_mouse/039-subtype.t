@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 11;
 use Test::Exception;
 
 use Mouse::Util::TypeConstraints;
@@ -16,10 +16,16 @@ do {
         => where { length $_ }
         => message { "The string is empty!" };
 
+    subtype 'MyClass'
+        => as 'Object'
+        => where { $_->isa(__PACKAGE__) };
+
     has name => (
         is  => 'ro',
         isa => 'NonemptyStr',
     );
+
+
 };
 
 ok(My::Class->new(name => 'foo'));
@@ -35,3 +41,10 @@ ok $st->check('Foo');
 ok!$st->check(undef);
 ok!$st->check('');
 
+lives_and{
+    my $tc = find_type_constraint('MyClass');
+    ok $tc->check(My::Class->new());
+    ok!$tc->check('My::Class');
+    ok!$tc->check([]);
+    ok!$tc->check(undef);
+};

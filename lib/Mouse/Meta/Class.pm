@@ -44,6 +44,13 @@ sub is_anon_class{
 
 sub roles { $_[0]->{roles} }
 
+sub calculate_all_roles {
+    my $self = shift;
+    my %seen;
+    return grep { !$seen{ $_->name }++ }
+           map  { $_->calculate_all_roles } @{ $self->roles };
+}
+
 sub superclasses {
     my $self = shift;
 
@@ -474,7 +481,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 METHODS
 

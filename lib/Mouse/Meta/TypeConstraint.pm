@@ -101,11 +101,11 @@ sub compile_type_constraint{
     my @checks;
     for(my $parent = $self->parent; defined $parent; $parent = $parent->parent){
          if($parent->{hand_optimized_type_constraint}){
-            push @checks, $parent->{hand_optimized_type_constraint};
+            unshift @checks, $parent->{hand_optimized_type_constraint};
             last; # a hand optimized constraint must include all the parents
         }
         elsif($parent->{constraint}){
-            push @checks, $parent->{constraint};
+            unshift @checks, $parent->{constraint};
         }
     }
 
@@ -249,7 +249,7 @@ Mouse::Meta::TypeConstraint - The Mouse Type Constraint metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 DESCRIPTION
 

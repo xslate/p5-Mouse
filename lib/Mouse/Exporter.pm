@@ -168,11 +168,6 @@ sub do_import {
     $^H              |= _strict_bits;         # strict->import;
     ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
 
-    if($into eq 'main' && !$spec->{_export_to_main}){
-        warn qq{$package does not export its sugar to the 'main' package.\n};
-        return;
-    }
-
     if($spec->{INIT_META}){
         my $meta;
         foreach my $init_meta(@{$spec->{INIT_META}}){
@@ -265,7 +260,7 @@ Mouse::Exporter - make an import() and unimport() just like Mouse.pm
 
 =head1 VERSION
 
-This document describes Mouse version 0.39
+This document describes Mouse version 0.40
 
 =head1 SYNOPSIS
 

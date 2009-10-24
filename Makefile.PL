@@ -55,7 +55,7 @@ sub create_moose_compatibility_test {
     # some test does not pass... currently skip it.
     my %SKIP_TEST = (
         '016-trigger.t'    => "trigger's argument is incompatble :(",
-        '010-isa-or.t'     => "Mouse has a [BUG]",
+        '810-isa-or.t'     => "Mouse has a [BUG]",
 
         '052-undefined-type-in-union.t' => "Mouse accepts undefined type as a member of union types",
         '054-anon-leak.t'     => 'Moose has memory leaks',
