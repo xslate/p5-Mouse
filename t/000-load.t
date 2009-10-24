@@ -2,9 +2,10 @@
 package Foo;
 use strict;
 use warnings;
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 use_ok 'Mouse';
+use_ok 'Mouse::Role';
 
 no warnings 'uninitialized';
 
