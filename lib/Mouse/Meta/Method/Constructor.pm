@@ -1,6 +1,11 @@
 package Mouse::Meta::Method::Constructor;
 use Mouse::Util; # enables strict and warnings
 
+sub _inline_slot{
+    my(undef, $self_var, $attr_name) = @_;
+    return sprintf '%s->{q{%s}}', $self_var, $attr_name;
+}
+
 sub _generate_constructor {
     my ($class, $metaclass, $args) = @_;
 
@@ -42,7 +47,7 @@ sub _generate_constructor {
 }
 
 sub _generate_processattrs {
-    my ($class, $metaclass, $attrs) = @_;
+    my ($method_class, $metaclass, $attrs) = @_;
     my @res;
 
     my $has_triggers;
@@ -57,7 +62,7 @@ sub _generate_processattrs {
         my $type_constraint = $attr->type_constraint;
         my $need_coercion;
 
-        my $instance_slot  = "\$instance->{q{$key}}";
+        my $instance_slot  = $method_class->_inline_slot('$instance', $key);
         my $attr_var       = "\$attrs[$index]";
         my $constraint_var;
 

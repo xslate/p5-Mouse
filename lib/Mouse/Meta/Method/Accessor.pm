@@ -2,8 +2,13 @@ package Mouse::Meta::Method::Accessor;
 use Mouse::Util; # enables strict and warnings
 use Scalar::Util qw(blessed);
 
+sub _inline_slot{
+    my(undef, $self_var, $attr_name) = @_;
+    return sprintf '%s->{q{%s}}', $self_var, $attr_name;
+}
+
 sub _generate_accessor{
-    my (undef, $attribute, $class, $type) = @_;
+    my ($method_class, $attribute, $class, $type) = @_;
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
@@ -17,8 +22,7 @@ sub _generate_accessor{
     my $compiled_type_constraint = defined($constraint) ? $constraint->_compiled_type_constraint : undef;
 
     my $self  = '$_[0]';
-    my $key   = "q{$name}";
-    my $slot  = "$self\->{$key}";
+    my $slot  = $method_class->_inline_slot($self, $name);;
 
     $type ||= 'accessor';
 
