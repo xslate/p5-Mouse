@@ -51,7 +51,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::Method::Accessor - A Mouse method generator for destructors
+Mouse::Meta::Method::Destructor - A Mouse method generator for destructors
 
 =head1 VERSION
 
