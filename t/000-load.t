@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use Test::More tests => 2;
 
-use_ok 'Mouse';
-use_ok 'Mouse::Role';
+require_ok 'Mouse';
+require_ok 'Mouse::Role';
 
 no warnings 'uninitialized';
 
