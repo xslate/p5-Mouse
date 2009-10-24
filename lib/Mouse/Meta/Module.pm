@@ -38,8 +38,9 @@ sub get_metaclass_by_name       { $METAS{$_[0]}         }
 #sub does_metaclass_exist        { defined $METAS{$_[0]} }
 #sub remove_metaclass_by_name    { delete $METAS{$_[0]}  }
 
-
 sub name;
+
+sub namespace;
 
 # The followings are Class::MOP specific methods
 
@@ -65,12 +66,6 @@ sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
 sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
 sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
-
-sub namespace{
-    my $name = $_[0]->{package};
-    no strict 'refs';
-    return \%{ $name . '::' };
-}
 
 sub add_method {
     my($self, $name, $code) = @_;

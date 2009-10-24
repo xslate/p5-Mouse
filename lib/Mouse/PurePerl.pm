@@ -71,6 +71,12 @@ package
 
 sub name { $_[0]->{package} }
 
+sub namespace{
+    my $name = $_[0]->{package};
+    no strict 'refs';
+    return \%{ $name . '::' };
+}
+
 package
     Mouse::Meta::Class;
 

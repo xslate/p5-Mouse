@@ -40,6 +40,19 @@ BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Module, _method_map, methods);
     INSTALL_SIMPLE_READER_WITH_KEY(Module, _attribute_map, attributes);
 
+HV*
+namespace(HV* self)
+CODE:
+{
+    SV** svp = hv_fetchs(self, "package", FALSE);
+    if(!(svp && SvOK(*svp))){
+        croak("No package name");
+    }
+    RETVAL = gv_stashsv(*svp, GV_ADDMULTI);
+}
+OUTPUT:
+    RETVAL
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
 BOOT:
