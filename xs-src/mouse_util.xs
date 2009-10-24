@@ -1,5 +1,75 @@
 #include "mouse.h"
 
+#define ISA_CACHE "::LINEALIZED_ISA_CACHE::"
+
+#ifndef no_mro_get_linear_isa
+AV*
+mouse_mro_get_linear_isa(pTHX_ HV* const stash){
+	GV* const cachegv = *(GV**)hv_fetchs(stash, ISA_CACHE, TRUE);
+	AV* isa;
+	SV* gen;
+	CV* get_linear_isa;
+
+	if(!isGV(cachegv))
+		gv_init(cachegv, stash, ISA_CACHE, sizeof(ISA_CACHE)-1, TRUE);
+
+	isa = GvAVn(cachegv);
+	gen = GvSVn(cachegv);
+
+
+	if(SvIOK(gen) && SvIVX(gen) == (IV)mro_get_pkg_gen(stash)){
+		return isa; /* returns the cache if available */
+	}
+	else{
+		SvREADONLY_off(isa);
+		av_clear(isa);
+	}
+
+	get_linear_isa = get_cv("Mouse::Util::get_linear_isa", TRUE);
+
+	{
+		SV* avref;
+		dSP;
+
+		ENTER;
+		SAVETMPS;
+
+		PUSHMARK(SP);
+		mXPUSHp(HvNAME_get(stash), HvNAMELEN_get(stash));
+		PUTBACK;
+
+		call_sv((SV*)get_linear_isa, G_SCALAR);
+
+		SPAGAIN;
+		avref = POPs;
+		PUTBACK;
+
+		if(SvROK(avref) && SvTYPE(SvRV(avref)) == SVt_PVAV){
+			AV* const av  = (AV*)SvRV(avref);
+			I32 const len = AvFILLp(av) + 1;
+			I32 i;
+
+			for(i = 0; i < len; i++){
+				HV* const stash = gv_stashsv(AvARRAY(av)[i], FALSE);
+				if(stash)
+					av_push(isa, newSVpv(HvNAME(stash), 0));
+			}
+			SvREADONLY_on(isa);
+		}
+		else{
+			Perl_croak(aTHX_ "Mouse:Util::get_linear_isa() didn't return an ARRAY reference");
+		}
+
+		FREETMPS;
+		LEAVE;
+	}
+
+	sv_setiv(gen, (IV)mro_get_pkg_gen(stash));
+	return GvAV(cachegv);
+}
+#endif /* !no_mor_get_linear_isa */
+
+
 /* equivalent to "blessed($x) && $x->isa($klass)" */
 bool
 mouse_is_instance_of(pTHX_ SV* const sv, SV* const klass){

@@ -8,12 +8,32 @@
 
 #include "ppport.h"
 
+#ifndef newSVpvs_share
+#define newSVpvs_share(s) Perl_newSVpvn_share(aTHX_ s, sizeof(s)-1, 0U)
+#endif
+
+#ifndef mro_get_linear_isa
+#define no_mro_get_linear_isa
+#define mro_get_linear_isa(stash) mouse_mro_get_linear_isa(aTHX_ stash)
+AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash)
+#endif /* !mro_get_linear_isa */
+
+#ifndef mro_get_pkg_gen
+#ifdef no_mro_get_linear_isa
+#define mro_get_pkg_gen(stash) ((void)stash, PL_sub_generation)
+#else
+#define mro_get_pkg_gen(stash) (HvAUX(stash)->xhv_mro_meta ? HvAUX(stash)->xhv_mro_meta->pkg_gen : (U32)0)
+#endif /* !no_mro_get_linear_isa */
+#endif /* mro_get_package_gen */
+
 #define MOUSE_CALL_BOOT(name) STMT_START {        \
         EXTERN_C XS(CAT2(boot_, name));         \
         PUSHMARK(SP);                           \
         CALL_FPTR(CAT2(boot_, name))(aTHX_ cv); \
     } STMT_END
 
+extern SV* mouse_package;
+extern SV* mouse_namespace;
 
 #define is_class_loaded(sv) mouse_is_class_loaded(aTHX_ sv)
 bool mouse_is_class_loaded(pTHX_ SV*);

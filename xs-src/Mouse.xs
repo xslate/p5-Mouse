@@ -1,8 +1,16 @@
 #include "mouse.h"
 
+SV* mouse_package;
+SV* mouse_namespace;
+
 MODULE = Mouse  PACKAGE = Mouse::Util
 
 PROTOTYPES: DISABLE
+
+BOOT:
+    mouse_package   = newSVpvs_share("package");
+    mouse_namespace = newSVpvs_share("namespace");
+
 
 bool
 is_class_loaded(SV* sv = &PL_sv_undef)
@@ -41,17 +49,53 @@ BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Module, _attribute_map, attributes);
 
 HV*
-namespace(HV* self)
+namespace(SV* self)
 CODE:
 {
-    SV** svp = hv_fetchs(self, "package", FALSE);
-    if(!(svp && SvOK(*svp))){
+    SV* const package = mouse_instance_get_slot(self, mouse_package);
+    if(!(package && SvOK(package))){
         croak("No package name");
     }
-    RETVAL = gv_stashsv(*svp, GV_ADDMULTI);
+    RETVAL = gv_stashsv(package, GV_ADDMULTI);
 }
 OUTPUT:
     RETVAL
+
+CV*
+_get_code_ref(SV* self, SV* name)
+CODE:
+{
+    SV* const stash_ref = mcall0(self, mouse_namespace); /* $self->namespace */
+    HV* stash;
+    HE* he;
+    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)){
+        croak("namespace() didn't return a HASH reference");
+    }
+    stash = (HV*)SvRV(stash_ref);
+    he = hv_fetch_ent(stash, name, FALSE, 0U);
+    if(he){
+        GV* const gv = (GV*)hv_iterval(stash, he);
+        if(isGV(gv)){
+            RETVAL = GvCVu(gv);
+        }
+        else{ /* special constant or stub */
+            STRLEN len;
+            const char* const pv = SvPV_const(name, len);
+            gv_init(gv, stash, pv, len, GV_ADDMULTI);
+            RETVAL = GvCVu(gv);
+        }
+    }
+    else{
+        RETVAL = NULL;
+    }
+
+    if(!RETVAL){
+        XSRETURN_UNDEF;
+    }
+}
+OUTPUT:
+    RETVAL
+
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
@@ -59,12 +103,30 @@ BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
 
+void
+linearized_isa(SV* self)
+PPCODE:
+{
+    SV* const stash_ref = mcall0(self, mouse_namespace); /* $self->namespace */
+    AV* linearized_isa;
+    I32 len;
+    I32 i;
+    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)){
+        croak("namespace() didn't return a HASH reference");
+    }
+    linearized_isa = mro_get_linear_isa((HV*)SvRV(stash_ref));
+    len = AvFILLp(linearized_isa) + 1;
+    EXTEND(SP, len);
+    for(i = 0; i < len; i++){
+        PUSHs(AvARRAY(linearized_isa)[i]);
+    }
+}
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 
 BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Role, get_roles, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Role, is_anon_role, anon_serial_id);
-
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Attribute
 

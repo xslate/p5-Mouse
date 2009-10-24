@@ -171,7 +171,7 @@ sub get_all_attributes {
     return @attr;
 }
 
-sub linearized_isa { @{ get_linear_isa($_[0]->name) } }
+sub linearized_isa;
 
 sub new_object {
     my $self = shift;

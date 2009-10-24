@@ -86,6 +86,8 @@ sub is_anon_class{
 
 sub roles { $_[0]->{roles} }
 
+sub linearized_isa { @{ get_linear_isa($_[0]->{package}) } }
+
 package
     Mouse::Meta::Role;
 

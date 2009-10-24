@@ -110,11 +110,7 @@ sub has_method {
 
     return 1 if $self->{methods}{$method_name};
 
-    my $code = do{
-        no strict 'refs';
-        no warnings 'once';
-        *{ $self->{package} . '::' . $method_name }{CODE};
-    };
+    my $code = $self->_get_code_ref($method_name);
 
     return $code && $self->_code_is_mine($code);
 }
@@ -126,12 +122,7 @@ sub get_method_body{
         or $self->throw_error('You must define a method name');
 
     return $self->{methods}{$method_name} ||= do{
-        my $code = do{
-            no strict 'refs';
-            no warnings 'once';
-            *{$self->{package} . '::' . $method_name}{CODE};
-        };
-
+        my $code = $self->_get_code_ref($method_name);
         ($code && $self->_code_is_mine($code)) ? $code : undef;
     };
 }
