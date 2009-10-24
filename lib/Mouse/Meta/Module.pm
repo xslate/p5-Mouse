@@ -149,11 +149,10 @@ sub get_method{
         my $method_metaclass = $self->method_metaclass;
         load_class($method_metaclass);
 
-        my $package = $self->name;
         return $method_metaclass->wrap(
-            body                 => $package->can($method_name),
+            body                 => $self->get_method_body($method_name),
             name                 => $method_name,
-            package              => $package,
+            package              => $self->name,
             associated_metaclass => $self,
         );
     }
