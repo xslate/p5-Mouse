@@ -39,8 +39,7 @@ sub get_metaclass_by_name       { $METAS{$_[0]}         }
 #sub remove_metaclass_by_name    { delete $METAS{$_[0]}  }
 
 
-
-sub name { $_[0]->{package} }
+sub name;
 
 # The followings are Class::MOP specific methods
 

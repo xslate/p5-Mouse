@@ -108,3 +108,19 @@ mouse_call1 (pTHX_ SV *const self, SV *const method, SV* const arg1)
     return ret;
 }
 
+MAGIC*
+mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags){
+    MAGIC* mg;
+
+    assert(sv != NULL);
+    for(mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic){
+        if(mg->mg_virtual == vtbl){
+            return mg;
+        }
+    }
+
+    if(flags & MOUSEf_DIE_ON_FAIL){
+        croak("mouse_mg_find: no MAGIC found for %"SVf, sv_2mortal(newRV_inc(sv)));
+    }
+    return NULL;
+}

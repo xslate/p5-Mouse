@@ -120,9 +120,6 @@ package
 sub applied_traits{            $_[0]->{traits} } # TEST ONLY
 sub has_applied_traits{ exists $_[0]->{traits} } # TEST ONLY
 
-sub has_documentation{ exists $_[0]->{documentation} } # TEST ONLY
-sub documentation{            $_[0]->{documentation} } # TEST ONLY
-
 1;
 
 __END__

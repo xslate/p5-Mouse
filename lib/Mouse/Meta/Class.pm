@@ -38,11 +38,9 @@ sub create_anon_class{
     return $self->create(undef, @_);
 }
 
-sub is_anon_class{
-    return exists $_[0]->{anon_serial_id};
-}
+sub is_anon_class;
 
-sub roles { $_[0]->{roles} }
+sub roles;
 
 sub calculate_all_roles {
     my $self = shift;

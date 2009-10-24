@@ -156,48 +156,8 @@ sub new {
     return $self;
 }
 
-# readers
-
-sub name                 { $_[0]->{name}                   }
-sub associated_class     { $_[0]->{associated_class}       }
-
-sub accessor             { $_[0]->{accessor}               }
-sub reader               { $_[0]->{reader}                 }
-sub writer               { $_[0]->{writer}                 }
-sub predicate            { $_[0]->{predicate}              }
-sub clearer              { $_[0]->{clearer}                }
-sub handles              { $_[0]->{handles}                }
-
-sub _is_metadata         { $_[0]->{is}                     }
-sub is_required          { $_[0]->{required}               }
-sub default              { $_[0]->{default}                }
-sub is_lazy              { $_[0]->{lazy}                   }
-sub is_lazy_build        { $_[0]->{lazy_build}             }
-sub is_weak_ref          { $_[0]->{weak_ref}               }
-sub init_arg             { $_[0]->{init_arg}               }
-sub type_constraint      { $_[0]->{type_constraint}        }
-
-sub trigger              { $_[0]->{trigger}                }
-sub builder              { $_[0]->{builder}                }
-sub should_auto_deref    { $_[0]->{auto_deref}             }
-sub should_coerce        { $_[0]->{coerce}                 }
-
-# predicates
-
-sub has_accessor         { exists $_[0]->{accessor}        }
-sub has_reader           { exists $_[0]->{reader}          }
-sub has_writer           { exists $_[0]->{writer}          }
-sub has_predicate        { exists $_[0]->{predicate}       }
-sub has_clearer          { exists $_[0]->{clearer}         }
-sub has_handles          { exists $_[0]->{handles}         }
-
-sub has_default          { exists $_[0]->{default}         }
-sub has_type_constraint  { exists $_[0]->{type_constraint} }
-sub has_trigger          { exists $_[0]->{trigger}         }
-sub has_builder          { exists $_[0]->{builder}         }
-
-sub has_read_method      { exists $_[0]->{reader} || exists $_[0]->{accessor} }
-sub has_write_method     { exists $_[0]->{writer} || exists $_[0]->{accessor} }
+sub has_read_method      { $_[0]->has_reader || $_[0]->has_accessor }
+sub has_write_method     { $_[0]->has_writer || $_[0]->has_accessor }
 
 sub _create_args { # DEPRECATED
     $_[0]->{_create_args} = $_[1] if @_ > 1;
@@ -337,10 +297,10 @@ sub get_parent_args { # DEPRECATED
 
 
 sub get_read_method {
-    $_[0]->{reader} || $_[0]->{accessor}
+    $_[0]->reader || $_[0]->accessor
 }
 sub get_write_method {
-    $_[0]->{writer} || $_[0]->{accessor}
+    $_[0]->writer || $_[0]->accessor
 }
 
 sub get_read_method_ref{

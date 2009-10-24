@@ -86,13 +86,6 @@ sub create_child_type{
    );
 }
 
-sub name    { $_[0]->{name}    }
-sub parent  { $_[0]->{parent}  }
-sub message { $_[0]->{message} }
-
-sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
-
-sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
 
 sub compile_type_constraint{
     my($self) = @_;
