@@ -2,7 +2,7 @@ package Mouse::Meta::Method;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
-    '&{}' => 'body',
+    '&{}' => sub{ $_[0]->body },
     fallback => 1,
 ;
 
