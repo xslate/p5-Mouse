@@ -69,6 +69,49 @@ mouse_mro_get_linear_isa(pTHX_ HV* const stash){
 }
 #endif /* !no_mor_get_linear_isa */
 
+#ifdef DEBUGGING
+SV**
+mouse_av_at_safe(pTHX_ AV* const av, I32 const ix){
+    assert(av);
+    assert(SvTYPE(av) == SVt_PVAV);
+    assert(AvMAX(av) >= ix);
+    return &AvARRAY(av)[ix];
+}
+#endif
+
+void
+mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...){
+    dTHX;
+    va_list args;
+    SV* message;
+
+    PERL_UNUSED_ARG(data); /* for moose-compat */
+
+    assert(metaobject);
+    assert(fmt);
+
+    va_start(args, fmt);
+    message = vnewSVpvf(fmt, &args);
+    va_end(args);
+
+    {
+        dSP;
+        PUSHMARK(SP);
+        EXTEND(SP, 4);
+
+        PUSHs(metaobject);
+        mPUSHs(message);
+
+        mPUSHs(newSVpvs("depth"));
+        mPUSHi(-1);
+
+        PUTBACK;
+
+        call_method("throw_error", G_VOID);
+        croak("throw_error() did not throw the error (%"SVf")", message);
+    }
+}
+
 
 /* equivalent to "blessed($x) && $x->isa($klass)" */
 bool

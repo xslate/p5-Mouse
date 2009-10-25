@@ -186,6 +186,8 @@ sub has_builder          { exists $_[0]->{builder}         }
 
 sub has_documentation    { exists $_[0]->{documentation}   }
 
+sub accessor_metaclass(){ 'Mouse::Meta::Method::Accessor' }
+
 package
     Mouse::Meta::TypeConstraint;
 
@@ -195,10 +197,10 @@ sub message { $_[0]->{message} }
 
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 
-sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
+sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }
 
-package
-    Mouse::Meta::Method::Accessor;
+
+sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
 
 1;
 __END__

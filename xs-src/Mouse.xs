@@ -204,6 +204,9 @@ BOOT:
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_builder, builder);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_documentation, documentation);
 
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Attribute", TRUE), "accessor_metaclass",
+        newSVpvs("Mouse::Meta::Method::Accessor::XS"));
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::TypeConstraint
 
 BOOT:
@@ -215,3 +218,64 @@ BOOT:
     INSTALL_SIMPLE_READER(TypeConstraint, _compiled_type_coercion); /* Mouse specific */
 
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, has_coercion, _compiled_type_coercion);
+
+
+MODULE = Mouse  PACKAGE = Mouse::Meta::Method::Accessor::XS
+
+BOOT:
+{
+    AV* const isa = get_av("Mouse::Meta::Method::Accessor::XS::ISA", TRUE);
+    av_push(isa, newSVpvs("Mouse::Meta::Method::Accessor"));
+}
+
+CV*
+_generate_accessor(klass, SV* attr, metaclass)
+CODE:
+{
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_accessor);
+}
+OUTPUT:
+    RETVAL
+
+CV*
+_generate_reader(klass, SV* attr, metaclass)
+CODE:
+{
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_reader);
+}
+OUTPUT:
+    RETVAL
+
+CV*
+_generate_writer(klass, SV* attr, metaclass)
+CODE:
+{
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_writer);
+}
+OUTPUT:
+    RETVAL
+
+CV*
+_generate_clearer(klass, SV* attr, metaclass)
+CODE:
+{
+    SV* const slot = mcall0s(attr, "name");
+    STRLEN len;
+    const char* const pv = SvPV_const(slot, len);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, mouse_xs_simple_clearer);
+}
+OUTPUT:
+    RETVAL
+
+CV*
+_generate_predicate(klass, SV* attr, metaclass)
+CODE:
+{
+    SV* const slot = mcall0s(attr, "name");
+    STRLEN len;
+    const char* const pv = SvPV_const(slot, len);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, mouse_xs_simple_predicate);
+}
+OUTPUT:
+    RETVAL
+

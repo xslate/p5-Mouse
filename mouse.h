@@ -35,6 +35,14 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash)
 extern SV* mouse_package;
 extern SV* mouse_namespace;
 
+void
+mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)
+#ifdef __attribute__format__
+    __attribute__format__(__printf__, 3, 4);
+#else
+    ;
+#endif
+
 #define is_class_loaded(sv) mouse_is_class_loaded(aTHX_ sv)
 bool mouse_is_class_loaded(pTHX_ SV*);
 
@@ -54,7 +62,25 @@ SV* mouse_call1(pTHX_ SV *const self, SV *const method, SV* const arg1);
 #define MOUSEf_DIE_ON_FAIL 0x01
 MAGIC* mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags);
 
-#define dMOUSE_self      SV* const self = mouse_accessor_get_self(aTHX_ ax, items, cv)
+/* MOUSE_av_at(av, ix) is the safer version of AvARRAY(av)[ix] if perl is compiled with -DDEBUGGING */
+#ifdef DEBUGGING
+#define MOUSE_av_at(av, ix)  *mouse_av_at_safe(aTHX_ (av) , (ix))
+SV** mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
+#else
+#define MOUSE_av_at(av, ix)  AvARRAY(av)[ix]
+#endif
+
+#define dMOUSE_self  SV* const self = mouse_accessor_get_self(aTHX_ ax, items, cv)
+SV* mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv);
+
+#define MOUSE_mg_obj(mg)     ((mg)->mg_obj)
+#define MOUSE_mg_ptr(mg)     ((mg)->mg_ptr)
+#define MOUSE_mg_flags(mg)   ((mg)->mg_private)
+#define MOUSE_mg_virtual(mg) ((mg)->mg_virtual)
+
+#define MOUSE_mg_slot(mg)   MOUSE_mg_obj(mg)
+#define MOUSE_mg_xa(mg)    ((AV*)MOUSE_mg_ptr(mg))
+
 
 /* mouse_instance.xs stuff */
 SV*  mouse_instance_create     (pTHX_ HV* const stash);
@@ -80,7 +106,14 @@ CV* mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* c
 
 XS(mouse_xs_simple_reader);
 XS(mouse_xs_simple_writer);
+XS(mouse_xs_simple_clearer);
 XS(mouse_xs_simple_predicate);
+
+CV* mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl);
+
+XS(mouse_xs_accessor);
+XS(mouse_xs_reader);
+XS(mouse_xs_writer);
 
 typedef enum mouse_tc{
      MOUSE_TC_ANY,

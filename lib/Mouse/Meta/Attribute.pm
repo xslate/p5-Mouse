@@ -360,19 +360,16 @@ sub _canonicalize_handles {
     }
 }
 
-
 sub associate_method{
     my ($attribute, $method) = @_;
     $attribute->{associated_methods}++;
     return;
 }
 
-sub accessor_metaclass(){ 'Mouse::Meta::Method::Accessor' }
-
 sub install_accessors{
     my($attribute) = @_;
 
-    my $metaclass      = $attribute->{associated_class};
+    my $metaclass      = $attribute->associated_class;
     my $accessor_class = $attribute->accessor_metaclass;
 
     foreach my $type(qw(accessor reader writer predicate clearer)){

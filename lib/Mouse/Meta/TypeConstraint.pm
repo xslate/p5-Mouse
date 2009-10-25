@@ -2,7 +2,7 @@ package Mouse::Meta::TypeConstraint;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
-    '""'     => sub { shift->{name} },   # stringify to tc name
+    '""'     => sub { $_[0]->name },   # stringify to tc name
     fallback => 1;
 
 use Carp qw(confess);
@@ -183,13 +183,11 @@ sub check {
 
 sub coerce {
     my $self = shift;
-    if(!$self->{_compiled_type_coercion}){
-        confess("Cannot coerce without a type coercion ($self)");
-    }
 
     return $_[0] if $self->_compiled_type_constraint->(@_);
 
-    return $self->{_compiled_type_coercion}->(@_);
+    my $coercion = $self->_compiled_type_coercion;
+    return $coercion ? $coercion->(@_) : $_[0];
 }
 
 sub get_message {

@@ -1,7 +1,7 @@
 #include "mouse.h"
 
 static MGVTBL mouse_simple_accessor_vtbl;
-
+
 /*
 static MAGIC*
 mouse_accessor_get_mg(pTHX_ CV* const xsub){
@@ -24,9 +24,9 @@ mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const
     SvREFCNT_dec(slot); /* sv_magicext() increases refcnt in mg_obj */
 
     /* NOTE:
-     * although we use MAGIC for gc, we also store slot to CvXSUBANY slot for efficiency (gfx)
+     * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
      */
-    CvXSUBANY(xsub).any_ptr = (void*)slot;
+    CvXSUBANY(xsub).any_ptr = (void*)mg;
 
     return xsub;
 }
@@ -55,11 +55,11 @@ XS(mouse_xs_simple_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = (SV*)XSANY.any_ptr;
+    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
     SV* value;
 
     if (items != 1) {
-        croak("Expected exactly one argument");
+        croak("Expected exactly one argument for a reader for '%"SVf"'", slot);
     }
 
     value = mouse_instance_get_slot(self, slot);
@@ -72,25 +72,40 @@ XS(mouse_xs_simple_writer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = (SV*)XSANY.any_ptr;
+    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
 
     if (items != 2) {
-        croak("Expected exactly two argument");
+        croak("Expected exactly two argument for a writer for '%"SVf"'", slot);
     }
 
     ST(0) = mouse_instance_set_slot(self, slot, ST(1));
     XSRETURN(1);
 }
 
+XS(mouse_xs_simple_clearer)
+{
+    dVAR; dXSARGS;
+    dMOUSE_self;
+    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* value;
+
+    if (items != 1) {
+        croak("Expected exactly one argument for a clearer for '%"SVf"'", slot);
+    }
+
+    value = mouse_instance_delete_slot(aTHX_ self, slot);
+    ST(0) = value ? value : &PL_sv_undef;
+    XSRETURN(1);
+}
 
 XS(mouse_xs_simple_predicate)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = (SV*)XSANY.any_ptr;
+    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
 
     if (items != 1) {
-        croak("Expected exactly one argument");
+        croak("Expected exactly one argument for a predicate for '%"SVf"'", slot);
     }
 
     ST(0) = boolSV( mouse_instance_has_slot(self, slot) );
