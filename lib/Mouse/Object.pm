@@ -51,11 +51,8 @@ sub BUILDALL {
     return unless $self->can('BUILD');
 
     for my $class (reverse $self->meta->linearized_isa) {
-        my $build = do{
-            no strict 'refs';
-            no warnings 'once';
-            *{ $class . '::BUILD' }{CODE};
-        } or next;
+        my $build = Mouse::Util::get_code_ref($class, 'BUILD')
+            || next;
 
         $self->$build(@_);
     }
@@ -74,11 +71,8 @@ sub DEMOLISHALL {
     # that time (at least tests suggest so ;)
 
     foreach my $class (@{ Mouse::Util::get_linear_isa(ref $self) }) {
-        my $demolish = do{
-            no strict 'refs';
-            no warnings 'once';
-            *{ $class . '::DEMOLISH'}{CODE};
-        } or next;
+        my $demolish = Mouse::Util::get_code_ref($class, 'DEMOLISH')
+            || next;
 
         $self->$demolish();
     }

@@ -1,5 +1,5 @@
 package Mouse::Meta::Method::Constructor;
-use Mouse::Util; # enables strict and warnings
+use Mouse::Util qw(get_code_ref); # enables strict and warnings
 
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
@@ -177,10 +177,7 @@ sub _generate_BUILDALL {
 
     my @code;
     for my $class ($metaclass->linearized_isa) {
-        no strict 'refs';
-        no warnings 'once';
-
-        if (*{ $class . '::BUILD' }{CODE}) {
+        if (get_code_ref($class, 'BUILD')) {
             unshift  @code, qq{${class}::BUILD(\$instance, \$args);};
         }
     }
