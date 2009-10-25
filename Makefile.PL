@@ -30,6 +30,10 @@ for (@ARGV) {
     /^--xs$/ and $use_xs = 1;
 }
 
+if($] < 5.008_001){
+    $use_xs = 0;
+}
+
 if(!defined $use_xs){
     configure_requires 'ExtUtils::CBuilder';
     require ExtUtils::CBuilder;

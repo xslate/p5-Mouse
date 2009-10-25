@@ -123,7 +123,7 @@ HV*
 namespace(SV* self)
 CODE:
 {
-    SV* const package = mouse_instance_get_slot(self, mouse_package);
+    SV* const package = mouse_instance_get_slot(aTHX_ self, mouse_package);
     if(!(package && SvOK(package))){
         croak("No package name");
     }

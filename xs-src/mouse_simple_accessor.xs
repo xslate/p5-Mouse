@@ -62,7 +62,7 @@ XS(mouse_xs_simple_reader)
         croak("Expected exactly one argument for a reader for '%"SVf"'", slot);
     }
 
-    value = mouse_instance_get_slot(self, slot);
+    value = mouse_instance_get_slot(aTHX_ self, slot);
     ST(0) = value ? value : &PL_sv_undef;
     XSRETURN(1);
 }
@@ -78,7 +78,7 @@ XS(mouse_xs_simple_writer)
         croak("Expected exactly two argument for a writer for '%"SVf"'", slot);
     }
 
-    ST(0) = mouse_instance_set_slot(self, slot, ST(1));
+    ST(0) = mouse_instance_set_slot(aTHX_ self, slot, ST(1));
     XSRETURN(1);
 }
 
@@ -108,6 +108,6 @@ XS(mouse_xs_simple_predicate)
         croak("Expected exactly one argument for a predicate for '%"SVf"'", slot);
     }
 
-    ST(0) = boolSV( mouse_instance_has_slot(self, slot) );
+    ST(0) = boolSV( mouse_instance_has_slot(aTHX_ self, slot) );
     XSRETURN(1);
 }

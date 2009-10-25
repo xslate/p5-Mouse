@@ -2,7 +2,7 @@
 
 #define ISA_CACHE "::LINEALIZED_ISA_CACHE::"
 
-#ifndef no_mro_get_linear_isa
+#ifdef no_mro_get_linear_isa
 AV*
 mouse_mro_get_linear_isa(pTHX_ HV* const stash){
 	GV* const cachegv = *(GV**)hv_fetchs(stash, ISA_CACHE, TRUE);
