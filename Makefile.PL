@@ -1,3 +1,4 @@
+BEGIN{ $INC{'Module/Install/ExtraTests.pm'} = __FILE__ } # to disable the use of ExtrTests
 use strict;
 use warnings;
 use inc::Module::Install;
@@ -47,7 +48,7 @@ else{
     print "Mouse configured in Pure Perl (--pp)\n";
 }
 
-if ($Module::Install::AUTHOR) {
+if (author_context()) {
     local @INC = ('lib', @INC);
     require 'lib/Mouse/Spec.pm';
     my $require_version = Mouse::Spec->MooseVersion;
@@ -67,4 +68,18 @@ if ($Module::Install::AUTHOR) {
 clean_files 'lib/Mouse/Tiny.pm';
 
 WriteAll check_nmake => 0;
+
+sub MY::postamble{
+    return '' unless author_context() && $use_xs;
+
+    # repeat test
+    # see also ExtUtils::MM_Any::test_via_harness()
+    my $test_via_harness =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                           .q{ "do 'author/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                           .q{ $(TEST_FILES)} . "\n";
+
+    return   qq{test_dynamic :: test_pp\n\n}
+           . qq{test_pp :: pure_all\n}
+           . qq{\t} . $test_via_harness;
+}
 
