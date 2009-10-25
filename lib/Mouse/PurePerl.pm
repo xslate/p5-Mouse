@@ -66,6 +66,47 @@ sub get_code_package{
     return $gv->STASH->NAME;
 }
 
+sub get_code_ref{
+    my($package, $name) = @_;
+    no strict 'refs';
+    no warnings 'once';
+    use warnings FATAL => 'uninitialized';
+    return *{$package . '::' . $name}{CODE};
+}
+
+package
+    Mouse::Util::TypeConstraints;
+
+sub Any        { 1 }
+sub Item       { 1 }
+sub Maybe      { 1 }
+
+sub Bool       { $_[0] ? $_[0] eq '1' : 1 }
+sub Undef      { !defined($_[0]) }
+sub Defined    {  defined($_[0])  }
+sub Value      {  defined($_[0]) && !ref($_[0]) }
+sub Num        { !ref($_[0]) && looks_like_number($_[0]) }
+sub Int        {  defined($_[0]) && !ref($_[0]) && $_[0] =~ /^-?[0-9]+$/ }
+sub Str        {  defined($_[0]) && !ref($_[0]) }
+
+sub Ref        { ref($_[0]) }
+sub ScalarRef  { ref($_[0]) eq 'SCALAR' }
+sub ArrayRef   { ref($_[0]) eq 'ARRAY'  }
+sub HashRef    { ref($_[0]) eq 'HASH'   }
+sub CodeRef    { ref($_[0]) eq 'CODE'   }
+sub RegexpRef  { ref($_[0]) eq 'Regexp' }
+sub GlobRef    { ref($_[0]) eq 'GLOB'   }
+
+sub FileHandle {
+    openhandle($_[0])  || (blessed($_[0]) && $_[0]->isa("IO::Handle"))
+}
+
+sub Object     { blessed($_[0]) && blessed($_[0]) ne 'Regexp' }
+
+sub ClassName  { Mouse::Util::is_class_loaded($_[0]) }
+sub RoleName   { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::Role') }
+
+
 package
     Mouse::Meta::Module;
 

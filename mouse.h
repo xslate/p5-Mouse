@@ -82,5 +82,55 @@ XS(mouse_xs_simple_reader);
 XS(mouse_xs_simple_writer);
 XS(mouse_xs_simple_predicate);
 
+typedef enum mouse_tc{
+     MOUSE_TC_ANY,
+     MOUSE_TC_ITEM,
+     MOUSE_TC_UNDEF,
+     MOUSE_TC_DEFINED,
+     MOUSE_TC_BOOL,
+     MOUSE_TC_VALUE,
+     MOUSE_TC_REF,
+     MOUSE_TC_STR,
+     MOUSE_TC_NUM,
+     MOUSE_TC_INT,
+     MOUSE_TC_SCALAR_REF,
+     MOUSE_TC_ARRAY_REF,
+     MOUSE_TC_HASH_REF,
+     MOUSE_TC_CODE_REF,
+     MOUSE_TC_GLOB_REF,
+     MOUSE_TC_FILEHANDLE,
+     MOUSE_TC_REGEXP_REF,
+     MOUSE_TC_OBJECT,
+     MOUSE_TC_CLASS_NAME,
+     MOUSE_TC_ROLE_NAME,
+
+     MOUSE_TC_last
+} mouse_tc;
+
+/* type constraints */
+
+int mouse_tc_check(pTHX_ mouse_tc const tc, SV* sv);
+
+int mouse_tc_Any       (pTHX_ SV* const sv);
+int mouse_tc_Bool      (pTHX_ SV* const sv);
+int mouse_tc_Undef     (pTHX_ SV* const sv);
+int mouse_tc_Defined   (pTHX_ SV* const sv);
+int mouse_tc_Value     (pTHX_ SV* const sv);
+int mouse_tc_Num       (pTHX_ SV* const sv);
+int mouse_tc_Int       (pTHX_ SV* const sv);
+int mouse_tc_Str       (pTHX_ SV* const sv);
+int mouse_tc_ClassName (pTHX_ SV* const sv);
+int mouse_tc_RoleName  (pTHX_ SV* const sv);
+int mouse_tc_Ref       (pTHX_ SV* const sv);
+int mouse_tc_ScalarRef (pTHX_ SV* const sv);
+int mouse_tc_ArrayRef  (pTHX_ SV* const sv);
+int mouse_tc_HashRef   (pTHX_ SV* const sv);
+int mouse_tc_CodeRef   (pTHX_ SV* const sv);
+int mouse_tc_RegexpRef (pTHX_ SV* const sv);
+int mouse_tc_GlobRef   (pTHX_ SV* const sv);
+int mouse_tc_FileHandle(pTHX_ SV* const sv);
+int mouse_tc_Object    (pTHX_ SV* const sv);
+
+
 #endif /* !MOUSE_H */
 

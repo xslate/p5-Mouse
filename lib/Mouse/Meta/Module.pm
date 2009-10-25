@@ -1,5 +1,5 @@
 package Mouse::Meta::Module;
-use Mouse::Util qw/:meta get_code_package load_class not_supported/; # enables strict and warnings
+use Mouse::Util qw/:meta get_code_package get_code_ref load_class not_supported/; # enables strict and warnings
 
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
@@ -110,7 +110,7 @@ sub has_method {
 
     return 1 if $self->{methods}{$method_name};
 
-    my $code = $self->_get_code_ref($method_name);
+    my $code = get_code_ref($self->{package}, $method_name);
 
     return $code && $self->_code_is_mine($code);
 }
@@ -122,7 +122,7 @@ sub get_method_body{
         or $self->throw_error('You must define a method name');
 
     return $self->{methods}{$method_name} ||= do{
-        my $code = $self->_get_code_ref($method_name);
+        my $code = get_code_ref($self->{package}, $method_name);
         ($code && $self->_code_is_mine($code)) ? $code : undef;
     };
 }

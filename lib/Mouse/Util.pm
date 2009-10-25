@@ -44,6 +44,7 @@ Mouse::Exporter->setup_import_methods(
         get_code_info
 
         get_code_package
+        get_code_ref
 
         not_supported
 

@@ -32,32 +32,28 @@ BEGIN {
         Item       => undef, # null check
         Maybe      => undef, # null check
 
-        Bool       => sub { $_[0] ? $_[0] eq '1' : 1 },
-        Undef      => sub { !defined($_[0]) },
-        Defined    => sub { defined($_[0]) },
-        Value      => sub { defined($_[0]) && !ref($_[0]) },
-        Num        => sub { !ref($_[0]) && looks_like_number($_[0]) },
-        Int        => sub { defined($_[0]) && !ref($_[0]) && $_[0] =~ /^-?[0-9]+$/ },
-        Str        => sub { defined($_[0]) && !ref($_[0]) },
-        Ref        => sub { ref($_[0]) },
+        Bool       => \&Bool,
+        Undef      => \&Undef,
+        Defined    => \&Defined,
+        Value      => \&Value,
+        Num        => \&Num,
+        Int        => \&Int,
+        Str        => \&Str,
+        Ref        => \&Ref,
 
-        ScalarRef  => sub { ref($_[0]) eq 'SCALAR' },
-        ArrayRef   => sub { ref($_[0]) eq 'ARRAY'  },
-        HashRef    => sub { ref($_[0]) eq 'HASH'   },
-        CodeRef    => sub { ref($_[0]) eq 'CODE'   },
-        RegexpRef  => sub { ref($_[0]) eq 'Regexp' },
-        GlobRef    => sub { ref($_[0]) eq 'GLOB'   },
+        ScalarRef  => \&ScalarRef,
+        ArrayRef   => \&ArrayRef,
+        HashRef    => \&HashRef,
+        CodeRef    => \&CodeRef,
+        RegexpRef  => \&RegexpRef,
+        GlobRef    => \&GlobRef,
 
-        FileHandle => sub {
-            ref($_[0]) eq 'GLOB' && openhandle($_[0])
-            or
-            blessed($_[0]) && $_[0]->isa("IO::Handle")
-        },
+        FileHandle => \&FileHandle,
 
-        Object     => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
+        Object     => \&Object,
 
-        ClassName  => sub { Mouse::Util::is_class_loaded($_[0]) },
-        RoleName   => sub { (Mouse::Util::find_meta($_[0]) || return 0)->isa('Mouse::Meta::Role') },
+        ClassName  => \&ClassName,
+        RoleName   => \&RoleName,
     );
 
     while (my ($name, $code) = each %builtins) {

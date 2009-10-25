@@ -41,6 +41,77 @@ CODE:
 OUTPUT:
     RETVAL
 
+CV*
+get_code_ref(SV* package, SV* name)
+CODE:
+{
+    HV* stash;
+    HE* he;
+
+    if(!SvOK(package)){
+        croak("You must define a package name");
+    }
+    if(!SvOK(name)){
+        croak("You must define a subroutine name");
+    }
+
+    stash = gv_stashsv(package, FALSE);
+    if(!stash){
+        XSRETURN_UNDEF;
+    }
+    he = hv_fetch_ent(stash, name, FALSE, 0U);
+    if(he){
+        GV* const gv = (GV*)hv_iterval(stash, he);
+        if(!isGV(gv)){ /* special constant or stub */
+            STRLEN len;
+            const char* const pv = SvPV_const(name, len);
+            gv_init(gv, stash, pv, len, GV_ADDMULTI);
+        }
+        RETVAL = GvCVu(gv);
+    }
+    else{
+        RETVAL = NULL;
+    }
+
+    if(!RETVAL){
+        XSRETURN_UNDEF;
+    }
+}
+OUTPUT:
+    RETVAL
+
+
+MODULE = Mouse  PACKAGE = Mouse::Util::TypeConstraints
+
+void
+Item(SV* sv = &PL_sv_undef)
+ALIAS:
+    Any        = MOUSE_TC_ANY
+    Item       = MOUSE_TC_ITEM
+    Undef      = MOUSE_TC_UNDEF
+    Defined    = MOUSE_TC_DEFINED
+    Bool       = MOUSE_TC_BOOL
+    Value      = MOUSE_TC_VALUE
+    Ref        = MOUSE_TC_REF
+    Str        = MOUSE_TC_STR
+    Num        = MOUSE_TC_NUM
+    Int        = MOUSE_TC_INT
+    ScalarRef  = MOUSE_TC_SCALAR_REF
+    ArrayRef   = MOUSE_TC_ARRAY_REF
+    HashRef    = MOUSE_TC_HASH_REF
+    CodeRef    = MOUSE_TC_CODE_REF
+    GlobRef    = MOUSE_TC_GLOB_REF
+    FileHandle = MOUSE_TC_FILEHANDLE
+    RegexpRef  = MOUSE_TC_REGEXP_REF
+    Object     = MOUSE_TC_OBJECT
+    ClassName  = MOUSE_TC_CLASS_NAME
+    RoleName   = MOUSE_TC_ROLE_NAME
+CODE:
+    SvGETMAGIC(sv);
+    ST(0) = boolSV( mouse_tc_check(aTHX_ ix, sv) );
+    XSRETURN(1);
+
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Module
 
 BOOT:
@@ -60,42 +131,6 @@ CODE:
 }
 OUTPUT:
     RETVAL
-
-CV*
-_get_code_ref(SV* self, SV* name)
-CODE:
-{
-    SV* const stash_ref = mcall0(self, mouse_namespace); /* $self->namespace */
-    HV* stash;
-    HE* he;
-    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)){
-        croak("namespace() didn't return a HASH reference");
-    }
-    stash = (HV*)SvRV(stash_ref);
-    he = hv_fetch_ent(stash, name, FALSE, 0U);
-    if(he){
-        GV* const gv = (GV*)hv_iterval(stash, he);
-        if(isGV(gv)){
-            RETVAL = GvCVu(gv);
-        }
-        else{ /* special constant or stub */
-            STRLEN len;
-            const char* const pv = SvPV_const(name, len);
-            gv_init(gv, stash, pv, len, GV_ADDMULTI);
-            RETVAL = GvCVu(gv);
-        }
-    }
-    else{
-        RETVAL = NULL;
-    }
-
-    if(!RETVAL){
-        XSRETURN_UNDEF;
-    }
-}
-OUTPUT:
-    RETVAL
-
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
@@ -180,4 +215,3 @@ BOOT:
     INSTALL_SIMPLE_READER(TypeConstraint, _compiled_type_coercion); /* Mouse specific */
 
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, has_coercion, _compiled_type_coercion);
-
