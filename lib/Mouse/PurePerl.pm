@@ -168,6 +168,8 @@ sub builder              { $_[0]->{builder}                }
 sub should_auto_deref    { $_[0]->{auto_deref}             }
 sub should_coerce        { $_[0]->{coerce}                 }
 
+sub documentation        { $_[0]->{documentation}          }
+
 # predicates
 
 sub has_accessor         { exists $_[0]->{accessor}        }
@@ -181,6 +183,8 @@ sub has_default          { exists $_[0]->{default}         }
 sub has_type_constraint  { exists $_[0]->{type_constraint} }
 sub has_trigger          { exists $_[0]->{trigger}         }
 sub has_builder          { exists $_[0]->{builder}         }
+
+sub has_documentation    { exists $_[0]->{documentation}   }
 
 package
     Mouse::Meta::TypeConstraint;
