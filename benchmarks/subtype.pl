@@ -21,11 +21,11 @@ for my $klass (qw/Moose Mouse/) {
     die $@ if $@;
 }
 
-use Data::Dumper;
-$Data::Dumper::Deparse = 1;
-$Data::Dumper::Indent  = 1;
-print Mouse::Util::TypeConstraints::find_type_constraint('NaturalNumber')->dump(3);
-print Moose::Util::TypeConstraints::find_type_constraint('NaturalNumber')->dump(3);
+#use Data::Dumper;
+#$Data::Dumper::Deparse = 1;
+#$Data::Dumper::Indent  = 1;
+#print Mouse::Util::TypeConstraints::find_type_constraint('NaturalNumber')->dump(3);
+#print Moose::Util::TypeConstraints::find_type_constraint('NaturalNumber')->dump(3);
 
 print "Class::MOP: $Class::MOP::VERSION\n";
 print "Moose:      $Moose::VERSION\n";
