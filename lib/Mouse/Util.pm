@@ -15,7 +15,7 @@ BEGIN{
             require XSLoader;
             XSLoader::load('Mouse', $VERSION);
         };
-        warn $@ if $@; # for DEBUGGING
+        #warn $@ if $@;
     }
 
     if($need_pp){
