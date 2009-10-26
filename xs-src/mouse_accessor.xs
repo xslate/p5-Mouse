@@ -135,7 +135,6 @@ static SV*
 mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
     SV* const tc = MOUSE_xa_tc(xa);
     SV* tc_code;
-    int ok;
 
     if(flags & MOUSEf_ATTR_SHOULD_COERCE){
           value = mcall1s(tc, "coerce", value);
@@ -160,30 +159,7 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
         tc_code = MOUSE_xa_tc_code(xa);
     }
 
-    if(SvIOK(tc_code)){ /* built-in type constraints */
-        ok = mouse_tc_check(aTHX_ SvIVX(tc_code), value);
-    }
-    else {
-        dSP;
-
-        ENTER;
-        SAVETMPS;
-
-        PUSHMARK(SP);
-        XPUSHs(value);
-        PUTBACK;
-
-        call_sv(tc_code, G_SCALAR);
-
-        SPAGAIN;
-        ok = SvTRUEx(POPs);
-        PUTBACK;
-
-        FREETMPS;
-        LEAVE;
-    }
-
-    if(!ok){
+    if(!mouse_tc_check(aTHX_ tc_code, value)){
         mouse_throw_error(MOUSE_xa_attribute(xa), value,
             "Attribute (%"SVf") does not pass the type constraint because: %"SVf,
                 mcall0s(MOUSE_xa_attribute(xa), "name"),

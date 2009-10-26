@@ -151,7 +151,8 @@ typedef enum mouse_tc{
 
 /* type constraints */
 
-int mouse_tc_check(pTHX_ mouse_tc const tc, SV* sv);
+int mouse_tc_check(pTHX_ SV* const tc, SV* const sv);
+int mouse_builtin_tc_check(pTHX_ mouse_tc const tc, SV* const sv);
 
 int mouse_tc_Any       (pTHX_ SV* const sv);
 int mouse_tc_Bool      (pTHX_ SV* const sv);

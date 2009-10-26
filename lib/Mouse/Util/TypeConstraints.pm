@@ -155,15 +155,16 @@ sub class_type {
     if ($conf && $conf->{class}) {
         # No, you're using this wrong
         warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        _create_type 'type', $name => (
+        _create_type 'subtype', $name => (
             as   => $conf->{class},
 
             type => 'Class',
        );
     }
     else {
-        _create_type 'type', $name => (
-            optimized_as => sub { blessed($_[0]) && $_[0]->isa($name) },
+        _create_type 'subtype', $name => (
+            as           => 'Object',
+            optimized_as => _generate_class_type_for($name),
 
             type => 'Class',
         );
@@ -173,7 +174,8 @@ sub class_type {
 sub role_type {
     my($name, $conf) = @_;
     my $role = ($conf && $conf->{role}) ? $conf->{role} : $name;
-    _create_type 'type', $name => (
+    _create_type 'subtype', $name => (
+        as           => 'Object',
         optimized_as => sub { blessed($_[0]) && does_role($_[0], $role) },
 
         type => 'Role',
@@ -220,27 +222,12 @@ sub _find_or_create_regular_type{
         return;
     }
 
-    my $check;
-    my $type;
     if($meta->isa('Mouse::Meta::Role')){
-        $check = sub{
-            return blessed($_[0]) && $_[0]->does($spec);
-        };
-        $type = 'Role';
+        return role_type($spec);
     }
     else{
-        $check = sub{
-            return blessed($_[0]) && $_[0]->isa($spec);
-        };
-        $type = 'Class';
+        return class_type($spec);
     }
-
-    return $TYPE{$spec} = Mouse::Meta::TypeConstraint->new(
-        name      => $spec,
-        optimized => $check,
-
-        type      => $type,
-    );
 }
 
 $TYPE{ArrayRef}{constraint_generator} = sub {

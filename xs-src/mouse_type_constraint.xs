@@ -14,9 +14,37 @@
 #define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))
 #endif
 
+int
+mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
+    if(SvIOK(tc_code)){ /* built-in type constraints */
+        return mouse_builtin_tc_check(aTHX_ SvIVX(tc_code), sv);
+    }
+    else {
+        int ok;
+        dSP;
+
+        ENTER;
+        SAVETMPS;
+
+        PUSHMARK(SP);
+        XPUSHs(sv);
+        PUTBACK;
+
+        call_sv(tc_code, G_SCALAR);
+
+        SPAGAIN;
+        ok = SvTRUEx(POPs);
+        PUTBACK;
+
+        FREETMPS;
+        LEAVE;
+
+        return ok;
+    }
+}
 
 int
-mouse_tc_check(pTHX_ mouse_tc const tc, SV* const sv) {
+mouse_builtin_tc_check(pTHX_ mouse_tc const tc, SV* const sv) {
     switch(tc){
     case MOUSE_TC_ANY:        return mouse_tc_Any(aTHX_ sv);
     case MOUSE_TC_ITEM:       return mouse_tc_Any(aTHX_ sv);
@@ -232,4 +260,235 @@ mouse_tc_Object(pTHX_ SV* const sv) {
     assert(sv);
     return SvROK(sv) && SvOBJECT(SvRV(sv)) && !SvRXOK(sv);
 }
+
+/*
+ *  This class_type generator is taken from Scalar::Util::Instance
+ */
+
+#define MY_CXT_KEY "Mouse::Util::TypeConstraints::_guts" XS_VERSION
+typedef struct sui_cxt{
+    GV* universal_isa;
+} my_cxt_t;
+START_MY_CXT
+
+#define MG_klass_stash(mg) ((HV*)(mg)->mg_obj)
+#define MG_klass_pv(mg)    ((mg)->mg_ptr)
+#define MG_klass_len(mg)   ((mg)->mg_len)
+
+static MGVTBL mouse_util_type_constraints_vtbl;
+
+static const char*
+canonicalize_package_name(const char* name){
+
+    /* "::Foo" -> "Foo" */
+    if(name[0] == ':' && name[1] == ':'){
+        name += 2;
+    }
+
+    /* "main::main::main::Foo" -> "Foo" */
+    while(strnEQ(name, "main::", sizeof("main::")-1)){
+        name += sizeof("main::")-1;
+    }
+
+    return name;
+}
+
+static int
+lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
+    AV*  const linearized_isa = mro_get_linear_isa(instance_stash);
+    SV**       svp            = AvARRAY(linearized_isa);
+    SV** const end            = svp + AvFILLp(linearized_isa) + 1;
+
+    while(svp != end){
+        assert(SvPVX(*svp));
+        if(strEQ(klass_pv, canonicalize_package_name(SvPVX(*svp)))){
+            return TRUE;
+        }
+        svp++;
+    }
+    return FALSE;
+}
+
+static int
+instance_isa(pTHX_ SV* const instance, const MAGIC* const mg){
+    dMY_CXT;
+    HV* const instance_stash = SvSTASH(SvRV(instance));
+    GV* const instance_isa   = gv_fetchmeth_autoload(instance_stash, "isa", sizeof("isa")-1, 0);
+
+    /* the instance has no own isa method */
+    if(instance_isa == NULL || GvCV(instance_isa) == GvCV(MY_CXT.universal_isa)){
+        return MG_klass_stash(mg) == instance_stash
+            || lookup_isa(aTHX_ instance_stash, MG_klass_pv(mg));
+    }
+    /* the instance has its own isa method */
+    else {
+        int retval;
+        dSP;
+
+        ENTER;
+        SAVETMPS;
+
+        PUSHMARK(SP);
+        EXTEND(SP, 2);
+        PUSHs(instance);
+        mPUSHp(MG_klass_pv(mg), MG_klass_len(mg));
+        PUTBACK;
+
+        call_sv((SV*)instance_isa, G_SCALAR);
+
+        SPAGAIN;
+
+        retval = SvTRUEx(POPs);
+
+        PUTBACK;
+
+        FREETMPS;
+        LEAVE;
+
+        return retval;
+    }
+}
+
+XS(XS_isa_check); /* -W */
+XS(XS_isa_check){
+    dVAR;
+    dXSARGS;
+    SV* sv;
+
+    assert(XSANY.any_ptr != NULL);
+
+    if(items != 1){
+        if(items < 1){
+            croak("Not enough arguments for is-a predicate");
+        }
+        else{
+            croak("Too many arguments for is-a predicate");
+        }
+    }
+
+    sv = ST(0);
+    SvGETMAGIC(sv);
+
+    ST(0) = boolSV( SvROK(sv) && SvOBJECT(SvRV(sv)) && instance_isa(aTHX_ sv, (MAGIC*)XSANY.any_ptr) );
+    XSRETURN(1);
+}
+
+XS(XS_isa_check_for_universal); /* -W */
+XS(XS_isa_check_for_universal){
+    dVAR;
+    dXSARGS;
+    SV* sv;
+    PERL_UNUSED_VAR(cv);
+
+    if(items != 1){
+        if(items < 1){
+            croak("Not enough arguments for is-a predicate");
+        }
+        else{
+            croak("Too many arguments for is-a predicate");
+        }
+    }
+
+    sv = ST(0);
+    SvGETMAGIC(sv);
+
+    ST(0) = boolSV( SvROK(sv) && SvOBJECT(SvRV(sv)) );
+    XSRETURN(1);
+}
+
+static void
+setup_my_cxt(pTHX_ pMY_CXT){
+    MY_CXT.universal_isa = gv_fetchpvs("UNIVERSAL::isa", GV_ADD, SVt_PVCV);
+    SvREFCNT_inc_simple_void_NN(MY_CXT.universal_isa);
+}
+
+MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Util::TypeConstraints
+
+PROTOTYPES: DISABLE
+
+BOOT:
+{
+    MY_CXT_INIT;
+    setup_my_cxt(aTHX_ aMY_CXT);
+}
+
+#ifdef USE_ITHREADS
+
+void
+CLONE(...)
+CODE:
+{
+    MY_CXT_CLONE;
+    setup_my_cxt(aTHX_ aMY_CXT);
+    PERL_UNUSED_VAR(items);
+}
+
+#endif /* !USE_ITHREADS */
+
+void
+_generate_class_type_for(SV* klass, const char* predicate_name = NULL)
+PPCODE:
+{
+    STRLEN klass_len;
+    const char* klass_pv;
+    HV* stash;
+    CV* xsub;
+
+    if(!SvOK(klass)){
+        croak("You must define a class name for generate_for");
+    }
+    klass_pv = SvPV_const(klass, klass_len);
+    klass_pv = canonicalize_package_name(klass_pv);
+
+    if(strNE(klass_pv, "UNIVERSAL")){
+        xsub = newXS(predicate_name, XS_isa_check, __FILE__);
+
+        stash = gv_stashpvn(klass_pv, klass_len, GV_ADD);
+
+        CvXSUBANY(xsub).any_ptr = sv_magicext(
+            (SV*)xsub,
+            (SV*)stash, /* mg_obj */
+            PERL_MAGIC_ext,
+            &mouse_util_type_constraints_vtbl,
+            klass_pv,   /* mg_ptr */
+            klass_len   /* mg_len */
+        );
+    }
+    else{
+        xsub = newXS(predicate_name, XS_isa_check_for_universal, __FILE__);
+    }
+
+    if(predicate_name == NULL){ /* anonymous predicate */
+        XPUSHs( newRV_noinc((SV*)xsub) );
+    }
+}
+
+void
+Item(SV* sv = &PL_sv_undef)
+ALIAS:
+    Any        = MOUSE_TC_ANY
+    Item       = MOUSE_TC_ITEM
+    Undef      = MOUSE_TC_UNDEF
+    Defined    = MOUSE_TC_DEFINED
+    Bool       = MOUSE_TC_BOOL
+    Value      = MOUSE_TC_VALUE
+    Ref        = MOUSE_TC_REF
+    Str        = MOUSE_TC_STR
+    Num        = MOUSE_TC_NUM
+    Int        = MOUSE_TC_INT
+    ScalarRef  = MOUSE_TC_SCALAR_REF
+    ArrayRef   = MOUSE_TC_ARRAY_REF
+    HashRef    = MOUSE_TC_HASH_REF
+    CodeRef    = MOUSE_TC_CODE_REF
+    GlobRef    = MOUSE_TC_GLOB_REF
+    FileHandle = MOUSE_TC_FILEHANDLE
+    RegexpRef  = MOUSE_TC_REGEXP_REF
+    Object     = MOUSE_TC_OBJECT
+    ClassName  = MOUSE_TC_CLASS_NAME
+    RoleName   = MOUSE_TC_ROLE_NAME
+CODE:
+    SvGETMAGIC(sv);
+    ST(0) = boolSV( mouse_builtin_tc_check(aTHX_ ix, sv) );
+    XSRETURN(1);
+
 

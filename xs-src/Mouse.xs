@@ -10,6 +10,7 @@ PROTOTYPES: DISABLE
 BOOT:
     mouse_package   = newSVpvs_share("package");
     mouse_namespace = newSVpvs_share("namespace");
+    MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
 
 
 bool
@@ -79,37 +80,6 @@ CODE:
 }
 OUTPUT:
     RETVAL
-
-
-MODULE = Mouse  PACKAGE = Mouse::Util::TypeConstraints
-
-void
-Item(SV* sv = &PL_sv_undef)
-ALIAS:
-    Any        = MOUSE_TC_ANY
-    Item       = MOUSE_TC_ITEM
-    Undef      = MOUSE_TC_UNDEF
-    Defined    = MOUSE_TC_DEFINED
-    Bool       = MOUSE_TC_BOOL
-    Value      = MOUSE_TC_VALUE
-    Ref        = MOUSE_TC_REF
-    Str        = MOUSE_TC_STR
-    Num        = MOUSE_TC_NUM
-    Int        = MOUSE_TC_INT
-    ScalarRef  = MOUSE_TC_SCALAR_REF
-    ArrayRef   = MOUSE_TC_ARRAY_REF
-    HashRef    = MOUSE_TC_HASH_REF
-    CodeRef    = MOUSE_TC_CODE_REF
-    GlobRef    = MOUSE_TC_GLOB_REF
-    FileHandle = MOUSE_TC_FILEHANDLE
-    RegexpRef  = MOUSE_TC_REGEXP_REF
-    Object     = MOUSE_TC_OBJECT
-    ClassName  = MOUSE_TC_CLASS_NAME
-    RoleName   = MOUSE_TC_ROLE_NAME
-CODE:
-    SvGETMAGIC(sv);
-    ST(0) = boolSV( mouse_tc_check(aTHX_ ix, sv) );
-    XSRETURN(1);
 
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Module
