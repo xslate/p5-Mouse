@@ -186,10 +186,10 @@ sub apply {
 
     my $instance;
 
-    if($applicant->isa('Mouse::Meta::Class')){  # Application::ToClass
+    if(Mouse::Util::TypeConstraints::_is_a_metaclass($applicant)){  # Application::ToClass
         $args{_to} = 'class';
     }
-    elsif($applicant->isa('Mouse::Meta::Role')){ # Application::ToRole
+    elsif(Mouse::Util::TypeConstraints::_is_a_metarole($applicant)){ # Application::ToRole
         $args{_to} = 'role';
     }
     else{                                       # Appplication::ToInstance

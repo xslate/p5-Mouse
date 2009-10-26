@@ -353,7 +353,9 @@ sub _canonicalize_handles {
         my $meta = Mouse::Meta::Class->initialize("$class_or_role"); # "" for stringify
         return map  { $_ => $_ }
                grep { $_ ne 'meta' && !Mouse::Object->can($_) && $_ =~ $handles }
-                   $meta->isa('Mouse::Meta::Class') ? $meta->get_all_method_names : $meta->get_method_list;
+                   Mouse::Util::TypeConstraints::_is_a_metarole($meta)
+                        ? $meta->get_method_list
+                        : $meta->get_all_method_names;
     }
     else {
         $self->throw_error("Unable to canonicalize the 'handles' option with $handles");

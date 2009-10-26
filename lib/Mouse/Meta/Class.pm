@@ -56,7 +56,7 @@ sub superclasses {
         foreach my $super(@_){
             Mouse::Util::load_class($super);
             my $meta = Mouse::Util::get_metaclass_by_name($super);
-            if($meta && $meta->isa('Mouse::Meta::Role')){
+            if(Mouse::Util::TypeConstraints::_is_a_metarole($meta)){
                 $self->throw_error("You cannot inherit from a Mouse Role ($super)");
             }
         }

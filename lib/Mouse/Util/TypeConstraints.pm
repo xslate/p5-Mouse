@@ -74,6 +74,14 @@ BEGIN {
     sub list_all_type_constraints         { keys %TYPE }
 }
 
+# is-a predicates
+BEGIN{
+    _generate_class_type_for('Mouse::Meta::TypeConstraint' => '_is_a_type_constraint');
+    _generate_class_type_for('Mouse::Meta::Class'          => '_is_a_metaclass');
+    _generate_class_type_for('Mouse::Meta::Role'           => '_is_a_metarole');
+}
+
+
 sub _create_type{
     my $mode = shift;
 
@@ -222,7 +230,7 @@ sub _find_or_create_regular_type{
         return;
     }
 
-    if($meta->isa('Mouse::Meta::Role')){
+    if(_is_a_metarole($meta)){
         return role_type($spec);
     }
     else{
@@ -371,7 +379,7 @@ sub _parse_type{
 
 sub find_type_constraint {
     my($spec) = @_;
-    return $spec if blessed($spec) && $spec->isa('Mouse::Meta::TypeConstraint');
+    return $spec if _is_a_type_constraint($spec);
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec};
@@ -379,7 +387,7 @@ sub find_type_constraint {
 
 sub find_or_parse_type_constraint {
     my($spec) = @_;
-    return $spec if blessed($spec) && $spec->isa('Mouse::Meta::TypeConstraint');
+    return $spec if _is_a_type_constraint($spec);
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec} || do{

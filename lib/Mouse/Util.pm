@@ -252,8 +252,7 @@ sub apply_all_roles {
         my $role_name = $roles[-1][0];
         load_class($role_name);
 
-        my $metarole = get_metaclass_by_name($role_name);
-        ( $metarole && $metarole->isa('Mouse::Meta::Role') )
+        Mouse::Util::TypeConstraints::_is_a_metarole( get_metaclass_by_name($role_name) )
             || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
     }
 

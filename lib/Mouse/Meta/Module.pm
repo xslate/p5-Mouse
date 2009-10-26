@@ -1,6 +1,8 @@
 package Mouse::Meta::Module;
 use Mouse::Util qw/:meta get_code_package get_code_ref load_class not_supported/; # enables strict and warnings
 
+use Mouse::Util::TypeConstraints ();
+
 use Carp ();
 use Scalar::Util qw/blessed weaken/;
 
@@ -164,7 +166,7 @@ sub get_method_list {
 
         my $superclasses;
         if(exists $options{superclasses}){
-            if($self->isa('Mouse::Meta::Role')){
+            if(Mouse::Util::TypeConstraints::_is_a_metarole($self)){
                 delete $options{superclasses};
             }
             else{
