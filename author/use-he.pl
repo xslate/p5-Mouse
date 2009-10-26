@@ -1,7 +1,8 @@
 #!perl -w
 
 use strict;
-use HTTP::Engine;
+require UNIVERSAL; # for profiling
+require HTTP::Engine;
 
 my $engine = HTTP::Engine->new(
     interface       => {
