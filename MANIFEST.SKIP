@@ -55,3 +55,4 @@ Mouse-
 ppport\.h
 \.o(?:bj)?$
 \.c$
+\.bs$
