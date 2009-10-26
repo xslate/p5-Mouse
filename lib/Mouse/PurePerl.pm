@@ -80,7 +80,7 @@ package
 sub _generate_class_type_for{
     my($for_class, $name) = @_;
 
-    my $predicate = sub{ Scalar::Util::blessd($_[0]) && $_[0]->isa($for_class) };
+    my $predicate = sub{ Scalar::Util::blessed($_[0]) && $_[0]->isa($for_class) };
 
     if(defined $name){
         no strict 'refs';
