@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.40_01 Sun Oct 25 18:01:51 2009
+    * Mouse in XS
+
 0.40 Mon Oct 19 18:30:32 2009
     * Mouse::Meta::TypeConstraint
         - Fix a subtyping issue (Thanks miyagawa san)
