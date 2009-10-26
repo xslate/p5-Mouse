@@ -155,6 +155,7 @@ sub get_roles { $_[0]->{roles} }
 package
     Mouse::Meta::Attribute;
 
+use Mouse::Meta::Method::Accessor;
 
 # readers
 

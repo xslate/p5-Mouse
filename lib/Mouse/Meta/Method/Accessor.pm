@@ -166,29 +166,6 @@ sub _generate_clearer {
     };
 }
 
-sub _generate_delegation{
-    my (undef, $attribute, $class, $reader, $handle_name, $method_to_call) = @_;
-
-    return sub {
-        my $instance = shift;
-        my $proxy    = $instance->$reader();
-
-        my $error = !defined($proxy)                ? ' is not defined'
-                  : ref($proxy) && !blessed($proxy) ? qq{ is not an object (got '$proxy')}
-                                                    : undef;
-        if ($error) {
-            $instance->meta->throw_error(
-                "Cannot delegate $handle_name to $method_to_call because "
-                    . "the value of "
-                    . $attribute->name
-                    . $error
-             );
-        }
-        $proxy->$method_to_call(@_);
-    };
-}
-
-
 1;
 __END__
 

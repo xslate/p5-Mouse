@@ -4,7 +4,9 @@ use Mouse::Util qw(:meta); # enables strict and warnings
 use Carp ();
 
 use Mouse::Meta::TypeConstraint;
-use Mouse::Meta::Method::Accessor;
+
+#use Mouse::Meta::Method::Accessor;
+use Mouse::Meta::Method::Delegation;
 
 
 sub _process_options{
@@ -368,6 +370,9 @@ sub associate_method{
     return;
 }
 
+
+sub delegation_metaclass() { 'Mouse::Meta::Method::Delegation' }
+
 sub install_accessors{
     my($attribute) = @_;
 
@@ -385,11 +390,12 @@ sub install_accessors{
 
     # install delegation
     if(exists $attribute->{handles}){
+        my $delegation_class = $attribute->delegation_metaclass;
         my %handles = $attribute->_canonicalize_handles($attribute->{handles});
         my $reader  = $attribute->get_read_method_ref;
 
         while(my($handle_name, $method_to_call) = each %handles){
-            my $code = $accessor_class->_generate_delegation($attribute, $metaclass,
+            my $code = $delegation_class->_generate_delegation($attribute, $metaclass,
                 $reader, $handle_name, $method_to_call);
 
             $metaclass->add_method($handle_name => $code);

@@ -192,12 +192,6 @@ BOOT:
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Method::Accessor::XS
 
-BOOT:
-{
-    AV* const isa = get_av("Mouse::Meta::Method::Accessor::XS::ISA", TRUE);
-    av_push(isa, newSVpvs("Mouse::Meta::Method::Accessor"));
-}
-
 CV*
 _generate_accessor(klass, SV* attr, metaclass)
 CODE:
