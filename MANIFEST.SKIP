@@ -53,3 +53,5 @@ lib/Mouse/Tiny\.pm$
 Mouse-
 
 ppport\.h
+\.o(?:bj)?$
+\.c$
