@@ -172,9 +172,8 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
 
 /* pushes return values, does auto-deref if needed */
 static void
-mouse_push_values(pTHX_ AV* const xa, SV* const value, U16 const flags){
+mouse_push_values(pTHX_ SV* const value, U16 const flags){
     dSP;
-    PERL_UNUSED_ARG(xa);
 
     if(flags & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){
         if(!(value && SvOK(value))){
@@ -222,7 +221,6 @@ mouse_push_values(pTHX_ AV* const xa, SV* const value, U16 const flags){
 
 static void
 mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
-    AV* const xa    = MOUSE_mg_xa(mg);
     U16 const flags = MOUSE_mg_flags(mg);
     SV* const slot  = MOUSE_mg_slot(mg);
     SV* value;
@@ -231,7 +229,9 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
 
     /* check_lazy */
     if( !value && flags & MOUSEf_ATTR_IS_LAZY ){
+        AV* const xa    = MOUSE_mg_xa(mg);
         SV* const attr = MOUSE_xa_attribute(xa);
+
         /* get default value by $attr->default or $attr->builder */
         if(flags & MOUSEf_ATTR_HAS_DEFAULT){
             value = mcall0s(attr, "default");
@@ -258,17 +258,16 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
         value = mouse_instance_set_slot(aTHX_ self, slot, value);
     }
 
-    mouse_push_values(aTHX_ xa, value, flags);
+    mouse_push_values(aTHX_ value, flags);
 }
 
 static void
 mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
-    AV* const xa    = MOUSE_mg_xa(mg);
     U16 const flags = MOUSE_mg_flags(mg);
     SV* const slot  = MOUSE_mg_slot(mg);
 
     if(flags & MOUSEf_ATTR_HAS_TC){
-        value = mouse_apply_type_constraint(aTHX_ xa, value, flags);
+        value = mouse_apply_type_constraint(aTHX_ MOUSE_mg_xa(mg), value, flags);
     }
 
     mouse_instance_set_slot(aTHX_ self, slot, value);
@@ -278,7 +277,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
     }
 
     if(flags & MOUSEf_ATTR_HAS_TRIGGER){
-        SV* const trigger = mcall0s(MOUSE_xa_attribute(xa), "trigger");
+        SV* const trigger = mcall0s(MOUSE_mg_attribute(mg), "trigger");
         dSP;
 
         PUSHMARK(SP);
@@ -291,7 +290,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         /* need not SPAGAIN */
     }
 
-    mouse_push_values(aTHX_ xa, value, flags);
+    mouse_push_values(aTHX_ value, flags);
 }
 
 XS(mouse_xs_accessor)
