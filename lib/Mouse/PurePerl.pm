@@ -126,7 +126,10 @@ sub RoleName   { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::R
 package
     Mouse::Meta::Module;
 
-sub name { $_[0]->{package} }
+sub name          { $_[0]->{package} }
+
+sub _method_map   { $_[0]->{methods} }
+sub _attribute_map{ $_[0]->{attribute_map} }
 
 sub namespace{
     my $name = $_[0]->{package};
