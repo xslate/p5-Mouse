@@ -2,7 +2,7 @@ package Mouse::Util::TypeConstraints;
 use Mouse::Util qw(does_role not_supported); # enables strict and warnings
 
 use Carp qw(confess);
-use Scalar::Util qw/blessed looks_like_number openhandle/;
+use Scalar::Util qw(blessed);
 
 use Mouse::Meta::TypeConstraint;
 use Mouse::Exporter;
