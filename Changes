@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.40_01
+0.40_02 Tue Oct 27 15:04:10 2009
     * Add the Mouse::XS documentation
 
     * Mouse::Meta::Method::Accessor
