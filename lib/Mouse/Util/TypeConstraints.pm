@@ -159,30 +159,20 @@ sub coerce {
 }
 
 sub class_type {
-    my($name, $conf) = @_;
-    if ($conf && $conf->{class}) {
-        # No, you're using this wrong
-        warn "class_type() should be class_type(ClassName). Perhaps you're looking for subtype $name => as '$conf->{class}'?";
-        _create_type 'subtype', $name => (
-            as   => $conf->{class},
+    my($name, $options) = @_;
+    my $class = $options->{class} || $name;
+    return _create_type 'subtype', $name => (
+        as => 'Object',
+        optimized_as => _generate_class_type_for($class),
 
-            type => 'Class',
-       );
-    }
-    else {
-        _create_type 'subtype', $name => (
-            as           => 'Object',
-            optimized_as => _generate_class_type_for($name),
-
-            type => 'Class',
-        );
-    }
+        type => 'Class',
+    );
 }
 
 sub role_type {
-    my($name, $conf) = @_;
-    my $role = ($conf && $conf->{role}) ? $conf->{role} : $name;
-    _create_type 'subtype', $name => (
+    my($name, $options) = @_;
+    my $role = $options->{role} || $name;
+    return _create_type 'subtype', $name => (
         as           => 'Object',
         optimized_as => sub { blessed($_[0]) && does_role($_[0], $role) },
 
@@ -224,11 +214,8 @@ sub _find_or_create_regular_type{
 
     return $TYPE{$spec} if exists $TYPE{$spec};
 
-    my $meta  = Mouse::Util::get_metaclass_by_name($spec);
-
-    if(!$meta){
-        return;
-    }
+    my $meta = Mouse::Util::get_metaclass_by_name($spec)
+        or return undef;
 
     if(_is_a_metarole($meta)){
         return role_type($spec);
