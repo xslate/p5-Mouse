@@ -2,7 +2,7 @@ package Mouse::Util::TypeConstraints;
 use Mouse::Util qw(does_role not_supported); # enables strict and warnings
 
 use Carp qw(confess);
-use Scalar::Util qw(blessed);
+use Scalar::Util ();
 
 use Mouse::Meta::TypeConstraint;
 use Mouse::Exporter;
@@ -174,7 +174,7 @@ sub role_type {
     my $role = $options->{role} || $name;
     return _create_type 'subtype', $name => (
         as           => 'Object',
-        optimized_as => sub { blessed($_[0]) && does_role($_[0], $role) },
+        optimized_as => sub { Scalar::Util::blessed($_[0]) && does_role($_[0], $role) },
 
         type => 'Role',
     );
