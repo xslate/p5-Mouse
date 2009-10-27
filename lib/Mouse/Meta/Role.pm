@@ -255,27 +255,36 @@ sub combine {
     return $composite;
 }
 
-for my $modifier_type (qw/before after around/) {
+sub add_before_method_modifier {
+    my ($self, $method_name, $method) = @_;
 
-    my $modifier = "${modifier_type}_method_modifiers";
+    push @{ $self->{before_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
+sub add_around_method_modifier {
+    my ($self, $method_name, $method) = @_;
 
-    my $add_method_modifier =  sub {
-        my ($self, $method_name, $method) = @_;
+    push @{ $self->{around_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
+sub add_after_method_modifier {
+    my ($self, $method_name, $method) = @_;
 
-        push @{ $self->{$modifier}->{$method_name} ||= [] }, $method;
-        return;
-    };
+    push @{ $self->{after_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
 
-    my $get_method_modifiers = sub {
-        my ($self, $method_name) = @_;
-        return @{ $self->{$modifier}->{$method_name} ||= [] }
-    };
-
-    no strict 'refs';
-    *{ 'add_' . $modifier_type . '_method_modifier'  } = $add_method_modifier;
-    *{ 'get_' . $modifier_type . '_method_modifiers' } = $get_method_modifiers;
-
-    # has_${modifier_type}_method_modifiers is moved into t::lib::Test::Mouse
+sub get_before_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{before_method_modifiers}{$method_name} ||= [] }
+}
+sub get_around_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{around_method_modifiers}{$method_name} ||= [] }
+}
+sub get_after_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{after_method_modifiers}{$method_name} ||= [] }
 }
 
 sub add_override_method_modifier{
