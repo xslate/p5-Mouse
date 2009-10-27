@@ -3,8 +3,8 @@ use Mouse::Util qw/:meta get_code_package get_code_ref load_class not_supported/
 
 use Mouse::Util::TypeConstraints ();
 
-use Carp ();
-use Scalar::Util qw/blessed weaken/;
+use Carp         ();
+use Scalar::Util ();
 
 my %METAS;
 
@@ -199,7 +199,7 @@ sub get_method_list {
 
         my $meta = $self->initialize( $package_name, %options);
 
-        weaken $METAS{$package_name}
+        Scalar::Util::weaken $METAS{$package_name}
             if $mortal;
 
         $meta->add_method(meta => sub{
