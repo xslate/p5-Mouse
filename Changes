@@ -1,7 +1,10 @@
 Revision history for Mouse
 
 0.40_01
-    * 
+    * Add the Mouse::XS documentation
+
+    * Mouse::Meta::Method::Accessor
+        - Apply type constraints to default values as Moose does
 
 0.40_01 Mon Oct 26 17:31:23 2009
     * Add an optional XS implementation
