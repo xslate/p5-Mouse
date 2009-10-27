@@ -16,7 +16,6 @@ BEGIN{
         #      $hack_mouse_file fools its mechanism
 
         (my $hack_mouse_file = __FILE__) =~ s/.Util//; # .../Mouse/Util.pm -> .../Mouse.pm
-        print "$hack_mouse_file\n";
         $need_pp = !eval sprintf("#line %d %s\n", __LINE__, $hack_mouse_file) . q{
             require XSLoader;
             XSLoader::load('Mouse', $VERSION);
