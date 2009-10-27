@@ -22,7 +22,7 @@ test_requires 'Test::Exception' => 0.27;
 # test_requires 'Test::Output'    => 0.16; # too many dependencies!
 
 
-include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
+include_deps 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
 
 recommends 'MRO::Compat' if $] < 5.010;
 
@@ -38,8 +38,10 @@ if($] < 5.008_001){
 }
 
 if(!defined $use_xs){
-    require ExtUtils::CBuilder;
-    $use_xs = ExtUtils::CBuilder->new(quiet => 1)->have_compiler();
+    $use_xs = eval {
+        require ExtUtils::CBuilder;
+        ExtUtils::CBuilder->new(quiet => 1)->have_compiler();
+    };
 }
 
 if($use_xs){
