@@ -134,6 +134,30 @@ sub namespace{
     return \%{ $name . '::' };
 }
 
+sub add_method {
+    my($self, $name, $code) = @_;
+
+    if(!defined $name){
+        $self->throw_error('You must pass a defined name');
+    }
+    if(!defined $code){
+        $self->throw_error('You must pass a defined code');
+    }
+
+    if(ref($code) ne 'CODE'){
+        $code = \&{$code}; # coerce
+    }
+
+    $self->{methods}->{$name} = $code; # Moose stores meta object here.
+
+    my $pkg = $self->name;
+    no strict 'refs';
+    no warnings 'redefine', 'once';
+    *{ $pkg . '::' . $name } = $code;
+    return;
+}
+
+
 package
     Mouse::Meta::Class;
 

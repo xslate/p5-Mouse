@@ -2,6 +2,7 @@
 
 SV* mouse_package;
 SV* mouse_namespace;
+SV* mouse_methods;
 
 MODULE = Mouse  PACKAGE = Mouse::Util
 
@@ -10,6 +11,8 @@ PROTOTYPES: DISABLE
 BOOT:
     mouse_package   = newSVpvs_share("package");
     mouse_namespace = newSVpvs_share("namespace");
+    mouse_methods   = newSVpvs_share("methods");
+
     MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
 
 
@@ -95,12 +98,67 @@ CODE:
 {
     SV* const package = mouse_instance_get_slot(aTHX_ self, mouse_package);
     if(!(package && SvOK(package))){
-        croak("No package name");
+        croak("No package name defined");
     }
     RETVAL = gv_stashsv(package, GV_ADDMULTI);
 }
 OUTPUT:
     RETVAL
+
+# ignore extra arguments for extensibility
+void
+add_method(SV* self, SV* name, SV* code, ...)
+CODE:
+{
+    SV* const package = mouse_instance_get_slot(self, mouse_package); /* $self->{package} */
+    SV* const methods = mouse_instance_get_slot(self, mouse_methods); /* $self->{methods} */
+    GV* gv;
+    SV* code_ref;
+
+    if(!(package && SvOK(package))){
+        croak("No package name defined");
+    }
+
+    SvGETMAGIC(name);
+    SvGETMAGIC(code);
+
+    if(!SvOK(name)){
+        mouse_throw_error(self, NULL, "You must define a method name");
+    }
+    if(!SvROK(code)){
+        mouse_throw_error(self, NULL, "You must define a CODE reference");
+    }
+
+    code_ref = code;
+    if(SvTYPE(SvRV(code_ref)) != SVt_PVCV){
+        SV*  sv = code_ref;  /* used in tryAMAGICunDEREF */
+        SV** sp = &sv;       /* used in tryAMAGICunDEREF */
+        tryAMAGICunDEREF(to_cv); /* try \&{$code} */
+        if(SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVCV){
+            mouse_throw_error(self, NULL, "Not a CODE reference");
+        }
+        code_ref = sv;
+    }
+
+    /*  *{$package . '::' . $name} -> *gv */
+    gv = gv_fetchpv(form("%"SVf"::%"SVf, package, name), GV_ADDMULTI, SVt_PVCV);
+    if(GvCVu(gv)){ /* delete *slot{gv} to work around "redefine" warning */
+        SvREFCNT_dec(GvCV(gv));
+        GvCV(gv) = NULL;
+    }
+    sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */
+
+    mouse_instance_set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
+
+    /* TODO: name the CODE ref if it's anonymous */
+    //code_entity = (CV*)SvRV(code_ref);
+    //if(CvANON(code_entity)
+    //    && CvGV(code_entity) /* a cv under construction has no gv */ ){
+
+    //    CvGV(code_entity) = gv;
+    //    CvANON_off(code_entity);
+    //}
+}
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 

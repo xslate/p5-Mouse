@@ -69,28 +69,6 @@ sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
 sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
 sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
 
-sub add_method {
-    my($self, $name, $code) = @_;
-
-    if(!defined $name){
-        $self->throw_error('You must pass a defined name');
-    }
-    if(!defined $code){
-        $self->throw_error('You must pass a defined code');
-    }
-
-    if(ref($code) ne 'CODE'){
-        $code = \&{$code}; # coerce
-    }
-
-    $self->{methods}->{$name} = $code; # Moose stores meta object here.
-
-    my $pkg = $self->name;
-    no strict 'refs';
-    no warnings 'redefine', 'once';
-    *{ $pkg . '::' . $name } = $code;
-}
-
 # XXX: for backward compatibility
 my %foreign = map{ $_ => undef } qw(
     Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
@@ -103,6 +81,8 @@ sub _code_is_mine{
 
     return !exists $foreign{$package};
 }
+
+sub add_method;
 
 sub has_method {
     my($self, $method_name) = @_;
