@@ -18,9 +18,9 @@ Mouse::Exporter->setup_import_methods(
 
 my %TYPE;
 
-sub as          ($) { (as => $_[0]) }
-sub where       (&) { (where => $_[0]) }
-sub message     (&) { (message => $_[0]) }
+sub as          ($) { (as          => $_[0]) }
+sub where       (&) { (where       => $_[0]) }
+sub message     (&) { (message     => $_[0]) }
 sub optimize_as (&) { (optimize_as => $_[0]) }
 
 sub from    { @_ }
@@ -162,7 +162,7 @@ sub class_type {
     my($name, $options) = @_;
     my $class = $options->{class} || $name;
     return _create_type 'subtype', $name => (
-        as => 'Object',
+        as           => 'Object',
         optimized_as => _generate_class_type_for($class),
 
         type => 'Class',
@@ -384,10 +384,12 @@ sub find_or_parse_type_constraint {
 }
 
 sub find_or_create_does_type_constraint{
+    # XXX: Moose does not register a new role_type, but Mouse does.
     return find_or_parse_type_constraint(@_) || role_type(@_);
 }
 
 sub find_or_create_isa_type_constraint {
+    # XXX: Moose does not register a new class_type, but Mouse does.
     return find_or_parse_type_constraint(@_) || class_type(@_);
 }
 
