@@ -43,6 +43,8 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 
 extern SV* mouse_package;
 extern SV* mouse_namespace;
+extern SV* mouse_methods;
+extern SV* mouse_name;
 
 void
 mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)

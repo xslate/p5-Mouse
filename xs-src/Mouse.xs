@@ -3,6 +3,7 @@
 SV* mouse_package;
 SV* mouse_namespace;
 SV* mouse_methods;
+SV* mouse_name;
 
 MODULE = Mouse  PACKAGE = Mouse::Util
 
@@ -12,6 +13,7 @@ BOOT:
     mouse_package   = newSVpvs_share("package");
     mouse_namespace = newSVpvs_share("namespace");
     mouse_methods   = newSVpvs_share("methods");
+    mouse_name      = newSVpvs_share("name");
 
     MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
 

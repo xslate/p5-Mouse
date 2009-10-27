@@ -45,7 +45,7 @@ static MGVTBL mouse_accessor_vtbl; /* MAGIC identity */
 
 CV*
 mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
-    SV* const slot = mcall0s(attr,  "name");
+    SV* const slot = mcall0(attr,  mouse_name);
     AV* const xa = newAV();
     CV* xsub;
     MAGIC* mg;
@@ -91,7 +91,7 @@ mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_im
             else{
                 mouse_throw_error(attr, tc,
                     "Can not auto de-reference the type constraint '%"SVf"'",
-                        mcall0s(tc, "name"));
+                        mcall0(tc, mouse_name));
             }
         }
 
@@ -162,7 +162,7 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
     if(!mouse_tc_check(aTHX_ tc_code, value)){
         mouse_throw_error(MOUSE_xa_attribute(xa), value,
             "Attribute (%"SVf") does not pass the type constraint because: %"SVf,
-                mcall0s(MOUSE_xa_attribute(xa), "name"),
+                mcall0(MOUSE_xa_attribute(xa), mouse_name),
                 mcall1s(tc, "get_message", value));
     }
 
