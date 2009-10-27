@@ -180,8 +180,6 @@ sub do_import {
                 map{ ref($_) ? $_ : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1) }
                 @traits;
 
-            print "[@traits]\n";
-
             not_supported('-traits');
             require Mouse::Util::MetaRole;
             Mouse::Util::MetaRole::apply_metaclass_roles(
