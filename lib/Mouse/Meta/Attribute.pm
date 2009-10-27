@@ -267,7 +267,13 @@ sub clone_and_inherit_options{
     my($attribute_class, @traits) = ref($self)->interpolate_class(\%args);
 
     $args{traits} = \@traits if @traits;
-    return $attribute_class->new($self->name, %{$self}, %args);
+    # do not inherit the 'handles' attribute
+    foreach my $name(keys %{$self}){
+        if(!exists $args{$name} && $name ne 'handles'){
+            $args{$name} = $self->{$name};
+        }
+    }
+    return $attribute_class->new($self->name, %args);
 }
 
 sub clone_parent { # DEPRECATED
