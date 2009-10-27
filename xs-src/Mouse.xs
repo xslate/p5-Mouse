@@ -19,7 +19,7 @@ BOOT:
 
 
 bool
-is_class_loaded(SV* sv = &PL_sv_undef)
+is_class_loaded(SV* sv)
 
 void
 get_code_info(CV* code)
