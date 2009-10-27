@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 17;
 use Test::Exception;
 
 BEGIN {
@@ -27,7 +27,6 @@ foreach my $type_name (qw(
                 CodeRef
                 RegexpRef
                 Object
-                    Role
     )) {
     is(find_type_constraint($type_name)->name,
        $type_name,
