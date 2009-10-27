@@ -15,9 +15,12 @@ tests 't/*.t t/*/*.t';
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
+configure_requires 'ExtUtils::CBuilder';
+
 test_requires 'Test::More'      => 0.88;
 test_requires 'Test::Exception' => 0.27;
 # test_requires 'Test::Output'    => 0.16; # too many dependencies!
+
 
 include 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
 
@@ -35,7 +38,6 @@ if($] < 5.008_001){
 }
 
 if(!defined $use_xs){
-    configure_requires 'ExtUtils::CBuilder';
     require ExtUtils::CBuilder;
     $use_xs = ExtUtils::CBuilder->new(quiet => 1)->have_compiler();
 }
