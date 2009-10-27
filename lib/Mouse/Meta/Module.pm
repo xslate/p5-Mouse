@@ -72,14 +72,12 @@ sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
 # XXX: for backward compatibility
 my %foreign = map{ $_ => undef } qw(
     Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
-    Carp Scalar::Util
+    Carp Scalar::Util List::Util
 );
 sub _code_is_mine{
-    my($self, $code) = @_;
+#    my($self, $code) = @_;
 
-    my $package = get_code_package($code);
-
-    return !exists $foreign{$package};
+    return !exists $foreign{ get_code_package($_[1]) };
 }
 
 sub add_method;
@@ -90,14 +88,13 @@ sub has_method {
     defined($method_name)
         or $self->throw_error('You must define a method name');
 
-    return 1 if $self->{methods}{$method_name};
-
-    my $code = get_code_ref($self->{package}, $method_name);
-
-    return $code && $self->_code_is_mine($code);
+    return defined($self->{methods}{$method_name}) || do{
+        my $code = get_code_ref($self->{package}, $method_name);
+        $code && $self->_code_is_mine($code);
+    };
 }
 
-sub get_method_body{
+sub get_method_body {
     my($self, $method_name) = @_;
 
     defined($method_name)
@@ -105,19 +102,19 @@ sub get_method_body{
 
     return $self->{methods}{$method_name} ||= do{
         my $code = get_code_ref($self->{package}, $method_name);
-        ($code && $self->_code_is_mine($code)) ? $code : undef;
+        $code && $self->_code_is_mine($code) ? $code : undef;
     };
 }
 
 sub get_method{
     my($self, $method_name) = @_;
 
-    if($self->has_method($method_name)){
+    if(my $code = $self->get_method_body($method_name)){
         my $method_metaclass = $self->method_metaclass;
         load_class($method_metaclass);
 
         return $method_metaclass->wrap(
-            body                 => $self->get_method_body($method_name),
+            body                 => $code,
             name                 => $method_name,
             package              => $self->name,
             associated_metaclass => $self,
