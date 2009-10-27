@@ -1,3 +1,5 @@
+package Mouse::PurePerl;
+
 package
     Mouse::Util;
 
@@ -243,8 +245,21 @@ sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 
 sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }
 
-
 sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
 
 1;
 __END__
+
+=head1 NAME
+
+Mouse::PurePerl - A Mouse guts in pure Perl
+
+=head1 VERSION
+
+This document describes Mouse version 0.40_01
+
+=head1 SEE ALSO
+
+L<Mouse::XS>
+
+=cut

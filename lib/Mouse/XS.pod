@@ -1,0 +1,30 @@
+
+=head1 NAME
+
+Mouse::XS - A Mouse guts in XS
+
+=head1 VERSION
+
+This document describes Mouse version 0.40_01
+
+=head1 DESCRIPTION
+
+Mouse has an optional XS implementation. This is automatically built
+and used if available.
+
+=head2 INSTALL
+
+If you do not want to build the XS implementation, you can pass the C<--pp>
+option to F<Makefile.PL>.
+
+    perl Makefile.PL --pp
+
+=head2 The MOUSE_PUREPERL environment variable
+
+It can be used to enable the use of Mouse::PurePerl.
+
+=head1 SEE ALSO
+
+L<Mouse::PurePerl>
+
+=cut
