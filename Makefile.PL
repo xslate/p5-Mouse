@@ -85,6 +85,6 @@ if (author_context()) {
     }
 }
 
-clean_files 'lib/Mouse/Tiny.pm';
+clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';
 
 WriteAll check_nmake => 0;
