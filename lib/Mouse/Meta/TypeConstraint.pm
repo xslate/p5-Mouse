@@ -5,8 +5,7 @@ use overload
     '""'     => sub { $_[0]->name },   # stringify to tc name
     fallback => 1;
 
-use Carp qw(confess);
-use Scalar::Util qw(blessed reftype);
+use Carp         ();
 
 my $null_check = sub { 1 };
 
@@ -32,7 +31,7 @@ sub new {
     $check = $args{constraint};
 
     if(defined($check) && ref($check) ne 'CODE'){
-        confess("Constraint for $args{name} is not a CODE reference");
+        Carp::confess("Constraint for $args{name} is not a CODE reference");
     }
 
     $args{package_defined_in} ||= caller;
@@ -147,18 +146,18 @@ sub _add_type_coercions{
         my $action = $_[++$i];
 
         if(exists $has{$from}){
-            confess("A coercion action already exists for '$from'");
+            Carp::confess("A coercion action already exists for '$from'");
         }
 
         my $type = Mouse::Util::TypeConstraints::find_or_parse_type_constraint($from)
-            or confess("Could not find the type constraint ($from) to coerce from");
+            or Carp::confess("Could not find the type constraint ($from) to coerce from");
 
         push @{$coercions}, [ $type => $action ];
     }
 
     # compile
     if(exists $self->{type_constraints}){ # union type
-        confess("Cannot add additional type coercions to Union types");
+        Carp::confess("Cannot add additional type coercions to Union types");
     }
     else{
         $self->{_compiled_type_coercion} = sub {
@@ -206,7 +205,7 @@ sub is_a_type_of{
     my($self, $other) = @_;
 
     # ->is_a_type_of('__ANON__') is always false
-    return 0 if !blessed($other) && $other eq '__ANON__';
+    return 0 if !ref($other) && $other eq '__ANON__';
 
     (my $other_name = $other) =~ s/\s+//g;
 
