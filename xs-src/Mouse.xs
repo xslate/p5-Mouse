@@ -110,8 +110,8 @@ void
 add_method(SV* self, SV* name, SV* code, ...)
 CODE:
 {
-    SV* const package = mouse_instance_get_slot(self, mouse_package); /* $self->{package} */
-    SV* const methods = mouse_instance_get_slot(self, mouse_methods); /* $self->{methods} */
+    SV* const package = mouse_instance_get_slot(aTHX_ self, mouse_package); /* $self->{package} */
+    SV* const methods = mouse_instance_get_slot(aTHX_ self, mouse_methods); /* $self->{methods} */
     GV* gv;
     SV* code_ref;
 
@@ -148,7 +148,7 @@ CODE:
     }
     sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */
 
-    mouse_instance_set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
+    mouse_instance_set_slot(aTHX_ methods, name, code); /* $self->{methods}{$name} = $code */
 
     /* TODO: name the CODE ref if it's anonymous */
     //code_entity = (CV*)SvRV(code_ref);
