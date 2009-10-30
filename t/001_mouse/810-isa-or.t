@@ -6,7 +6,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 22;
 
 {   
     package Foo;
@@ -102,4 +102,20 @@ $k->foo(KLASS->new);
 isa_ok $k->foo, 'KLASS';
 $k->foo(undef);
 is $k->foo, undef, 'foo is undef';
+
+# or-combination operator ('|')
+{
+    use Mouse::Util::TypeConstraints;
+    my $Int    = find_type_constraint 'Int';
+    my $Str    = find_type_constraint 'Str';
+    my $Object = find_type_constraint 'Object';
+
+    *t = \&Mouse::Util::TypeConstraints::find_or_parse_type_constraint; # alias
+
+    is $Int | $Str, t('Int | Str');
+    is $Str | $Int, t('Int | Str');
+
+    is $Int | $Str | $Object, t('Int | Str | Object');
+    is $Str | $Object | $Int, t('Int | Str | Object');
+}
 
