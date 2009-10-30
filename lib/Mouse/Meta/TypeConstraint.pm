@@ -234,6 +234,28 @@ sub is_a_type_of{
     return 0;
 }
 
+# See also Moose::Meta::TypeConstraint::Parameterizable
+sub parameterize{
+    my($self, $param, $name) = @_;
+
+    if(!ref $param){
+        require Mouse::Util::TypeConstraints;
+        $param = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($param);
+    }
+
+    $name ||= sprintf '%s[%s]', $self->name, $param->name;
+
+    my $generator = $self->{constraint_generator}
+        || Carp::confess("The $name constraint cannot be used, because $param doesn't subtype from a parameterizable type");
+
+    return Mouse::Meta::TypeConstraint->new(
+        name               => $name,
+        parent             => $self,
+        constraint         => $generator->($param),
+
+        type               => 'Parameterized',
+    );
+}
 
 1;
 __END__
