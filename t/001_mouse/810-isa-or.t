@@ -1,3 +1,9 @@
+#!perl
+
+# XXX:
+# XXX: !!!Currently this test is not compatible with Moose!!!
+# XXX:
+
 use strict;
 use warnings;
 use Test::More tests => 18;
