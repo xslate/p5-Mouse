@@ -3,6 +3,14 @@ use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
     '""'     => sub { $_[0]->name },   # stringify to tc name
+
+    '|'      => sub {                  # or-combination
+        require Mouse::Util::TypeConstraints;
+        return Mouse::Util::TypeConstraints::find_or_parse_type_constraint(
+            "$_[0] | $_[1]",
+        );
+    },
+
     fallback => 1;
 
 use Carp         ();
