@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.40_03 Fri Oct 30 12:03:58 2009
+    * Update Module::Install::XSUtil to 0.15
+
 0.40_02 Tue Oct 27 15:04:10 2009
     * Add the Mouse::XS documentation
 
