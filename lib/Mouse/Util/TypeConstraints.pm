@@ -280,7 +280,7 @@ sub _find_or_create_parameterized_type{
     }
 }
 sub _find_or_create_union_type{
-    my @types = sort{ $a cmp $b } map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
+    my @types = sort map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
 
     my $name = join '|', @types;
 
