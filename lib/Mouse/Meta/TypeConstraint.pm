@@ -2,6 +2,8 @@ package Mouse::Meta::TypeConstraint;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
+    'bool'   => sub { 1 },             # always true
+
     '""'     => sub { $_[0]->name },   # stringify to tc name
 
     '|'      => sub {                  # or-combination
