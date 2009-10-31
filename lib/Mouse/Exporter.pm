@@ -14,7 +14,7 @@ require Mouse::Util;
 
 sub import{
     $^H              |= _strict_bits;         # strict->import;
-    ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
+    ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
     return;
 }
 
@@ -166,7 +166,7 @@ sub do_import {
     }
 
     $^H              |= _strict_bits;         # strict->import;
-    ${^WARNING_BITS}  = $warnings::Bits{all}; # warnings->import;
+    ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
 
     if($spec->{INIT_META}){
         my $meta;
