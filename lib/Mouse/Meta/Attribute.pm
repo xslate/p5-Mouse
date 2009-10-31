@@ -371,7 +371,7 @@ sub _canonicalize_handles {
 }
 
 sub associate_method{
-    my ($attribute, $method) = @_;
+    my ($attribute, $method_name) = @_;
     $attribute->{associated_methods}++;
     return;
 }
@@ -390,7 +390,7 @@ sub install_accessors{
             my $generator = '_generate_' . $type;
             my $code      = $accessor_class->$generator($attribute, $metaclass);
             $metaclass->add_method($attribute->{$type} => $code);
-            $attribute->associate_method($code);
+            $attribute->associate_method($attribute->{$type});
         }
     }
 
@@ -405,7 +405,7 @@ sub install_accessors{
                 $reader, $handle_name, $method_to_call);
 
             $metaclass->add_method($handle_name => $code);
-            $attribute->associate_method($code);
+            $attribute->associate_method($handle_name);
         }
     }
 
@@ -543,12 +543,12 @@ is equivalent to this:
 
 =back
 
-=head2 C<< associate_method(Method) >>
+=head2 C<< associate_method(MethodName) >>
 
 Associates a method with the attribute. Typically, this is called internally
 when an attribute generates its accessors.
 
-Currently the argument I<Method> is ignored in Mouse.
+Currently the argument I<MethodName> is ignored in Mouse.
 
 =head2 C<< verify_against_type_constraint(Item) -> TRUE | ERROR >>
 
