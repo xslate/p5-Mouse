@@ -18,10 +18,8 @@ typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
 int
 mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
-    CV* cv;
-    assert(SvROK(tc_code) && SvTYPE(SvRV(tc_code)));
-
-    cv = (CV*)SvRV(tc_code);
+    CV* const cv = (CV*)SvRV(tc_code);
+    assert(SvTYPE(cv) == Svt_PVCV);
 
     if(CvISXSUB(cv)){ /* can be built-in tc */
         if(CvXSUB(cv) == XS_Mouse__Util__TypeConstraints_Item){
@@ -33,7 +31,9 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
             MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
 
             assert(CvXSUBANY(cv).any_ptr != NULL);
-            return CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj /* stash */, sv);
+
+            /* call the check function directly, skipping call_sv() */
+            return CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, sv);
         }
     }
 
