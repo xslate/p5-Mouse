@@ -312,39 +312,27 @@ OUTPUT:
     RETVAL
 
 void
-generate_isa_predicate_for(SV* klass, const char* predicate_name = NULL)
+generate_isa_predicate_for(SV* klass, SV* predicate_name = NULL)
 PPCODE:
 {
-    STRLEN klass_len;
-    const char* klass_pv;
-    HV* stash;
+    const char* name_pv = NULL;
     CV* xsub;
 
+    SvGETMAGIC(klass);
+
     if(!SvOK(klass)){
-        croak("You must define a class name for generate_for");
+        croak("You must define a class name");
     }
-    klass_pv = SvPV_const(klass, klass_len);
-    klass_pv = mouse_canonicalize_package_name(klass_pv);
 
-    if(strNE(klass_pv, "UNIVERSAL")){
-        static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
-
-        xsub = newXS(predicate_name, XS_isa_check, __FILE__);
-
-        stash = gv_stashpvn(klass_pv, klass_len, GV_ADD);
-
-        CvXSUBANY(xsub).any_ptr = sv_magicext(
-            (SV*)xsub,
-            (SV*)stash, /* mg_obj */
-            PERL_MAGIC_ext,
-            &mouse_util_type_constraints_vtbl,
-            klass_pv,   /* mg_ptr */
-            klass_len   /* mg_len */
-        );
+    if(predicate_name){
+        SvGETMAGIC(predicate_name);
+        if(!SvOK(predicate_name)){
+            croak("You must define a predicate_name");
+        }
+        name_pv = SvPV_nolen_const(predicate_name);
     }
-    else{
-        xsub = newXS(predicate_name, XS_isa_check_for_universal, __FILE__);
-    }
+
+    xsub = generate_isa_predicate_for(aTHX_ klass, name_pv);
 
     if(predicate_name == NULL){ /* anonymous predicate */
         XPUSHs( newRV_noinc((SV*)xsub) );

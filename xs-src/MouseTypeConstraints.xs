@@ -275,7 +275,7 @@ START_MY_CXT
 #define MG_klass_pv(mg)    ((mg)->mg_ptr)
 #define MG_klass_len(mg)   ((mg)->mg_len)
 
-const char*
+static const char*
 mouse_canonicalize_package_name(const char* name){
 
     /* "::Foo" -> "Foo" */
@@ -292,7 +292,7 @@ mouse_canonicalize_package_name(const char* name){
 }
 
 static int
-lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
+mouse_lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
     AV*  const linearized_isa = mro_get_linear_isa(instance_stash);
     SV**       svp            = AvARRAY(linearized_isa);
     SV** const end            = svp + AvFILLp(linearized_isa) + 1;
@@ -307,90 +307,110 @@ lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
     return FALSE;
 }
 
+int
+mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance){
+    assert(stash);
+    assert(SvTYPE(stash) == SVt_PVHV);
+
+    if(SvROK(instance) && SvOBJECT(SvRV(instance))){
+        dMY_CXT;
+        HV* const instance_stash = SvSTASH(SvRV(instance));
+        GV* const instance_isa   = gv_fetchmeth_autoload(instance_stash, "isa", sizeof("isa")-1, 0);
+
+        /* the instance has no own isa method */
+        if(instance_isa == NULL || GvCV(instance_isa) == GvCV(MY_CXT.universal_isa)){
+            return stash == instance_stash
+                || mouse_lookup_isa(aTHX_ instance_stash, HvNAME_get(stash));
+        }
+        /* the instance has its own isa method */
+        else {
+            int retval;
+            dSP;
+
+            ENTER;
+            SAVETMPS;
+
+            PUSHMARK(SP);
+            EXTEND(SP, 2);
+            PUSHs(instance);
+            mPUSHp(HvNAME_get(stash), HvNAMELEN_get(stash));
+            PUTBACK;
+
+            call_sv((SV*)instance_isa, G_SCALAR);
+
+            SPAGAIN;
+
+            retval = SvTRUEx(POPs);
+
+            PUTBACK;
+
+            FREETMPS;
+            LEAVE;
+
+            return retval;
+        }
+    }
+    return FALSE;
+}
+
 static int
-instance_isa(pTHX_ SV* const instance, const MAGIC* const mg){
-    dMY_CXT;
-    HV* const instance_stash = SvSTASH(SvRV(instance));
-    GV* const instance_isa   = gv_fetchmeth_autoload(instance_stash, "isa", sizeof("isa")-1, 0);
-
-    /* the instance has no own isa method */
-    if(instance_isa == NULL || GvCV(instance_isa) == GvCV(MY_CXT.universal_isa)){
-        return MG_klass_stash(mg) == instance_stash
-            || lookup_isa(aTHX_ instance_stash, MG_klass_pv(mg));
-    }
-    /* the instance has its own isa method */
-    else {
-        int retval;
-        dSP;
-
-        ENTER;
-        SAVETMPS;
-
-        PUSHMARK(SP);
-        EXTEND(SP, 2);
-        PUSHs(instance);
-        mPUSHp(MG_klass_pv(mg), MG_klass_len(mg));
-        PUTBACK;
-
-        call_sv((SV*)instance_isa, G_SCALAR);
-
-        SPAGAIN;
-
-        retval = SvTRUEx(POPs);
-
-        PUTBACK;
-
-        FREETMPS;
-        LEAVE;
-
-        return retval;
-    }
+mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
+    PERL_UNUSED_ARG(data);
+    return SvROK(sv) && SvOBJECT(SvRV(sv));
 }
 
+static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
-XS(XS_isa_check){
-    dVAR;
-    dXSARGS;
-    SV* sv;
+CV*
+generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name){
+    STRLEN klass_len;
+    const char* klass_pv = SvPV_const(klass, klass_len);
+    CV* xsub;
+    SV*   mg_obj;
+    void* mg_ptr;
 
-    assert(XSANY.any_ptr != NULL);
+    klass_pv = mouse_canonicalize_package_name(klass_pv);
 
-    if(items != 1){
-        if(items < 1){
-            croak("Not enough arguments for is-a predicate");
-        }
-        else{
-            croak("Too many arguments for is-a predicate");
-        }
+    if(strNE(klass_pv, "UNIVERSAL")){
+        mg_obj = (SV*)gv_stashpvn(klass_pv, klass_len, GV_ADD);
+        mg_ptr = (void*)mouse_is_an_instance_of;
+
+    }
+    else{
+        mg_obj = NULL;
+        mg_ptr = (void*)mouse_is_an_instance_of_universal;
     }
 
-    sv = ST(0);
-    SvGETMAGIC(sv);
+    xsub = newXS(predicate_name, XS_Mouse_parameterized_check, __FILE__);
 
-    ST(0) = boolSV( SvROK(sv) && SvOBJECT(SvRV(sv)) && instance_isa(aTHX_ sv, (MAGIC*)XSANY.any_ptr) );
-    XSRETURN(1);
+    CvXSUBANY(xsub).any_ptr = sv_magicext(
+        (SV*)xsub,
+        mg_obj,
+        PERL_MAGIC_ext,
+        &mouse_util_type_constraints_vtbl,
+        mg_ptr,
+        0   /* indicates static data */
+    );
+
+    if(!predicate_name){
+        sv_2mortal((SV*)xsub);
+    }
+
+    return xsub;
 }
 
-
-XS(XS_isa_check_for_universal){
+XS(XS_Mouse_parameterized_check) {
     dVAR;
     dXSARGS;
-    SV* sv;
-    PERL_UNUSED_VAR(cv);
+    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
-    if(items != 1){
-        if(items < 1){
-            croak("Not enough arguments for is-a predicate");
-        }
-        else{
-            croak("Too many arguments for is-a predicate");
-        }
+    if(items < 1){
+        croak("Too few arguments for parameterized check functions");
     }
 
-    sv = ST(0);
-    SvGETMAGIC(sv);
-
-    ST(0) = boolSV( SvROK(sv) && SvOBJECT(SvRV(sv)) );
+    SvGETMAGIC( ST(0) );
+    ST(0) = boolSV( CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, ST(0)) );
     XSRETURN(1);
 }
 
