@@ -42,9 +42,9 @@ find({
 my $mouse_tiny = '';
 
 for my $file (uniq
+        'lib/Mouse/PurePerl.pm',
         'lib/Mouse/Exporter.pm',
         'lib/Mouse/Util.pm',
-        'lib/Mouse/PurePerl.pm',
         'lib/Mouse/Meta/TypeConstraint.pm',
         'lib/Mouse/Util/TypeConstraints.pm',
             sort @files) {
