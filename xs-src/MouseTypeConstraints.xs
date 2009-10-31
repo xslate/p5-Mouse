@@ -404,7 +404,7 @@ mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predic
 
     CvXSUBANY(xsub).any_ptr = sv_magicext(
         (SV*)xsub,
-        mg_obj,
+        mg_obj, /* refcnt will be increased */
         PERL_MAGIC_ext,
         &mouse_util_type_constraints_vtbl,
         mg_ptr,
