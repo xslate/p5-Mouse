@@ -280,6 +280,53 @@ mouse_tc_Object(pTHX_ SV* const sv) {
     return SvROK(sv) && SvOBJECT(SvRV(sv)) && !SvRXOK(sv);
 }
 
+/* Parameterized type constraints */
+
+int
+mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
+    if(mouse_tc_ArrayRef(aTHX_ sv)){
+        AV* const av  = (AV*)SvRV(sv);
+        I32 const len = av_len(av) + 1;
+        I32 i;
+        for(i = 0; i < len; i++){
+            SV* const value = *av_fetch(av, i, TRUE);
+            SvGETMAGIC(value);
+            if(!mouse_tc_check(aTHX_ param, value)){
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+int
+mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
+    if(mouse_tc_HashRef(aTHX_ sv)){
+        HV* const hv  = (HV*)SvRV(sv);
+        HE* he;
+
+        hv_iterinit(hv);
+        while((he = hv_iternext(hv))){
+            SV* const value = hv_iterval(hv, he);
+            SvGETMAGIC(value);
+            if(!mouse_tc_check(aTHX_ param, value)){
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+int
+mouse_parameterized_Maybe(pTHX_ SV* const param, SV* const sv) {
+    if(SvOK(sv)){
+        return mouse_tc_check(aTHX_ param, sv);
+    }
+    return TRUE;
+}
+
 /*
  *  This class_type generator is taken from Scalar::Util::Instance
  */
@@ -380,10 +427,11 @@ mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
 
 static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
-CV*
+static CV*
 mouse_tc_parameterize(pTHX_ const char* const name, check_fptr_t const fptr, SV* const param) {
-    CV* const xsub = newXS(name, XS_Mouse_parameterized_check, __FILE__);
+    CV* xsub;
 
+    xsub = newXS(name, XS_Mouse_parameterized_check, __FILE__);
     CvXSUBANY(xsub).any_ptr = sv_magicext(
         (SV*)xsub,
         param,       /* mg_obj: refcnt will be increased */
@@ -494,4 +542,33 @@ CODE:
     ST(0) = boolSV( mouse_builtin_tc_check(aTHX_ ix, sv) );
     XSRETURN(1);
 
+
+CV*
+_parameterize_ArrayRef_for(SV* param)
+ALIAS:
+    _parameterize_ArrayRef_for = MOUSE_TC_ARRAY_REF
+    _parameterize_HashRef_for  = MOUSE_TC_HASH_REF
+    _parameterize_Maybe_for    = MOUSE_TC_MAYBE
+CODE:
+{
+    check_fptr_t fptr;
+    SV* const tc_code = mcall0s(param, "_compiled_type_constraint");
+    if(!(SvROK(tc_code) && SvTYPE(SvRV(tc_code)) == SVt_PVCV)){
+        croak("_compiled_type_constraint didn't return a CODE reference");
+    }
+
+    switch(ix){
+    case MOUSE_TC_ARRAY_REF:
+        fptr = mouse_parameterized_ArrayRef;
+        break;
+    case MOUSE_TC_HASH_REF:
+        fptr = mouse_parameterized_HashRef;
+        break;
+    default: /* Maybe type */
+        fptr = mouse_parameterized_Maybe;
+    }
+    RETVAL = mouse_tc_parameterize(aTHX_ NULL, fptr, tc_code);
+}
+OUTPUT:
+    RETVAL
 

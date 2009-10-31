@@ -124,6 +124,41 @@ sub Object     { blessed($_[0]) && blessed($_[0]) ne 'Regexp' }
 sub ClassName  { Mouse::Util::is_class_loaded($_[0]) }
 sub RoleName   { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::Role') }
 
+sub _parameterize_ArrayRef_for {
+    my($type_parameter) = @_;
+    my $check = $type_parameter->_compiled_type_constraint;
+
+    return sub {
+        foreach my $value (@{$_}) {
+            return undef unless $check->($value);
+        }
+        return 1;
+    }
+}
+
+sub _parameterize_HashRef_for {
+    my($type_parameter) = @_;
+    my $check = $type_parameter->_compiled_type_constraint;
+
+    return sub {
+        foreach my $value(values %{$_}){
+            return undef unless $check->($value);
+        }
+        return 1;
+    };
+}
+
+# 'Maybe' type accepts 'Any', so it requires parameters
+sub _parameterize_Maybe_for {
+    my($type_parameter) = @_;
+    my $check = $type_parameter->_compiled_type_constraint;
+
+    return sub{
+        return !defined($_) || $check->($_);
+    };
+};
+
+
 
 package
     Mouse::Meta::Module;

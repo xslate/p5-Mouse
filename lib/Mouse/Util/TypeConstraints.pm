@@ -217,38 +217,9 @@ sub _find_or_create_regular_type{
     }
 }
 
-$TYPE{ArrayRef}{constraint_generator} = sub {
-    my($type_parameter) = @_;
-    my $check = $type_parameter->_compiled_type_constraint;
-
-    return sub{
-        foreach my $value (@{$_}) {
-            return undef unless $check->($value);
-        }
-        return 1;
-    }
-};
-$TYPE{HashRef}{constraint_generator} = sub {
-    my($type_parameter) = @_;
-    my $check = $type_parameter->_compiled_type_constraint;
-
-    return sub{
-        foreach my $value(values %{$_}){
-            return undef unless $check->($value);
-        }
-        return 1;
-    };
-};
-
-# 'Maybe' type accepts 'Any', so it requires parameters
-$TYPE{Maybe}{constraint_generator} = sub {
-    my($type_parameter) = @_;
-    my $check = $type_parameter->_compiled_type_constraint;
-
-    return sub{
-        return !defined($_) || $check->($_);
-    };
-};
+$TYPE{ArrayRef}{constraint_generator} = \&_parameterize_ArrayRef_for;
+$TYPE{HashRef}{constraint_generator}  = \&_parameterize_HashRef_for;
+$TYPE{Maybe}{constraint_generator}    = \&_parameterize_Maybe_for;
 
 sub _find_or_create_parameterized_type{
     my($base, $param) = @_;
