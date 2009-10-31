@@ -126,7 +126,7 @@ XS(mouse_xs_reader);
 XS(mouse_xs_writer);
 
 typedef enum mouse_tc{
-     MOUSE_TC_ANY,
+     MOUSE_TC_ANY = 1,
      MOUSE_TC_ITEM,
      MOUSE_TC_UNDEF,
      MOUSE_TC_DEFINED,
@@ -180,6 +180,8 @@ CV* mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const pr
 int mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance);
 
 XS(XS_Mouse_parameterized_check);
+
+XS(XS_Mouse__Util__TypeConstraints_Item);
 
 #endif /* !MOUSE_H */
 
