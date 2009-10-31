@@ -20,10 +20,16 @@ test_requires 'Test::More'      => 0.88;
 test_requires 'Test::Exception' => 0.27;
 # test_requires 'Test::Output'    => 0.16; # too many dependencies!
 
-
 include_deps 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
 
 recommends 'MRO::Compat' if $] < 5.010;
+
+require 'lib/Mouse/Spec.pm'; # for the version
+
+if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
+    require Carp::Always; Carp::Always->import();
+    include_deps 'Carp::Always';
+}
 
 my $use_xs;
 
@@ -45,7 +51,7 @@ if(!defined $use_xs){
 
 if($use_xs){
     print "Mouse configured with XS.\n",
-          "You can try --pp option to configure it with Pure Perl.\n";
+          "NOTE: You can try --pp option to configure Mouse with Pure Perl.\n";
     ;
 
     require Module::Install::XSUtil;
@@ -60,8 +66,6 @@ else{
 }
 
 if (author_context()) {
-    local @INC = ('lib', @INC);
-    require 'lib/Mouse/Spec.pm';
     my $require_version = Mouse::Spec->MooseVersion;
 
     if (eval{ require Moose; Moose->VERSION($require_version) }) {
