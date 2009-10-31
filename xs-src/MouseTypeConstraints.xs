@@ -362,7 +362,7 @@ mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
 static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
 CV*
-generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name){
+mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name){
     STRLEN klass_len;
     const char* klass_pv = SvPV_const(klass, klass_len);
     CV* xsub;

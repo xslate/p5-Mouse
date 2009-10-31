@@ -332,7 +332,7 @@ PPCODE:
         name_pv = SvPV_nolen_const(predicate_name);
     }
 
-    xsub = generate_isa_predicate_for(aTHX_ klass, name_pv);
+    xsub = mouse_generate_isa_predicate_for(aTHX_ klass, name_pv);
 
     if(predicate_name == NULL){ /* anonymous predicate */
         XPUSHs( newRV_noinc((SV*)xsub) );

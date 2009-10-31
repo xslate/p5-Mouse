@@ -176,7 +176,7 @@ int mouse_tc_GlobRef   (pTHX_ SV* const sv);
 int mouse_tc_FileHandle(pTHX_ SV* const sv);
 int mouse_tc_Object    (pTHX_ SV* const sv);
 
-CV* generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name);
+CV* mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name);
 
 XS(XS_Mouse_parameterized_check);
 
