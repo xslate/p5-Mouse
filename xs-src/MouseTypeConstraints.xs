@@ -86,11 +86,10 @@ mouse_builtin_tc_check(pTHX_ mouse_tc const tc, SV* const sv) {
     case MOUSE_TC_CLASS_NAME: return mouse_tc_ClassName(aTHX_ sv);
     case MOUSE_TC_ROLE_NAME:  return mouse_tc_RoleName(aTHX_ sv);
     default:
-        /* custom type constraints */
         NOOP;
     }
 
-    croak("Custom type constraint is not yet implemented");
+    croak("Mouse-panic: unrecognized type constraint id: %d", (int)tc);
     return FALSE; /* not reached */
 }
 
@@ -109,22 +108,23 @@ mouse_tc_Any(pTHX_ SV* const sv PERL_UNUSED_DECL) {
 int
 mouse_tc_Bool(pTHX_ SV* const sv) {
     assert(sv);
-    if(SvOK(sv)){
+
+    if(SvTRUE(sv)){
         if(SvIOKp(sv)){
-            return SvIVX(sv) == 1 || SvIVX(sv) == 0;
+            return SvIVX(sv) == 1;
         }
         else if(SvNOKp(sv)){
-            return SvNVX(sv) == 1.0 || SvNVX(sv) == 0.0;
+            return SvNVX(sv) == 1.0;
         }
-        else if(SvPOKp(sv)){ /* "" or "1" or "0" */
-            return SvCUR(sv) == 0
-                || ( SvCUR(sv) == 1 && ( SvPVX(sv)[0] == '1' || SvPVX(sv)[0] == '0' ) );
+        else if(SvPOKp(sv)){ /* "1" */
+            return SvCUR(sv) == 1 && SvPVX(sv)[0] == '1';
         }
         else{
             return FALSE;
         }
     }
     else{
+        /* false must be boolean */
         return TRUE;
     }
 }
