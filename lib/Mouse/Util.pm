@@ -75,9 +75,9 @@ BEGIN {
     *get_all_metaclass_names     = \&Mouse::Meta::Module::get_all_metaclass_names;
 
     # is-a predicates
-    _generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
-    _generate_isa_predicate_for('Mouse::Meta::Class'          => 'is_a_metaclass');
-    _generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
+    generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
+    generate_isa_predicate_for('Mouse::Meta::Class'          => 'is_a_metaclass');
+    generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
 }
 
 

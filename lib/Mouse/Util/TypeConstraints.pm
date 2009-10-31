@@ -155,7 +155,7 @@ sub class_type {
     my $class = $options->{class} || $name;
     return _create_type 'subtype', $name => (
         as           => 'Object',
-        optimized_as => Mouse::Util::_generate_isa_predicate_for($class),
+        optimized_as => Mouse::Util::generate_isa_predicate_for($class),
 
         type => 'Class',
     );

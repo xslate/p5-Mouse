@@ -76,7 +76,7 @@ sub get_code_ref{
     return *{$package . '::' . $name}{CODE};
 }
 
-sub _generate_isa_predicate_for {
+sub generate_isa_predicate_for {
     my($for_class, $name) = @_;
 
     my $predicate = sub{ Scalar::Util::blessed($_[0]) && $_[0]->isa($for_class) };

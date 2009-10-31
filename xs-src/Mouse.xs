@@ -87,7 +87,7 @@ OUTPUT:
     RETVAL
 
 void
-_generate_isa_predicate_for(SV* klass, const char* predicate_name = NULL)
+generate_isa_predicate_for(SV* klass, const char* predicate_name = NULL)
 PPCODE:
 {
     STRLEN klass_len;

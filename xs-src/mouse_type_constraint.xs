@@ -275,8 +275,6 @@ START_MY_CXT
 #define MG_klass_pv(mg)    ((mg)->mg_ptr)
 #define MG_klass_len(mg)   ((mg)->mg_len)
 
-static MGVTBL mouse_util_type_constraints_vtbl;
-
 const char*
 mouse_canonicalize_package_name(const char* name){
 
