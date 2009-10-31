@@ -54,7 +54,7 @@ for my $file (uniq
     $contents =~ s/__END__\b.*//s;          # remove documentation
     $contents =~ s/1;\n*$//;                # remove success indicator
 
-    $mouse_tiny .= "BEGIN{ # #file\n";
+    $mouse_tiny .= "BEGIN{ # $file\n";
     $mouse_tiny .= $contents;
     $mouse_tiny .= "}\n";
 }
