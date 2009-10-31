@@ -277,8 +277,8 @@ START_MY_CXT
 
 static MGVTBL mouse_util_type_constraints_vtbl;
 
-static const char*
-canonicalize_package_name(const char* name){
+const char*
+mouse_canonicalize_package_name(const char* name){
 
     /* "::Foo" -> "Foo" */
     if(name[0] == ':' && name[1] == ':'){
@@ -301,7 +301,7 @@ lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
 
     while(svp != end){
         assert(SvPVX(*svp));
-        if(strEQ(klass_pv, canonicalize_package_name(SvPVX(*svp)))){
+        if(strEQ(klass_pv, mouse_canonicalize_package_name(SvPVX(*svp)))){
             return TRUE;
         }
         svp++;
@@ -349,7 +349,7 @@ instance_isa(pTHX_ SV* const instance, const MAGIC* const mg){
     }
 }
 
-XS(XS_isa_check); /* -W */
+
 XS(XS_isa_check){
     dVAR;
     dXSARGS;
@@ -373,7 +373,7 @@ XS(XS_isa_check){
     XSRETURN(1);
 }
 
-XS(XS_isa_check_for_universal); /* -W */
+
 XS(XS_isa_check_for_universal){
     dVAR;
     dXSARGS;
@@ -424,44 +424,6 @@ CODE:
 }
 
 #endif /* !USE_ITHREADS */
-
-void
-_generate_class_type_for(SV* klass, const char* predicate_name = NULL)
-PPCODE:
-{
-    STRLEN klass_len;
-    const char* klass_pv;
-    HV* stash;
-    CV* xsub;
-
-    if(!SvOK(klass)){
-        croak("You must define a class name for generate_for");
-    }
-    klass_pv = SvPV_const(klass, klass_len);
-    klass_pv = canonicalize_package_name(klass_pv);
-
-    if(strNE(klass_pv, "UNIVERSAL")){
-        xsub = newXS(predicate_name, XS_isa_check, __FILE__);
-
-        stash = gv_stashpvn(klass_pv, klass_len, GV_ADD);
-
-        CvXSUBANY(xsub).any_ptr = sv_magicext(
-            (SV*)xsub,
-            (SV*)stash, /* mg_obj */
-            PERL_MAGIC_ext,
-            &mouse_util_type_constraints_vtbl,
-            klass_pv,   /* mg_ptr */
-            klass_len   /* mg_len */
-        );
-    }
-    else{
-        xsub = newXS(predicate_name, XS_isa_check_for_universal, __FILE__);
-    }
-
-    if(predicate_name == NULL){ /* anonymous predicate */
-        XPUSHs( newRV_noinc((SV*)xsub) );
-    }
-}
 
 void
 Item(SV* sv = &PL_sv_undef)

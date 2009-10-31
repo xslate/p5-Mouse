@@ -143,7 +143,7 @@ sub get_method_list {
 
         my $superclasses;
         if(exists $options{superclasses}){
-            if(Mouse::Util::TypeConstraints::_is_a_metarole($self)){
+            if(Mouse::Util::is_a_metarole($self)){
                 delete $options{superclasses};
             }
             else{

@@ -176,6 +176,10 @@ int mouse_tc_GlobRef   (pTHX_ SV* const sv);
 int mouse_tc_FileHandle(pTHX_ SV* const sv);
 int mouse_tc_Object    (pTHX_ SV* const sv);
 
+const char* mouse_canonicalize_package_name(const char* name);
+
+XS(XS_isa_check);
+XS(XS_isa_check_for_universal);
 
 #endif /* !MOUSE_H */
 

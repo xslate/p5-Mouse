@@ -76,15 +76,10 @@ sub get_code_ref{
     return *{$package . '::' . $name}{CODE};
 }
 
-package
-    Mouse::Util::TypeConstraints;
-
-use Scalar::Util qw(blessed looks_like_number openhandle);
-
-sub _generate_class_type_for{
+sub _generate_isa_predicate_for {
     my($for_class, $name) = @_;
 
-    my $predicate = sub{ blessed($_[0]) && $_[0]->isa($for_class) };
+    my $predicate = sub{ Scalar::Util::blessed($_[0]) && $_[0]->isa($for_class) };
 
     if(defined $name){
         no strict 'refs';
@@ -95,6 +90,11 @@ sub _generate_class_type_for{
     return $predicate;
 }
 
+
+package
+    Mouse::Util::TypeConstraints;
+
+use Scalar::Util qw(blessed looks_like_number openhandle);
 
 sub Any        { 1 }
 sub Item       { 1 }

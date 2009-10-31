@@ -73,7 +73,13 @@ BEGIN {
     *get_metaclass_by_name       = \&Mouse::Meta::Module::get_metaclass_by_name;
     *get_all_metaclass_instances = \&Mouse::Meta::Module::get_all_metaclass_instances;
     *get_all_metaclass_names     = \&Mouse::Meta::Module::get_all_metaclass_names;
+
+    # is-a predicates
+    _generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
+    _generate_isa_predicate_for('Mouse::Meta::Class'          => 'is_a_metaclass');
+    _generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
 }
+
 
 # Moose::Util compatible utilities
 
@@ -259,7 +265,7 @@ sub apply_all_roles {
         my $role_name = $roles[-1][0];
         load_class($role_name);
 
-        Mouse::Util::TypeConstraints::_is_a_metarole( get_metaclass_by_name($role_name) )
+        is_a_metarole( get_metaclass_by_name($role_name) )
             || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
     }
 
