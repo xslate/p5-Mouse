@@ -32,16 +32,6 @@ my $cxsa_is_loaded = eval q{
         lazy    => 1,
         default => 42,
     );
-    has with_tc => (
-        is  => 'rw',
-        isa => 'Int',
-    );
-
-    has with_tc_class_type => (
-        is  => 'rw',
-        isa => 'Foo',
-    );
-
     __PACKAGE__->meta->make_immutable;
 }
 {
@@ -55,15 +45,6 @@ my $cxsa_is_loaded = eval q{
         lazy    => 1,
         default => 42,
     );
-    has with_tc => (
-        is  => 'rw',
-        isa => 'Int',
-    );
-    has with_tc_class_type => (
-        is  => 'rw',
-        isa => 'Foo',
-    );
-
     __PACKAGE__->meta->make_immutable;
 }
 
@@ -136,43 +117,6 @@ cmpthese -1 => {
         my $x;
         $x = $cx->simple();
         $x = $cx->simple();
-    },
-    ) : (),
-};
-
-print "\nSETTING for attributes with type constraints 'Int' (except for C::XSAccessor)\n";
-cmpthese -1 => {
-    'Mouse' => sub{
-        $mi->with_tc(10);
-        $mi->with_tc(10);
-    },
-    'Moose' => sub{
-        $mx->with_tc(10);
-        $mx->with_tc(10);
-    },
-    $cxsa_is_loaded ? (
-    'C::XSAccessor' => sub{
-        $cx->simple(10);
-        $cx->simple(10);
-    },
-    ) : (),
-};
-
-print "\nSETTING for attributes with type constraints 'Foo' (except for C::XSAccessor)\n";
-my $foo = Foo->new;
-cmpthese -1 => {
-    'Mouse' => sub{
-        $mi->with_tc_class_type($foo);
-        $mi->with_tc_class_type($foo);
-    },
-    'Moose' => sub{
-        $mx->with_tc_class_type($foo);
-        $mx->with_tc_class_type($foo);
-    },
-    $cxsa_is_loaded ? (
-    'C::XSAccessor' => sub{
-        $cx->simple($foo);
-        $cx->simple($foo);
     },
     ) : (),
 };
