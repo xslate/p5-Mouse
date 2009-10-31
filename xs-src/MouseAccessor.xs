@@ -196,51 +196,58 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
     return value;
 }
 
+#define PUSH_VALUE(value, flags) STMT_START { \
+        if((flags) & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){ \
+            mouse_push_values(aTHX_ value, (flags));                       \
+        }                                                                  \
+        else{                                                              \
+            dSP;                                                           \
+            XPUSHs(value ? value : &PL_sv_undef);                          \
+            PUTBACK;                                                       \
+        }                                                                  \
+    } STMT_END                                                             \
 
 /* pushes return values, does auto-deref if needed */
 static void
 mouse_push_values(pTHX_ SV* const value, U16 const flags){
     dSP;
 
-    if(flags & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){
-        if(!(value && SvOK(value))){
-            return;
+    assert( flags & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY );
+
+    if(!(value && SvOK(value))){
+        return;
+    }
+
+    if(flags & MOUSEf_TC_IS_ARRAYREF){
+        AV* const av = (AV*)SvRV(value);
+        I32 len;
+        I32 i;
+
+        if(SvTYPE(av) != SVt_PVAV){
+            croak("Mouse-panic: Not an ARRAY reference");
         }
 
-        if(flags & MOUSEf_TC_IS_ARRAYREF){
-            AV* const av = (AV*)SvRV(value);
-            I32 len;
-            I32 i;
-
-            if(SvTYPE(av) != SVt_PVAV){
-                croak("Mouse-panic: Not an ARRAY reference");
-            }
-
-            len = av_len(av) + 1;
-            EXTEND(SP, len);
-            for(i = 0; i < len; i++){
-                SV** const svp = av_fetch(av, i, FALSE);
-                PUSHs(svp ? *svp : &PL_sv_undef);
-            }
-        }
-        else if(flags & MOUSEf_TC_IS_HASHREF){
-            HV* const hv = (HV*)SvRV(value);
-            HE* he;
-
-            if(SvTYPE(hv) != SVt_PVHV){
-                croak("Mouse-panic: Not a HASH reference");
-            }
-
-            hv_iterinit(hv);
-            while((he = hv_iternext(hv))){
-                EXTEND(SP, 2);
-                PUSHs(hv_iterkeysv(he));
-                PUSHs(hv_iterval(hv, he));
-            }
+        len = av_len(av) + 1;
+        EXTEND(SP, len);
+        for(i = 0; i < len; i++){
+            SV** const svp = av_fetch(av, i, FALSE);
+            PUSHs(svp ? *svp : &PL_sv_undef);
         }
     }
-    else{
-        XPUSHs(value ? value : &PL_sv_undef);
+    else if(flags & MOUSEf_TC_IS_HASHREF){
+        HV* const hv = (HV*)SvRV(value);
+        HE* he;
+
+        if(SvTYPE(hv) != SVt_PVHV){
+            croak("Mouse-panic: Not a HASH reference");
+        }
+
+        hv_iterinit(hv);
+        while((he = hv_iternext(hv))){
+            EXTEND(SP, 2);
+            PUSHs(hv_iterkeysv(he));
+            PUSHs(hv_iterval(hv, he));
+        }
     }
 
     PUTBACK;
@@ -285,7 +292,7 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
         value = mouse_instance_set_slot(aTHX_ self, slot, value);
     }
 
-    mouse_push_values(aTHX_ value, flags);
+    PUSH_VALUE(value, flags);
 }
 
 static void
@@ -317,7 +324,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         /* need not SPAGAIN */
     }
 
-    mouse_push_values(aTHX_ value, flags);
+    PUSH_VALUE(value, flags);
 }
 
 XS(mouse_xs_accessor)
