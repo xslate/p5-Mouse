@@ -2,7 +2,7 @@
 
 #define CHECK_INSTANCE(instance) STMT_START{                          \
         if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){ \
-            croak("Invalid object for instance managers");            \
+            croak("Invalid object instance");                         \
         }                                                             \
     } STMT_END
 
@@ -62,11 +62,7 @@ mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
      *       before calling methods, so SvGETMAGIC(self) is not necessarily needed here.
      */
 
-    self = ST(0);
-    if(!IsObject(self)){
-        croak("Cant call %s as a class method", GvNAME(CvGV(cv)));
-    }
-    return self;
+    return ST(0);
 }
 
 
@@ -475,7 +471,7 @@ XS(mouse_xs_simple_predicate)
     XSRETURN(1);
 }
 
-/* simple instance slot accessor */
+/* simple instance slot accessor (or Mouse::Meta::Instance) */
 
 SV*
 mouse_instance_create(pTHX_ HV* const stash) {
