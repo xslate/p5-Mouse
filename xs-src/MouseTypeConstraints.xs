@@ -381,41 +381,45 @@ mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
 static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
 CV*
-mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name){
-    STRLEN klass_len;
-    const char* klass_pv = SvPV_const(klass, klass_len);
-    CV* xsub;
-    SV*   mg_obj;
-    void* mg_ptr;
-
-    klass_pv = mouse_canonicalize_package_name(klass_pv);
-
-    if(strNE(klass_pv, "UNIVERSAL")){
-        mg_obj = (SV*)gv_stashpvn(klass_pv, klass_len, GV_ADD);
-        mg_ptr = (void*)mouse_is_an_instance_of;
-
-    }
-    else{
-        mg_obj = NULL;
-        mg_ptr = (void*)mouse_is_an_instance_of_universal;
-    }
-
-    xsub = newXS(predicate_name, XS_Mouse_parameterized_check, __FILE__);
+mouse_tc_parameterize(pTHX_ const char* const name, check_fptr_t const fptr, SV* const param) {
+    CV* const xsub = newXS(name, XS_Mouse_parameterized_check, __FILE__);
 
     CvXSUBANY(xsub).any_ptr = sv_magicext(
         (SV*)xsub,
-        mg_obj, /* refcnt will be increased */
+        param,       /* mg_obj: refcnt will be increased */
         PERL_MAGIC_ext,
         &mouse_util_type_constraints_vtbl,
-        mg_ptr,
-        0   /* indicates static data */
+        (void*)fptr, /* mg_ptr */
+        0            /* mg_len: 0 for static data */
     );
 
-    if(!predicate_name){
+    if(!name){
         sv_2mortal((SV*)xsub);
     }
 
     return xsub;
+}
+
+CV*
+mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name){
+    STRLEN klass_len;
+    const char* klass_pv = SvPV_const(klass, klass_len);
+    SV*   param;
+    void* fptr;
+
+    klass_pv = mouse_canonicalize_package_name(klass_pv);
+
+    if(strNE(klass_pv, "UNIVERSAL")){
+        param = (SV*)gv_stashpvn(klass_pv, klass_len, GV_ADD);
+        fptr = (void*)mouse_is_an_instance_of;
+
+    }
+    else{
+        param = NULL;
+        fptr = (void*)mouse_is_an_instance_of_universal;
+    }
+
+    return mouse_tc_parameterize(aTHX_ predicate_name, fptr, param);
 }
 
 XS(XS_Mouse_parameterized_check) {
