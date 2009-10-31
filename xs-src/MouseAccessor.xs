@@ -52,8 +52,6 @@ static MGVTBL mouse_accessor_vtbl; /* MAGIC identity */
 
 SV*
 mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
-    SV* self;
-
     if(items < 1){
         croak("Too few arguments for %s", GvNAME(CvGV(cv)));
     }
