@@ -162,18 +162,10 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
     }
 
     if(!SvOK(MOUSE_xa_tc_code(xa))){
-        XS(XS_Mouse__Util__TypeConstraints_Item); /* prototype defined in Mouse.xs */
-
         tc_code = mcall0s(tc, "_compiled_type_constraint");
-
-        if(SvROK(tc_code) && SvTYPE(SvRV(tc_code))
-            && CvXSUB((CV*)SvRV(tc_code)) == XS_Mouse__Util__TypeConstraints_Item){
-            /* built-in type constraints */
-            mouse_tc const id = CvXSUBANY((CV*)SvRV(tc_code)).any_i32;
-            av_store(xa, MOUSE_XA_TC_CODE, newSViv(id));
-        }
-        else{
-            av_store(xa, MOUSE_XA_TC_CODE, newSVsv(tc_code));
+        av_store(xa, MOUSE_XA_TC_CODE, newSVsv(tc_code));
+        if(!(SvROK(tc_code) && SvTYPE(SvRV(tc_code)) == SVt_PVCV)){
+            mouse_throw_error(MOUSE_xa_attribute(xa), tc, "Not a CODE reference");
         }
     }
     else{

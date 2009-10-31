@@ -14,12 +14,31 @@
 #define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))
 #endif
 
+typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
+
 int
 mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
-    if(SvIOK(tc_code)){ /* built-in type constraints */
-        return mouse_builtin_tc_check(aTHX_ SvIVX(tc_code), sv);
+    CV* cv;
+    assert(SvROK(tc_code) && SvTYPE(SvRV(tc_code)));
+
+    cv = (CV*)SvRV(tc_code);
+
+    if(CvISXSUB(cv)){ /* can be built-in tc */
+        if(CvXSUB(cv) == XS_Mouse__Util__TypeConstraints_Item){
+            assert(CvXSUBANY(cv).any_iv > 0);
+
+            return mouse_builtin_tc_check(aTHX_ CvXSUBANY(cv).any_iv, sv);
+        }
+        else if(CvXSUB(cv) == XS_Mouse_parameterized_check){
+            MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
+
+            assert(CvXSUBANY(cv).any_ptr != NULL);
+            return CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj /* stash */, sv);
+        }
     }
-    else {
+
+    /* user-defined type constraints */
+    {
         int ok;
         dSP;
 
@@ -403,7 +422,6 @@ XS(XS_Mouse_parameterized_check) {
     dVAR;
     dXSARGS;
     MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
-    typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
     if(items < 1){
         croak("Too few arguments for parameterized check functions");
