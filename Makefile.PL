@@ -1,4 +1,3 @@
-BEGIN{ $INC{'Module/Install/ExtraTests.pm'} = __FILE__ } # to disable the use of ExtrTests
 use strict;
 use warnings;
 use inc::Module::Install;
@@ -45,17 +44,19 @@ if(!defined $use_xs){
 }
 
 if($use_xs){
+    print "Mouse configured with XS.\n",
+          "You can try --pp option to configure it with Pure Perl.\n";
+    ;
+
     require Module::Install::XSUtil;
     Module::Install::XSUtil->VERSION(0.15); # for co-developpers
 
     use_ppport(3.19);
     cc_warnings();
     cc_src_paths('xs-src');
-
-    print "Mouse configured in XS (--xs)\n";
 }
 else{
-    print "Mouse configured in Pure Perl (--pp)\n";
+    print "Mouse configured with Pure Perl.\n";
 }
 
 if (author_context()) {
