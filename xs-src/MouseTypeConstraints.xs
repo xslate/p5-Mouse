@@ -402,7 +402,8 @@ setup_my_cxt(pTHX_ pMY_CXT){
 
 MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Util::TypeConstraints
 
-PROTOTYPES: DISABLE
+PROTOTYPES:   DISABLE
+VERSIONCHECK: DISABLE
 
 BOOT:
 {

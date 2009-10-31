@@ -237,3 +237,116 @@ mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags){
     }
     return NULL;
 }
+
+MODULE = Mouse::Util  PACKAGE = Mouse::Util
+
+PROTOTYPES:   DISABLE
+VERSIONCHECK: DISABLE
+
+bool
+is_class_loaded(SV* sv)
+
+void
+get_code_info(CV* code)
+PREINIT:
+    GV* gv;
+    HV* stash;
+PPCODE:
+    if((gv = CvGV(code)) && isGV(gv) && (stash = GvSTASH(gv))){
+        EXTEND(SP, 2);
+        mPUSHs(newSVpvn_share(HvNAME_get(stash), HvNAMELEN_get(stash), 0U));
+        mPUSHs(newSVpvn_share(GvNAME_get(gv), GvNAMELEN_get(gv), 0U));
+    }
+
+SV*
+get_code_package(CV* code)
+PREINIT:
+    HV* stash;
+CODE:
+    if(CvGV(code) && isGV(CvGV(code)) && (stash = GvSTASH(CvGV(code)))){
+        RETVAL = newSVpvn_share(HvNAME_get(stash), HvNAMELEN_get(stash), 0U);
+    }
+    else{
+        RETVAL = &PL_sv_no;
+    }
+OUTPUT:
+    RETVAL
+
+CV*
+get_code_ref(SV* package, SV* name)
+CODE:
+{
+    HV* stash;
+    HE* he;
+
+    if(!SvOK(package)){
+        croak("You must define a package name");
+    }
+    if(!SvOK(name)){
+        croak("You must define a subroutine name");
+    }
+
+    stash = gv_stashsv(package, FALSE);
+    if(!stash){
+        XSRETURN_UNDEF;
+    }
+    he = hv_fetch_ent(stash, name, FALSE, 0U);
+    if(he){
+        GV* const gv = (GV*)hv_iterval(stash, he);
+        if(!isGV(gv)){ /* special constant or stub */
+            STRLEN len;
+            const char* const pv = SvPV_const(name, len);
+            gv_init(gv, stash, pv, len, GV_ADDMULTI);
+        }
+        RETVAL = GvCVu(gv);
+    }
+    else{
+        RETVAL = NULL;
+    }
+
+    if(!RETVAL){
+        XSRETURN_UNDEF;
+    }
+}
+OUTPUT:
+    RETVAL
+
+void
+generate_isa_predicate_for(SV* klass, const char* predicate_name = NULL)
+PPCODE:
+{
+    STRLEN klass_len;
+    const char* klass_pv;
+    HV* stash;
+    CV* xsub;
+
+    if(!SvOK(klass)){
+        croak("You must define a class name for generate_for");
+    }
+    klass_pv = SvPV_const(klass, klass_len);
+    klass_pv = mouse_canonicalize_package_name(klass_pv);
+
+    if(strNE(klass_pv, "UNIVERSAL")){
+        static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
+
+        xsub = newXS(predicate_name, XS_isa_check, __FILE__);
+
+        stash = gv_stashpvn(klass_pv, klass_len, GV_ADD);
+
+        CvXSUBANY(xsub).any_ptr = sv_magicext(
+            (SV*)xsub,
+            (SV*)stash, /* mg_obj */
+            PERL_MAGIC_ext,
+            &mouse_util_type_constraints_vtbl,
+            klass_pv,   /* mg_ptr */
+            klass_len   /* mg_len */
+        );
+    }
+    else{
+        xsub = newXS(predicate_name, XS_isa_check_for_universal, __FILE__);
+    }
+
+    if(predicate_name == NULL){ /* anonymous predicate */
+        XPUSHs( newRV_noinc((SV*)xsub) );
+    }
+}
