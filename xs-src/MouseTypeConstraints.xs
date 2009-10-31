@@ -184,7 +184,7 @@ mouse_tc_RoleName(pTHX_ SV* const sv) {
         meta = POPs;
         PUTBACK;
 
-        ok =  is_instance_of(meta, newSVpvs_flags("Mouse::Meta::Role", SVs_TEMP));
+        ok =  is_an_instance_of("Mouse::Meta::Role", meta);
 
         FREETMPS;
         LEAVE;
@@ -252,7 +252,7 @@ mouse_tc_FileHandle(pTHX_ SV* const sv) {
         }
     }
 
-    return is_instance_of(sv, newSVpvs_flags("IO::Handle", SVs_TEMP));
+    return is_an_instance_of("IO::Handle", sv);
 }
 
 int
@@ -312,7 +312,7 @@ mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance){
     assert(stash);
     assert(SvTYPE(stash) == SVt_PVHV);
 
-    if(SvROK(instance) && SvOBJECT(SvRV(instance))){
+    if(IsObject(instance)){
         dMY_CXT;
         HV* const instance_stash = SvSTASH(SvRV(instance));
         GV* const instance_isa   = gv_fetchmeth_autoload(instance_stash, "isa", sizeof("isa")-1, 0);

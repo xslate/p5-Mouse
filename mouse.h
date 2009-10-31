@@ -57,8 +57,7 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
 #define is_class_loaded(sv) mouse_is_class_loaded(aTHX_ sv)
 bool mouse_is_class_loaded(pTHX_ SV*);
 
-#define is_instance_of(sv, klass) mouse_is_instance_of(aTHX_ sv, klass)
-bool mouse_is_instance_of(pTHX_ SV* const sv, SV* const klass);
+#define is_an_instance_of(klass, sv) mouse_is_an_instance_of(aTHX_ gv_stashpvs(klass, GV_ADD), (sv))
 
 #define IsObject(sv) (SvROK(sv) && SvOBJECT(SvRV(sv)))
 
@@ -177,6 +176,8 @@ int mouse_tc_FileHandle(pTHX_ SV* const sv);
 int mouse_tc_Object    (pTHX_ SV* const sv);
 
 CV* mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name);
+
+int mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance);
 
 XS(XS_Mouse_parameterized_check);
 

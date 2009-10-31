@@ -112,31 +112,6 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
-
-/* equivalent to "blessed($x) && $x->isa($klass)" */
-bool
-mouse_is_instance_of(pTHX_ SV* const sv, SV* const klass){
-    assert(sv);
-    assert(klass);
-
-    if(IsObject(sv) && SvOK(klass)){
-        bool ok;
-
-        ENTER;
-        SAVETMPS;
-
-        ok = SvTRUEx(mcall1s(sv, "isa", klass));
-
-        FREETMPS;
-        LEAVE;
-
-        return ok;
-    }
-
-    return FALSE;
-}
-
-
 bool
 mouse_is_class_loaded(pTHX_ SV * const klass){
     HV *stash;
