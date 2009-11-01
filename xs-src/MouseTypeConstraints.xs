@@ -63,6 +63,7 @@ mouse_builtin_tc_check(pTHX_ mouse_tc const tc, SV* const sv) {
     switch(tc){
     case MOUSE_TC_ANY:        return mouse_tc_Any(aTHX_ sv);
     case MOUSE_TC_ITEM:       return mouse_tc_Any(aTHX_ sv);
+    case MOUSE_TC_MAYBE:      return mouse_tc_Any(aTHX_ sv);
     case MOUSE_TC_UNDEF:      return mouse_tc_Undef(aTHX_ sv);
     case MOUSE_TC_DEFINED:    return mouse_tc_Defined(aTHX_ sv);
     case MOUSE_TC_BOOL:       return mouse_tc_Bool(aTHX_ sv);
@@ -278,7 +279,7 @@ mouse_tc_Object(pTHX_ SV* const sv) {
 
 /* Parameterized type constraints */
 
-int
+static int
 mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
     if(mouse_tc_ArrayRef(aTHX_ sv)){
         AV* const av  = (AV*)SvRV(sv);
@@ -296,7 +297,7 @@ mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
     return FALSE;
 }
 
-int
+static int
 mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
     if(mouse_tc_HashRef(aTHX_ sv)){
         HV* const hv  = (HV*)SvRV(sv);
@@ -315,11 +316,46 @@ mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
     return FALSE;
 }
 
-int
+static int
 mouse_parameterized_Maybe(pTHX_ SV* const param, SV* const sv) {
     if(SvOK(sv)){
         return mouse_tc_check(aTHX_ param, sv);
     }
+    return TRUE;
+}
+
+static int
+mouse_types_union_check(pTHX_ AV* const types, SV* const sv) {
+    I32 const len = AvFILLp(types) + 1;
+    I32 i;
+
+    for(i = 0; i < len; i++){
+        if(mouse_tc_check(aTHX_ AvARRAY(types)[i], sv)){
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static int
+mouse_types_check(pTHX_ AV* const types, SV* const sv) {
+    I32 const len = AvFILLp(types) + 1;
+    I32 i;
+
+    ENTER;
+    SAVE_DEFSV;
+    DEFSV_set(sv);
+
+    for(i = 0; i < len; i++){
+        if(!mouse_tc_check(aTHX_ AvARRAY(types)[i], sv)){
+            LEAVE;
+            return FALSE;
+        }
+    }
+
+    LEAVE;
+
     return TRUE;
 }
 
@@ -567,4 +603,86 @@ CODE:
 }
 OUTPUT:
     RETVAL
+
+MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Meta::TypeConstraint
+
+void
+compile_type_constraint(SV* self)
+CODE:
+{
+    AV* const checks = newAV();
+    SV* check; /* check function */
+    SV* parent;
+    SV* types_ref;
+
+    sv_2mortal((SV*)checks);
+
+    for(parent = get_slots(self, "parent"); parent; parent = get_slots(parent, "parent")){
+        check = get_slots(parent, "hand_optimized_type_constraint");
+        if(check && SvOK(check)){
+            if(!mouse_tc_CodeRef(aTHX_ check)){
+                croak("Not a CODE reference");
+            }
+            av_unshift(checks, 1);
+            av_store(checks, 0, newSVsv(check));
+            break; /* a hand optimized constraint must include all the parent */
+        }
+
+        check = get_slots(parent, "constraint");
+        if(check && SvOK(check)){
+            if(!mouse_tc_CodeRef(aTHX_ check)){
+                croak("Not a CODE reference");
+            }
+            av_unshift(checks, 1);
+            av_store(checks, 0, newSVsv(check));
+        }
+    }
+
+    check = get_slots(self, "constraint");
+    if(check && SvOK(check)){
+        if(!mouse_tc_CodeRef(aTHX_ check)){
+            croak("Not a CODE reference");
+        }
+        av_push(checks, newSVsv(check));
+    }
+
+    types_ref = get_slots(self, "type_constraints");
+    if(types_ref && SvOK(types_ref)){ /* union type */
+        AV* types;
+        AV* union_checks;
+        CV* union_check;
+        I32 len;
+        I32 i;
+
+        if(!mouse_tc_ArrayRef(aTHX_ types_ref)){
+            croak("Not an ARRAY reference");
+        }
+        types = (AV*)SvRV(types_ref);
+        len = av_len(types) + 1;
+
+        union_checks = newAV();
+        sv_2mortal((SV*)union_checks);
+
+        for(i = 0; i < len; i++){
+            SV* const tc = *av_fetch(types, i, TRUE);
+            SV* const c  = get_slots(tc, "compiled_type_constraint");
+            if(!(c && mouse_tc_CodeRef(aTHX_ c))){
+                sv_dump(self);
+                croak("'%"SVf"' has no compiled type constraint", self);
+            }
+            av_push(union_checks, newSVsv(c));
+        }
+
+        union_check = mouse_tc_parameterize(aTHX_ NULL, (check_fptr_t)mouse_types_union_check, (SV*)union_checks);
+        av_push(checks, newRV_inc((SV*)union_check));
+    }
+
+    if(AvFILLp(checks) < 0){
+        check = newRV_inc((SV*)get_cv("Mouse::Util::TypeConstraints::Any", TRUE));
+    }
+    else{
+        check = newRV_inc((SV*)mouse_tc_parameterize(aTHX_ NULL, (check_fptr_t)mouse_types_check, (SV*)checks));
+    }
+    set_slots(self, "compiled_type_constraint", check);
+}
 
