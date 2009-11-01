@@ -31,7 +31,7 @@ HV*
 namespace(SV* self)
 CODE:
 {
-    SV* const package = get_slot(aTHX_ self, mouse_package);
+    SV* const package = get_slot(self, mouse_package);
     if(!(package && SvOK(package))){
         croak("No package name defined");
     }
@@ -45,8 +45,8 @@ void
 add_method(SV* self, SV* name, SV* code, ...)
 CODE:
 {
-    SV* const package = get_slot(aTHX_ self, mouse_package); /* $self->{package} */
-    SV* const methods = get_slot(aTHX_ self, mouse_methods); /* $self->{methods} */
+    SV* const package = get_slot(self, mouse_package); /* $self->{package} */
+    SV* const methods = get_slot(self, mouse_methods); /* $self->{methods} */
     GV* gv;
     SV* code_ref;
 
