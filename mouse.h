@@ -133,9 +133,9 @@ XS(mouse_xs_reader);
 XS(mouse_xs_writer);
 
 typedef enum mouse_tc{
-     MOUSE_TC_MAYBE,
      MOUSE_TC_ANY,
      MOUSE_TC_ITEM,
+     MOUSE_TC_MAYBE,
      MOUSE_TC_UNDEF,
      MOUSE_TC_DEFINED,
      MOUSE_TC_BOOL,

@@ -22,11 +22,9 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     assert(SvTYPE(cv) == SVt_PVCV);
 
     if(CvXSUB(cv) == XS_Mouse__Util__TypeConstraints_Item){ /* built-in */
-        assert(CvXSUBANY(cv).any_iv > 0);
-
         return mouse_builtin_tc_check(aTHX_ CvXSUBANY(cv).any_iv, sv);
     }
-    else if(CvXSUB(cv) == XS_Mouse_parameterized_check){ /* built-in, parameterizad */
+    else if(CvXSUB(cv) == XS_Mouse_parameterized_check){ /* complex type constraints */
         MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
 
         assert(CvXSUBANY(cv).any_ptr != NULL);
