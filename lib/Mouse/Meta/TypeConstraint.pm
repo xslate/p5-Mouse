@@ -96,7 +96,7 @@ sub compile_type_constraint{
 
     # add parents first
     my @checks;
-    for(my $parent = $self->parent; defined $parent; $parent = $parent->parent){
+    for(my $parent = $self->{parent}; defined $parent; $parent = $parent->{parent}){
          if($parent->{hand_optimized_type_constraint}){
             unshift @checks, $parent->{hand_optimized_type_constraint};
             last; # a hand optimized constraint must include all the parents
@@ -112,7 +112,7 @@ sub compile_type_constraint{
     }
 
     if($self->{type_constraints}){ # Union
-        my @types = map{ $_->_compiled_type_constraint } @{ $self->{type_constraints} };
+        my @types = map{ $_->{compiled_type_constraint} } @{ $self->{type_constraints} };
         push @checks, sub{
             foreach my $c(@types){
                 return 1 if $c->($_[0]);
@@ -123,14 +123,6 @@ sub compile_type_constraint{
 
     if(@checks == 0){
         $self->{compiled_type_constraint} = $null_check;
-    }
-    elsif(@checks == 1){
-        my $c = $checks[0];
-        $self->{compiled_type_constraint} = sub{
-            my(@args) = @_;
-            local $_ = $args[0];
-            return $c->(@args);
-        };
     }
     else{
         $self->{compiled_type_constraint} =  sub{
