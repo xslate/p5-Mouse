@@ -21,13 +21,11 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     CV* const cv = (CV*)SvRV(tc_code);
     assert(SvTYPE(cv) == SVt_PVCV);
 
-    if(CvXSUB(cv) == XS_Mouse__Util__TypeConstraints_Item){ /* built-in */
-        return mouse_builtin_tc_check(aTHX_ CvXSUBANY(cv).any_iv, sv);
-    }
-    else if(CvXSUB(cv) == XS_Mouse_parameterized_check){ /* complex type constraints */
+    if(CvXSUB(cv) == XS_Mouse_constraint_check){ /* built-in type constraints */
         MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
 
         assert(CvXSUBANY(cv).any_ptr != NULL);
+        assert(mg->mg_ptr            != NULL);
 
         /* call the check function directly, skipping call_sv() */
         return CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, sv);
@@ -56,52 +54,19 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     }
 }
 
-int
-mouse_builtin_tc_check(pTHX_ mouse_tc const tc, SV* const sv) {
-    switch(tc){
-    case MOUSE_TC_ANY:        return mouse_tc_Any(aTHX_ sv);
-    case MOUSE_TC_ITEM:       return mouse_tc_Any(aTHX_ sv);
-    case MOUSE_TC_MAYBE:      return mouse_tc_Any(aTHX_ sv);
-    case MOUSE_TC_UNDEF:      return mouse_tc_Undef(aTHX_ sv);
-    case MOUSE_TC_DEFINED:    return mouse_tc_Defined(aTHX_ sv);
-    case MOUSE_TC_BOOL:       return mouse_tc_Bool(aTHX_ sv);
-    case MOUSE_TC_VALUE:      return mouse_tc_Value(aTHX_ sv);
-    case MOUSE_TC_REF:        return mouse_tc_Ref(aTHX_ sv);
-    case MOUSE_TC_STR:        return mouse_tc_Str(aTHX_ sv);
-    case MOUSE_TC_NUM:        return mouse_tc_Num(aTHX_ sv);
-    case MOUSE_TC_INT:        return mouse_tc_Int(aTHX_ sv);
-    case MOUSE_TC_SCALAR_REF: return mouse_tc_ScalarRef(aTHX_ sv);
-    case MOUSE_TC_ARRAY_REF:  return mouse_tc_ArrayRef(aTHX_ sv);
-    case MOUSE_TC_HASH_REF:   return mouse_tc_HashRef(aTHX_ sv);
-    case MOUSE_TC_CODE_REF:   return mouse_tc_CodeRef(aTHX_ sv);
-    case MOUSE_TC_GLOB_REF:   return mouse_tc_GlobRef(aTHX_ sv);
-    case MOUSE_TC_FILEHANDLE: return mouse_tc_FileHandle(aTHX_ sv);
-    case MOUSE_TC_REGEXP_REF: return mouse_tc_RegexpRef(aTHX_ sv);
-    case MOUSE_TC_OBJECT:     return mouse_tc_Object(aTHX_ sv);
-    case MOUSE_TC_CLASS_NAME: return mouse_tc_ClassName(aTHX_ sv);
-    case MOUSE_TC_ROLE_NAME:  return mouse_tc_RoleName(aTHX_ sv);
-    default:
-        NOOP;
-    }
-
-    croak("Mouse-panic: unrecognized type constraint id: %d", (int)tc);
-    return FALSE; /* not reached */
-}
-
-
 /*
     The following type check functions return an integer, not a bool, to keep them simple,
     so if you assign these return value to bool variable, you must use "expr ? TRUE : FALSE".
 */
 
 int
-mouse_tc_Any(pTHX_ SV* const sv PERL_UNUSED_DECL) {
+mouse_tc_Any(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv PERL_UNUSED_DECL) {
     assert(sv);
     return TRUE;
 }
 
 int
-mouse_tc_Bool(pTHX_ SV* const sv) {
+mouse_tc_Bool(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
 
     if(SvTRUE(sv)){
@@ -125,31 +90,31 @@ mouse_tc_Bool(pTHX_ SV* const sv) {
 }
 
 int
-mouse_tc_Undef(pTHX_ SV* const sv) {
+mouse_tc_Undef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return !SvOK(sv);
 }
 
 int
-mouse_tc_Defined(pTHX_ SV* const sv) {
+mouse_tc_Defined(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvOK(sv);
 }
 
 int
-mouse_tc_Value(pTHX_ SV* const sv) {
+mouse_tc_Value(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvOK(sv) && !SvROK(sv);
 }
 
 int
-mouse_tc_Num(pTHX_ SV* const sv) {
+mouse_tc_Num(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return LooksLikeNumber(sv);
 }
 
 int
-mouse_tc_Int(pTHX_ SV* const sv) {
+mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     if(SvIOKp(sv)){
         return TRUE;
@@ -168,19 +133,19 @@ mouse_tc_Int(pTHX_ SV* const sv) {
 }
 
 int
-mouse_tc_Str(pTHX_ SV* const sv) {
+mouse_tc_Str(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvOK(sv) && !SvROK(sv) && !isGV(sv);
 }
 
 int
-mouse_tc_ClassName(pTHX_ SV* const sv){ 
+mouse_tc_ClassName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv){ 
     assert(sv);
     return is_class_loaded(sv);
 }
 
 int
-mouse_tc_RoleName(pTHX_ SV* const sv) {
+mouse_tc_RoleName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     if(is_class_loaded(sv)){
         int ok;
@@ -209,49 +174,49 @@ mouse_tc_RoleName(pTHX_ SV* const sv) {
 }
 
 int
-mouse_tc_Ref(pTHX_ SV* const sv) {
+mouse_tc_Ref(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv);
 }
 
 int
-mouse_tc_ScalarRef(pTHX_ SV* const sv) {
+mouse_tc_ScalarRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv) && !SvOBJECT(SvRV(sv)) && (SvTYPE(SvRV(sv)) <= SVt_PVLV && !isGV(SvRV(sv)));
 }
 
 int
-mouse_tc_ArrayRef(pTHX_ SV* const sv) {
+mouse_tc_ArrayRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVAV;
 }
 
 int
-mouse_tc_HashRef(pTHX_ SV* const sv) {
+mouse_tc_HashRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVHV;
 }
 
 int
-mouse_tc_CodeRef(pTHX_ SV* const sv) {
+mouse_tc_CodeRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv)  && !SvOBJECT(SvRV(sv))&& SvTYPE(SvRV(sv)) == SVt_PVCV;
 }
 
 int
-mouse_tc_RegexpRef(pTHX_ SV* const sv) {
+mouse_tc_RegexpRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvRXOK(sv);
 }
 
 int
-mouse_tc_GlobRef(pTHX_ SV* const sv) {
+mouse_tc_GlobRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv) && !SvOBJECT(SvRV(sv)) && isGV(SvRV(sv));
 }
 
 int
-mouse_tc_FileHandle(pTHX_ SV* const sv) {
+mouse_tc_FileHandle(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     GV* gv;
     assert(sv);
 
@@ -270,7 +235,7 @@ mouse_tc_FileHandle(pTHX_ SV* const sv) {
 }
 
 int
-mouse_tc_Object(pTHX_ SV* const sv) {
+mouse_tc_Object(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     return SvROK(sv) && SvOBJECT(SvRV(sv)) && !SvRXOK(sv);
 }
@@ -279,7 +244,7 @@ mouse_tc_Object(pTHX_ SV* const sv) {
 
 static int
 mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
-    if(mouse_tc_ArrayRef(aTHX_ sv)){
+    if(mouse_tc_ArrayRef(aTHX_ NULL, sv)){
         AV* const av  = (AV*)SvRV(sv);
         I32 const len = av_len(av) + 1;
         I32 i;
@@ -297,7 +262,7 @@ mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
 
 static int
 mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
-    if(mouse_tc_HashRef(aTHX_ sv)){
+    if(mouse_tc_HashRef(aTHX_ NULL, sv)){
         HV* const hv  = (HV*)SvRV(sv);
         HE* he;
 
@@ -458,10 +423,10 @@ mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
 static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
 static CV*
-mouse_tc_parameterize(pTHX_ const char* const name, check_fptr_t const fptr, SV* const param) {
+mouse_tc_generate(pTHX_ const char* const name, check_fptr_t const fptr, SV* const param) {
     CV* xsub;
 
-    xsub = newXS(name, XS_Mouse_parameterized_check, __FILE__);
+    xsub = newXS(name, XS_Mouse_constraint_check, __FILE__);
     CvXSUBANY(xsub).any_ptr = sv_magicext(
         (SV*)xsub,
         param,       /* mg_obj: refcnt will be increased */
@@ -497,16 +462,16 @@ mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predic
         fptr = (void*)mouse_is_an_instance_of_universal;
     }
 
-    return mouse_tc_parameterize(aTHX_ predicate_name, fptr, param);
+    return mouse_tc_generate(aTHX_ predicate_name, fptr, param);
 }
 
-XS(XS_Mouse_parameterized_check) {
+XS(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
     MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
 
     if(items < 1){
-        croak("Too few arguments for parameterized check functions");
+        croak("Too few arguments for type constraint check functions");
     }
 
     SvGETMAGIC( ST(0) );
@@ -520,6 +485,8 @@ setup_my_cxt(pTHX_ pMY_CXT){
     SvREFCNT_inc_simple_void_NN(MY_CXT.universal_isa);
 }
 
+#define DEFINE_TC(name) mouse_tc_generate(aTHX_ "Mouse::Util::TypeConstraints::" STRINGIFY(name), CAT2(mouse_tc_, name), NULL)
+
 MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Util::TypeConstraints
 
 PROTOTYPES:   DISABLE
@@ -529,6 +496,27 @@ BOOT:
 {
     MY_CXT_INIT;
     setup_my_cxt(aTHX_ aMY_CXT);
+
+    /* setup built-in type constraints */
+    DEFINE_TC(Any);
+    DEFINE_TC(Undef);
+    DEFINE_TC(Defined);
+    DEFINE_TC(Bool);
+    DEFINE_TC(Value);
+    DEFINE_TC(Ref);
+    DEFINE_TC(Str);
+    DEFINE_TC(Num);
+    DEFINE_TC(Int);
+    DEFINE_TC(ScalarRef);
+    DEFINE_TC(ArrayRef);
+    DEFINE_TC(HashRef);
+    DEFINE_TC(CodeRef);
+    DEFINE_TC(GlobRef);
+    DEFINE_TC(FileHandle);
+    DEFINE_TC(RegexpRef);
+    DEFINE_TC(Object);
+    DEFINE_TC(ClassName);
+    DEFINE_TC(RoleName);
 }
 
 #ifdef USE_ITHREADS
@@ -544,34 +532,9 @@ CODE:
 
 #endif /* !USE_ITHREADS */
 
-void
-Item(SV* sv = &PL_sv_undef)
-ALIAS:
-    Any        = MOUSE_TC_ANY
-    Item       = MOUSE_TC_ITEM
-    Undef      = MOUSE_TC_UNDEF
-    Defined    = MOUSE_TC_DEFINED
-    Bool       = MOUSE_TC_BOOL
-    Value      = MOUSE_TC_VALUE
-    Ref        = MOUSE_TC_REF
-    Str        = MOUSE_TC_STR
-    Num        = MOUSE_TC_NUM
-    Int        = MOUSE_TC_INT
-    ScalarRef  = MOUSE_TC_SCALAR_REF
-    ArrayRef   = MOUSE_TC_ARRAY_REF
-    HashRef    = MOUSE_TC_HASH_REF
-    CodeRef    = MOUSE_TC_CODE_REF
-    GlobRef    = MOUSE_TC_GLOB_REF
-    FileHandle = MOUSE_TC_FILEHANDLE
-    RegexpRef  = MOUSE_TC_REGEXP_REF
-    Object     = MOUSE_TC_OBJECT
-    ClassName  = MOUSE_TC_CLASS_NAME
-    RoleName   = MOUSE_TC_ROLE_NAME
-CODE:
-    SvGETMAGIC(sv);
-    ST(0) = boolSV( mouse_builtin_tc_check(aTHX_ ix, sv) );
-    XSRETURN(1);
-
+#define MOUSE_TC_MAYBE     0
+#define MOUSE_TC_ARRAY_REF 1
+#define MOUSE_TC_HASH_REF  2
 
 CV*
 _parameterize_ArrayRef_for(SV* param)
@@ -597,7 +560,7 @@ CODE:
     default: /* Maybe type */
         fptr = mouse_parameterized_Maybe;
     }
-    RETVAL = mouse_tc_parameterize(aTHX_ NULL, fptr, tc_code);
+    RETVAL = mouse_tc_generate(aTHX_ NULL, fptr, tc_code);
 }
 OUTPUT:
     RETVAL
@@ -618,7 +581,7 @@ CODE:
     for(parent = get_slots(self, "parent"); parent; parent = get_slots(parent, "parent")){
         check = get_slots(parent, "hand_optimized_type_constraint");
         if(check && SvOK(check)){
-            if(!mouse_tc_CodeRef(aTHX_ check)){
+            if(!mouse_tc_CodeRef(aTHX_ NULL, check)){
                 croak("Not a CODE reference");
             }
             av_unshift(checks, 1);
@@ -628,7 +591,7 @@ CODE:
 
         check = get_slots(parent, "constraint");
         if(check && SvOK(check)){
-            if(!mouse_tc_CodeRef(aTHX_ check)){
+            if(!mouse_tc_CodeRef(aTHX_ NULL, check)){
                 croak("Not a CODE reference");
             }
             av_unshift(checks, 1);
@@ -638,7 +601,7 @@ CODE:
 
     check = get_slots(self, "constraint");
     if(check && SvOK(check)){
-        if(!mouse_tc_CodeRef(aTHX_ check)){
+        if(!mouse_tc_CodeRef(aTHX_ NULL, check)){
             croak("Not a CODE reference");
         }
         av_push(checks, newSVsv(check));
@@ -652,7 +615,7 @@ CODE:
         I32 len;
         I32 i;
 
-        if(!mouse_tc_ArrayRef(aTHX_ types_ref)){
+        if(!mouse_tc_ArrayRef(aTHX_ NULL, types_ref)){
             croak("Not an ARRAY reference");
         }
         types = (AV*)SvRV(types_ref);
@@ -664,14 +627,14 @@ CODE:
         for(i = 0; i < len; i++){
             SV* const tc = *av_fetch(types, i, TRUE);
             SV* const c  = get_slots(tc, "compiled_type_constraint");
-            if(!(c && mouse_tc_CodeRef(aTHX_ c))){
+            if(!(c && mouse_tc_CodeRef(aTHX_ NULL, c))){
                 sv_dump(self);
                 croak("'%"SVf"' has no compiled type constraint", self);
             }
             av_push(union_checks, newSVsv(c));
         }
 
-        union_check = mouse_tc_parameterize(aTHX_ NULL, (check_fptr_t)mouse_types_union_check, (SV*)union_checks);
+        union_check = mouse_tc_generate(aTHX_ NULL, (check_fptr_t)mouse_types_union_check, (SV*)union_checks);
         av_push(checks, newRV_inc((SV*)union_check));
     }
 
@@ -679,7 +642,7 @@ CODE:
         check = newRV_inc((SV*)get_cv("Mouse::Util::TypeConstraints::Any", TRUE));
     }
     else{
-        check = newRV_inc((SV*)mouse_tc_parameterize(aTHX_ NULL, (check_fptr_t)mouse_types_check, (SV*)checks));
+        check = newRV_inc((SV*)mouse_tc_generate(aTHX_ NULL, (check_fptr_t)mouse_types_check, (SV*)checks));
     }
     set_slots(self, "compiled_type_constraint", check);
 }
