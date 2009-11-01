@@ -246,7 +246,7 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
     SV* const slot  = MOUSE_mg_slot(mg);
     SV* value;
 
-    value = mouse_instance_get_slot(aTHX_ self, slot);
+    value = get_slot(self, slot);
 
     /* check_lazy */
     if( !value && flags & MOUSEf_ATTR_IS_LAZY ){
@@ -276,7 +276,7 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
         }
 
         /* store value to slot */
-        value = mouse_instance_set_slot(aTHX_ self, slot, value);
+        value = set_slot(self, slot, value);
     }
 
     PUSH_VALUE(value, flags);
@@ -291,10 +291,10 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         value = mouse_apply_type_constraint(aTHX_ MOUSE_mg_xa(mg), value, flags);
     }
 
-    mouse_instance_set_slot(aTHX_ self, slot, value);
+    set_slot(self, slot, value);
 
     if(flags & MOUSEf_ATTR_IS_WEAK_REF){
-        mouse_instance_weaken_slot(aTHX_ self, slot);
+        weaken_slot(self, slot);
     }
 
     if(flags & MOUSEf_ATTR_HAS_TRIGGER){
@@ -412,7 +412,7 @@ XS(mouse_xs_simple_reader)
         croak("Expected exactly one argument for a reader for '%"SVf"'", slot);
     }
 
-    value = mouse_instance_get_slot(aTHX_ self, slot);
+    value = get_slot(self, slot);
     ST(0) = value ? value : &PL_sv_undef;
     XSRETURN(1);
 }
@@ -428,7 +428,7 @@ XS(mouse_xs_simple_writer)
         croak("Expected exactly two argument for a writer for '%"SVf"'", slot);
     }
 
-    ST(0) = mouse_instance_set_slot(aTHX_ self, slot, ST(1));
+    ST(0) = set_slot(self, slot, ST(1));
     XSRETURN(1);
 }
 
@@ -443,7 +443,7 @@ XS(mouse_xs_simple_clearer)
         croak("Expected exactly one argument for a clearer for '%"SVf"'", slot);
     }
 
-    value = mouse_instance_delete_slot(aTHX_ self, slot);
+    value = delete_slot(self, slot);
     ST(0) = value ? value : &PL_sv_undef;
     XSRETURN(1);
 }
@@ -458,7 +458,7 @@ XS(mouse_xs_simple_predicate)
         croak("Expected exactly one argument for a predicate for '%"SVf"'", slot);
     }
 
-    ST(0) = boolSV( mouse_instance_has_slot(aTHX_ self, slot) );
+    ST(0) = boolSV( has_slot(self, slot) );
     XSRETURN(1);
 }
 

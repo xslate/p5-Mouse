@@ -104,10 +104,12 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 #define has_slot(self, key)         mouse_instance_has_slot(aTHX_ self, key)
 #define get_slot(self, key)         mouse_instance_get_slot(aTHX_ self, key)
 #define set_slot(self, key, value)  mouse_instance_set_slot(aTHX_ self, key, value)
+#define delete_slot(self, key)      mouse_instance_delete_slot(aTHX_ self, key)
+#define weaken_slot(self, key)      mouse_instance_weaken_slot(aTHX_ self, key)
 
-#define has_slots(self, key)        mouse_instance_has_slot(aTHX_ self, sv_2mortal(newSVpvs_share(key)))
-#define get_slots(self, key)        mouse_instance_get_slot(aTHX_ self, sv_2mortal(newSVpvs_share(key)))
-#define set_slots(self, key, value) mouse_instance_set_slot(aTHX_ self, sv_2mortal(newSVpvs_share(key)), value)
+#define has_slots(self, key)        has_slot(self, sv_2mortal(newSVpvs_share(key)))
+#define get_slots(self, key)        get_slot(self, sv_2mortal(newSVpvs_share(key)))
+#define set_slots(self, key, value) set_slot(self, sv_2mortal(newSVpvs_share(key)), value)
 
 /* mouse_simle_accessor.xs */
 #define INSTALL_SIMPLE_READER(klass, name)                  INSTALL_SIMPLE_READER_WITH_KEY(klass, name, name)
