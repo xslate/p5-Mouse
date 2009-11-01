@@ -101,10 +101,10 @@ sub does_role{
 }
 
 BEGIN {
-    my $impl;
+    my $get_linear_isa;
     if ($] >= 5.009_005) {
         require mro;
-        $impl = \&mro::get_linear_isa;
+        $get_linear_isa = \&mro::get_linear_isa;
     } else {
         my $e = do {
             local $@;
@@ -112,7 +112,7 @@ BEGIN {
             $@;
         };
         if (!$e) {
-            $impl = \&mro::get_linear_isa;
+            $get_linear_isa = \&mro::get_linear_isa;
         } else {
 #       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
             my $_get_linear_isa_dfs; # this recurses so it isn't pretty
@@ -134,13 +134,13 @@ BEGIN {
                 return \@lin;
             };
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
-            $impl = $_get_linear_isa_dfs;
+            $get_linear_isa = $_get_linear_isa_dfs;
         }
     }
 
 
     no warnings 'once';
-    *get_linear_isa = $impl;
+    *get_linear_isa = $get_linear_isa;
 }
 
 
