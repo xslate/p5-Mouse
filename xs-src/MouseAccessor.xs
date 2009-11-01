@@ -250,24 +250,20 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
 
     /* check_lazy */
     if( !value && flags & MOUSEf_ATTR_IS_LAZY ){
-        AV* const xa    = MOUSE_mg_xa(mg);
+        AV* const xa   = MOUSE_mg_xa(mg);
         SV* const attr = MOUSE_xa_attribute(xa);
 
-        /* get default value by $attr->default or $attr->builder */
-        if(flags & MOUSEf_ATTR_HAS_DEFAULT){
+        /* get default value by $attr->builder or $attr->default */
+        if(flags & MOUSEf_ATTR_HAS_BUILDER){
+            SV* const builder = mcall0s(attr, "builder");
+            value = mcall0(self, builder);
+        }
+        else {
             value = mcall0s(attr, "default");
 
             if(SvROK(value) && SvTYPE(SvRV(value)) == SVt_PVCV){
                 value = mcall0(self, value);
             }
-        }
-        else if(flags & MOUSEf_ATTR_HAS_BUILDER){
-            SV* const builder = mcall0s(attr, "builder");
-            value = mcall0(self, builder);
-        }
-
-        if(!value){
-            value = sv_newmortal();
         }
 
         /* apply coerce and type constraint */
