@@ -1,5 +1,7 @@
 package Mouse::PurePerl;
 
+require Mouse::Util;
+
 package
     Mouse::Util;
 
