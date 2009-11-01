@@ -7,25 +7,27 @@ BEGIN{
 
     our $VERSION = '0.40_04';
 
-    my $need_pp = !!$ENV{MOUSE_PUREPERL};
+    my $xs = !(exists $INC{'Mouse/PurePerl.pm'} || $ENV{MOUSE_PUREPERL});
 
-    if(!$need_pp && !exists $INC{'Mouse/PurePerl.pm'}){
+    if($xs){
         local $@;
 
         # XXX: XSLoader tries to get the object path from caller's file name
         #      $hack_mouse_file fools its mechanism
 
         (my $hack_mouse_file = __FILE__) =~ s/.Util//; # .../Mouse/Util.pm -> .../Mouse.pm
-        $need_pp = !eval sprintf("#line %d %s\n", __LINE__, $hack_mouse_file) . q{
+        $xs = eval sprintf("#line %d %s\n", __LINE__, $hack_mouse_file) . q{
             require XSLoader;
             XSLoader::load('Mouse', $VERSION);
         };
         #warn $@ if $@;
     }
 
-    if($need_pp){
+    if(!$xs){
         require 'Mouse/PurePerl.pm'; # we don't want to create its namespace
     }
+
+    *_MOUSE_XS = sub(){ $xs };
 }
 
 
