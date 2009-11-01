@@ -63,8 +63,8 @@ bool mouse_is_class_loaded(pTHX_ SV*);
 
 #define mcall0(invocant, m)        mouse_call0(aTHX_ (invocant), (m))
 #define mcall1(invocant, m, arg1)  mouse_call1(aTHX_ (invocant), (m), (arg1))
-#define mcall0s(invocant, m)       mcall0((invocant), newSVpvs_flags(m, SVs_TEMP))
-#define mcall1s(invocant, m, arg1) mcall1((invocant), newSVpvs_flags(m, SVs_TEMP), (arg1))
+#define mcall0s(invocant, m)       mcall0((invocant), sv_2mortal(newSVpvs_share(m)))
+#define mcall1s(invocant, m, arg1) mcall1((invocant), sv_2mortal(newSVpvs_share(m)), (arg1))
 
 SV* mouse_call0(pTHX_ SV *const self, SV *const method);
 SV* mouse_call1(pTHX_ SV *const self, SV *const method, SV* const arg1);
