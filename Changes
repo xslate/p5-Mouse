@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.40_04
+0.40_05 Mon Nov  2 11:59:01 2009
+    * Shipped with Module::Install::XSUtil 0.16
+
+0.40_04 Tue Nov  1 11:58:27 2009
     * Implement type constraint generators in XS
 
 0.40_03 Fri Oct 30 12:03:58 2009

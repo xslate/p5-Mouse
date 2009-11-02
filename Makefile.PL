@@ -55,7 +55,7 @@ if($use_xs){
     ;
 
     require Module::Install::XSUtil;
-    Module::Install::XSUtil->VERSION(0.15); # for co-developpers
+    Module::Install::XSUtil->VERSION(0.16); # for co-developpers
 
     use_ppport(3.19);
     cc_warnings();
