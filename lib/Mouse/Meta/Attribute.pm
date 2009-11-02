@@ -435,7 +435,7 @@ Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_04
+This document describes Mouse version 0.40_05
 
 =head1 METHODS
 
