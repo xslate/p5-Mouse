@@ -408,9 +408,9 @@ L<Class::MOP>
 
 =head1 AUTHORS
 
-Shawn M Moore, E<lt>sartak at gmail.comE<gt>
+Shawn M Moore E<lt>sartak at gmail.comE<gt>
 
-Yuval Kogman, E<lt>nothingmuch at woobling.orgE<gt>
+Yuval Kogman E<lt>nothingmuch at woobling.orgE<gt>
 
 tokuhirom
 
