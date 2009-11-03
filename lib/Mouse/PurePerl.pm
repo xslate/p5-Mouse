@@ -168,7 +168,7 @@ package
 sub name          { $_[0]->{package} }
 
 sub _method_map   { $_[0]->{methods} }
-sub _attribute_map{ $_[0]->{attribute_map} }
+sub _attribute_map{ $_[0]->{attributes} }
 
 sub namespace{
     my $name = $_[0]->{package};
