@@ -7,28 +7,28 @@ Revision history for Mouse
         - BUILDALL and DMELISHALL are no longer called (gfx)
 
 0.40_05 Mon Nov  2 11:59:01 2009
-    * Shipped with Module::Install::XSUtil 0.16
+    * Shipped with Module::Install::XSUtil 0.16 (gfx)
 
 0.40_04 Tue Nov  1 11:58:27 2009
-    * Implement type constraint generators in XS
+    * Implement type constraint generators in XS (gfx)
 
 0.40_03 Fri Oct 30 12:03:58 2009
-    * Update Module::Install::XSUtil to 0.15
+    * Update Module::Install::XSUtil to 0.15 (gfx)
 
 0.40_02 Tue Oct 27 15:04:10 2009
-    * Add the Mouse::XS documentation
+    * Add the Mouse::XS documentation (gfx)
 
     * Mouse::Meta::Method::Accessor
-        - Apply type constraints to default values as Moose does
+        - Apply type constraints to default values as Moose does (gfx)
 
 0.40_01 Mon Oct 26 17:31:23 2009
-    * Add an optional XS implementation
+    * Add an optional XS implementation (gfx)
 
 0.40 Mon Oct 19 18:30:32 2009
     * Mouse::Meta::TypeConstraint
-        - Fix a subtyping issue (Thanks miyagawa san)
+        - Fix a subtyping issue (Thanks miyagawa san) (gfx)
     * Mouse/Mouse::Role
-        - Now export their sugars to the "main" package
+        - Now export their sugars to the "main" package (gfx)
 
 0.39 Tue Oct 13 16:42:31 2009
     * Fix RT #50421 (Thanks Michael G Schwern)
