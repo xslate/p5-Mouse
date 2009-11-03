@@ -1,6 +1,5 @@
 package Mouse::Meta::Method::Accessor;
 use Mouse::Util; # enables strict and warnings
-use Scalar::Util qw(blessed);
 
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
