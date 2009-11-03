@@ -18,16 +18,20 @@ mouse_get_all_attributes(pTHX_ SV* const metaclass){
 
     if(!(cache_gen && pkg_gen == SvUV(cache_gen))){ /* update */
         CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
+        AV* const all_attrs      = newAV();
+        SV* const get_attribute  = newSVpvs_share("get_attribute");
+
         AV* const linearized_isa = mro_get_linear_isa(stash);
         I32 const len            = AvFILLp(linearized_isa);
         I32 i;
         HV* seen;
-        AV* const all_attrs = newAV();
 
         /* warn("Update all_attrs_cache (cache_gen %d != pkg_gen %d)", (cache_gen ? (int)SvIV(cache_gen) : 0), (int)pkg_gen); //*/
 
         ENTER;
         SAVETMPS;
+
+        sv_2mortal(get_attribute);
 
         set_slot(metaclass, mouse_all_attrs_cache, sv_2mortal(newRV_inc((SV*)all_attrs)));
 
@@ -72,7 +76,7 @@ mouse_get_all_attributes(pTHX_ SV* const metaclass){
                 }
                 (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
 
-                av_push(all_attrs, newSVsv( mcall1s(meta, "get_attribute", name) ));
+                av_push(all_attrs, newSVsv( mcall1(meta, get_attribute, name) ));
             }
         }
 
