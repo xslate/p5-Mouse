@@ -310,7 +310,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
     PUSH_VALUE(value, flags);
 }
 
-XS(mouse_xs_accessor)
+XS(XS_Mouse_accessor)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -332,7 +332,7 @@ XS(mouse_xs_accessor)
 }
 
 
-XS(mouse_xs_reader)
+XS(XS_Mouse_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -349,7 +349,7 @@ XS(mouse_xs_reader)
     mouse_attr_get(aTHX_ self, mg);
 }
 
-XS(mouse_xs_writer)
+XS(XS_Mouse_writer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -397,7 +397,7 @@ mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const
     return xsub;
 }
 
-XS(mouse_xs_simple_reader)
+XS(XS_Mouse_simple_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -414,7 +414,7 @@ XS(mouse_xs_simple_reader)
 }
 
 
-XS(mouse_xs_simple_writer)
+XS(XS_Mouse_simple_writer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -428,7 +428,7 @@ XS(mouse_xs_simple_writer)
     XSRETURN(1);
 }
 
-XS(mouse_xs_simple_clearer)
+XS(XS_Mouse_simple_clearer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -444,7 +444,7 @@ XS(mouse_xs_simple_clearer)
     XSRETURN(1);
 }
 
-XS(mouse_xs_simple_predicate)
+XS(XS_Mouse_simple_predicate)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
@@ -537,7 +537,7 @@ CV*
 _generate_accessor(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_accessor);
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_accessor);
 }
 OUTPUT:
     RETVAL
@@ -546,7 +546,7 @@ CV*
 _generate_reader(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_reader);
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_reader);
 }
 OUTPUT:
     RETVAL
@@ -555,7 +555,7 @@ CV*
 _generate_writer(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, mouse_xs_writer);
+    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_writer);
 }
 OUTPUT:
     RETVAL
@@ -567,7 +567,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, mouse_xs_simple_clearer);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer);
 }
 OUTPUT:
     RETVAL
@@ -579,7 +579,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, mouse_xs_simple_predicate);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate);
 }
 OUTPUT:
     RETVAL

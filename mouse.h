@@ -113,26 +113,26 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 
 /* mouse_simle_accessor.xs */
 #define INSTALL_SIMPLE_READER(klass, name)                  INSTALL_SIMPLE_READER_WITH_KEY(klass, name, name)
-#define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key)    (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, mouse_xs_simple_reader)
+#define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key)    (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_reader)
 
 #define INSTALL_SIMPLE_WRITER(klass, name)                  INSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, name)
-#define INSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, key)    (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, mouse_xs_simple_writer)
+#define INSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, key)    (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_writer)
 
 #define INSTALL_SIMPLE_PREDICATE(klass, name)                INSTALL_SIMPLE_PREDICATE_WITH_KEY(klass, name, name)
-#define INSTALL_SIMPLE_PREDICATE_WITH_KEY(klass, name, key) (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, mouse_xs_simple_predicate)
+#define INSTALL_SIMPLE_PREDICATE_WITH_KEY(klass, name, key) (void)mouse_install_simple_accessor(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_predicate)
 
 CV* mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl);
 
-XS(mouse_xs_simple_reader);
-XS(mouse_xs_simple_writer);
-XS(mouse_xs_simple_clearer);
-XS(mouse_xs_simple_predicate);
+XS(XS_Mouse_simple_reader);
+XS(XS_Mouse_simple_writer);
+XS(XS_Mouse_simple_clearer);
+XS(XS_Mouse_simple_predicate);
 
 CV* mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl);
 
-XS(mouse_xs_accessor);
-XS(mouse_xs_reader);
-XS(mouse_xs_writer);
+XS(XS_Mouse_accessor);
+XS(XS_Mouse_reader);
+XS(XS_Mouse_writer);
 
 /* type constraints */
 
