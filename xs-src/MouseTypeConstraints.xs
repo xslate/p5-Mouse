@@ -567,6 +567,16 @@ OUTPUT:
 
 MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Meta::TypeConstraint
 
+BOOT:
+    INSTALL_SIMPLE_READER(TypeConstraint, name);
+    INSTALL_SIMPLE_READER(TypeConstraint, parent);
+    INSTALL_SIMPLE_READER(TypeConstraint, message);
+
+    INSTALL_SIMPLE_READER_WITH_KEY(TypeConstraint, _compiled_type_constraint, compiled_type_constraint);
+    INSTALL_SIMPLE_READER(TypeConstraint, _compiled_type_coercion); /* Mouse specific */
+
+    INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, has_coercion, _compiled_type_coercion);
+
 void
 compile_type_constraint(SV* self)
 CODE:
