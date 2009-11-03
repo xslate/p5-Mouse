@@ -21,8 +21,8 @@ mouse_mro_get_linear_isa(pTHX_ HV* const stash){
         return isa; /* returns the cache if available */
     }
     else{
-        SvREADONLY_off(isa);
-        av_clear(isa);
+        SvREFCNT_dec(isa);
+        GvAV(cachegv) = isa = newAV();
     }
 
     get_linear_isa = get_cv("Mouse::Util::get_linear_isa", TRUE);
@@ -65,7 +65,7 @@ mouse_mro_get_linear_isa(pTHX_ HV* const stash){
     }
 
     sv_setiv(gen, (IV)mro_get_pkg_gen(stash));
-    return GvAV(cachegv);
+    return isa;
 }
 #endif /* !no_mor_get_linear_isa */
 
