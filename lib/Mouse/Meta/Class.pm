@@ -17,9 +17,9 @@ sub destructor_class()    { 'Mouse::Meta::Method::Destructor'  }
 sub _construct_meta {
     my($class, %args) = @_;
 
-    $args{attributes} ||= {};
-    $args{methods}    ||= {};
-    $args{roles}      ||= [];
+    $args{attributes} = {};
+    $args{methods}    = {};
+    $args{roles}      = [];
 
     $args{superclasses} = do {
         no strict 'refs';

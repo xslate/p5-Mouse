@@ -11,10 +11,10 @@ sub _construct_meta {
 
     my %args  = @_;
 
-    $args{methods}          ||= {};
-    $args{attributes}       ||= {};
-    $args{required_methods} ||= [];
-    $args{roles}            ||= [];
+    $args{methods}          = {};
+    $args{attributes}       = {};
+    $args{required_methods} = [];
+    $args{roles}            = [];
 
     my $self = bless \%args, ref($class) || $class;
     if($class ne __PACKAGE__){
