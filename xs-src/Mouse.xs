@@ -1,3 +1,4 @@
+#define  NEED_newSVpvn_flags_GLOBAL
 #include "mouse.h"
 
 SV* mouse_package;
