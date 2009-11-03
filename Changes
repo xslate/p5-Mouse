@@ -4,7 +4,8 @@ Revision history for Mouse
     * Implement many in XS (gfx)
 
     * Mouse::Object
-        - BUILDALL and DMELISHALL are no longer called (gfx)
+        - BUILDALL and DMELISHALL are no longer called by the default ctr/dtr,
+          because generated ctrs/dtrs have never call them (gfx)
 
 0.40_05 Mon Nov  2 11:59:01 2009
     * Shipped with Module::Install::XSUtil 0.16 (gfx)
