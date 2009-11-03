@@ -6,6 +6,98 @@ SV* mouse_namespace;
 SV* mouse_methods;
 SV* mouse_name;
 
+static SV* mouse_all_attrs_cache;
+static SV* mouse_all_attrs_cache_gen;
+
+AV*
+mouse_get_all_attributes(pTHX_ SV* const metaclass){
+    SV* const package = get_slot(metaclass, mouse_package);
+    HV* const stash   = gv_stashsv(package, TRUE);
+    UV const pkg_gen  = mro_get_pkg_gen(stash);
+    SV* cache_gen     = get_slot(metaclass, mouse_all_attrs_cache_gen);
+
+    if(!(cache_gen && pkg_gen == SvUV(cache_gen))){ /* update */
+        CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
+        AV* const linearized_isa = mro_get_linear_isa(stash);
+        I32 const len            = AvFILLp(linearized_isa);
+        I32 i;
+        HV* seen;
+        AV* const all_attrs = newAV();
+
+        /* warn("Update all_attrs_cache (cache_gen %d != pkg_gen %d)", (cache_gen ? (int)SvIV(cache_gen) : 0), (int)pkg_gen); //*/
+
+        ENTER;
+        SAVETMPS;
+
+        set_slot(metaclass, mouse_all_attrs_cache, sv_2mortal(newRV_inc((SV*)all_attrs)));
+
+        seen = newHV();
+        sv_2mortal((SV*)seen);
+
+        for(i = 0; i < len; i++){
+            SV* const klass = MOUSE_av_at(linearized_isa, i);
+            SV* meta;
+            I32 n;
+            dSP;
+
+            PUSHMARK(SP);
+            XPUSHs(klass);
+            PUTBACK;
+
+            call_sv((SV*)get_metaclass, G_SCALAR);
+
+            SPAGAIN;
+            meta = POPs;
+            PUTBACK;
+
+            if(!SvOK(meta)){
+                continue; /* skip non-Mouse classes */
+            }
+
+            /* $meta->get_attribute_list */
+            PUSHMARK(SP);
+            XPUSHs(meta);
+            PUTBACK;
+
+            n = call_method("get_attribute_list", G_ARRAY);
+            for(NOOP; n > 0; n--){
+                SV* name;
+
+                SPAGAIN;
+                name = POPs;
+                PUTBACK;
+
+                if(hv_exists_ent(seen, name, 0U)){
+                    continue;
+                }
+                (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
+
+                av_push(all_attrs, newSVsv( mcall1s(meta, "get_attribute", name) ));
+            }
+        }
+
+        if(!cache_gen){
+            cache_gen = sv_newmortal();
+        }
+        sv_setuv(cache_gen, mro_get_pkg_gen(stash));
+        set_slot(metaclass, mouse_all_attrs_cache_gen, cache_gen);
+
+        FREETMPS;
+        LEAVE;
+
+        return all_attrs;
+    }
+    else {
+        SV* const all_attrs_ref = get_slot(metaclass, mouse_all_attrs_cache);
+
+        if(!IsArrayRef(all_attrs_ref)){
+            croak("Not an ARRAY reference");
+        }
+
+        return (AV*)SvRV(all_attrs_ref);
+    }
+}
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -15,6 +107,9 @@ BOOT:
     mouse_namespace = newSVpvs_share("namespace");
     mouse_methods   = newSVpvs_share("methods");
     mouse_name      = newSVpvs_share("name");
+
+    mouse_all_attrs_cache      = newSVpvs_share("__all_attrs_cache");
+    mouse_all_attrs_cache_gen  = newSVpvs_share("__all_attrs_cache_gen");
 
     MOUSE_CALL_BOOT(Mouse__Util);
     MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
@@ -121,6 +216,19 @@ PPCODE:
     }
 }
 
+void
+get_all_attributes(SV* self)
+PPCODE:
+{
+    AV* const all_attrs = mouse_get_all_attributes(aTHX_ self);
+    I32 const len       = AvFILLp(all_attrs) + 1;
+    I32 i;
+
+    EXTEND(SP, len);
+    for(i = 0; i < len; i++){
+        PUSHs( MOUSE_av_at(all_attrs, i) );
+    }
+}
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 

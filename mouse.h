@@ -13,6 +13,10 @@
 #define newSVpvs_share(s) Perl_newSVpvn_share(aTHX_ s, sizeof(s)-1, 0U)
 #endif
 
+#ifndef get_cvs
+#define get_cvs(name, flags) get_cv(name, flags)
+#endif
+
 #ifndef GvNAME_get
 #define GvNAME_get GvNAME
 #endif

@@ -154,23 +154,6 @@ sub compute_all_applicable_attributes {
     return shift->get_all_attributes(@_)
 }
 
-sub get_all_attributes {
-    my $self = shift;
-    my (@attr, %seen);
-
-    for my $class ($self->linearized_isa) {
-        my $meta = Mouse::Util::get_metaclass_by_name($class)
-            or next;
-
-        for my $name ($meta->get_attribute_list) {
-            next if $seen{$name}++;
-            push @attr, $meta->get_attribute($name);
-        }
-    }
-
-    return @attr;
-}
-
 sub linearized_isa;
 
 sub new_object {

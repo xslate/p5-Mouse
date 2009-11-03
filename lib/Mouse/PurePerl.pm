@@ -211,6 +211,12 @@ sub roles { $_[0]->{roles} }
 
 sub linearized_isa { @{ get_linear_isa($_[0]->{package}) } }
 
+sub get_all_attributes {
+    my($self) = @_;
+    my %attrs = map { %{ $self->initialize($_)->_attribute_map } } reverse $self->linearized_isa;
+    return values %attrs;
+}
+
 package
     Mouse::Meta::Role;
 
