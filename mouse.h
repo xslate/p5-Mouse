@@ -59,7 +59,10 @@ bool mouse_is_class_loaded(pTHX_ SV*);
 
 #define is_an_instance_of(klass, sv) mouse_is_an_instance_of(aTHX_ gv_stashpvs(klass, GV_ADD), (sv))
 
-#define IsObject(sv) (SvROK(sv) && SvOBJECT(SvRV(sv)))
+#define IsObject(sv)   (SvROK(sv) && SvOBJECT(SvRV(sv)))
+#define IsArrayRef(sv) (SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVAV)
+#define IsHashRef(sv)  (SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVHV)
+#define IsCodeRef(sv)  (SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVCV)
 
 #define mcall0(invocant, m)        mouse_call0(aTHX_ (invocant), (m))
 #define mcall1(invocant, m, arg1)  mouse_call1(aTHX_ (invocant), (m), (arg1))

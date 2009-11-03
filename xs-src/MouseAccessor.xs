@@ -165,7 +165,7 @@ mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
         tc_code = mcall0s(tc, "_compiled_type_constraint");
         av_store(xa, MOUSE_XA_TC_CODE, newSVsv(tc_code));
 
-        if(!(SvROK(tc_code) && SvTYPE(SvRV(tc_code)) == SVt_PVCV)){
+        if(!IsCodeRef(tc_code)){
             mouse_throw_error(MOUSE_xa_attribute(xa), tc, "Not a CODE reference");
         }
     }
@@ -206,14 +206,15 @@ mouse_push_values(pTHX_ SV* const value, U16 const flags){
     }
 
     if(flags & MOUSEf_TC_IS_ARRAYREF){
-        AV* const av = (AV*)SvRV(value);
+        AV* av;
         I32 len;
         I32 i;
 
-        if(SvTYPE(av) != SVt_PVAV){
+        if(!IsArrayRef(value)){
             croak("Mouse-panic: Not an ARRAY reference");
         }
 
+        av  = (AV*)SvRV(value);
         len = av_len(av) + 1;
         EXTEND(SP, len);
         for(i = 0; i < len; i++){
@@ -222,13 +223,14 @@ mouse_push_values(pTHX_ SV* const value, U16 const flags){
         }
     }
     else if(flags & MOUSEf_TC_IS_HASHREF){
-        HV* const hv = (HV*)SvRV(value);
+        HV* hv;
         HE* he;
 
-        if(SvTYPE(hv) != SVt_PVHV){
+        if(!IsHashRef(value)){
             croak("Mouse-panic: Not a HASH reference");
         }
 
+        hv = (HV*)SvRV(value);
         hv_iterinit(hv);
         while((he = hv_iternext(hv))){
             EXTEND(SP, 2);
@@ -261,7 +263,7 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
         else {
             value = mcall0s(attr, "default");
 
-            if(SvROK(value) && SvTYPE(SvRV(value)) == SVt_PVCV){
+            if(IsCodeRef(value)){
                 value = mcall0(self, value);
             }
         }

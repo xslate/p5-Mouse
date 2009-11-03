@@ -44,7 +44,7 @@ mouse_mro_get_linear_isa(pTHX_ HV* const stash){
         avref = POPs;
         PUTBACK;
 
-        if(SvROK(avref) && SvTYPE(SvRV(avref)) == SVt_PVAV){
+        if(IsArrayRef(avref)){
             AV* const av  = (AV*)SvRV(avref);
             I32 const len = AvFILLp(av) + 1;
             I32 i;

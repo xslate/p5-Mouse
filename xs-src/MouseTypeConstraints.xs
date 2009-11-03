@@ -188,19 +188,19 @@ mouse_tc_ScalarRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 int
 mouse_tc_ArrayRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    return SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVAV;
+    return IsArrayRef(sv);
 }
 
 int
 mouse_tc_HashRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    return SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVHV;
+    return IsHashRef(sv);
 }
 
 int
 mouse_tc_CodeRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    return SvROK(sv)  && !SvOBJECT(SvRV(sv))&& SvTYPE(SvRV(sv)) == SVt_PVCV;
+    return IsCodeRef(sv);
 }
 
 int
@@ -244,7 +244,7 @@ mouse_tc_Object(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 
 static int
 mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
-    if(mouse_tc_ArrayRef(aTHX_ NULL, sv)){
+    if(IsArrayRef(sv)){
         AV* const av  = (AV*)SvRV(sv);
         I32 const len = av_len(av) + 1;
         I32 i;
@@ -546,7 +546,7 @@ CODE:
 {
     check_fptr_t fptr;
     SV* const tc_code = mcall0s(param, "_compiled_type_constraint");
-    if(!(SvROK(tc_code) && SvTYPE(SvRV(tc_code)) == SVt_PVCV)){
+    if(!IsCodeRef(tc_code)){
         croak("_compiled_type_constraint didn't return a CODE reference");
     }
 
@@ -625,7 +625,7 @@ CODE:
         I32 len;
         I32 i;
 
-        if(!mouse_tc_ArrayRef(aTHX_ NULL, types_ref)){
+        if(!IsArrayRef(types_ref)){
             croak("Not an ARRAY reference");
         }
         types = (AV*)SvRV(types_ref);
