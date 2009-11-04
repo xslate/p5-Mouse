@@ -5,9 +5,9 @@ SV* mouse_package;
 SV* mouse_namespace;
 SV* mouse_methods;
 SV* mouse_name;
+SV* mouse_get_attribute;
+SV* mouse_get_attribute_list;
 
-static SV* mouse_all_attrs_cache;
-static SV* mouse_all_attrs_cache_gen;
 
 #define MOUSE_xc_gen(a)         MOUSE_av_at((a), MOUSE_XC_GEN)
 #define MOUSE_xc_attrall(a)     ( (AV*)MOUSE_av_at((a), MOUSE_XC_ATTRALL) )
@@ -36,7 +36,7 @@ mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV
     XPUSHs(metaclass);
     PUTBACK;
 
-    n = call_method("get_attribute_list", G_ARRAY);
+    n = call_sv(mouse_get_attribute_list, G_ARRAY | G_METHOD);
     for(NOOP; n > 0; n--){
         SV* name;
 
@@ -49,7 +49,7 @@ mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV
         }
         (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
 
-        av_push(attrall, newSVsv( mcall1s(metaclass, "get_attribute", name) ));
+        av_push(attrall, newSVsv( mcall1(metaclass, mouse_get_attribute, name) ));
     }
 }
 
@@ -83,7 +83,7 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     av_store(xc, MOUSE_XC_DEMOLISHALL, (SV*)demolishall);
 
     for(i = 0; i < len; i++){
-        SV* const klass     = MOUSE_av_at(linearized_isa, i);
+        SV* const klass = MOUSE_av_at(linearized_isa, i);
         SV* meta;
         GV* gv;
 
@@ -171,8 +171,8 @@ BOOT:
     mouse_methods   = newSVpvs_share("methods");
     mouse_name      = newSVpvs_share("name");
 
-    mouse_all_attrs_cache      = newSVpvs_share("__all_attrs_cache");
-    mouse_all_attrs_cache_gen  = newSVpvs_share("__all_attrs_cache_gen");
+    mouse_get_attribute      = newSVpvs_share("get_attribute");
+    mouse_get_attribute_list = newSVpvs_share("get_attribute_list");
 
     MOUSE_CALL_BOOT(Mouse__Util);
     MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);

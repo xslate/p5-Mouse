@@ -64,8 +64,10 @@ sub get_attribute_map { # DEPRECATED
 
 sub has_attribute     { exists $_[0]->{attributes}->{$_[1]} }
 sub get_attribute     {        $_[0]->{attributes}->{$_[1]} }
-sub get_attribute_list{ keys %{$_[0]->{attributes}}         }
 sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
+
+sub get_attribute_list{ keys   %{$_[0]->{attributes}} }
+
 
 # XXX: for backward compatibility
 my %foreign = map{ $_ => undef } qw(
