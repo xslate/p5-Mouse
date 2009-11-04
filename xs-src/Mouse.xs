@@ -9,97 +9,156 @@ SV* mouse_name;
 static SV* mouse_all_attrs_cache;
 static SV* mouse_all_attrs_cache_gen;
 
+#define MOUSE_xc_gen(a)         MOUSE_av_at((a), MOUSE_XC_GEN)
+#define MOUSE_xc_attrall(a)     ( (AV*)MOUSE_av_at((a), MOUSE_XC_ATTRALL) )
+#define MOUSE_xc_buildall(a)    ( (AV*)MOUSE_av_at((a), MOUSE_XC_BUILDALL) )
+#define MOUSE_xc_demolishall(a) ( (AV*)MOUSE_av_at((a), MOUSE_XC_DEOLISHALL) )
+
+/* Mouse XS Metaclass object */
+enum mouse_xc_ix_t{
+    MOUSE_XC_GEN,          /* class generation */
+    MOUSE_XC_ATTRALL,      /* all the attributes */
+    MOUSE_XC_BUILDALL,     /* all the BUILD methods */
+    MOUSE_XC_DEMOLISHALL,  /* all the DEMOLISH methods */
+
+    MOUSE_XC_last
+};
+
+static MGVTBL mouse_xc_vtbl; /* for identity */
+
+static void
+mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV* const seen){
+    dSP;
+    I32 n;
+
+    /* $meta->get_attribute_list */
+    PUSHMARK(SP);
+    XPUSHs(metaclass);
+    PUTBACK;
+
+    n = call_method("get_attribute_list", G_ARRAY);
+    for(NOOP; n > 0; n--){
+        SV* name;
+
+        SPAGAIN;
+        name = POPs;
+        PUTBACK;
+
+        if(hv_exists_ent(seen, name, 0U)){
+            continue;
+        }
+        (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
+
+        av_push(attrall, newSVsv( mcall1s(metaclass, "get_attribute", name) ));
+    }
+}
+
+static void
+mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stash, AV* const xc) {
+    AV* const linearized_isa = mro_get_linear_isa(stash);
+    I32 const len            = AvFILLp(linearized_isa);
+    I32 i;
+    AV* const attrall     = newAV();
+    AV* const buildall    = newAV();
+    AV* const demolishall = newAV();
+    HV* const seen        = newHV(); /* for attributes */
+
+    ENTER;
+    SAVETMPS;
+
+    sv_2mortal((SV*)seen);
+
+     /* old data will be delete at the end of the perl scope */
+    av_delete(xc, MOUSE_XC_DEMOLISHALL, 0x00);
+    av_delete(xc, MOUSE_XC_BUILDALL,    0x00);
+    av_delete(xc, MOUSE_XC_ATTRALL,     0x00);
+
+    SvREFCNT_inc_simple_void_NN(linearized_isa);
+    sv_2mortal((SV*)linearized_isa);
+
+    /* update */
+
+    av_store(xc, MOUSE_XC_ATTRALL,     (SV*)attrall);
+    av_store(xc, MOUSE_XC_BUILDALL,    (SV*)buildall);
+    av_store(xc, MOUSE_XC_DEMOLISHALL, (SV*)demolishall);
+
+    for(i = 0; i < len; i++){
+        SV* const klass     = MOUSE_av_at(linearized_isa, i);
+        SV* meta;
+        GV* gv;
+
+        gv = stash_fetchs(stash, "BUILD", FALSE);
+        if(gv && GvCVu(gv)){
+            av_push(buildall, newRV_inc((SV*)GvCV(gv)));
+        }
+
+        gv = stash_fetchs(stash, "DEMOLISH", FALSE);
+        if(gv && GvCVu(gv)){
+            av_push(demolishall, newRV_inc((SV*)GvCV(gv)));
+        }
+
+        /* ATTRIBUTES */
+        meta = get_metaclass_by_name(klass);
+        if(!SvOK(meta)){
+            continue; /* skip non-Mouse classes */
+        }
+
+        mouse_class_push_attribute_list(aTHX_ meta, attrall, seen);
+    }
+
+    FREETMPS;
+    LEAVE;
+
+    sv_setuv(MOUSE_xc_gen(xc), mro_get_pkg_gen(stash));
+}
+
 AV*
-mouse_get_all_attributes(pTHX_ SV* const metaclass){
-    SV* const package = get_slot(metaclass, mouse_package);
-    HV* const stash   = gv_stashsv(package, TRUE);
-    UV const pkg_gen  = mro_get_pkg_gen(stash);
-    SV* cache_gen     = get_slot(metaclass, mouse_all_attrs_cache_gen);
+mouse_get_xc(pTHX_ SV* const metaclass) {
+    AV* xc;
+    SV* gen;
+    HV* stash;
+    MAGIC* mg;
 
-    if(!(cache_gen && pkg_gen == SvUV(cache_gen))){ /* update */
-        CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
-        AV* const all_attrs      = newAV();
-        SV* const get_attribute  = newSVpvs_share("get_attribute");
-
-        AV* const linearized_isa = mro_get_linear_isa(stash);
-        I32 const len            = AvFILLp(linearized_isa);
-        I32 i;
-        HV* seen;
-
-        /* warn("Update all_attrs_cache (cache_gen %d != pkg_gen %d)", (cache_gen ? (int)SvIV(cache_gen) : 0), (int)pkg_gen); //*/
-
-        ENTER;
-        SAVETMPS;
-
-        sv_2mortal(get_attribute);
-
-        set_slot(metaclass, mouse_all_attrs_cache, sv_2mortal(newRV_inc((SV*)all_attrs)));
-
-        seen = newHV();
-        sv_2mortal((SV*)seen);
-
-        for(i = 0; i < len; i++){
-            SV* const klass = MOUSE_av_at(linearized_isa, i);
-            SV* meta;
-            I32 n;
-            dSP;
-
-            PUSHMARK(SP);
-            XPUSHs(klass);
-            PUTBACK;
-
-            call_sv((SV*)get_metaclass, G_SCALAR);
-
-            SPAGAIN;
-            meta = POPs;
-            PUTBACK;
-
-            if(!SvOK(meta)){
-                continue; /* skip non-Mouse classes */
-            }
-
-            /* $meta->get_attribute_list */
-            PUSHMARK(SP);
-            XPUSHs(meta);
-            PUTBACK;
-
-            n = call_method("get_attribute_list", G_ARRAY);
-            for(NOOP; n > 0; n--){
-                SV* name;
-
-                SPAGAIN;
-                name = POPs;
-                PUTBACK;
-
-                if(hv_exists_ent(seen, name, 0U)){
-                    continue;
-                }
-                (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
-
-                av_push(all_attrs, newSVsv( mcall1(meta, get_attribute, name) ));
-            }
-        }
-
-        if(!cache_gen){
-            cache_gen = sv_newmortal();
-        }
-        sv_setuv(cache_gen, mro_get_pkg_gen(stash));
-        set_slot(metaclass, mouse_all_attrs_cache_gen, cache_gen);
-
-        FREETMPS;
-        LEAVE;
-
-        return all_attrs;
+    if(!IsObject(metaclass)){
+        croak("Not a Mouse metaclass");
     }
-    else {
-        SV* const all_attrs_ref = get_slot(metaclass, mouse_all_attrs_cache);
 
-        if(!IsArrayRef(all_attrs_ref)){
-            croak("Not an ARRAY reference");
-        }
+    mg = mouse_mg_find(aTHX_ SvRV(metaclass), &mouse_xc_vtbl, 0x00);
+    if(!mg){
+        SV* const package = get_slot(metaclass, mouse_package);
 
-        return (AV*)SvRV(all_attrs_ref);
+        stash = gv_stashsv(package, TRUE);
+        xc    = newAV();
+
+        mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext, &mouse_xc_vtbl, (char*)stash, HEf_SVKEY);
+        SvREFCNT_dec(xc); /* refcnt++ in sv_magicext */
+
+        av_extend(xc, MOUSE_XC_last - 1);
+        av_store(xc, MOUSE_XC_GEN, newSViv(0));
     }
+    else{
+        stash = (HV*)MOUSE_mg_ptr(mg);
+        xc    = (AV*)MOUSE_mg_obj(mg);
+
+        assert(stash);
+        assert(SvTYPE(stash) == SVt_PVAV);
+
+        assert(xc);
+        assert(SvTYPE(xc) == SVt_PVAV);
+    }
+
+    gen = MOUSE_xc_gen(xc);
+    if(SvUV(gen) != mro_get_pkg_gen(stash)){
+        mouse_class_update_xc(aTHX_ metaclass, stash, xc);
+    }
+
+    return xc;
+}
+
+AV*
+mouse_get_all_attributes(pTHX_ SV* const metaclass) {
+    AV* const xc = mouse_get_xc(aTHX_ metaclass);
+    return MOUSE_xc_attrall(xc);
 }
 
 MODULE = Mouse  PACKAGE = Mouse

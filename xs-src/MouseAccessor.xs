@@ -6,8 +6,10 @@
         }                                                             \
     } STMT_END
 
-/* Moose XS Attribute object */
+/* Mouse XS Attribute object */
 enum mouse_xa_ix_t{
+    MOUSE_XA_SLOT,      /* for constructors, sync to mg_obj */
+    MOUSE_XA_FLAGS,     /* for constructors, sync to mg_private */
     MOUSE_XA_ATTRIBUTE,
     MOUSE_XA_TC,
     MOUSE_XA_TC_CODE,
@@ -25,7 +27,7 @@ enum mouse_xa_flags_t{
     MOUSEf_ATTR_HAS_TC          = 0x0001,
     MOUSEf_ATTR_HAS_DEFAULT     = 0x0002,
     MOUSEf_ATTR_HAS_BUILDER     = 0x0004,
-    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008, /* not used in Mouse */
+    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008,
     MOUSEf_ATTR_HAS_TRIGGER     = 0x0010,
 
     MOUSEf_ATTR_IS_LAZY         = 0x0020,

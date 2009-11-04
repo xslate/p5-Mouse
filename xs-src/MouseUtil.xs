@@ -196,6 +196,25 @@ mouse_call1 (pTHX_ SV *const self, SV *const method, SV* const arg1)
     return ret;
 }
 
+SV*
+mouse_get_metaclass_by_name(pTHX_ SV* const metaclass_name){
+    CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
+    SV* metaclass;
+    dSP;
+
+    PUSHMARK(SP);
+    XPUSHs(metaclass_name);
+    PUTBACK;
+
+    call_sv((SV*)get_metaclass, G_SCALAR);
+
+    SPAGAIN;
+    metaclass = POPs;
+    PUTBACK;
+
+    return metaclass;
+}
+
 MAGIC*
 mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags){
     MAGIC* mg;
@@ -211,6 +230,21 @@ mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags){
         croak("mouse_mg_find: no MAGIC found for %"SVf, sv_2mortal(newRV_inc(sv)));
     }
     return NULL;
+}
+
+GV*
+mouse_stash_fetch(pTHX_ HV* const stash, const char* const name, I32 const namelen, I32 const create) {
+    GV** const gvp = (GV**)hv_fetch(stash, name, namelen, create);
+
+    if(gvp){
+        if(!isGV(*gvp)){
+            gv_init(*gvp, stash, name, namelen, GV_ADDMULTI);
+        }
+        return *gvp;
+    }
+    else{
+        return NULL;
+    }
 }
 
 MODULE = Mouse::Util  PACKAGE = Mouse::Util
@@ -252,7 +286,9 @@ get_code_ref(SV* package, SV* name)
 CODE:
 {
     HV* stash;
-    HE* he;
+    STRLEN name_len;
+    const char* name_pv;
+    GV* gv;
 
     if(!SvOK(package)){
         croak("You must define a package name");
@@ -265,19 +301,10 @@ CODE:
     if(!stash){
         XSRETURN_UNDEF;
     }
-    he = hv_fetch_ent(stash, name, FALSE, 0U);
-    if(he){
-        GV* const gv = (GV*)hv_iterval(stash, he);
-        if(!isGV(gv)){ /* special constant or stub */
-            STRLEN len;
-            const char* const pv = SvPV_const(name, len);
-            gv_init(gv, stash, pv, len, GV_ADDMULTI);
-        }
-        RETVAL = GvCVu(gv);
-    }
-    else{
-        RETVAL = NULL;
-    }
+
+    name_pv = SvPV_const(name, name_len);
+    gv = stash_fetch(stash, name_pv, name_len, FALSE);
+    RETVAL = gv ? GvCVu(gv) : NULL;
 
     if(!RETVAL){
         XSRETURN_UNDEF;
