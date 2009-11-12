@@ -11,8 +11,6 @@ system($^X, 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
 name     'Mouse';
 all_from 'lib/Mouse.pm';
 
-tests 't/*.t t/*/*.t';
-
 # Scalar::Util < 1.14 has a bug.
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
@@ -62,8 +60,8 @@ else{
 if (author_context()) {
     my $require_version = Mouse::Spec->MooseVersion;
 
-    if (eval{ require Moose; Moose->VERSION($require_version) }) {
-        if (eval 'use Module::Install::AuthorTests; 1') {
+    if (eval { require Moose; Moose->VERSION($require_version) }) {
+        if (eval { require Module::Install::AuthorTests }) {
             do 'author/create-moose-compatibility-tests.pl';
             recursive_author_tests('xt');
         } else {
@@ -85,6 +83,8 @@ if (author_context()) {
                 . qq{\t} . $test_via_harness;
     }
 }
+
+tests 't/*.t t/*/*.t';
 
 clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';
 
