@@ -571,12 +571,10 @@ void
 compile_type_constraint(SV* self)
 CODE:
 {
-    AV* const checks = newAV();
+    AV* const checks = newAV_mortal();
     SV* check; /* check function */
     SV* parent;
     SV* types_ref;
-
-    sv_2mortal((SV*)checks);
 
     for(parent = get_slots(self, "parent"); parent; parent = get_slots(parent, "parent")){
         check = get_slots(parent, "hand_optimized_type_constraint");
@@ -621,8 +619,7 @@ CODE:
         types = (AV*)SvRV(types_ref);
         len = av_len(types) + 1;
 
-        union_checks = newAV();
-        sv_2mortal((SV*)union_checks);
+        union_checks = newAV_mortal();
 
         for(i = 0; i < len; i++){
             SV* const tc = *av_fetch(types, i, TRUE);

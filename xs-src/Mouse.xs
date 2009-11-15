@@ -213,8 +213,7 @@ mouse_build_args(aTHX_ SV* metaclass, SV* const klass, I32 const start, I32 cons
     else{
         I32 i;
 
-        args = newHV();
-        sv_2mortal((SV*)args);
+        args = newHV_mortal();
 
         if( ((items - start) % 2) != 0 ){
             if(!metaclass){ metaclass = get_metaclass(klass); }
