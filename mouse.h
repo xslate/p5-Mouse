@@ -70,15 +70,20 @@ bool mouse_is_class_loaded(pTHX_ SV*);
 #define IsHashRef(sv)  (SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVHV)
 #define IsCodeRef(sv)  (SvROK(sv) && !SvOBJECT(SvRV(sv)) && SvTYPE(SvRV(sv)) == SVt_PVCV)
 
-#define mcall0(invocant, m)        mouse_call0(aTHX_ (invocant), (m))
-#define mcall1(invocant, m, arg1)  mouse_call1(aTHX_ (invocant), (m), (arg1))
-#define mcall0s(invocant, m)       mcall0((invocant), sv_2mortal(newSVpvs_share(m)))
-#define mcall1s(invocant, m, arg1) mcall1((invocant), sv_2mortal(newSVpvs_share(m)), (arg1))
+#define mcall0(invocant, m)          mouse_call0(aTHX_ (invocant), (m))
+#define mcall1(invocant, m, arg1)    mouse_call1(aTHX_ (invocant), (m), (arg1))
+#define predicate_call(invocant, m)  mouse_predicate_call(aTHX_ (invocant), (m))
+
+#define mcall0s(invocant, m)          mcall0((invocant), sv_2mortal(newSVpvs_share(m)))
+#define mcall1s(invocant, m, arg1)    mcall1((invocant), sv_2mortal(newSVpvs_share(m)), (arg1))
+#define predicate_calls(invocant, m)  predicate_call((invocant), sv_2mortal(newSVpvs_share(m)))
+
 
 #define get_metaclass(name) mouse_get_metaclass(aTHX_ name)
 
 SV* mouse_call0(pTHX_ SV *const self, SV *const method);
 SV* mouse_call1(pTHX_ SV *const self, SV *const method, SV* const arg1);
+int mouse_predicate_call(pTHX_ SV* const self, SV* const method);
 
 SV* mouse_get_metaclass(pTHX_ SV* metaclass_name);
 
@@ -181,6 +186,54 @@ CV* mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const pr
 int mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance);
 
 XS(XS_Mouse_constraint_check);
+
+/* Mouse XS Attribute object */
+
+AV* mouse_get_xa(pTHX_ SV* const attr);
+
+enum mouse_xa_ix_t{
+    MOUSE_XA_SLOT,      /* for constructors, sync to mg_obj */
+    MOUSE_XA_FLAGS,     /* for constructors, sync to mg_private */
+    MOUSE_XA_ATTRIBUTE,
+    MOUSE_XA_TC,
+    MOUSE_XA_TC_CODE,
+
+    MOUSE_XA_last
+};
+
+#define MOUSE_xa_slot(m)      MOUSE_av_at(m, MOUSE_XA_SLOT)
+#define MOUSE_xa_flags(m)     MOUSE_av_at(m, MOUSE_XA_FLAGS)
+#define MOUSE_xa_attribute(m) MOUSE_av_at(m, MOUSE_XA_ATTRIBUTE)
+#define MOUSE_xa_tc(m)        MOUSE_av_at(m, MOUSE_XA_TC)
+#define MOUSE_xa_tc_code(m)   MOUSE_av_at(m, MOUSE_XA_TC_CODE)
+
+
+enum mouse_xa_flags_t{
+    MOUSEf_ATTR_HAS_TC          = 0x0001,
+    MOUSEf_ATTR_HAS_DEFAULT     = 0x0002,
+    MOUSEf_ATTR_HAS_BUILDER     = 0x0004,
+    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008,
+    MOUSEf_ATTR_HAS_TRIGGER     = 0x0010,
+
+    MOUSEf_ATTR_IS_LAZY         = 0x0020,
+    MOUSEf_ATTR_IS_WEAK_REF     = 0x0040,
+    MOUSEf_ATTR_IS_REQUIRED     = 0x0080,
+
+    MOUSEf_ATTR_SHOULD_COERCE   = 0x0100,
+
+    MOUSEf_ATTR_SHOULD_AUTO_DEREF
+                                = 0x0200,
+    MOUSEf_TC_IS_ARRAYREF       = 0x0400,
+    MOUSEf_TC_IS_HASHREF        = 0x0800,
+
+    MOUSEf_OTHER1               = 0x1000,
+    MOUSEf_OTHER2               = 0x2000,
+    MOUSEf_OTHER3               = 0x4000,
+    MOUSEf_OTHER4               = 0x8000,
+
+    MOUSEf_MOUSE_MASK           = 0xFFFF /* not used */
+};
+
 
 #endif /* !MOUSE_H */
 

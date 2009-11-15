@@ -72,10 +72,8 @@ mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
     XS(XS_Mouse__Object_BUILDARGS); /* prototype */
 
     GV* const buildargs = gv_fetchmeth_autoload(stash, "BUILDARGS", sizeof("BUILDARGS")-1, 0);
-    CV* const cv        = GvCV(buildargs);
 
-    assert(cv);
-    return CvXSUB(cv) == XS_Mouse__Object_BUILDARGS;
+    return buildargs && CvXSUB(GvCV(buildargs)) == XS_Mouse__Object_BUILDARGS;
 }
 
 static void
@@ -192,14 +190,8 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
     return xc;
 }
 
-AV*
-mouse_get_all_attributes(pTHX_ SV* const metaclass) {
-    AV* const xc = mouse_get_xc(aTHX_ metaclass);
-    return MOUSE_xc_attrall(xc);
-}
-
 HV*
-mouse_build_args(aTHX_ SV* metaclass, SV* const klass, I32 const start, I32 const items, I32 const ax) {
+mouse_build_args(pTHX_ SV* metaclass, SV* const klass, I32 const start, I32 const items, I32 const ax) {
     HV* args;
     if((items - start) == 1){
         SV* const args_ref = ST(start);
@@ -234,9 +226,10 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     AV* const attrs = MOUSE_xc_attrall(xc);
     I32 const len   = AvFILLp(attrs) + 1;
     I32 i;
-    AV* const triggers_queue = (invoke_triggers ? newAV_mortal() : NULL);
+    AV* const triggers_queue = (ignore_triggers ? NULL : newAV_mortal());
+
     for(i = 0; i < len; i++){
-        AV* const = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
+        AV* const xa = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
     }
 }
 
@@ -363,7 +356,8 @@ void
 get_all_attributes(SV* self)
 PPCODE:
 {
-    AV* const all_attrs = mouse_get_all_attributes(aTHX_ self);
+    AV* const xc        = mouse_get_xc(aTHX_ self);
+    AV* const all_attrs =  MOUSE_xc_attrall(xc);
     I32 const len       = AvFILLp(all_attrs) + 1;
     I32 i;
 

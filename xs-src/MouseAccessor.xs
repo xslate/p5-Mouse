@@ -6,48 +6,8 @@
         }                                                             \
     } STMT_END
 
-/* Mouse XS Attribute object */
-enum mouse_xa_ix_t{
-    MOUSE_XA_SLOT,      /* for constructors, sync to mg_obj */
-    MOUSE_XA_FLAGS,     /* for constructors, sync to mg_private */
-    MOUSE_XA_ATTRIBUTE,
-    MOUSE_XA_TC,
-    MOUSE_XA_TC_CODE,
-
-    MOUSE_XA_last
-};
-
-#define MOUSE_xa_attribute(m) MOUSE_av_at(m, MOUSE_XA_ATTRIBUTE)
-#define MOUSE_xa_tc(m)        MOUSE_av_at(m, MOUSE_XA_TC)
-#define MOUSE_xa_tc_code(m)   MOUSE_av_at(m, MOUSE_XA_TC_CODE)
 
 #define MOUSE_mg_attribute(mg) MOUSE_xa_attribute(MOUSE_mg_xa(mg))
-
-enum mouse_xa_flags_t{
-    MOUSEf_ATTR_HAS_TC          = 0x0001,
-    MOUSEf_ATTR_HAS_DEFAULT     = 0x0002,
-    MOUSEf_ATTR_HAS_BUILDER     = 0x0004,
-    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008,
-    MOUSEf_ATTR_HAS_TRIGGER     = 0x0010,
-
-    MOUSEf_ATTR_IS_LAZY         = 0x0020,
-    MOUSEf_ATTR_IS_WEAK_REF     = 0x0040,
-    MOUSEf_ATTR_IS_REQUIRED     = 0x0080,
-
-    MOUSEf_ATTR_SHOULD_COERCE   = 0x0100,
-
-    MOUSEf_ATTR_SHOULD_AUTO_DEREF
-                                = 0x0200,
-    MOUSEf_TC_IS_ARRAYREF       = 0x0400,
-    MOUSEf_TC_IS_HASHREF        = 0x0800,
-
-    MOUSEf_OTHER1               = 0x1000,
-    MOUSEf_OTHER2               = 0x2000,
-    MOUSEf_OTHER3               = 0x4000,
-    MOUSEf_OTHER4               = 0x8000,
-
-    MOUSEf_MOUSE_MASK           = 0xFFFF /* not used */
-};
 
 static MGVTBL mouse_accessor_vtbl; /* MAGIC identity */
 
@@ -68,88 +28,21 @@ mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
 
 CV*
 mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
-    SV* const slot = mcall0(attr,  mouse_name);
-    AV* const xa = newAV();
+    AV* const xa = mouse_get_xa(aTHX_ attr);
     CV* xsub;
     MAGIC* mg;
-    U16 flags = 0;
-
-    sv_2mortal((SV*)xa);
 
     xsub = newXS(NULL, accessor_impl, __FILE__);
     sv_2mortal((SV*)xsub);
 
-    mg = sv_magicext((SV*)xsub, slot, PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)xa, HEf_SVKEY);
+    mg = sv_magicext((SV*)xsub, MOUSE_xa_slot(xa), PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)xa, HEf_SVKEY);
+
+    MOUSE_mg_flags(mg) = (U16)SvUV(MOUSE_xa_flags(xa));
 
     /* NOTE:
      * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
      */
     CvXSUBANY(xsub).any_ptr = (void*)mg;
-
-    av_extend(xa, MOUSE_XA_last - 1);
-
-    av_store(xa, MOUSE_XA_ATTRIBUTE, newSVsv(attr));
-
-    /* prepare attribute status */
-    /* XXX: making it lazy is a good way? */
-
-    if(SvTRUEx(mcall0s(attr, "has_type_constraint"))){
-        SV* tc;
-        flags |= MOUSEf_ATTR_HAS_TC;
-
-        ENTER;
-        SAVETMPS;
-
-        tc = mcall0s(attr, "type_constraint");
-        av_store(xa, MOUSE_XA_TC, newSVsv(tc));
-
-        if(SvTRUEx(mcall0s(attr, "should_auto_deref"))){
-            flags |= MOUSEf_ATTR_SHOULD_AUTO_DEREF;
-            if( SvTRUEx(mcall1s(tc, "is_a_type_of", newSVpvs_flags("ArrayRef", SVs_TEMP))) ){
-                flags |= MOUSEf_TC_IS_ARRAYREF;
-            }
-            else if( SvTRUEx(mcall1s(tc, "is_a_type_of", newSVpvs_flags("HashRef", SVs_TEMP))) ){
-                flags |= MOUSEf_TC_IS_HASHREF;
-            }
-            else{
-                mouse_throw_error(attr, tc,
-                    "Can not auto de-reference the type constraint '%"SVf"'",
-                        mcall0(tc, mouse_name));
-            }
-        }
-
-        if(SvTRUEx(mcall0s(attr, "should_coerce"))){
-            flags |= MOUSEf_ATTR_SHOULD_COERCE;
-        }
-
-        FREETMPS;
-        LEAVE;
-    }
-
-    if(SvTRUEx(mcall0s(attr, "has_trigger"))){
-        flags |= MOUSEf_ATTR_HAS_TRIGGER;
-    }
-
-    if(SvTRUEx(mcall0s(attr, "is_lazy"))){
-        flags |= MOUSEf_ATTR_IS_LAZY;
-
-        if(SvTRUEx(mcall0s(attr, "has_builder"))){
-            flags |= MOUSEf_ATTR_HAS_BUILDER;
-        }
-        else if(SvTRUEx(mcall0s(attr, "has_default"))){
-            flags |= MOUSEf_ATTR_HAS_DEFAULT;
-        }
-    }
-
-    if(SvTRUEx(mcall0s(attr, "is_weak_ref"))){
-        flags |= MOUSEf_ATTR_IS_WEAK_REF;
-    }
-
-    if(SvTRUEx(mcall0s(attr, "is_required"))){
-        flags |= MOUSEf_ATTR_IS_REQUIRED;
-    }
-
-    MOUSE_mg_flags(mg) = flags;
 
     return xsub;
 }

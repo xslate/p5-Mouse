@@ -156,9 +156,8 @@ mouse_is_class_loaded(pTHX_ SV * const klass){
 }
 
 
-SV *
-mouse_call0 (pTHX_ SV *const self, SV *const method)
-{
+SV*
+mouse_call0 (pTHX_ SV* const self, SV* const method) {
     dSP;
     SV *ret;
 
@@ -175,9 +174,8 @@ mouse_call0 (pTHX_ SV *const self, SV *const method)
     return ret;
 }
 
-SV *
-mouse_call1 (pTHX_ SV *const self, SV *const method, SV* const arg1)
-{
+SV*
+mouse_call1 (pTHX_ SV* const self, SV* const method, SV* const arg1) {
     dSP;
     SV *ret;
 
@@ -194,6 +192,12 @@ mouse_call1 (pTHX_ SV *const self, SV *const method, SV* const arg1)
     PUTBACK;
 
     return ret;
+}
+
+int
+mouse_predicate_call(pTHX_ SV* const self, SV* const method) {
+    SV* const value = mcall0(self, method);
+    return SvTRUE(value);
 }
 
 SV*
