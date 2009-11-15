@@ -203,6 +203,8 @@ sub add_method {
 package
     Mouse::Meta::Class;
 
+sub constructor_class()   { 'Mouse::Meta::Method::Constructor' }
+
 sub is_anon_class{
     return exists $_[0]->{anon_serial_id};
 }
@@ -216,6 +218,61 @@ sub get_all_attributes {
     my %attrs = map { %{ $self->initialize($_)->{attributes} } } reverse $self->linearized_isa;
     return values %attrs;
 }
+
+sub _initialize_object{
+    my($self, $object, $args, $ignore_triggers) = @_;
+
+    my @triggers_queue;
+
+    foreach my $attribute ($self->get_all_attributes) {
+        my $init_arg = $attribute->init_arg;
+        my $slot     = $attribute->name;
+
+        if (defined($init_arg) && exists($args->{$init_arg})) {
+            $object->{$slot} = $attribute->_coerce_and_verify($args->{$init_arg}, $object);
+
+            weaken($object->{$slot})
+                if ref($object->{$slot}) && $attribute->is_weak_ref;
+
+            if ($attribute->has_trigger) {
+                push @triggers_queue, [ $attribute->trigger, $object->{$slot} ];
+            }
+        }
+        else { # no init arg
+            if ($attribute->has_default || $attribute->has_builder) {
+                if (!$attribute->is_lazy) {
+                    my $default = $attribute->default;
+                    my $builder = $attribute->builder;
+                    my $value =   $builder                ? $object->$builder()
+                                : ref($default) eq 'CODE' ? $object->$default()
+                                :                           $default;
+
+                    $object->{$slot} = $attribute->_coerce_and_verify($value, $object);
+
+                    weaken($object->{$slot})
+                        if ref($object->{$slot}) && $attribute->is_weak_ref;
+                }
+            }
+            elsif($attribute->is_required) {
+                $self->throw_error("Attribute (".$attribute->name.") is required");
+            }
+        }
+    }
+
+    if(!$ignore_triggers){
+        foreach my $trigger_and_value(@triggers_queue){
+            my($trigger, $value) = @{$trigger_and_value};
+            $trigger->($object, $value);
+        }
+    }
+
+    if($self->is_anon_class){
+        $object->{__METACLASS__} = $self;
+    }
+
+    return;
+}
+
 
 package
     Mouse::Meta::Role;

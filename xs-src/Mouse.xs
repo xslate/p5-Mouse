@@ -8,7 +8,7 @@ SV* mouse_name;
 SV* mouse_get_attribute;
 SV* mouse_get_attribute_list;
 
-
+#define MOUSE_xc_flags(a)       SvUVX(MOUSE_av_at((a), MOUSE_XC_FLAGS))
 #define MOUSE_xc_gen(a)         MOUSE_av_at((a), MOUSE_XC_GEN)
 #define MOUSE_xc_stash(a)       ( (HV*)MOUSE_av_at((a), MOUSE_XC_STASH) )
 #define MOUSE_xc_attrall(a)     ( (AV*)MOUSE_av_at((a), MOUSE_XC_ATTRALL) )
@@ -25,9 +25,10 @@ enum mouse_xc_flags_t {
 
 /* Mouse XS Metaclass object */
 enum mouse_xc_ix_t{
+    MOUSE_XC_FLAGS,
+
     MOUSE_XC_GEN,          /* class generation */
     MOUSE_XC_STASH,        /* symbol table hash */
-    MOUSE_XC_FLAGS,
 
     MOUSE_XC_BUILDARGS,    /* Custom BUILDARGS */
 
@@ -102,14 +103,19 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
 
     /* update */
 
-    if(SvTRUEx( mcall0s(metaclass, "is_immutable") )){
+    if(predicate_calls(metaclass, "is_immutable")){
         flags |= MOUSEf_XC_IS_IMMUTABLE;
+    }
+
+    if(predicate_calls(metaclass, "is_anon_class")){
+        flags |= MOUSEf_XC_IS_ANON;
     }
 
     if(mouse_class_has_custom_buildargs(aTHX_ stash)){
         flags |= MOUSEf_XC_HAS_BUILDARGS;
     }
 
+    av_store(xc, MOUSE_XC_FLAGS,       newSVuv(flags));
     av_store(xc, MOUSE_XC_ATTRALL,     (SV*)attrall);
     av_store(xc, MOUSE_XC_BUILDALL,    (SV*)buildall);
     av_store(xc, MOUSE_XC_DEMOLISHALL, (SV*)demolishall);
@@ -171,6 +177,7 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
 
         av_store(xc, MOUSE_XC_GEN, newSViv(0));
         av_store(xc, MOUSE_XC_STASH, (SV*)stash);
+
         SvREFCNT_inc_simple_void_NN(stash);
     }
     else{
@@ -224,13 +231,72 @@ void
 mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const ignore_triggers) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
-    I32 const len   = AvFILLp(attrs) + 1;
+    I32 len         = AvFILLp(attrs) + 1;
     I32 i;
-    AV* const triggers_queue = (ignore_triggers ? NULL : newAV_mortal());
+    AV* triggers_queue = NULL;
+
+    ENTER;
+    SAVETMPS;
+
+    if(!ignore_triggers){
+        triggers_queue = newAV_mortal();
+    }
 
     for(i = 0; i < len; i++){
-        AV* const xa = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
+        SV* const attr = AvARRAY(attrs)[i];
+        AV* const xa   = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
+
+        SV* const slot     = MOUSE_xa_slot(xa);
+        U16 const flags    = (U16)MOUSE_xa_flags(xa);
+        SV* const init_arg = MOUSE_xa_init_arg(xa);
+        HE* he;
+
+        if(SvOK(init_arg) && ( he = hv_fetch_ent(args, init_arg, FALSE, 0U) ) ){
+            SV* value = HeVAL(he);
+            if(flags & MOUSEf_ATTR_HAS_TC){
+                value = mouse_xa_apply_type_constraint(aTHX_ xa, value, flags);
+            }
+            set_slot(object, slot, value);
+            if(SvROK(value) && flags & MOUSEf_ATTR_IS_WEAK_REF){
+                weaken_slot(object, slot);
+            }
+            if(flags & MOUSEf_ATTR_HAS_TRIGGER && triggers_queue){
+                AV* const pair = newAV();
+                av_push(pair, newSVsv( mcall0s(attr, "trigger") ));
+                av_push(pair, newSVsv(value));
+
+                av_push(triggers_queue, (SV*)pair);
+            }
+        }
+        else { /* no init arg */
+            if(flags & (MOUSEf_ATTR_HAS_DEFAULT | MOUSEf_ATTR_HAS_BUILDER)){
+                if(!(flags & MOUSEf_ATTR_IS_LAZY)){
+                    mouse_xa_set_default(aTHX_ xa, object);
+                }
+            }
+            else if(flags & MOUSEf_ATTR_IS_REQUIRED) {
+                mouse_throw_error(attr, NULL, "Attribute (%"SVf") is required", slot);
+            }
+        }
+    } /* for each attributes */
+
+    if(triggers_queue){
+        len = AvFILLp(triggers_queue) + 1;
+        for(i = 0; i < len; i++){
+            AV* const pair    = (AV*)AvARRAY(triggers_queue)[i];
+            SV* const trigger = AvARRAY(pair)[0];
+            SV* const value   = AvARRAY(pair)[1];
+
+            mcall1(object, trigger, value);
+        }
     }
+
+    if(MOUSE_xc_flags(xc) & MOUSEf_XC_IS_ANON){
+        set_slot(object, newSVpvs_flags("__ANON__", SVs_TEMP), meta);
+    }
+
+    FREETMPS;
+    LEAVE;
 }
 
 MODULE = Mouse  PACKAGE = Mouse
@@ -332,6 +398,8 @@ MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Class", TRUE), "constructor_class",
+        newSVpvs("Mouse::Meta::Method::Constructor::XS"));
 
 void
 linearized_isa(SV* self)
@@ -380,7 +448,7 @@ CODE:
 
 
 void
-_initialize_object_(SV* meta, SV* object, HV* args, bool ignore_triggers = FALSE)
+_initialize_object(SV* meta, SV* object, HV* args, bool ignore_triggers = FALSE)
 CODE:
 {
     mouse_class_initialize_object(aTHX_ meta, object, args, ignore_triggers);
@@ -399,6 +467,18 @@ BUILDARGS(SV* klass, ...)
 CODE:
 {
     RETVAL = mouse_build_args(aTHX_ NULL, klass, 1, items, ax);
+}
+OUTPUT:
+    RETVAL
+
+MODULE = Mouse  PACKAGE = Mouse::Meta::Method::Constructor::XS
+
+CV*
+_generate_constructor(...)
+CODE:
+{
+    RETVAL = get_cvs("Mouse::Object::new", TRUE);
+    SvREFCNT_inc_simple_void_NN(RETVAL);
 }
 OUTPUT:
     RETVAL

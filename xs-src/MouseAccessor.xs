@@ -37,7 +37,7 @@ mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_im
 
     mg = sv_magicext((SV*)xsub, MOUSE_xa_slot(xa), PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)xa, HEf_SVKEY);
 
-    MOUSE_mg_flags(mg) = (U16)SvUV(MOUSE_xa_flags(xa));
+    MOUSE_mg_flags(mg) = (U16)MOUSE_xa_flags(xa);
 
     /* NOTE:
      * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
@@ -47,36 +47,6 @@ mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_im
     return xsub;
 }
 
-static SV*
-mouse_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
-    SV* const tc = MOUSE_xa_tc(xa);
-    SV* tc_code;
-
-    if(flags & MOUSEf_ATTR_SHOULD_COERCE){
-          value = mcall1s(tc, "coerce", value);
-    }
-
-    if(!SvOK(MOUSE_xa_tc_code(xa))){
-        tc_code = mcall0s(tc, "_compiled_type_constraint");
-        av_store(xa, MOUSE_XA_TC_CODE, newSVsv(tc_code));
-
-        if(!IsCodeRef(tc_code)){
-            mouse_throw_error(MOUSE_xa_attribute(xa), tc, "Not a CODE reference");
-        }
-    }
-    else{
-        tc_code = MOUSE_xa_tc_code(xa);
-    }
-
-    if(!mouse_tc_check(aTHX_ tc_code, value)){
-        mouse_throw_error(MOUSE_xa_attribute(xa), value,
-            "Attribute (%"SVf") does not pass the type constraint because: %"SVf,
-                mcall0(MOUSE_xa_attribute(xa), mouse_name),
-                mcall1s(tc, "get_message", value));
-    }
-
-    return value;
-}
 
 #define PUSH_VALUE(value, flags) STMT_START { \
         if((flags) & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){ \
@@ -140,36 +110,13 @@ mouse_push_values(pTHX_ SV* const value, U16 const flags){
 static void
 mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
     U16 const flags = MOUSE_mg_flags(mg);
-    SV* const slot  = MOUSE_mg_slot(mg);
     SV* value;
 
-    value = get_slot(self, slot);
+    value = get_slot(self, MOUSE_mg_slot(mg));
 
     /* check_lazy */
     if( !value && flags & MOUSEf_ATTR_IS_LAZY ){
-        AV* const xa   = MOUSE_mg_xa(mg);
-        SV* const attr = MOUSE_xa_attribute(xa);
-
-        /* get default value by $attr->builder or $attr->default */
-        if(flags & MOUSEf_ATTR_HAS_BUILDER){
-            SV* const builder = mcall0s(attr, "builder");
-            value = mcall0(self, builder);
-        }
-        else {
-            value = mcall0s(attr, "default");
-
-            if(IsCodeRef(value)){
-                value = mcall0(self, value);
-            }
-        }
-
-        /* apply coerce and type constraint */
-        if(flags & MOUSEf_ATTR_HAS_TC){
-            value = mouse_apply_type_constraint(aTHX_ xa, value, flags);
-        }
-
-        /* store value to slot */
-        value = set_slot(self, slot, value);
+        value = mouse_xa_set_default(aTHX_ MOUSE_mg_xa(mg), self);
     }
 
     PUSH_VALUE(value, flags);
@@ -181,7 +128,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
     SV* const slot  = MOUSE_mg_slot(mg);
 
     if(flags & MOUSEf_ATTR_HAS_TC){
-        value = mouse_apply_type_constraint(aTHX_ MOUSE_mg_xa(mg), value, flags);
+        value = mouse_xa_apply_type_constraint(aTHX_ MOUSE_mg_xa(mg), value, flags);
     }
 
     set_slot(self, slot, value);

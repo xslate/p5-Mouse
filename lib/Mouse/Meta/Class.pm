@@ -11,7 +11,7 @@ our @ISA = qw(Mouse::Meta::Module);
 sub method_metaclass()    { 'Mouse::Meta::Method'    }
 sub attribute_metaclass() { 'Mouse::Meta::Attribute' }
 
-sub constructor_class()   { 'Mouse::Meta::Method::Constructor' }
+sub constructor_class(); # XS
 sub destructor_class()    { 'Mouse::Meta::Method::Destructor'  }
 
 sub _construct_meta {
@@ -163,62 +163,6 @@ sub new_object {
     my $object = bless {}, $self->name;
 
     $self->_initialize_object($object, \%args);
-    return $object;
-}
-
-sub _initialize_object{
-    my($self, $object, $args, $ignore_triggers) = @_;
-
-    my @triggers_queue;
-
-    foreach my $attribute ($self->get_all_attributes) {
-        my $from = $attribute->init_arg;
-        my $key  = $attribute->name;
-
-        if (defined($from) && exists($args->{$from})) {
-            $object->{$key} = $attribute->_coerce_and_verify($args->{$from}, $object);
-
-            weaken($object->{$key})
-                if ref($object->{$key}) && $attribute->is_weak_ref;
-
-            if ($attribute->has_trigger) {
-                push @triggers_queue, [ $attribute->trigger, $object->{$key} ];
-            }
-        }
-        else {
-            if ($attribute->has_default || $attribute->has_builder) {
-                unless ($attribute->is_lazy) {
-                    my $default = $attribute->default;
-                    my $builder = $attribute->builder;
-                    my $value =   $builder                ? $object->$builder()
-                                : ref($default) eq 'CODE' ? $object->$default()
-                                :                           $default;
-
-                    $object->{$key} = $attribute->_coerce_and_verify($value, $object);
-
-                    weaken($object->{$key})
-                        if ref($object->{$key}) && $attribute->is_weak_ref;
-                }
-            }
-            else {
-                if ($attribute->is_required) {
-                    $self->throw_error("Attribute (".$attribute->name.") is required");
-                }
-            }
-        }
-    }
-
-    if(!$ignore_triggers){
-        foreach my $trigger_and_value(@triggers_queue){
-            my($trigger, $value) = @{$trigger_and_value};
-            $trigger->($object, $value);
-        }
-    }
-
-    if($self->is_anon_class){
-        $object->{__METACLASS__} = $self;
-    }
-
     return $object;
 }
 

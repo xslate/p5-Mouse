@@ -190,11 +190,14 @@ XS(XS_Mouse_constraint_check);
 /* Mouse XS Attribute object */
 
 AV* mouse_get_xa(pTHX_ SV* const attr);
+SV* mouse_xa_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags);
+SV* mouse_xa_set_default(pTHX_ AV* const xa, SV* const object);
 
 enum mouse_xa_ix_t{
     MOUSE_XA_SLOT,      /* for constructors, sync to mg_obj */
     MOUSE_XA_FLAGS,     /* for constructors, sync to mg_private */
     MOUSE_XA_ATTRIBUTE,
+    MOUSE_XA_INIT_ARG,
     MOUSE_XA_TC,
     MOUSE_XA_TC_CODE,
 
@@ -202,17 +205,17 @@ enum mouse_xa_ix_t{
 };
 
 #define MOUSE_xa_slot(m)      MOUSE_av_at(m, MOUSE_XA_SLOT)
-#define MOUSE_xa_flags(m)     MOUSE_av_at(m, MOUSE_XA_FLAGS)
+#define MOUSE_xa_flags(m)     SvUVX( MOUSE_av_at(m, MOUSE_XA_FLAGS) )
 #define MOUSE_xa_attribute(m) MOUSE_av_at(m, MOUSE_XA_ATTRIBUTE)
+#define MOUSE_xa_init_arg(m)  MOUSE_av_at(m, MOUSE_XA_INIT_ARG)
 #define MOUSE_xa_tc(m)        MOUSE_av_at(m, MOUSE_XA_TC)
 #define MOUSE_xa_tc_code(m)   MOUSE_av_at(m, MOUSE_XA_TC_CODE)
-
 
 enum mouse_xa_flags_t{
     MOUSEf_ATTR_HAS_TC          = 0x0001,
     MOUSEf_ATTR_HAS_DEFAULT     = 0x0002,
     MOUSEf_ATTR_HAS_BUILDER     = 0x0004,
-    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008,
+    MOUSEf_ATTR_HAS_INITIALIZER = 0x0008, /* not used */
     MOUSEf_ATTR_HAS_TRIGGER     = 0x0010,
 
     MOUSEf_ATTR_IS_LAZY         = 0x0020,
