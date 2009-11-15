@@ -467,6 +467,7 @@ XS(XS_Mouse_simple_predicate)
 SV*
 mouse_instance_create(pTHX_ HV* const stash) {
     assert(stash);
+    assert(SvTYPE(stash) == SVt_PVHV);
     return sv_bless( newRV_noinc((SV*)newHV()), stash );
 }
 

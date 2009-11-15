@@ -197,10 +197,18 @@ mouse_call1 (pTHX_ SV *const self, SV *const method, SV* const arg1)
 }
 
 SV*
-mouse_get_metaclass_by_name(pTHX_ SV* const metaclass_name){
+mouse_get_metaclass(pTHX_ SV* metaclass_name){
     CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
     SV* metaclass;
     dSP;
+
+    assert(metaclass_name);
+    if(IsObject(metaclass_name)){
+        HV* const stash = SvSTASH(metaclass_name);
+
+        metaclass_name = newSVpvn_share(HvNAME_get(stash), HvNAMELEN_get(stash), 0U);
+        sv_2mortal(metaclass_name);
+    }
 
     PUSHMARK(SP);
     XPUSHs(metaclass_name);

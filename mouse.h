@@ -72,12 +72,12 @@ bool mouse_is_class_loaded(pTHX_ SV*);
 #define mcall0s(invocant, m)       mcall0((invocant), sv_2mortal(newSVpvs_share(m)))
 #define mcall1s(invocant, m, arg1) mcall1((invocant), sv_2mortal(newSVpvs_share(m)), (arg1))
 
-#define get_metaclass_by_name(name) mouse_get_metaclass_by_name(aTHX_ name)
+#define get_metaclass(name) mouse_get_metaclass(aTHX_ name)
 
 SV* mouse_call0(pTHX_ SV *const self, SV *const method);
 SV* mouse_call1(pTHX_ SV *const self, SV *const method, SV* const arg1);
 
-SV* mouse_get_metaclass_by_name(pTHX_ SV* const metaclass_name);
+SV* mouse_get_metaclass(pTHX_ SV* metaclass_name);
 
 GV* mouse_stash_fetch(pTHX_ HV* const stash, const char* const name, I32 const namelen, I32 const create);
 #define stash_fetch(s, n, l, c) mouse_stash_fetch(aTHX_ (s), (n), (l), (c))

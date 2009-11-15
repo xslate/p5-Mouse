@@ -10,13 +10,27 @@ SV* mouse_get_attribute_list;
 
 
 #define MOUSE_xc_gen(a)         MOUSE_av_at((a), MOUSE_XC_GEN)
+#define MOUSE_xc_stash(a)       ( (HV*)MOUSE_av_at((a), MOUSE_XC_STASH) )
 #define MOUSE_xc_attrall(a)     ( (AV*)MOUSE_av_at((a), MOUSE_XC_ATTRALL) )
 #define MOUSE_xc_buildall(a)    ( (AV*)MOUSE_av_at((a), MOUSE_XC_BUILDALL) )
 #define MOUSE_xc_demolishall(a) ( (AV*)MOUSE_av_at((a), MOUSE_XC_DEOLISHALL) )
 
+enum mouse_xc_flags_t {
+    MOUSEf_XC_IS_IMMUTABLE   = 0x0001,
+    MOUSEf_XC_IS_ANON        = 0x0002,
+    MOUSEf_XC_HAS_BUILDARGS  = 0x0004,
+
+    MOUSEf_XC_mask           = 0xFFFF /* not used */
+};
+
 /* Mouse XS Metaclass object */
 enum mouse_xc_ix_t{
     MOUSE_XC_GEN,          /* class generation */
+    MOUSE_XC_STASH,        /* symbol table hash */
+    MOUSE_XC_FLAGS,
+
+    MOUSE_XC_BUILDARGS,    /* Custom BUILDARGS */
+
     MOUSE_XC_ATTRALL,      /* all the attributes */
     MOUSE_XC_BUILDALL,     /* all the BUILD methods */
     MOUSE_XC_DEMOLISHALL,  /* all the DEMOLISH methods */
@@ -53,11 +67,23 @@ mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV
     }
 }
 
+static int
+mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
+    XS(XS_Mouse__Object_BUILDARGS); /* prototype */
+
+    GV* const buildargs = gv_fetchmeth_autoload(stash, "BUILDARGS", sizeof("BUILDARGS")-1, 0);
+    CV* const cv        = GvCV(buildargs);
+
+    assert(cv);
+    return CvXSUB(cv) == XS_Mouse__Object_BUILDARGS;
+}
+
 static void
 mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stash, AV* const xc) {
     AV* const linearized_isa = mro_get_linear_isa(stash);
     I32 const len            = AvFILLp(linearized_isa);
     I32 i;
+    U32 flags             = 0x00;
     AV* const attrall     = newAV();
     AV* const buildall    = newAV();
     AV* const demolishall = newAV();
@@ -77,6 +103,14 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     sv_2mortal((SV*)linearized_isa);
 
     /* update */
+
+    if(SvTRUEx( mcall0s(metaclass, "is_immutable") )){
+        flags |= MOUSEf_XC_IS_IMMUTABLE;
+    }
+
+    if(mouse_class_has_custom_buildargs(aTHX_ stash)){
+        flags |= MOUSEf_XC_HAS_BUILDARGS;
+    }
 
     av_store(xc, MOUSE_XC_ATTRALL,     (SV*)attrall);
     av_store(xc, MOUSE_XC_BUILDALL,    (SV*)buildall);
@@ -98,7 +132,7 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
         }
 
         /* ATTRIBUTES */
-        meta = get_metaclass_by_name(klass);
+        meta = get_metaclass(klass);
         if(!SvOK(meta)){
             continue; /* skip non-Mouse classes */
         }
@@ -126,28 +160,31 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
     mg = mouse_mg_find(aTHX_ SvRV(metaclass), &mouse_xc_vtbl, 0x00);
     if(!mg){
         SV* const package = get_slot(metaclass, mouse_package);
+        STRLEN len;
+        const char* const pv = SvPV_const(package, len);
 
-        stash = gv_stashsv(package, TRUE);
+        stash = gv_stashpvn(pv, len, TRUE);
         xc    = newAV();
 
-        mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext, &mouse_xc_vtbl, (char*)stash, HEf_SVKEY);
+        mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext, &mouse_xc_vtbl, pv, len);
         SvREFCNT_dec(xc); /* refcnt++ in sv_magicext */
 
         av_extend(xc, MOUSE_XC_last - 1);
+
         av_store(xc, MOUSE_XC_GEN, newSViv(0));
+        av_store(xc, MOUSE_XC_STASH, (SV*)stash);
+        SvREFCNT_inc_simple_void_NN(stash);
     }
     else{
-        stash = (HV*)MOUSE_mg_ptr(mg);
         xc    = (AV*)MOUSE_mg_obj(mg);
-
-        assert(stash);
-        assert(SvTYPE(stash) == SVt_PVAV);
 
         assert(xc);
         assert(SvTYPE(xc) == SVt_PVAV);
     }
 
-    gen = MOUSE_xc_gen(xc);
+    gen   = MOUSE_xc_gen(xc);
+    stash = MOUSE_xc_stash(xc);
+
     if(SvUV(gen) != mro_get_pkg_gen(stash)){
         mouse_class_update_xc(aTHX_ metaclass, stash, xc);
     }
@@ -159,6 +196,44 @@ AV*
 mouse_get_all_attributes(pTHX_ SV* const metaclass) {
     AV* const xc = mouse_get_xc(aTHX_ metaclass);
     return MOUSE_xc_attrall(xc);
+}
+
+HV*
+mouse_build_args(aTHX_ SV* metaclass, SV* const klass, I32 const start, I32 const items, I32 const ax) {
+    HV* args;
+    if((items - start) == 1){
+        SV* const args_ref = ST(start);
+        if(!IsHashRef(args_ref)){
+            if(!metaclass){ metaclass = get_metaclass(klass); }
+            mouse_throw_error(metaclass, NULL, "Single parameters to new() must be a HASH ref");
+        }
+        args = newHVhv((HV*)SvRV(args_ref));
+        sv_2mortal((SV*)args);
+    }
+    else{
+        I32 i;
+
+        args = newHV();
+        sv_2mortal((SV*)args);
+
+        if( ((items - start) % 2) != 0 ){
+            if(!metaclass){ metaclass = get_metaclass(klass); }
+            mouse_throw_error(metaclass, NULL, "Odd number of parameters to new()");
+        }
+
+        for(i = start; i < items; i += 2){
+            (void)hv_store_ent(args, ST(i), newSVsv(ST(i+1)), 0U);
+        }
+
+    }
+    return args;
+}
+
+void
+mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const invoke_triggers) {
+    AV* const xc = mouse_get_xc(aTHX_ meta);
+
+    // TODO
 }
 
 MODULE = Mouse  PACKAGE = Mouse
@@ -177,6 +252,7 @@ BOOT:
     MOUSE_CALL_BOOT(Mouse__Util);
     MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
     MOUSE_CALL_BOOT(Mouse__Meta__Method__Accessor__XS);
+    MOUSE_CALL_BOOT(Mouse__Meta__Attribute);
 
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Module
@@ -293,53 +369,38 @@ PPCODE:
     }
 }
 
+SV*
+new_object_(SV* meta, ...)
+CODE:
+{
+    HV* const args = mouse_build_args(aTHX_ meta, NULL, 1, items, ax);
+    AV* const xc   = mouse_get_xc(aTHX_ meta);
+    RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
+    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, TRUE);
+}
+
+
+void
+_initialize_object_(SV* meta, SV* object, HV* args, bool invoke_triggers = TRUE)
+CODE:
+{
+    mouse_class_initialize_object(aTHX_ meta, object, args, invoke_triggers);
+}
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 
 BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Role, get_roles, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Role, is_anon_role, anon_serial_id);
 
-MODULE = Mouse  PACKAGE = Mouse::Meta::Attribute
+MODULE = Mouse  PACKAGE = Mouse::Object
 
-BOOT:
-    /* readers */
-    INSTALL_SIMPLE_READER(Attribute, name);
-    INSTALL_SIMPLE_READER(Attribute, associated_class);
-    INSTALL_SIMPLE_READER(Attribute, accessor);
-    INSTALL_SIMPLE_READER(Attribute, reader);
-    INSTALL_SIMPLE_READER(Attribute, writer);
-    INSTALL_SIMPLE_READER(Attribute, predicate);
-    INSTALL_SIMPLE_READER(Attribute, clearer);
-    INSTALL_SIMPLE_READER(Attribute, handles);
-
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, _is_metadata, is);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_required, required);
-    INSTALL_SIMPLE_READER(Attribute, default);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_lazy, lazy);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_lazy_build, lazy_build);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_weak_ref, weak_ref);
-    INSTALL_SIMPLE_READER(Attribute, init_arg);
-    INSTALL_SIMPLE_READER(Attribute, type_constraint);
-    INSTALL_SIMPLE_READER(Attribute, trigger);
-    INSTALL_SIMPLE_READER(Attribute, builder);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, should_auto_deref, auto_deref);
-    INSTALL_SIMPLE_READER_WITH_KEY(Attribute, should_coerce, coerce);
-    INSTALL_SIMPLE_READER(Attribute, documentation);
-
-    /* predicates */
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_accessor, accessor);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_reader, reader);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_writer, writer);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_predicate, predicate);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_clearer, clearer);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_handles, handles);
-
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_default, default);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_type_constraint, type_constraint);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_trigger, trigger);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_builder, builder);
-    INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_documentation, documentation);
-
-    newCONSTSUB(gv_stashpvs("Mouse::Meta::Attribute", TRUE), "accessor_metaclass",
-        newSVpvs("Mouse::Meta::Method::Accessor::XS"));
+HV*
+BUILDARGS(SV* klass, ...)
+CODE:
+{
+    RETVAL = mouse_build_args(aTHX_ NULL, klass, 1, items, ax);
+}
+OUTPUT:
+    RETVAL
 

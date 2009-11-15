@@ -149,21 +149,11 @@ mouse_tc_RoleName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     if(is_class_loaded(sv)){
         int ok;
-        SV* meta;
-        dSP;
 
         ENTER;
         SAVETMPS;
 
-        PUSHMARK(SP);
-        XPUSHs(sv);
-        PUTBACK;
-        call_pv("Mouse::Util::get_metaclass_by_name", G_SCALAR);
-        SPAGAIN;
-        meta = POPs;
-        PUTBACK;
-
-        ok =  is_an_instance_of("Mouse::Meta::Role", meta);
+        ok =  is_an_instance_of("Mouse::Meta::Role", get_metaclass(sv));
 
         FREETMPS;
         LEAVE;
