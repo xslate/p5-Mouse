@@ -229,10 +229,15 @@ mouse_build_args(aTHX_ SV* metaclass, SV* const klass, I32 const start, I32 cons
 }
 
 void
-mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const invoke_triggers) {
-    AV* const xc = mouse_get_xc(aTHX_ meta);
-
-    // TODO
+mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const ignore_triggers) {
+    AV* const xc    = mouse_get_xc(aTHX_ meta);
+    AV* const attrs = MOUSE_xc_attrall(xc);
+    I32 const len   = AvFILLp(attrs) + 1;
+    I32 i;
+    AV* const triggers_queue = (invoke_triggers ? newAV_mortal() : NULL);
+    for(i = 0; i < len; i++){
+        AV* const = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
+    }
 }
 
 MODULE = Mouse  PACKAGE = Mouse
@@ -374,16 +379,17 @@ CODE:
 {
     HV* const args = mouse_build_args(aTHX_ meta, NULL, 1, items, ax);
     AV* const xc   = mouse_get_xc(aTHX_ meta);
+
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
-    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, TRUE);
+    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
 }
 
 
 void
-_initialize_object_(SV* meta, SV* object, HV* args, bool invoke_triggers = TRUE)
+_initialize_object_(SV* meta, SV* object, HV* args, bool ignore_triggers = FALSE)
 CODE:
 {
-    mouse_class_initialize_object(aTHX_ meta, object, args, invoke_triggers);
+    mouse_class_initialize_object(aTHX_ meta, object, args, ignore_triggers);
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role

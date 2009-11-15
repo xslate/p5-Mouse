@@ -167,7 +167,7 @@ sub new_object {
 }
 
 sub _initialize_object{
-    my($self, $object, $args) = @_;
+    my($self, $object, $args, $ignore_triggers) = @_;
 
     my @triggers_queue;
 
@@ -208,9 +208,11 @@ sub _initialize_object{
         }
     }
 
-    foreach my $trigger_and_value(@triggers_queue){
-        my($trigger, $value) = @{$trigger_and_value};
-        $trigger->($object, $value);
+    if(!$ignore_triggers){
+        foreach my $trigger_and_value(@triggers_queue){
+            my($trigger, $value) = @{$trigger_and_value};
+            $trigger->($object, $value);
+        }
     }
 
     if($self->is_anon_class){
