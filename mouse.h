@@ -38,6 +38,9 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif /* !no_mro_get_linear_isa */
 #endif /* mro_get_package_gen */
 
+#define newAV_mortal() (AV*)sv_2mortal((SV*)newAV())
+#define newHV_mortal() (HV*)sv_2mortal((SV*)newHV())
+
 #define MOUSE_CALL_BOOT(name) STMT_START {      \
         EXTERN_C XS(CAT2(boot_, name));         \
         PUSHMARK(SP);                           \
