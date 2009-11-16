@@ -6,6 +6,14 @@ use Scalar::Util ();
 
 my %METAS;
 
+if(Mouse::Util::_MOUSE_XS){
+    # register meta storage for performance
+    Mouse::Util::__register_metaclass_storage(\%METAS, 0);
+
+    # ensure thread safety
+    *CLONE = sub { Mouse::Util::__register_metaclass_storage(\%METAS, 1) };
+}
+
 sub _metaclass_cache { # DEPRECATED
     my($class, $name) = @_;
     return $METAS{$name};

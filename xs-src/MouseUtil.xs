@@ -1,5 +1,11 @@
 #include "mouse.h"
 
+#define MY_CXT_KEY "Mouse::Util::_guts" XS_VERSION
+typedef struct {
+    HV* metas;
+} my_cxt_t;
+START_MY_CXT
+
 #define ISA_CACHE "::LINEALIZED_ISA_CACHE::"
 
 #ifdef no_mro_get_linear_isa
@@ -202,11 +208,12 @@ mouse_predicate_call(pTHX_ SV* const self, SV* const method) {
 
 SV*
 mouse_get_metaclass(pTHX_ SV* metaclass_name){
-    CV* const get_metaclass  = get_cvs("Mouse::Util::get_metaclass_by_name", TRUE);
-    SV* metaclass;
-    dSP;
+    dMY_CXT;
+    HE* he;
 
     assert(metaclass_name);
+    assert(MY_CXT.metas);
+
     if(IsObject(metaclass_name)){
         HV* const stash = SvSTASH(metaclass_name);
 
@@ -214,17 +221,9 @@ mouse_get_metaclass(pTHX_ SV* metaclass_name){
         sv_2mortal(metaclass_name);
     }
 
-    PUSHMARK(SP);
-    XPUSHs(metaclass_name);
-    PUTBACK;
+    he = hv_fetch_ent(MY_CXT.metas, metaclass_name, FALSE, 0U);
 
-    call_sv((SV*)get_metaclass, G_SCALAR);
-
-    SPAGAIN;
-    metaclass = POPs;
-    PUTBACK;
-
-    return metaclass;
+    return he ? HeVAL(he) : &PL_sv_undef;
 }
 
 MAGIC*
@@ -263,6 +262,28 @@ MODULE = Mouse::Util  PACKAGE = Mouse::Util
 
 PROTOTYPES:   DISABLE
 VERSIONCHECK: DISABLE
+
+BOOT:
+{
+    MY_CXT_INIT;
+    MY_CXT.metas = NULL;
+}
+
+void
+__register_metaclass_storage(HV* metas, bool cloning)
+CODE:
+{
+    if(cloning){
+        MY_CXT_CLONE;
+        MY_CXT.metas = NULL;
+    }
+    {
+        dMY_CXT;
+        if(MY_CXT.metas) croak("Cannot set metaclass storage more than once");
+        MY_CXT.metas = metas;
+        SvREFCNT_inc_simple_void_NN(metas);
+    }
+}
 
 bool
 is_class_loaded(SV* sv)
