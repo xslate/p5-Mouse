@@ -3,7 +3,6 @@ use Mouse::Util qw/:meta get_linear_isa not_supported/; # enables strict and war
 
 use Scalar::Util qw/blessed weaken/;
 
-use Mouse::Meta::Method::Destructor;
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
