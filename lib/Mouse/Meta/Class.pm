@@ -10,8 +10,8 @@ our @ISA = qw(Mouse::Meta::Module);
 sub method_metaclass()    { 'Mouse::Meta::Method'    }
 sub attribute_metaclass() { 'Mouse::Meta::Attribute' }
 
-sub constructor_class(); # XS
-sub destructor_class()    { 'Mouse::Meta::Method::Destructor'  }
+sub constructor_class();
+sub destructor_class();
 
 sub _construct_meta {
     my($class, %args) = @_;
@@ -199,13 +199,17 @@ sub make_immutable {
     $self->{is_immutable}++;
 
     if ($args{inline_constructor}) {
+        my $c = $self->constructor_class;
+        Mouse::Util::load_class($c);
         $self->add_method($args{constructor_name} =>
-            $self->constructor_class->_generate_constructor($self, \%args));
+            $c->_generate_constructor($self, \%args));
     }
 
     if ($args{inline_destructor}) {
+        my $c = $self->destructor_class;
+        Mouse::Util::load_class($c);
         $self->add_method(DESTROY =>
-            $self->destructor_class->_generate_destructor($self, \%args));
+            $c->_generate_destructor($self, \%args));
     }
 
     # Moose's make_immutable returns true allowing calling code to skip setting an explicit true value

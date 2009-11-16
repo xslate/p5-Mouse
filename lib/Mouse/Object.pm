@@ -3,37 +3,6 @@ use Mouse::Util qw(does dump); # enables strict and warnings
 
 sub new;
 
-sub DESTROY {
-    my $self = shift;
-
-    return unless $self->can('DEMOLISH'); # short circuit
-
-    local $?;
-
-    my $e = do{
-        local $@;
-        eval{
-
-            # DEMOLISHALL
-
-            # We cannot count on being able to retrieve a previously made
-            # metaclass, _or_ being able to make a new one during global
-            # destruction. However, we should still be able to use mro at
-            # that time (at least tests suggest so ;)
-
-            foreach my $class (@{ Mouse::Util::get_linear_isa(ref $self) }) {
-                my $demolish = Mouse::Util::get_code_ref($class, 'DEMOLISH')
-                    || next;
-
-                $self->$demolish();
-            }
-        };
-        $@;
-    };
-
-    no warnings 'misc';
-    die $e if $e; # rethrow
-}
 
 sub BUILDALL {
     my $self = shift;

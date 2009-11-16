@@ -175,7 +175,7 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
 
         av_extend(xc, MOUSE_XC_last - 1);
 
-        av_store(xc, MOUSE_XC_GEN, newSViv(0));
+        av_store(xc, MOUSE_XC_GEN, newSVuv(0U));
         av_store(xc, MOUSE_XC_STASH, (SV*)stash);
 
         SvREFCNT_inc_simple_void_NN(stash);
@@ -188,9 +188,14 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
     }
 
     gen   = MOUSE_xc_gen(xc);
+
+    if(SvUVX(gen) != 0U && MOUSE_xc_flags(xc) & MOUSEf_XC_IS_IMMUTABLE){
+        return xc;
+    }
+
     stash = MOUSE_xc_stash(xc);
 
-    if(SvUV(gen) != mro_get_pkg_gen(stash)){
+    if(SvUVX(gen) != mro_get_pkg_gen(stash)){
         mouse_class_update_xc(aTHX_ metaclass, stash, xc);
     }
 
@@ -308,7 +313,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     LEAVE;
 }
 
-SV*
+static SV*
 mouse_initialize_metaclass(pTHX_ SV* const klass) {
     SV* meta = get_metaclass(klass);
 
@@ -431,6 +436,15 @@ BOOT:
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
     newCONSTSUB(gv_stashpvs("Mouse::Meta::Class", TRUE), "constructor_class",
         newSVpvs("Mouse::Meta::Method::Constructor::XS"));
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Class", TRUE), "destructor_class",
+        newSVpvs("Mouse::Meta::Method::Destructor::XS"));
+
+
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Constructor::XS", TRUE), "_generate_constructor",
+        newRV_inc((SV*)get_cvs("Mouse::Object::new", TRUE)));
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Destructor::XS", TRUE), "_generate_destructor",
+        newRV_inc((SV*)get_cvs("Mouse::Object::DESTROY", TRUE)));
+
 
 void
 linearized_isa(SV* self)
@@ -511,7 +525,7 @@ CODE:
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     UV const flags = MOUSE_xc_flags(xc);
     SV* args;
-    AV* av;
+    AV* buildall;
     I32 len, i;
 
     /* BUILDARGS */
@@ -544,8 +558,8 @@ CODE:
     mouse_class_initialize_object(aTHX_ meta, RETVAL, (HV*)SvRV(args), FALSE);
 
     /* BUILDALL */
-    av  = MOUSE_xc_buildall(xc);
-    len = AvFILLp(av) + 1;
+    buildall = MOUSE_xc_buildall(xc);
+    len      = AvFILLp(buildall) + 1;
     for(i = 0; i < len; i++){
         dSP;
 
@@ -555,11 +569,75 @@ CODE:
         PUSHs(args);
         PUTBACK;
 
-        call_sv(AvARRAY(av)[i], G_VOID | G_DISCARD);
+        call_sv(AvARRAY(buildall)[i], G_VOID | G_DISCARD);
     }
 }
 OUTPUT:
     RETVAL
+
+void
+DESTROY(SV* object)
+CODE:
+{
+    SV* const meta = get_metaclass(object);
+    AV* demolishall;
+    I32 len, i;
+
+    if(!IsObject(object)){
+        croak("You must not call DESTROY as a class method");
+    }
+
+    if(SvOK(meta)){
+        AV* const xc = mouse_get_xc(aTHX_ meta);
+
+        demolishall = MOUSE_xc_demolishall(xc);
+    }
+    else {
+        AV* const linearized_isa = mro_get_linear_isa(SvSTASH(SvRV(object)));
+
+        len = AvFILLp(linearized_isa) + 1;
+
+        demolishall = newAV_mortal();
+        for(i = 0; i < len; i++){
+            SV* const klass = MOUSE_av_at(linearized_isa, i);
+            HV* const st    = gv_stashsv(klass, TRUE);
+            GV* const gv    = stash_fetchs(st, "DEMOLISH", FALSE);
+            if(gv && GvCVu(gv)){
+                av_push(demolishall, newRV_inc((SV*)GvCV(gv)));
+            }
+        }
+    }
+
+    /* DEMOLISHALL */
+    len      = AvFILLp(demolishall) + 1;
+    if(len > 0){
+        GV* const statusvalue = gv_fetchpvs("?", 0, SVt_PV);
+        SAVESPTR(GvSV(statusvalue)); /* local $? */
+        SAVESPTR(ERRSV); /* local $@ */
+
+        GvSV(statusvalue) = sv_2mortal(newSViv(0));
+        ERRSV             = sv_2mortal(newSVpvs(""));
+        for(i = 0; i < len; i++){
+            dSP;
+
+            PUSHMARK(SP);
+            XPUSHs(object);
+            PUTBACK;
+
+            call_sv(AvARRAY(demolishall)[i], G_VOID | G_DISCARD | G_EVAL);
+            if(SvTRUE(ERRSV)){
+                SV* const e = newSVsv(ERRSV);
+
+                FREETMPS;
+                LEAVE;
+
+                sv_setsv(ERRSV, e);
+                SvREFCNT_dec(e);
+                croak(NULL); /* rethrow */
+            }
+        }
+    }
+}
 
 HV*
 BUILDARGS(SV* klass, ...)
@@ -570,15 +648,4 @@ CODE:
 OUTPUT:
     RETVAL
 
-MODULE = Mouse  PACKAGE = Mouse::Meta::Method::Constructor::XS
-
-CV*
-_generate_constructor(...)
-CODE:
-{
-    RETVAL = get_cvs("Mouse::Object::new", TRUE);
-    SvREFCNT_inc_simple_void_NN(RETVAL);
-}
-OUTPUT:
-    RETVAL
 

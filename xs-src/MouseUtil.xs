@@ -215,7 +215,7 @@ mouse_get_metaclass(pTHX_ SV* metaclass_name){
     assert(MY_CXT.metas);
 
     if(IsObject(metaclass_name)){
-        HV* const stash = SvSTASH(metaclass_name);
+        HV* const stash = SvSTASH(SvRV(metaclass_name));
 
         metaclass_name = newSVpvn_share(HvNAME_get(stash), HvNAMELEN_get(stash), 0U);
         sv_2mortal(metaclass_name);
