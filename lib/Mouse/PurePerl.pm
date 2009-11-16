@@ -203,6 +203,8 @@ sub add_method {
 package
     Mouse::Meta::Class;
 
+use Mouse::Meta::Method::Constructor;
+
 sub constructor_class()   { 'Mouse::Meta::Method::Constructor' }
 
 sub is_anon_class{
