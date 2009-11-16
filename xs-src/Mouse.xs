@@ -308,6 +308,28 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     LEAVE;
 }
 
+SV*
+mouse_initialize_metaclass(pTHX_ SV* const klass) {
+    SV* meta = get_metaclass(klass);
+
+    if(!SvOK(meta)){
+        dSP;
+        PUSHMARK(SP);
+
+        EXTEND(SP, 2);
+        mPUSHp("Mouse::Meta::Class", sizeof("Mouse::Meta::Class")-1);
+        PUSHs(klass);
+        PUTBACK;
+
+        call_method("initialize", G_SCALAR);
+        SPAGAIN;
+        meta = POPs;
+        PUTBACK;
+    }
+
+    return meta;
+}
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -485,7 +507,7 @@ SV*
 new(SV* klass, ...)
 CODE:
 {
-    SV* const meta = get_metaclass(klass);
+    SV* const meta = mouse_initialize_metaclass(aTHX_ klass);
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     UV const flags = MOUSE_xc_flags(xc);
     SV* args;
