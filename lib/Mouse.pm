@@ -141,7 +141,7 @@ sub init_meta {
     });
 
     $meta->superclasses($base_class)
-        unless $class->isa($base_class);
+        unless $meta->superclasses;
 
     # make a class type for each Mouse class
     Mouse::Util::TypeConstraints::class_type($class)

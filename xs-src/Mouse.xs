@@ -407,6 +407,8 @@ MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
+    newCONSTSUB(gv_stashpvs("Mouse::Meta::Class", TRUE), "constructor_class",
+        newSVpvs("Mouse::Meta::Method::Constructor::XS"));
 
 void
 linearized_isa(SV* self)
@@ -545,3 +547,16 @@ CODE:
 }
 OUTPUT:
     RETVAL
+
+MODULE = Mouse  PACKAGE = Mouse::Meta::Method::Constructor::XS
+
+CV*
+_generate_constructor(...)
+CODE:
+{
+    RETVAL = get_cvs("Mouse::Object::new", TRUE);
+    SvREFCNT_inc_simple_void_NN(RETVAL);
+}
+OUTPUT:
+    RETVAL
+
