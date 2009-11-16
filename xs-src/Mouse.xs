@@ -419,14 +419,16 @@ CODE:
 
     set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 
-    /* TODO: name the CODE ref if it's anonymous */
-    //code_entity = (CV*)SvRV(code_ref);
-    //if(CvANON(code_entity)
-    //    && CvGV(code_entity) /* a cv under construction has no gv */ ){
+    /* name the CODE ref if it's anonymous */
+    {
+        CV* const code_entity = (CV*)SvRV(code_ref);
+        if(CvANON(code_entity)
+            && CvGV(code_entity) /* a cv under construction has no gv */ ){
 
-    //    CvGV(code_entity) = gv;
-    //    CvANON_off(code_entity);
-    //}
+            CvGV(code_entity) = gv;
+            CvANON_off(code_entity);
+        }
+    }
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
