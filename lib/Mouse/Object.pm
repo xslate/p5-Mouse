@@ -1,7 +1,7 @@
 package Mouse::Object;
 use Mouse::Util qw(does dump); # enables strict and warnings
 
-sub new {
+sub _new {
     my $class = shift;
 
     $class->meta->throw_error('Cannot call new() on an instance') if ref $class;

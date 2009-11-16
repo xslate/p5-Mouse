@@ -120,15 +120,17 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
 
     for(i = 0; i < len; i++){
         SV* const klass = MOUSE_av_at(linearized_isa, i);
+        HV* const st    = gv_stashsv(klass, TRUE);
         SV* meta;
         GV* gv;
 
-        gv = stash_fetchs(stash, "BUILD", FALSE);
+        gv = stash_fetchs(st, "BUILD", FALSE);
         if(gv && GvCVu(gv)){
-            av_push(buildall, newRV_inc((SV*)GvCV(gv)));
+            av_unshift(buildall, 1);
+            av_store(buildall, 0, newRV_inc((SV*)GvCV(gv)));
         }
 
-        gv = stash_fetchs(stash, "DEMOLISH", FALSE);
+        gv = stash_fetchs(st, "DEMOLISH", FALSE);
         if(gv && GvCVu(gv)){
             av_push(demolishall, newRV_inc((SV*)GvCV(gv)));
         }
@@ -196,10 +198,15 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
 }
 
 HV*
-mouse_build_args(pTHX_ SV* metaclass, SV* const klass, I32 const start, I32 const items, I32 const ax) {
+mouse_buildargs(pTHX_ SV* metaclass, SV* const klass, I32 ax, I32 items) {
     HV* args;
-    if((items - start) == 1){
-        SV* const args_ref = ST(start);
+
+    /* shift @_ */
+    ax++;
+    items--;
+
+    if(items == 1){
+        SV* const args_ref = ST(0);
         if(!IsHashRef(args_ref)){
             if(!metaclass){ metaclass = get_metaclass(klass); }
             mouse_throw_error(metaclass, NULL, "Single parameters to new() must be a HASH ref");
@@ -212,12 +219,12 @@ mouse_build_args(pTHX_ SV* metaclass, SV* const klass, I32 const start, I32 cons
 
         args = newHV_mortal();
 
-        if( ((items - start) % 2) != 0 ){
+        if( (items % 2) != 0 ){
             if(!metaclass){ metaclass = get_metaclass(klass); }
             mouse_throw_error(metaclass, NULL, "Odd number of parameters to new()");
         }
 
-        for(i = start; i < items; i += 2){
+        for(i = 0; i < items; i += 2){
             (void)hv_store_ent(args, ST(i), newSVsv(ST(i+1)), 0U);
         }
 
@@ -232,6 +239,10 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     I32 len         = AvFILLp(attrs) + 1;
     I32 i;
     AV* triggers_queue = NULL;
+
+    assert(meta || object);
+    assert(args);
+    assert(SvTYPE(args) == SVt_PVHV);
 
     ENTER;
     SAVETMPS;
@@ -435,8 +446,8 @@ SV*
 new_object_(SV* meta, ...)
 CODE:
 {
-    HV* const args = mouse_build_args(aTHX_ meta, NULL, 1, items, ax);
     AV* const xc   = mouse_get_xc(aTHX_ meta);
+    HV* const args = mouse_buildargs(aTHX_ meta, NULL, ax, items);
 
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
@@ -450,6 +461,16 @@ CODE:
     mouse_class_initialize_object(aTHX_ meta, object, args, ignore_triggers);
 }
 
+void
+__xc(SV* meta)
+PPCODE:
+{
+    AV* const xc = mouse_get_xc(aTHX_ meta);
+    mXPUSHu(MOUSE_xc_flags(xc));
+    mXPUSHs(newRV_inc((SV*)MOUSE_xc_buildall(xc)));
+    mXPUSHs(newRV_inc((SV*)MOUSE_xc_demolishall(xc)));
+}
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 
 BOOT:
@@ -458,11 +479,69 @@ BOOT:
 
 MODULE = Mouse  PACKAGE = Mouse::Object
 
+SV*
+new(SV* klass, ...)
+CODE:
+{
+    SV* const meta = get_metaclass(klass);
+    AV* const xc   = mouse_get_xc(aTHX_ meta);
+    UV const flags = MOUSE_xc_flags(xc);
+    SV* args;
+    AV* av;
+    I32 len, i;
+
+    /* BUILDARGS */
+    if(flags & MOUSEf_XC_HAS_BUILDARGS){
+        SPAGAIN;
+
+        PUSHMARK(SP);
+        EXTEND(SP, items);
+        for(i = 0; i < items; i++){
+            PUSHs(ST(i));
+        }
+        //SP += items;
+        PUTBACK;
+        call_method("BUILDARGS", G_SCALAR);
+        SPAGAIN;
+        args = POPs;
+        PUTBACK;
+
+        if(!IsHashRef(args)){
+            croak("BUILDARGS did not return a HASH reference");
+        }
+    }
+    else{
+        args = newRV_inc((SV*)mouse_buildargs(aTHX_ meta, klass, ax, items));
+        sv_2mortal(args);
+    }
+
+    /* new_object */
+    RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
+    mouse_class_initialize_object(aTHX_ meta, RETVAL, (HV*)SvRV(args), FALSE);
+
+    /* BUILDALL */
+    av  = MOUSE_xc_buildall(xc);
+    len = AvFILLp(av) + 1;
+    for(i = 0; i < len; i++){
+        dSP;
+
+        PUSHMARK(SP);
+        EXTEND(SP, 2);
+        PUSHs(RETVAL);
+        PUSHs(args);
+        PUTBACK;
+
+        call_sv(AvARRAY(av)[i], G_VOID | G_DISCARD);
+    }
+}
+OUTPUT:
+    RETVAL
+
 HV*
 BUILDARGS(SV* klass, ...)
 CODE:
 {
-    RETVAL = mouse_build_args(aTHX_ NULL, klass, 1, items, ax);
+    RETVAL = mouse_buildargs(aTHX_ NULL, klass, ax, items);
 }
 OUTPUT:
     RETVAL
