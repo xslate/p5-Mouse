@@ -30,8 +30,6 @@ enum mouse_xc_ix_t{
     MOUSE_XC_GEN,          /* class generation */
     MOUSE_XC_STASH,        /* symbol table hash */
 
-    MOUSE_XC_BUILDARGS,    /* Custom BUILDARGS */
-
     MOUSE_XC_ATTRALL,      /* all the attributes */
     MOUSE_XC_BUILDALL,     /* all the BUILD methods */
     MOUSE_XC_DEMOLISHALL,  /* all the DEMOLISH methods */
@@ -74,7 +72,7 @@ mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
 
     GV* const buildargs = gv_fetchmeth_autoload(stash, "BUILDARGS", sizeof("BUILDARGS")-1, 0);
 
-    return buildargs && CvXSUB(GvCV(buildargs)) == XS_Mouse__Object_BUILDARGS;
+    return buildargs && CvXSUB(GvCV(buildargs)) != XS_Mouse__Object_BUILDARGS;
 }
 
 static void
