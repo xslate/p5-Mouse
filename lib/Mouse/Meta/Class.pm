@@ -11,7 +11,7 @@ our @ISA = qw(Mouse::Meta::Module);
 sub method_metaclass()    { 'Mouse::Meta::Method'    }
 sub attribute_metaclass() { 'Mouse::Meta::Attribute' }
 
-sub constructor_class(); # XS
+sub constructor_class()   { 'Mouse::Meta::Method::Constructor' }
 sub destructor_class()    { 'Mouse::Meta::Method::Destructor'  }
 
 sub _construct_meta {
@@ -191,7 +191,7 @@ sub clone_instance {
 sub make_immutable {
     my $self = shift;
     my %args = (
-        inline_constructor => 1,
+        inline_constructor => 0,
         inline_destructor  => 1,
         constructor_name   => 'new',
         @_,

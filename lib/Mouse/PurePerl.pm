@@ -203,7 +203,6 @@ sub add_method {
 package
     Mouse::Meta::Class;
 
-sub constructor_class()   { 'Mouse::Meta::Method::Constructor' }
 
 sub is_anon_class{
     return exists $_[0]->{anon_serial_id};

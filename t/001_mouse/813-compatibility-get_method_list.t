@@ -15,7 +15,7 @@ use Test::More tests => 6;
     use Mouse;
     sub foo { }
     no Mouse;
-    __PACKAGE__->meta->make_immutable();
+    __PACKAGE__->meta->make_immutable(inline_constructor => 1);
 }
 {
     package MouseRole;
