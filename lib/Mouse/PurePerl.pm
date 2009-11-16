@@ -412,6 +412,29 @@ sub BUILDARGS {
     }
 }
 
+sub new {
+    my $class = shift;
+
+    $class->meta->throw_error('Cannot call new() on an instance') if ref $class;
+
+    my $args = $class->BUILDARGS(@_);
+
+    my $meta = Mouse::Meta::Class->initialize($class);
+    my $self = $meta->new_object($args);
+
+    # BUILDALL
+    if( $self->can('BUILD') ) {
+        for my $class (reverse $meta->linearized_isa) {
+            my $build = Mouse::Util::get_code_ref($class, 'BUILD')
+                || next;
+
+            $self->$build($args);
+        }
+    }
+
+    return $self;
+}
+
 1;
 __END__
 

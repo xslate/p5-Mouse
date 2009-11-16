@@ -1,28 +1,7 @@
 package Mouse::Object;
 use Mouse::Util qw(does dump); # enables strict and warnings
 
-sub _new {
-    my $class = shift;
-
-    $class->meta->throw_error('Cannot call new() on an instance') if ref $class;
-
-    my $args = $class->BUILDARGS(@_);
-
-    my $meta = Mouse::Meta::Class->initialize($class);
-    my $self = $meta->new_object($args);
-
-    # BUILDALL
-    if( $self->can('BUILD') ) {
-        for my $class (reverse $meta->linearized_isa) {
-            my $build = Mouse::Util::get_code_ref($class, 'BUILD')
-                || next;
-
-            $self->$build($args);
-        }
-    }
-
-    return $self;
-}
+sub new;
 
 sub DESTROY {
     my $self = shift;
