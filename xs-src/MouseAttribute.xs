@@ -142,6 +142,9 @@ mouse_xa_set_default(pTHX_ AV* const xa, SV* const object) {
     U16 const flags = (U16)MOUSE_xa_flags(xa);
     SV* value;
 
+    ENTER;
+    SAVETMPS;
+
     /* get default value by $attr->builder or $attr->default */
     if(flags & MOUSEf_ATTR_HAS_BUILDER){
         SV* const builder = mcall0s(MOUSE_xa_attribute(xa), "builder");
@@ -162,10 +165,12 @@ mouse_xa_set_default(pTHX_ AV* const xa, SV* const object) {
 
     /* store value to slot */
     value = set_slot(object, MOUSE_xa_slot(xa), value);
-
     if(flags & MOUSEf_ATTR_IS_WEAK_REF && SvROK(value)){
         weaken_slot(object, MOUSE_xa_slot(xa));
     }
+
+    FREETMPS;
+    LEAVE;
 
     return value;
 }

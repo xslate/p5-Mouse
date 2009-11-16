@@ -104,6 +104,9 @@ sub _generate_accessor{
         else{
             $accessor .= "$slot = $value;\n";
         }
+        if ($is_weak) {
+            $accessor .= "Scalar::Util::weaken($slot) if ref $slot;\n";
+        }
         $accessor .= "}\n";
     }
 
