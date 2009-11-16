@@ -24,10 +24,10 @@ print "Profiling $branch ...\n";
 my @cmd = ($^X, '-Iblib/lib', '-Iblib/arch', '-d:NYTProf', $script);
 
 print "> @cmd\n";
-system(@cmd) == 0 or die "Cannot profile";
-system(@cmd) == 0 or die "Cannot profile";
-system(@cmd) == 0 or die "Cannot profile";
+system(@cmd) == 0 or die "Cannot profile (\$?=$?)";
+system(@cmd) == 0 or die "Cannot profile (\$?=$?)";
+system(@cmd) == 0 or die "Cannot profile (\$?=$?)";
 
 @cmd = ($^X, '-S', 'nytprofhtml', '--out', "nytprof-$branch");
 print "> @cmd\n";
-system(@cmd) == 0 or die "Cannot profile";
+system(@cmd) == 0 or die "Cannot profile (\$?=$?)";
