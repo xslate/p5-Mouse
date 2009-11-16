@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More skip_all => '[TODO] a Moose class cannot extends a Mouse class';
 
 use Mouse::Spec;
 BEGIN {
