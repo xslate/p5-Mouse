@@ -13,7 +13,7 @@ SV* mouse_get_attribute_list;
 #define MOUSE_xc_stash(a)       ( (HV*)MOUSE_av_at((a), MOUSE_XC_STASH) )
 #define MOUSE_xc_attrall(a)     ( (AV*)MOUSE_av_at((a), MOUSE_XC_ATTRALL) )
 #define MOUSE_xc_buildall(a)    ( (AV*)MOUSE_av_at((a), MOUSE_XC_BUILDALL) )
-#define MOUSE_xc_demolishall(a) ( (AV*)MOUSE_av_at((a), MOUSE_XC_DEOLISHALL) )
+#define MOUSE_xc_demolishall(a) ( (AV*)MOUSE_av_at((a), MOUSE_XC_DEMOLISHALL) )
 
 enum mouse_xc_flags_t {
     MOUSEf_XC_IS_IMMUTABLE   = 0x0001,
