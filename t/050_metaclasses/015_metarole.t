@@ -349,14 +349,16 @@ use Mouse::Util::MetaRole;
         '... and My::Class4->meta() still does Role::Foo' );
 }
 
+## TODO@2009/11/17
+
+exit(0);
+
 {
     package My::Class5;
     use Mouse;
     
     extends 'My::Class';
 }
-
-exit(0);
 
 {
     ok( My::Class5->meta()->meta()->does_role('Role::Foo'),
@@ -372,7 +374,7 @@ exit(0);
     ok( My::Class5->meta()->destructor_class()->meta()->does_role('Role::Foo'),
         q{My::Class5->meta()'s destructor class also does Role::Foo} );
 }
-
+exit;
 {
     Mouse::Util::MetaRole::apply_metaclass_roles(
         for_class       => 'My::Class5',
