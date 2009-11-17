@@ -149,7 +149,7 @@ sub do_import {
         my $arg = shift @args;
         if($arg =~ s/^-//){
             if($arg eq 'traits'){
-                push @traits, @{shift(@args)};
+                push @traits, ref($args[0]) ? @{shift(@args)} : shift(@args);
             }
             else {
                 Mouse::Util::not_supported("-$arg");
@@ -177,16 +177,20 @@ sub do_import {
         if(@traits){
             my $type = (split /::/, ref $meta)[-1]; # e.g. "Class" for "My::Meta::Class"
             @traits =
-                map{ ref($_) ? $_ : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1) }
-                @traits;
+                map{
+                    ref($_) ? $_
+                            : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1)
+                } @traits;
 
-            not_supported('-traits');
             require Mouse::Util::MetaRole;
             Mouse::Util::MetaRole::apply_metaclass_roles(
                 for_class       => $into,
                 metaclass_roles => \@traits,
             );
         }
+    }
+    elsif(@traits){
+        Carp::confess("Cannot provide traits when $package does not have an init_meta() method");
     }
 
     if(@exports){
