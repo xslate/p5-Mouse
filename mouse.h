@@ -112,9 +112,6 @@ SV** mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 #define MOUSE_av_at(av, ix)  AvARRAY(av)[ix]
 #endif
 
-#define dMOUSE_self  SV* const self = mouse_accessor_get_self(aTHX_ ax, items, cv)
-SV* mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv);
-
 #define MOUSE_mg_obj(mg)     ((mg)->mg_obj)
 #define MOUSE_mg_ptr(mg)     ((mg)->mg_ptr)
 #define MOUSE_mg_flags(mg)   ((mg)->mg_private)
