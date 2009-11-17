@@ -13,10 +13,12 @@ File::Path::rmtree(File::Spec->catfile('xt', 'compatibility'));
 # some test does not pass... currently skip it.
 my %SKIP_TEST = (
     '016-trigger.t'    => "trigger's argument is incompatble :(",
-    '810-isa-or.t'     => "Mouse has a [BUG]",
+    '810-isa-or.t'     => "Mouse has a bug",
 
     '052-undefined-type-in-union.t' => "Mouse accepts undefined type as a member of union types",
     '054-anon-leak.t'     => 'Moose has memory leaks',
+
+    '059-weak-with-default.t' => 'Moose has a bug',
 
     '600-tiny-tiny.t'     => "Moose doesn't support ::Tiny",
     '601-tiny-mouse.t'    => "Moose doesn't support ::Tiny",
