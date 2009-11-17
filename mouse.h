@@ -114,6 +114,7 @@ SV** mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 
 #define MOUSE_mg_obj(mg)     ((mg)->mg_obj)
 #define MOUSE_mg_ptr(mg)     ((mg)->mg_ptr)
+#define MOUSE_mg_len(mg)     ((mg)->mg_len)
 #define MOUSE_mg_flags(mg)   ((mg)->mg_private)
 #define MOUSE_mg_virtual(mg) ((mg)->mg_virtual)
 
