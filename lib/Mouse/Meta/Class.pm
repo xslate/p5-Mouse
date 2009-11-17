@@ -6,11 +6,11 @@ use Scalar::Util qw/blessed weaken/;
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
-sub method_metaclass()    { 'Mouse::Meta::Method'    }
-sub attribute_metaclass() { 'Mouse::Meta::Attribute' }
+sub method_metaclass;
+sub attribute_metaclass;
 
-sub constructor_class();
-sub destructor_class();
+sub constructor_class;
+sub destructor_class;
 
 sub _construct_meta {
     my($class, %args) = @_;

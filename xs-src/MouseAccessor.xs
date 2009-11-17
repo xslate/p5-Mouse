@@ -221,7 +221,7 @@ mouse_accessor_get_mg(pTHX_ CV* const xsub){
 */
 
 CV*
-mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl){
+mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen){
     CV* const xsub = newXS((char*)fq_name, accessor_impl, __FILE__);
     SV* const slot = newSVpvn_share(key, keylen, 0U);
     MAGIC* mg;
@@ -231,8 +231,11 @@ mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const
         sv_2mortal((SV*)xsub);
     }
 
-    mg = sv_magicext((SV*)xsub, slot, PERL_MAGIC_ext, &mouse_accessor_vtbl, NULL, 0);
+    mg = sv_magicext((SV*)xsub, slot, PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)dptr, dlen);
     SvREFCNT_dec(slot); /* sv_magicext() increases refcnt in mg_obj */
+    if(dlen == HEf_SVKEY){
+        SvREFCNT_dec(dptr);
+    }
 
     /* NOTE:
      * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
@@ -246,15 +249,25 @@ XS(XS_Mouse_simple_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
     SV* value;
 
     if (items != 1) {
-        croak("Expected exactly one argument for a reader for '%"SVf"'", slot);
+        croak("Expected exactly one argument for a reader for '%"SVf"'", MOUSE_mg_slot(mg));
     }
 
-    value = get_slot(self, slot);
-    ST(0) = value ? value : &PL_sv_undef;
+    value = get_slot(self, MOUSE_mg_slot(mg));
+    if(!value) {
+        if(MOUSE_mg_ptr(mg)){
+            /* the default value must be a SV */
+            assert(MOUSE_mg_len(mg) == HEf_SVKEY);
+            value = (SV*)MOUSE_mg_ptr(mg);
+        }
+        else{
+            value = &PL_sv_undef;
+        }
+    }
+    ST(0) = value;
     XSRETURN(1);
 }
 
@@ -413,7 +426,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer, NULL, 0);
 }
 OUTPUT:
     RETVAL
@@ -425,7 +438,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate);
+    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate, NULL, 0);
 }
 OUTPUT:
     RETVAL

@@ -203,8 +203,11 @@ sub add_method {
 package
     Mouse::Meta::Class;
 
-sub constructor_class() { 'Mouse::Meta::Method::Constructor' }
-sub destructor_class()  { 'Mouse::Meta::Method::Destructor'  }
+sub method_metaclass    { $_[0]->{method_metaclass}    || 'Mouse::Meta::Method'    }
+sub attribute_metaclass { $_[0]->{attribute_metaclass} || 'Mouse::Meta::Attribute' }
+
+sub constructor_class { $_[0]->{constructor_class} || 'Mouse::Meta::Method::Constructor' }
+sub destructor_class  { $_[0]->{destructor_class}  || 'Mouse::Meta::Method::Destructor'  }
 
 sub is_anon_class{
     return exists $_[0]->{anon_serial_id};
@@ -278,6 +281,8 @@ sub _initialize_object{
 package
     Mouse::Meta::Role;
 
+sub method_metaclass{ $_[0]->{method_metaclass} || 'Mouse::Meta::Role::Method' }
+
 sub is_anon_role{
     return exists $_[0]->{anon_serial_id};
 }
@@ -287,7 +292,9 @@ sub get_roles { $_[0]->{roles} }
 package
     Mouse::Meta::Attribute;
 
-use Mouse::Meta::Method::Accessor;
+require Mouse::Meta::Method::Accessor;
+
+sub accessor_metaclass{ $_[0]->{accessor_metaclass} || 'Mouse::Meta::Method::Accessor' }
 
 # readers
 
@@ -332,8 +339,6 @@ sub has_trigger          { exists $_[0]->{trigger}         }
 sub has_builder          { exists $_[0]->{builder}         }
 
 sub has_documentation    { exists $_[0]->{documentation}   }
-
-sub accessor_metaclass(){ 'Mouse::Meta::Method::Accessor' }
 
 package
     Mouse::Meta::TypeConstraint;

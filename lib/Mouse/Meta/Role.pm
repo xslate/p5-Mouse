@@ -4,7 +4,7 @@ use Mouse::Util qw(:meta not_supported english_list); # enables strict and warni
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
-sub method_metaclass(){ 'Mouse::Meta::Role::Method' } # required for get_method()
+sub method_metaclass;
 
 sub _construct_meta {
     my $class = shift;
