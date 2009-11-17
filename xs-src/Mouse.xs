@@ -483,7 +483,7 @@ PPCODE:
 }
 
 SV*
-new_object_(SV* meta, ...)
+new_object(SV* meta, ...)
 CODE:
 {
     AV* const xc   = mouse_get_xc(aTHX_ meta);
@@ -492,7 +492,8 @@ CODE:
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
 }
-
+OUTPUT:
+    RETVAL
 
 void
 _initialize_object(SV* meta, SV* object, HV* args, bool ignore_triggers = FALSE)

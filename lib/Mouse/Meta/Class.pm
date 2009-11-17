@@ -154,15 +154,7 @@ sub compute_all_applicable_attributes {
 
 sub linearized_isa;
 
-sub new_object {
-    my $self = shift;
-    my %args = (@_ == 1 ? %{$_[0]} : @_);
-
-    my $object = bless {}, $self->name;
-
-    $self->_initialize_object($object, \%args);
-    return $object;
-}
+sub new_object;
 
 sub clone_object {
     my $class  = shift;

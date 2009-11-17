@@ -1,6 +1,8 @@
 package Mouse::Util;
 use Mouse::Exporter; # enables strict and warnings
 
+sub get_linear_isa($;$); # must be here
+
 BEGIN{
     # Because Mouse::Util is loaded first in all the Mouse sub-modules,
     # XS loader is placed here, not in Mouse.pm.
@@ -116,7 +118,7 @@ BEGIN {
         } else {
 #       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
             my $_get_linear_isa_dfs; # this recurses so it isn't pretty
-            $_get_linear_isa_dfs = sub {
+            $_get_linear_isa_dfs = sub ($;$){
                 no strict 'refs';
 
                 my $classname = shift;
@@ -138,8 +140,6 @@ BEGIN {
         }
     }
 
-
-    no warnings 'once';
     *get_linear_isa = $get_linear_isa;
 }
 
@@ -183,7 +183,7 @@ sub is_valid_class_name {
     return 0 if ref($class);
     return 0 unless defined($class);
 
-    return 1 if $class =~ /^\w+(?:::\w+)*$/;
+    return 1 if $class =~ /\A \w+ (?: :: \w+ )* \z/xms;
 
     return 0;
 }
