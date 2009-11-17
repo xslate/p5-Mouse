@@ -1,12 +1,19 @@
 Revision history for Mouse
 
-0.40_06
+0.40_07 Tue Nov 17 18:28:57 2009
+    * Mouse::Util::MetaRole
+        - Implemented, but there are many to be done (gfx)
+
+    * Mouse::Meta::Method::Accessor
+    * Mouse::Meta::Method::Constructor
+        - Fix a bug that default values are not weaken()ed (gfx)
+
+0.40_06 Mon Nov 16 17:21:10 2009
     * Shipped with Module::Install::XSUtil 0.17 (gfx)
     * Mouse::Object
         - BUILDALL and DMELISHALL are no longer called by the default ctr/dtr,
           because generated ctrs/dtrs have never call them anyway (gfx)
         - new and DESTROY are now in XS (gfx)
-
 
 0.40_05 Mon Nov  2 11:59:01 2009
     * Shipped with Module::Install::XSUtil 0.16 (gfx)

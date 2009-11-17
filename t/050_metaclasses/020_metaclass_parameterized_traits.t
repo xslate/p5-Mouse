@@ -1,6 +1,15 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+
+use Test::More;
+
+BEGIN{
+    if($] < 5.008){
+        plan skip_all => "segv happens on 5.6.2";
+    }
+}
+
 use Test::More tests => 5;
 
 {

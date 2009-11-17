@@ -140,7 +140,7 @@ sub add_attribute {
     $self->{attributes}{$attr->name} = $attr;
     $attr->install_accessors();
 
-    if(_MOUSE_VERBOSE && !$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
+    if(Mouse::Util::_MOUSE_VERBOSE && !$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
         Carp::cluck(qq{Attribute (}.$attr->name.qq{) of class }.$self->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
     return $attr;
@@ -148,7 +148,7 @@ sub add_attribute {
 
 sub compute_all_applicable_attributes {
     Carp::cluck('compute_all_applicable_attributes() has been deprecated')
-        if _MOUSE_VERBOSE;
+        if Mouse::Util::_MOUSE_VERBOSE;
     return shift->get_all_attributes(@_)
 }
 
@@ -174,7 +174,7 @@ sub clone_instance {
     my ($class, $instance, %params) = @_;
 
     Carp::cluck('clone_instance has been deprecated. Use clone_object instead')
-        if _MOUSE_VERBOSE;
+        if Mouse::Util::_MOUSE_VERBOSE;
     return $class->clone_object($instance, %params);
 }
 
@@ -402,7 +402,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_06
+This document describes Mouse version 0.40_07
 
 =head1 METHODS
 

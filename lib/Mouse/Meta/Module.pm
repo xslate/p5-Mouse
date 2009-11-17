@@ -6,7 +6,8 @@ use Scalar::Util ();
 
 my %METAS;
 
-if(Mouse::Util::_MOUSE_XS){
+# XXX: work around a warning "useless use of a constant in void context" in 5.6.2
+if(&Mouse::Util::_MOUSE_XS()){
     # register meta storage for performance
     Mouse::Util::__register_metaclass_storage(\%METAS, 0);
 
@@ -310,7 +311,7 @@ Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Rol
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_06
+This document describes Mouse version 0.40_07
 
 =head1 SEE ALSO
 

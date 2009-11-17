@@ -1,7 +1,7 @@
 #!perl
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 6;
 
 {
     package MyClass;
@@ -27,9 +27,11 @@ use Test::More tests => 4;
 my $o = MyClass->new();
 is($o->weak_with_default, undef);
 is($o->lazy_weak_with_default, undef);
+is($o->lazy_weak_with_default, undef);
 
 MyClass->meta->make_immutable();
 
 $o = MyClass->new();
 is($o->weak_with_default, undef);
+is($o->lazy_weak_with_default, undef);
 is($o->lazy_weak_with_default, undef);

@@ -4,10 +4,41 @@ use Mouse::Exporter; # enables strict and warnings
 sub get_linear_isa($;$); # must be here
 
 BEGIN{
+    # This is used in Mouse::PurePerl
+    Mouse::Exporter->setup_import_methods(
+        as_is => [qw(
+            find_meta
+            does_role
+            resolve_metaclass_alias
+            apply_all_roles
+            english_list
+
+            load_class
+            is_class_loaded
+
+            get_linear_isa
+            get_code_info
+
+            get_code_package
+            get_code_ref
+
+            not_supported
+
+            does meta dump
+        )],
+        groups => {
+            default => [], # export no functions by default
+
+            # The ':meta' group is 'use metaclass' for Mouse
+            meta    => [qw(does meta dump)],
+        },
+    );
+
+
     # Because Mouse::Util is loaded first in all the Mouse sub-modules,
     # XS loader is placed here, not in Mouse.pm.
 
-    our $VERSION = '0.40_06';
+    our $VERSION = '0.40_07';
 
     my $xs = !(exists $INC{'Mouse/PurePerl.pm'} || $ENV{MOUSE_PUREPERL});
 
@@ -37,36 +68,6 @@ use Carp         ();
 use Scalar::Util ();
 
 use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
-
-Mouse::Exporter->setup_import_methods(
-    as_is => [qw(
-        find_meta
-        does_role
-        resolve_metaclass_alias
-        apply_all_roles
-        english_list
-
-        load_class
-        is_class_loaded
-
-        get_linear_isa
-        get_code_info
-
-        get_code_package
-        get_code_ref
-
-        not_supported
-
-        does meta dump
-        _MOUSE_VERBOSE
-    )],
-    groups => {
-        default => [], # export no functions by default
-
-        # The ':meta' group is 'use metaclass' for Mouse
-        meta    => [qw(does meta dump _MOUSE_VERBOSE)],
-    },
-);
 
 # aliases as public APIs
 # it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
@@ -336,7 +337,7 @@ Mouse::Util - Features, with or without their dependencies
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_06
+This document describes Mouse version 0.40_07
 
 =head1 IMPLEMENTATIONS FOR
 

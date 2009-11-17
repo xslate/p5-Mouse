@@ -26,7 +26,7 @@ sub new {
 
     if($args{_compiled_type_constraint}){
         Carp::cluck("'_compiled_type_constraint' has been deprecated, use 'optimized' instead")
-            if _MOUSE_VERBOSE;
+            if Mouse::Util::_MOUSE_VERBOSE;
 
         $check = $args{_compiled_type_constraint};
     }
@@ -210,7 +210,7 @@ Mouse::Meta::TypeConstraint - The Mouse Type Constraint metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_06
+This document describes Mouse version 0.40_07
 
 =head1 DESCRIPTION
 

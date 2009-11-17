@@ -205,7 +205,7 @@ sub canonicalize_args{ # DEPRECATED
 
     Carp::cluck("$self->canonicalize_args has been deprecated."
         . "Use \$self->_process_options instead.")
-            if _MOUSE_VERBOSE;
+            if Mouse::Util::_MOUSE_VERBOSE;
 
     return %args;
 }
@@ -215,7 +215,7 @@ sub create { # DEPRECATED
 
     Carp::cluck("$self->create has been deprecated."
         . "Use \$meta->add_attribute and \$attr->install_accessors instead.")
-            if _MOUSE_VERBOSE;
+            if Mouse::Util::_MOUSE_VERBOSE;
 
     # noop
     return $self;
@@ -284,7 +284,7 @@ sub clone_parent { # DEPRECATED
 
     Carp::cluck("$self->clone_parent has been deprecated."
         . "Use \$meta->add_attribute and \$attr->install_accessors instead.")
-        if _MOUSE_VERBOSE;
+        if Mouse::Util::_MOUSE_VERBOSE;
 
     $self->clone_and_inherited_args($class, $name, %args);
 }
@@ -435,7 +435,7 @@ Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.40_06
+This document describes Mouse version 0.40_07
 
 =head1 METHODS
 
