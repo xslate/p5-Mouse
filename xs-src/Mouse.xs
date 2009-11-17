@@ -501,16 +501,6 @@ CODE:
     mouse_class_initialize_object(aTHX_ meta, object, args, ignore_triggers);
 }
 
-void
-__xc(SV* meta)
-PPCODE:
-{
-    AV* const xc = mouse_get_xc(aTHX_ meta);
-    mXPUSHu(MOUSE_xc_flags(xc));
-    mXPUSHs(newRV_inc((SV*)MOUSE_xc_buildall(xc)));
-    mXPUSHs(newRV_inc((SV*)MOUSE_xc_demolishall(xc)));
-}
-
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 
 BOOT:
