@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 21;
 use Test::Exception;
 
 use lib 't/lib';
@@ -62,3 +62,12 @@ $object->rw_attr(100);
 is $object->rw_attr, 100;
 is $object->read_attr, 100;
 
+dies_ok {
+    Class->rw_attr();
+};
+dies_ok {
+    Class->read_attr();
+};
+dies_ok {
+    Class->write_attr(42);
+};
