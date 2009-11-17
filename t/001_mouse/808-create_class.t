@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Mouse ();
-use Test::More tests => 23;
+use Test::More tests => 25;
 use Test::Exception;
 
 # error handling
@@ -82,6 +82,14 @@ ok !$anon_pkg1->can('dooo');
 ok !$anon_pkg1->can('meta');
 
 ok $anon_pkg2->can('meta'), 'cache => 1 makes it immortal';
+
+my $anon = Mouse::Meta::Class->create_anon_class(
+    constructor_class => 'ConstructorX',
+    destructor_class  => 'DestructorX',
+);
+
+is $anon->constructor_class, 'ConstructorX';
+is $anon->destructor_class,  'DestructorX';
 
 my $obj;
 {
