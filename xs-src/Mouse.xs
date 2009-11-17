@@ -150,7 +150,7 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     sv_setuv(MOUSE_xc_gen(xc), mro_get_pkg_gen(stash));
 }
 
-AV*
+static AV*
 mouse_get_xc(pTHX_ SV* const metaclass) {
     AV* xc;
     SV* gen;
@@ -202,7 +202,7 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
     return xc;
 }
 
-HV*
+static HV*
 mouse_buildargs(pTHX_ SV* metaclass, SV* const klass, I32 ax, I32 items) {
     HV* args;
 
@@ -237,7 +237,7 @@ mouse_buildargs(pTHX_ SV* metaclass, SV* const klass, I32 ax, I32 items) {
     return args;
 }
 
-void
+static void
 mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const ignore_triggers) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
