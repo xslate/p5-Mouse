@@ -1,5 +1,5 @@
 package Mouse::Object;
-use Mouse::Util qw(does dump); # enables strict and warnings
+use Mouse::Util qw(does dump meta); # enables strict and warnings
 
 sub new;
 

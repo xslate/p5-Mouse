@@ -360,7 +360,7 @@ sub _canonicalize_handles {
 
         my $meta = Mouse::Meta::Class->initialize("$class_or_role"); # "" for stringify
         return map  { $_ => $_ }
-               grep { $_ ne 'meta' && !Mouse::Object->can($_) && $_ =~ $handles }
+               grep { !Mouse::Object->can($_) && $_ =~ $handles }
                    Mouse::Util::is_a_metarole($meta)
                         ? $meta->get_method_list
                         : $meta->get_all_method_names;
