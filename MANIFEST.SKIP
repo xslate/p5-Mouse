@@ -44,8 +44,8 @@ t/.*/failing
 nytprof
 \.out$
 
-author/benchmarks
-author/externals
+# author's tools
+author/
 
 lib/Mouse/Tiny\.pm$
 
