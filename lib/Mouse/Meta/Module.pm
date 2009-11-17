@@ -32,6 +32,8 @@ sub initialize {
 sub reinitialize {
     my($class, $package_name, @args) = @_;
 
+    $package_name = $package_name->name if ref $package_name;
+
     ($package_name && !ref($package_name))
         || $class->throw_error("You must pass a package name and it cannot be blessed");
 
