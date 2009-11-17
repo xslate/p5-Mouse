@@ -5,7 +5,7 @@ use inc::Module::Install;
 # for co-developpers
 use Module::Install::XSUtil 0.17;
 
-system($^X, 'author/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
+system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";
 
 name     'Mouse';
@@ -62,7 +62,7 @@ if (author_context()) {
 
     if (eval { require Moose; Moose->VERSION($require_version) }) {
         if (eval { require Module::Install::AuthorTests }) {
-            do 'author/create-moose-compatibility-tests.pl';
+            do 'tool/create-moose-compatibility-tests.pl';
             recursive_author_tests('xt');
         } else {
             print "you don't have a M::I::AuthorTests.\n";
@@ -75,7 +75,7 @@ if (author_context()) {
         # repeat testing
         # see also ExtUtils::MM_Any::test_via_harness()
         my $test_via_harness =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                               .q{ "do 'author/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                               .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
                                .q{ $(TEST_FILES)} . "\n";
 
         postamble qq{test_dynamic :: test_pp\n\n}
