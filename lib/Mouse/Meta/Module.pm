@@ -29,7 +29,17 @@ sub initialize {
         ||= $class->_construct_meta(package => $package_name, @args);
 }
 
-sub class_of{
+sub reinitialize {
+    my($class, $package_name, @args) = @_;
+
+    ($package_name && !ref($package_name))
+        || $class->throw_error("You must pass a package name and it cannot be blessed");
+
+    delete $METAS{$package_name};
+    return $class->initialize($package_name, @args);
+}
+
+sub _class_of{
     my($class_or_instance) = @_;
     return undef unless defined $class_or_instance;
     return $METAS{ ref($class_or_instance) || $class_or_instance };
@@ -37,14 +47,14 @@ sub class_of{
 
 # Means of accessing all the metaclasses that have
 # been initialized thus far
-#sub get_all_metaclasses         {        %METAS         }
-sub get_all_metaclass_instances { values %METAS         }
-sub get_all_metaclass_names     { keys   %METAS         }
-sub get_metaclass_by_name       { $METAS{$_[0]}         }
-#sub store_metaclass_by_name     { $METAS{$_[0]} = $_[1] }
-#sub weaken_metaclass            { weaken($METAS{$_[0]}) }
-#sub does_metaclass_exist        { defined $METAS{$_[0]} }
-#sub remove_metaclass_by_name    { delete $METAS{$_[0]}  }
+#sub _get_all_metaclasses         {        %METAS         }
+sub _get_all_metaclass_instances { values %METAS         }
+sub _get_all_metaclass_names     { keys   %METAS         }
+sub _get_metaclass_by_name       { $METAS{$_[0]}         }
+#sub _store_metaclass_by_name     { $METAS{$_[0]} = $_[1] }
+#sub _weaken_metaclass            { weaken($METAS{$_[0]}) }
+#sub _does_metaclass_exist        { defined $METAS{$_[0]} }
+#sub _remove_metaclass_by_name    { delete $METAS{$_[0]}  }
 
 sub name;
 

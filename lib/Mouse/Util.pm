@@ -73,10 +73,10 @@ Mouse::Exporter->setup_import_methods(
 require Mouse::Meta::Module; # for the entities of metaclass cache utilities
 
 BEGIN {
-    *class_of                    = \&Mouse::Meta::Module::class_of;
-    *get_metaclass_by_name       = \&Mouse::Meta::Module::get_metaclass_by_name;
-    *get_all_metaclass_instances = \&Mouse::Meta::Module::get_all_metaclass_instances;
-    *get_all_metaclass_names     = \&Mouse::Meta::Module::get_all_metaclass_names;
+    *class_of                    = \&Mouse::Meta::Module::_class_of;
+    *get_metaclass_by_name       = \&Mouse::Meta::Module::_get_metaclass_by_name;
+    *get_all_metaclass_instances = \&Mouse::Meta::Module::_get_all_metaclass_instances;
+    *get_all_metaclass_names     = \&Mouse::Meta::Module::_get_all_metaclass_names;
 
     # is-a predicates
     generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');

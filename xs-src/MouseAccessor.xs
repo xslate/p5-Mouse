@@ -245,6 +245,37 @@ mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const
     return xsub;
 }
 
+XS(XS_Mouse_simple_accessor)
+{
+    dVAR; dXSARGS;
+    dMOUSE_self;
+    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    SV* value;
+
+    if(items == 1){ /* reader */
+        value = get_slot(self, MOUSE_mg_slot(mg));
+        if(!value) {
+            if(MOUSE_mg_ptr(mg)){
+                /* the default value must be a SV */
+                assert(MOUSE_mg_len(mg) == HEf_SVKEY);
+                value = (SV*)MOUSE_mg_ptr(mg);
+            }
+            else{
+                value = &PL_sv_undef;
+            }
+        }
+    }
+    else if(items == 2){ /* writer */
+         value = set_slot(self, MOUSE_mg_slot(mg), ST(1));
+    }
+    else {
+        croak("Expected exactly one or two argument for an accessor for '%"SVf"'", MOUSE_mg_slot(mg));
+    }
+
+    ST(0) = value;
+    XSRETURN(1);
+}
+
 XS(XS_Mouse_simple_reader)
 {
     dVAR; dXSARGS;
@@ -257,17 +288,7 @@ XS(XS_Mouse_simple_reader)
     }
 
     value = get_slot(self, MOUSE_mg_slot(mg));
-    if(!value) {
-        if(MOUSE_mg_ptr(mg)){
-            /* the default value must be a SV */
-            assert(MOUSE_mg_len(mg) == HEf_SVKEY);
-            value = (SV*)MOUSE_mg_ptr(mg);
-        }
-        else{
-            value = &PL_sv_undef;
-        }
-    }
-    ST(0) = value;
+    ST(0) = value ? value : &PL_sv_undef;
     XSRETURN(1);
 }
 

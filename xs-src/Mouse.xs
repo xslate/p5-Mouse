@@ -437,10 +437,10 @@ BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
 
-    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Class, method_metaclass,     "Mouse::Meta::Method");
-    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
-    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Class, constructor_class,    "Mouse::Meta::Method::Constructor::XS");
-    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Class, destructor_class,     "Mouse::Meta::Method::Destructor::XS");
+    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Class, method_metaclass,     "Mouse::Meta::Method");
+    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
+    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Class, constructor_class,    "Mouse::Meta::Method::Constructor::XS");
+    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Class, destructor_class,     "Mouse::Meta::Method::Destructor::XS");
 
     newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Constructor::XS", TRUE), "_generate_constructor",
         newRV_inc((SV*)get_cvs("Mouse::Object::new", TRUE)));
@@ -508,7 +508,7 @@ BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Role, get_roles, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Role, is_anon_role, anon_serial_id);
 
-    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Role, method_metaclass,  "Mouse::Meta::Role::Method");
+    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Role, method_metaclass,  "Mouse::Meta::Role::Method");
 
 MODULE = Mouse  PACKAGE = Mouse::Object
 
