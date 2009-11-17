@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 28;
+use Test::More tests => 27;
 use Test::Exception;
 
 do {
@@ -56,16 +56,6 @@ do {
             );
         };
         ::ok(!$@, "handles => \\str");
-    }
-
-    TODO: {
-        local our $TODO = "Mouse lacks this";
-        eval {
-            has error3 => (
-                handles => qr/regex/,
-            );
-        };
-        ::ok(!$@, "handles => qr/re/");
     }
 
     TODO: {
