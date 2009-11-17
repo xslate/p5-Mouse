@@ -8,7 +8,8 @@
 
 #include "ppport.h"
 
-/* for portability */
+/* Portability stuff */
+
 #ifndef newSVpvs_share
 #define newSVpvs_share(s) Perl_newSVpvn_share(aTHX_ s, sizeof(s)-1, 0U)
 #endif
@@ -37,6 +38,14 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #define mro_get_pkg_gen(stash) (HvAUX(stash)->xhv_mro_meta ? HvAUX(stash)->xhv_mro_meta->pkg_gen : (U32)0)
 #endif /* !no_mro_get_linear_isa */
 #endif /* mro_get_package_gen */
+
+#if !defined(__GNUC__)
+#  if (!defined(__cplusplus__) || !defined(__STDC_VERSION__) ||  (__STDC_VERSION__ < 199901L)) && !defined(inline)
+#    define inline /* nothing */
+#  endif
+#endif
+
+/* Mouse stuff */
 
 #define newAV_mortal() (AV*)sv_2mortal((SV*)newAV())
 #define newHV_mortal() (HV*)sv_2mortal((SV*)newHV())
