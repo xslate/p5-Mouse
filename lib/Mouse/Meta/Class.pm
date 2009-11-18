@@ -63,8 +63,6 @@ sub superclasses {
 
             next if $self->isa(ref $meta); # _superclass_meta_is_compatible
 
-            # XXX: should we check 'is_pristine' ?
-
             $self->_reconcile_with_superclass_meta($meta);
         }
         @{ $self->{superclasses} } = @_;
@@ -84,18 +82,17 @@ sub _reconcile_with_superclass_meta {
     my($self, $super_meta) = @_;
 
     my @incompatibles;
+
     foreach my $metaclass_type(@MetaClassTypes){
         my $super_c = $super_meta->$metaclass_type();
         my $self_c  = $self->$metaclass_type();
 
         if(!$super_c->isa($self_c)){
-            push @incompatibles, $metaclass_type => $super_c;
+            push @incompatibles, ($metaclass_type => $super_c);
         }
     }
 
-    if(@incompatibles){
-        $super_meta->reinitialize($self->name, @incompatibles);
-    }
+    $super_meta->reinitialize($self, @incompatibles);
     return;
 }
 
