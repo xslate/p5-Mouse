@@ -54,15 +54,51 @@ sub superclasses {
         foreach my $super(@_){
             Mouse::Util::load_class($super);
             my $meta = Mouse::Util::get_metaclass_by_name($super);
+
+            next if not defined $meta;
+
             if(Mouse::Util::is_a_metarole($meta)){
                 $self->throw_error("You cannot inherit from a Mouse Role ($super)");
             }
+
+            next if $self->isa(ref $meta); # _superclass_meta_is_compatible
+
+            # XXX: should we check 'is_pristine' ?
+
+            $self->_reconcile_with_superclass_meta($meta);
         }
         @{ $self->{superclasses} } = @_;
     }
 
     return @{ $self->{superclasses} };
 }
+
+my @MetaClassTypes = qw(
+    attribute_metaclass
+    method_metaclass
+    constructor_class
+    destructor_class
+);
+
+sub _reconcile_with_superclass_meta {
+    my($self, $super_meta) = @_;
+
+    my @incompatibles;
+    foreach my $metaclass_type(@MetaClassTypes){
+        my $super_c = $super_meta->$metaclass_type();
+        my $self_c  = $self->$metaclass_type();
+
+        if(!$super_c->isa($self_c)){
+            push @incompatibles, $metaclass_type => $super_c;
+        }
+    }
+
+    if(@incompatibles){
+        $super_meta->reinitialize($self->name, @incompatibles);
+    }
+    return;
+}
+
 
 sub find_method_by_name{
     my($self, $method_name) = @_;
