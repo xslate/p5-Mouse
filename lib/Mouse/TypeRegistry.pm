@@ -19,3 +19,15 @@ sub unimport {
 
 1;
 
+__END__
+
+
+=head1 NAME
+
+Mouse::TypeRegistry - (DEPRECATED)
+
+=head1 DESCRIPTION
+
+Mouse::TypeRegistry is deprecated. Use Mouse::Util::TypeConstraints instead.
+
+=cut
