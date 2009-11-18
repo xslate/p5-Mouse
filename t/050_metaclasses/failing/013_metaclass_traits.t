@@ -173,7 +173,6 @@ is( Role::Foo->meta()->simple(), 5,
           '... and error provides a useful explanation' );
 }
 
-### TODO@2009/11/17
 
 {
     package Foo::Subclass;

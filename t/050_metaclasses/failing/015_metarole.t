@@ -349,10 +349,6 @@ use Mouse::Util::MetaRole;
         '... and My::Class4->meta() still does Role::Foo' );
 }
 
-## TODO@2009/11/17
-
-exit(0);
-
 {
     package My::Class5;
     use Mouse;
