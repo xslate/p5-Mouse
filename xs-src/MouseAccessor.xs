@@ -28,7 +28,7 @@ mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
 
 
 CV*
-mouse_instantiate_xs_accessor(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
+mouse_accessor_generate(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
     AV* const xa = mouse_get_xa(aTHX_ attr);
     CV* xsub;
     MAGIC* mg;
@@ -221,7 +221,7 @@ mouse_accessor_get_mg(pTHX_ CV* const xsub){
 */
 
 CV*
-mouse_install_simple_accessor(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen){
+mouse_simple_accessor_generate(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen){
     CV* const xsub = newXS((char*)fq_name, accessor_impl, __FILE__);
     SV* const slot = newSVpvn_share(key, keylen, 0U);
     MAGIC* mg;
@@ -417,7 +417,7 @@ CV*
 _generate_accessor(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_accessor);
+    RETVAL = mouse_accessor_generate(aTHX_ attr, XS_Mouse_accessor);
 }
 OUTPUT:
     RETVAL
@@ -426,7 +426,7 @@ CV*
 _generate_reader(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_reader);
+    RETVAL = mouse_accessor_generate(aTHX_ attr, XS_Mouse_reader);
 }
 OUTPUT:
     RETVAL
@@ -435,7 +435,7 @@ CV*
 _generate_writer(klass, SV* attr, metaclass)
 CODE:
 {
-    RETVAL = mouse_instantiate_xs_accessor(aTHX_ attr, XS_Mouse_writer);
+    RETVAL = mouse_accessor_generate(aTHX_ attr, XS_Mouse_writer);
 }
 OUTPUT:
     RETVAL
@@ -447,7 +447,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer, NULL, 0);
+    RETVAL = mouse_simple_accessor_generate(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer, NULL, 0);
 }
 OUTPUT:
     RETVAL
@@ -459,7 +459,7 @@ CODE:
     SV* const slot = mcall0s(attr, "name");
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
-    RETVAL = mouse_install_simple_accessor(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate, NULL, 0);
+    RETVAL = mouse_simple_accessor_generate(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate, NULL, 0);
 }
 OUTPUT:
     RETVAL
