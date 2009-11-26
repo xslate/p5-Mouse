@@ -384,7 +384,8 @@ mouse_instance_set_slot(pTHX_ SV* const instance, SV* const slot, SV* const valu
     CHECK_INSTANCE(instance);
     he = hv_fetch_ent((HV*)SvRV(instance), slot, TRUE, 0U);
     sv = HeVAL(he);
-    sv_setsv_mg(sv, value);
+    sv_setsv(sv, value);
+    SvSETMAGIC(sv);
     return sv;
 }
 
