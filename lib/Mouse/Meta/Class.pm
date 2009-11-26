@@ -533,52 +533,6 @@ metaclass.
 
 Throws an error with the given message.
 
-=head3 OTHER PUBLIC METHODS
-
-=head3 add_after_method_modifier
-
-=head3 add_around_method_modifier
-
-=head3 add_augment_method_modifier
-
-=head3 add_before_method_modifier
-
-=head3 add_override_method_modifier
-
-=head3 attribute_metaclass
-
-=head3 calculate_all_roles
-
-=head3 compute_all_applicable_attributes
-
-=head3 constructor_class
-
-=head3 create_anon_class
-
-=head3 destructor_class
-
-=head3 does_role
-
-=head3 find_attribute_by_name
-
-=head3 find_method_by_name
-
-=head3 get_all_method_names
-
-=head3 is_anon_class
-
-=head3 is_immutable
-
-=head3 is_mutable
-
-=head3 make_immutable
-
-=head3 make_mutable
-
-=head3 method_metaclass
-
-=head3 roles
-
 =head1 SEE ALSO
 
 L<Mouse::Meta::Module>
