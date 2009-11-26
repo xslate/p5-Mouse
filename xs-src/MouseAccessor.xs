@@ -245,30 +245,6 @@ mouse_simple_accessor_generate(pTHX_ const char* const fq_name, const char* cons
     return xsub;
 }
 
-XS(XS_Mouse_simple_accessor)
-{
-    dVAR; dXSARGS;
-    dMOUSE_self;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
-    SV* value;
-
-    if(items == 1){ /* reader */
-        value = get_slot(self, MOUSE_mg_slot(mg));
-        if(!value){
-            value = &PL_sv_undef;
-        }
-    }
-    else if(items == 2){ /* writer */
-         value = set_slot(self, MOUSE_mg_slot(mg), ST(1));
-    }
-    else {
-        croak("Expected exactly one or two argument for an accessor for '%"SVf"'", MOUSE_mg_slot(mg));
-    }
-
-    ST(0) = value;
-    XSRETURN(1);
-}
-
 XS(XS_Mouse_simple_reader)
 {
     dVAR; dXSARGS;
