@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.40_08
+    * Mouse::Exporter
+        - Add the "-traits => ..." subdirective (gfx)
+
+    * Mouse::Meta::Class
+        - Add metaclass incompatibility resolution (gfx)
+
 0.40_07 Tue Nov 17 18:28:57 2009
     * Mouse::Util::MetaRole
         - Implemented, but there are many to be done (gfx)
