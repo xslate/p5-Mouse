@@ -560,7 +560,7 @@ CODE:
 
         PUSHMARK(SP);
         EXTEND(SP, 2);
-        PUSHs(RETVAL);
+        PUSHs(RETVAL); /* self */
         PUSHs(args);
         PUTBACK;
 
