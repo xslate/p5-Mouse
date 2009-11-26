@@ -52,6 +52,9 @@ BEGIN{
         $xs = eval sprintf("#line %d %s\n", __LINE__, $hack_mouse_file) . q{
             require XSLoader;
             XSLoader::load('Mouse', $VERSION);
+
+            *Mouse::Meta::Method::Constructor::XS::meta = \&meta;
+            *Mouse::Meta::Method::Destructor::XS::meta  = \&meta;
         };
         #warn $@ if $@;
     }

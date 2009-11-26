@@ -1,35 +1,43 @@
 package Mouse::Util::MetaRole;
 use Mouse::Util; # enables strict and warnings
 
-our @Classes = qw(constructor_class destructor_class);
+my @MetaClassTypes = qw(
+    metaclass
+    attribute_metaclass
+    method_metaclass
+    constructor_class
+    destructor_class
+);
 
+# In Mouse::Exporter::do_import():
+# apply_metaclass_roles(for_class => $class, metaclass_roles => \@traits)
 sub apply_metaclass_roles {
     my %options = @_;
 
     my $for = Scalar::Util::blessed($options{for_class})
         ? $options{for_class}
-        : Mouse::Util::class_of($options{for_class});
+        : Mouse::Util::get_metaclass_by_name($options{for_class});
 
-    my %old_classes = map { $for->can($_) ? ($_ => $for->$_) : () }
-                      @Classes;
+    my $new_metaclass = _make_new_class( ref $for,
+        $options{metaclass_roles},
+        $options{metaclass} ? [$options{metaclass}] : undef,
+    );
 
-    my $meta = _make_new_metaclass( $for, \%options );
+    my @metaclass_map;
 
-    for my $c ( grep { $meta->can($_) } @Classes ) {
-        if ( $options{ $c . '_roles' } ) {
-            my $class = _make_new_class(
-                $meta->$c(),
-                $options{ $c . '_roles' }
-            );
+    foreach my $mc_type(@MetaClassTypes){
+        next if !$for->can($mc_type);
 
-            $meta->$c($class);
+        if(my $roles = $options{ $mc_type . '_roles' }){
+            push @metaclass_map,
+                ($mc_type => _make_new_class($for->$mc_type(), $roles));
         }
-        elsif($meta->$c ne $old_classes{$c}){
-            $meta->$c( $old_classes{$c} );
+        elsif(my $mc = $options{$mc_type}){
+            push @metaclass_map, ($mc_type => $mc);
         }
     }
 
-    return $meta;
+    return $new_metaclass->reinitialize( $for, @metaclass_map );
 }
 
 sub apply_base_class_roles {
@@ -50,40 +58,17 @@ sub apply_base_class_roles {
     return;
 }
 
-
-my @Metaclasses = qw(
-    metaclass
-    attribute_metaclass
-    method_metaclass
-);
-
-sub _make_new_metaclass {
-    my($for, $options) = @_;
-
-    return $for
-        if !grep { exists $options->{ $_ . '_roles' } } @Metaclasses;
-
-    my $new_metaclass
-        = _make_new_class( ref $for, $options->{metaclass_roles} );
-
-    # This could get called for a Mouse::Meta::Role as well as a Mouse::Meta::Class
-    my %classes = map {
-        $_ => _make_new_class( $for->$_(), $options->{ $_ . '_roles' } )
-    }  grep { $for->can($_) } @Metaclasses;
-
-    return $new_metaclass->reinitialize( $for, %classes );
-}
-
-
 sub _make_new_class {
     my($existing_class, $roles, $superclasses) = @_;
 
-    return $existing_class if !$roles;
+    if(!$superclasses){
+        return $existing_class if !$roles;
 
-    my $meta = Mouse::Meta::Class->initialize($existing_class);
+        my $meta = Mouse::Meta::Class->initialize($existing_class);
 
-    return $existing_class
-        if !grep { !ref($_) && !$meta->does_role($_) } @{$roles};
+        return $existing_class
+            if !grep { !ref($_) && !$meta->does_role($_) } @{$roles};
+    }
 
     return Mouse::Meta::Class->create_anon_class(
         superclasses => $superclasses ? $superclasses : [$existing_class],

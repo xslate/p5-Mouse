@@ -6,11 +6,18 @@ use Scalar::Util qw/blessed weaken/;
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
-sub method_metaclass;
 sub attribute_metaclass;
+sub method_metaclass;
 
 sub constructor_class;
 sub destructor_class;
+
+my @MetaClassTypes = qw(
+    attribute_metaclass
+    method_metaclass
+    constructor_class
+    destructor_class
+);
 
 sub _construct_meta {
     my($class, %args) = @_;
@@ -71,13 +78,6 @@ sub superclasses {
     return @{ $self->{superclasses} };
 }
 
-my @MetaClassTypes = qw(
-    attribute_metaclass
-    method_metaclass
-    constructor_class
-    destructor_class
-);
-
 sub _reconcile_with_superclass_meta {
     my($self, $super_meta) = @_;
 
@@ -92,10 +92,25 @@ sub _reconcile_with_superclass_meta {
         }
     }
 
-    $super_meta->reinitialize($self, @incompatibles);
+    my @roles;
+
+    foreach my $role($self->meta->calculate_all_roles){
+        if(!$super_meta->meta->does_role($role->name)){
+            push @roles, $role->name;
+        }
+    }
+
+    #print "reconcile($self vs. $super_meta; @roles; @incompatibles)\n";
+
+    require Mouse::Util::MetaRole;
+    Mouse::Util::MetaRole::apply_metaclass_roles(
+        for_class       => $self,
+        metaclass       => ref $super_meta,
+        metaclass_roles => \@roles,
+        @incompatibles,
+    );
     return;
 }
-
 
 sub find_method_by_name{
     my($self, $method_name) = @_;
