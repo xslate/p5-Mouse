@@ -63,7 +63,7 @@ BEGIN{
         require 'Mouse/PurePerl.pm'; # we don't want to create its namespace
     }
 
-    *_MOUSE_XS = sub(){ $xs };
+    *MOUSE_XS = sub(){ $xs };
 }
 
 
