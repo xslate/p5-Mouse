@@ -254,15 +254,8 @@ XS(XS_Mouse_simple_accessor)
 
     if(items == 1){ /* reader */
         value = get_slot(self, MOUSE_mg_slot(mg));
-        if(!value) {
-            if(MOUSE_mg_ptr(mg)){
-                /* the default value must be a SV */
-                assert(MOUSE_mg_len(mg) == HEf_SVKEY);
-                value = (SV*)MOUSE_mg_ptr(mg);
-            }
-            else{
-                value = &PL_sv_undef;
-            }
+        if(!value){
+            value = &PL_sv_undef;
         }
     }
     else if(items == 2){ /* writer */
@@ -288,7 +281,18 @@ XS(XS_Mouse_simple_reader)
     }
 
     value = get_slot(self, MOUSE_mg_slot(mg));
-    ST(0) = value ? value : &PL_sv_undef;
+    if(!value) {
+        if(MOUSE_mg_ptr(mg)){
+            /* the default value must be a SV */
+            assert(MOUSE_mg_len(mg) == HEf_SVKEY);
+            value = (SV*)MOUSE_mg_ptr(mg);
+        }
+        else{
+            value = &PL_sv_undef;
+        }
+    }
+
+    ST(0) = value;
     XSRETURN(1);
 }
 

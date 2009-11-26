@@ -142,15 +142,15 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 #define set_slots(self, key, value) set_slot(self, sv_2mortal(newSVpvs_share(key)), value)
 
 /* mouse_simle_accessor.xs */
-#define INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTSV(klass, name, dsv) \
-    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #name, sizeof(#name)-1, XS_Mouse_simple_accessor, (dsv), HEf_SVKEY)
-#define INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(klass, name, ds) \
-    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTSV(klass, name, newSVpvs(ds))
-
 #define INSTALL_SIMPLE_READER(klass, name) \
     INSTALL_SIMPLE_READER_WITH_KEY(klass, name, name)
 #define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key) \
     (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_reader, NULL, 0)
+
+#define INSTALL_SIMPLE_READER_WITH_DEFAULTSV(klass, name, dsv) \
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #name, sizeof(#name)-1, XS_Mouse_simple_reader, (dsv), HEf_SVKEY)
+#define INSTALL_SIMPLE_READER_WITH_DEFAULTS(klass, name, ds) \
+    INSTALL_SIMPLE_READER_WITH_DEFAULTSV(klass, name, newSVpvs(ds))
 
 #define INSTALL_SIMPLE_WRITER(klass, name) \
     NSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, name)

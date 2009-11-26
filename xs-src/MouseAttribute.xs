@@ -218,5 +218,5 @@ BOOT:
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_builder, builder);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_documentation, documentation);
 
-    INSTALL_SIMPLE_ACCESSOR_WITH_DEFAULTS(Attribute, accessor_metaclass, "Mouse::Meta::Method::Accessor::XS");
+    INSTALL_SIMPLE_READER_WITH_DEFAULTS(Attribute, accessor_metaclass, "Mouse::Meta::Method::Accessor::XS");
 
