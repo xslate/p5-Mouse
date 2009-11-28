@@ -272,7 +272,7 @@ sub apply_all_roles {
         load_class($role_name);
 
         is_a_metarole( get_metaclass_by_name($role_name) )
-            || $applicant->meta->throw_error("You can only consume roles, $role_name(".$role_name->meta.") is not a Mouse role");
+            || $applicant->meta->throw_error("You can only consume roles, $role_name is not a Mouse role");
     }
 
     if ( scalar @roles == 1 ) {
