@@ -335,6 +335,122 @@ mouse_initialize_metaclass(pTHX_ SV* const klass) {
     return meta;
 }
 
+
+/* copied from Class-MOP/topic/symbol-manipluator */
+static GV*
+mouse_get_gv(pTHX_ SV* const self, svtype const type, const char* const var_name, I32 const var_name_len, I32 const flags){
+    SV* package_name;
+    STRLEN len;
+    const char* pv;
+
+    if(!flags){
+        SV* const ns = mcall0(self, mouse_namespace);
+        GV** gvp;
+        if(!(SvROK(ns) && SvTYPE(SvRV(ns)) == SVt_PVHV)){
+            croak("namespace() did not return a hash reference");
+        }
+        gvp = (GV**)hv_fetch((HV*)SvRV(ns), var_name, var_name_len, FALSE);
+        if(gvp && isGV_with_GP(*gvp)){
+            return *gvp;
+        }
+    }
+
+    package_name = get_slot(self, mouse_package);
+
+    if(!(package_name && SvOK(package_name))){
+        croak("No package name defined");
+    }
+
+    pv = SvPV_const(package_name, len);
+
+    return gv_fetchpvn_flags(Perl_form(aTHX_ "%s::%s", pv, var_name), (len + var_name_len + 2), flags, type);
+}
+
+/* copied from Class-MOP/topic/symbol-manipluator */
+static SV*
+mouse_gv_elem(pTHX_ GV* const gv, svtype const type, I32 const add){
+    SV* sv;
+
+    if(!gv){
+        return NULL;
+    }
+
+    assert(isGV_with_GP(gv));
+
+    switch(type){
+    case SVt_PVAV:
+        sv = (SV*)(add ? GvAVn(gv) : GvAV(gv));
+        break;
+    case SVt_PVHV:
+        sv = (SV*)(add ? GvHVn(gv) : GvHV(gv));
+        break;
+    case SVt_PVCV:
+        sv = (SV*)GvCV(gv);
+        break;
+    case SVt_PVIO:
+        sv = (SV*)(add ? GvIOn(gv) : GvIO(gv));
+        break;
+    case SVt_PVGV:
+        sv = (SV*)gv;
+        break;
+    default: /* SCALAR */
+        sv =       add ? GvSVn(gv) : GvSV(gv);
+        break;
+    }
+
+    return sv;
+}
+
+/* copied from Class-MOP/topic/symbol-manipluator */
+static void
+mouse_deconstruct_variable_name(pTHX_ SV* const variable,
+    const char** const var_name, STRLEN* const var_name_len,
+    svtype* const type,
+    const char** const type_name) {
+
+    STRLEN len;
+    const char* pv;
+
+    /* e.g. variable = '$foo' */
+
+    if(!SvOK(variable)) {
+        croak("You must pass a variable name");
+    }
+    pv = SvPV_const(variable, len);
+    if(len < 2){
+        croak("You must pass a variable name including a sigil");
+    }
+
+    *var_name     = pv  + 1;
+    *var_name_len = len - 1;
+
+    switch(pv[0]){
+    case '$':
+        *type      = SVt_PV; /* for all the types of scalars */
+        *type_name = "SCALAR";
+        break;
+    case '@':
+        *type      = SVt_PVAV;
+        *type_name = "ARRAY";
+        break;
+    case '%':
+        *type      = SVt_PVHV;
+        *type_name = "HASH";
+        break;
+    case '&':
+        *type      = SVt_PVCV;
+        *type_name = "CODE";
+        break;
+    case '*':
+        *type      = SVt_PVGV;
+        *type_name = "GLOB";
+        break;
+    default:
+        croak("I do not recognize that sigil '%c'", pv[0]);
+    }
+}
+
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -430,6 +546,41 @@ CODE:
         }
     }
 }
+
+bool
+has_package_symbol(SV* self, SV* variable)
+PREINIT:
+    svtype type;
+    const char* type_name;
+    const char* var_name;
+    STRLEN var_name_len;
+    GV* gv;
+CODE:
+    mouse_deconstruct_variable_name(aTHX_ variable, &var_name, &var_name_len, &type, &type_name);
+    gv = mouse_get_gv(aTHX_ self, type, var_name, var_name_len, 0);
+    RETVAL = mouse_gv_elem(aTHX_ gv, type, FALSE) ? TRUE : FALSE;
+OUTPUT:
+    RETVAL
+
+SV*
+get_package_symbol(SV* self, SV* variable)
+PREINIT:
+    svtype type;
+    const char* type_name;
+    const char* var_name;
+    STRLEN var_name_len;
+    I32 flags = 0;
+    GV* gv;
+    SV* sv;
+CODE:
+    mouse_deconstruct_variable_name(aTHX_ variable, &var_name, &var_name_len, &type, &type_name);
+    gv = mouse_get_gv(aTHX_ self, type, var_name, var_name_len, flags);
+    sv = mouse_gv_elem(aTHX_ gv, type, FALSE);
+
+    RETVAL = sv ? newRV_inc(sv) : &PL_sv_undef;
+OUTPUT:
+    RETVAL
+
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
