@@ -88,6 +88,8 @@ BEGIN {
     generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
 }
 
+our $in_global_destruction = 0;
+END{ $in_global_destruction = 1 }
 
 # Moose::Util compatible utilities
 
