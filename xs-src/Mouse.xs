@@ -403,8 +403,8 @@ CODE:
         SV*  sv = code_ref;  /* used in tryAMAGICunDEREF */
         SV** sp = &sv;       /* used in tryAMAGICunDEREF */
         tryAMAGICunDEREF(to_cv); /* try \&{$code} */
-        if(SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVCV){
-            mouse_throw_error(self, NULL, "Not a CODE reference");
+        if(!(SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVCV)){
+            mouse_throw_error(self, NULL, "You must pass a CODE reference to add_method");
         }
         code_ref = sv;
     }
