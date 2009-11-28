@@ -4,11 +4,14 @@ use Mouse::Util; # enables strict and warnings
 use Mouse::Meta::Method;
 our @ISA = qw(Mouse::Meta::Method);
 
-sub _new {
-    my $class = shift;
-    return $class->meta->new_object(@_)
-        if $class ne __PACKAGE__;
-    return bless {@_}, $class;
+sub _new{
+    my($class, %args) = @_;
+    my $self = bless \%args, $class;
+
+    if($class ne __PACKAGE__){
+        $self->meta->_initialize_object($self, \%args);
+    }
+    return $self;
 }
 
 1;
