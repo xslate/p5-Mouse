@@ -226,14 +226,22 @@ sub clone_instance {
     return $class->clone_object($instance, %params);
 }
 
-sub make_immutable {
-    my $self = shift;
-    my %args = (
+
+sub immutable_options {
+    my ( $self, @args ) = @_;
+
+    return (
         inline_constructor => 1,
         inline_destructor  => 1,
         constructor_name   => 'new',
-        @_,
+        @args,
     );
+}
+
+
+sub make_immutable {
+    my $self = shift;
+    my %args = $self->immutable_options(@_);
 
     $self->{is_immutable}++;
 
