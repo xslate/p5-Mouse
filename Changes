@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.41
+    * This is the first stable version of Mouse::XS
+
+    * SUMMARY from 0.40 to 0.40_09
+        - Many stuff are now in XS
+
 0.40_09 Thu Dec  3 13:42:17 2009
     * Mouse
         - Remove @Mouse::EXPORT, which was no longer used (gfx)
