@@ -84,7 +84,7 @@ mouse_tc_Bool(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
         }
     }
     else{
-        /* false must be boolean */
+        /* any false value must be boolean */
         return TRUE;
     }
 }
