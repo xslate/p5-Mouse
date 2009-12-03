@@ -44,29 +44,9 @@ cmpthese(-1, {
     ClassAccessorFast           => sub { $caf->foo },
 }, 'noc');
 
-my (@moose, @moose_immut, @mouse, @mouse_immut, @caf_stall);
-print "\nCREATION\n";
-cmpthese(1_000_000, {
-    Moose                       => sub { push @moose, PlainMoose->new(foo => 23) },
-    Mouse                       => sub { push @mouse, PlainMouse->new(foo => 23) },
-    ClassAccessorFast           => sub { push @caf_stall, ClassAccessorFast->new({foo => 23}) },
+print "\nCREATION AND DESTRUCTION\n";
+cmpthese(-1, {
+    Moose                       => sub { my $x = PlainMoose->new(foo => 23) },
+    Mouse                       => sub { my $x = PlainMouse->new(foo => 23) },
+    ClassAccessorFast           => sub { my $x = ClassAccessorFast->new({foo => 23}) },
 }, 'noc');
-
-my ( $moose_idx, $mouse_idx, $caf_idx ) = ( 0, 0, 0, 0 );
-print "\nDESTRUCTION\n";
-cmpthese(1_000_000, {
-    Moose => sub {
-        $moose[$moose_idx] = undef;
-        $moose_idx++;
-    },
-    Mouse => sub {
-        $mouse[$mouse_idx] = undef;
-        $mouse_idx++;
-    },
-    ClassAccessorFast   => sub {
-        $caf_stall[$caf_idx] = undef;
-        $caf_idx++;
-    },
-}, 'noc');
-
-
