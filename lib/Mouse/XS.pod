@@ -9,10 +9,15 @@ This document describes Mouse version 0.40_08
 
 =head1 DESCRIPTION
 
-Mouse has an optional XS implementation. This is automatically built
+Mouse has an optional XS implementation, which is automatically built
 and used if available.
 
 =head2 INSTALL
+
+The XS implementation are selected by default, but you can force it by
+passing the C<--xs> option to F<Makefile.PL>.
+
+    perl Makefile.PL --xs
 
 If you do not want to build the XS implementation, you can pass the C<--pp>
 option to F<Makefile.PL>.
