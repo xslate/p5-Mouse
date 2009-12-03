@@ -1,5 +1,5 @@
 package Mouse::Meta::Method::Constructor;
-use Mouse::Util; # enables strict and warnings
+use Mouse::Util qw(:meta); # enables strict and warnings
 
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;

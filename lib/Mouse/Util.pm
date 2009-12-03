@@ -54,6 +54,7 @@ BEGIN{
             XSLoader::load('Mouse', $VERSION);
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Constructor::XS' }, ':meta');
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Destructor::XS'  }, ':meta');
+            Mouse::Util->import({ into => 'Mouse::Meta::Method::Accessor::XS'    }, ':meta');
             return 1;
         };
         #warn $@ if $@;

@@ -1,6 +1,6 @@
 package Mouse::Meta::Method::Delegation;
-use Mouse::Util; # enables strict and warnings
-use Scalar::Util qw(blessed);
+use Mouse::Util qw(:meta); # enables strict and warnings
+use Scalar::Util;
 
 sub _generate_delegation{
     my (undef, $attribute, $metaclass, $reader, $handle_name, $method_to_call) = @_;
@@ -9,9 +9,9 @@ sub _generate_delegation{
         my $instance = shift;
         my $proxy    = $instance->$reader();
 
-        my $error = !defined($proxy)                ? ' is not defined'
-                  : ref($proxy) && !blessed($proxy) ? qq{ is not an object (got '$proxy')}
-                                                    : undef;
+        my $error = !defined($proxy)                              ? ' is not defined'
+                  : ref($proxy) && !Scalar::Util::blessed($proxy) ? qq{ is not an object (got '$proxy')}
+                                                                  : undef;
         if ($error) {
             $instance->meta->throw_error(
                 "Cannot delegate $handle_name to $method_to_call because "
