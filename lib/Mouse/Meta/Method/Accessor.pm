@@ -6,8 +6,8 @@ sub _inline_slot{
     return sprintf '%s->{q{%s}}', $self_var, $attr_name;
 }
 
-sub _generate_accessor{
-    my ($method_class, $attribute, $class, $type) = @_;
+sub _generate_accessor_any{
+    my($method_class, $type, $attribute, $class) = @_;
 
     my $name          = $attribute->name;
     my $default       = $attribute->default;
@@ -23,13 +23,11 @@ sub _generate_accessor{
     my $self  = '$_[0]';
     my $slot  = $method_class->_inline_slot($self, $name);;
 
-    $type ||= 'accessor';
-
     my $accessor = sprintf(qq{package %s;\n#line 1 "%s for %s (%s)"\n}, $class->name, $type, $name, __FILE__)
                  . "sub {\n";
 
-    if ($type eq 'accessor' || $type eq 'writer') {
-        if($type eq 'accessor'){
+    if ($type eq 'rw' || $type eq 'wo') {
+        if($type eq 'rw'){
             $accessor .= 
                 'if (scalar(@_) >= 2) {' . "\n";
         }
@@ -70,7 +68,7 @@ sub _generate_accessor{
 
         $accessor .= "}\n";
     }
-    elsif($type eq 'reader') {
+    elsif($type eq 'ro') {
         $accessor .= 'Carp::confess("Cannot assign a value to a read-only accessor") if scalar(@_) >= 2;' . "\n";
     }
     else{
@@ -136,16 +134,20 @@ sub _generate_accessor{
     return $code;
 }
 
-sub _generate_reader{
+sub _generate_accessor{
     my $class = shift;
-    return $class->_generate_accessor(@_, 'reader');
+    return $class->_generate_accessor_any(rw => @_);
 }
 
-sub _generate_writer{
+sub _generate_reader {
     my $class = shift;
-    return $class->_generate_accessor(@_, 'writer');
+    return $class->_generate_accessor_any(ro => @_);
 }
 
+sub _generate_writer {
+    my $class = shift;
+    return $class->_generate_accessor_any(wo => @_);
+}
 
 sub _generate_predicate {
     my (undef, $attribute, $class) = @_;
@@ -160,8 +162,7 @@ sub _generate_clearer {
     my (undef, $attribute, $class) = @_;
 
     my $slot = $attribute->name;
-
-   return sub{
+    return sub{
         delete $_[0]->{$slot};
     };
 }
