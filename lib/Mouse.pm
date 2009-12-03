@@ -252,25 +252,14 @@ Sets this class' superclasses.
 
 =head2 C<< before (method|methods) => CodeRef >>
 
-Installs a "before" method modifier. See L<Moose/before> or
-L<Class::Method::Modifiers/before>.
-
-Use of this feature requires L<Class::Method::Modifiers>!
+Installs a "before" method modifier. See L<Moose/before>.
 
 =head2 C<< after (method|methods) => CodeRef >>
 
-Installs an "after" method modifier. See L<Moose/after> or
-L<Class::Method::Modifiers/after>.
-
-Use of this feature requires L<Class::Method::Modifiers>!
-
+Installs an "after" method modifier. See L<Moose/after>.
 =head2 C<< around (method|methods) => CodeRef >>
 
-Installs an "around" method modifier. See L<Moose/around> or
-L<Class::Method::Modifiers/around>.
-
-Use of this feature requires L<Class::Method::Modifiers>!
-
+Installs an "around" method modifier. See L<Moose/around>.
 =head2 C<< has (name|names) => parameters >>
 
 Adds an attribute (or if passed an arrayref of names, multiple attributes) to
@@ -410,6 +399,10 @@ Perl 5.6.2 or later.
 L<Mouse::Spec>
 
 L<Moose>
+
+L<Moose::Manual>
+
+L<Moose::Cookbook>
 
 L<Class::MOP>
 

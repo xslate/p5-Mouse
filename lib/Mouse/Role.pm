@@ -163,18 +163,15 @@ Returns this role's metaclass instance.
 
 =head2 C<< before (method|methods) -> CodeRef >>
 
-Sets up a B<before> method modifier. See L<Moose/before> or
-L<Class::Method::Modifiers/before>.
+Sets up a B<before> method modifier. See L<Moose/before>.
 
 =head2 C<< after (method|methods) => CodeRef >>
 
-Sets up an B<after> method modifier. See L<Moose/after> or
-L<Class::Method::Modifiers/after>.
+Sets up an B<after> method modifier. See L<Moose/after>.
 
 =head2 C<< around (method|methods) => CodeRef >>
 
-Sets up an B<around> method modifier. See L<Moose/around> or
-L<Class::Method::Modifiers/around>.
+Sets up an B<around> method modifier. See L<Moose/around>.
 
 =head2 C<super>
 
