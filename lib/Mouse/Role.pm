@@ -25,18 +25,34 @@ Mouse::Exporter->setup_import_methods(
     ],
 );
 
-# XXX: for backward compatibility
-our @EXPORT = qw(
-    extends with
-    has
-    before after around
-    override super
-    augment  inner
 
-    requires excludes
+sub extends  {
+    Carp::croak "Roles do not support 'extends'";
+}
 
-    blessed confess
-);
+sub with     {
+    my $meta = Mouse::Meta::Role->initialize(scalar caller);
+    Mouse::Util::apply_all_roles($meta->name, @_);
+    return;
+}
+
+sub has {
+    my $meta = Mouse::Meta::Role->initialize(scalar caller);
+    my $name = shift;
+
+    $meta->throw_error(q{Usage: has 'name' => ( key => value, ... )})
+        if @_ % 2; # odd number of arguments
+
+    if(ref $name){ # has [qw(foo bar)] => (...)
+        for (@{$name}){
+            $meta->add_attribute($_ => @_);
+        }
+    }
+    else{ # has foo => (...)
+        $meta->add_attribute($_ => @_);
+    }
+    return;
+}
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
@@ -45,6 +61,7 @@ sub before {
     for (@_) {
         $meta->add_before_method_modifier($_ => $code);
     }
+    return;
 }
 
 sub after {
@@ -54,6 +71,7 @@ sub after {
     for (@_) {
         $meta->add_after_method_modifier($_ => $code);
     }
+    return;
 }
 
 sub around {
@@ -63,6 +81,7 @@ sub around {
     for (@_) {
         $meta->add_around_method_modifier($_ => $code);
     }
+    return;
 }
 
 
@@ -74,6 +93,7 @@ sub super {
 sub override {
     # my($name, $code) = @_;
     Mouse::Meta::Role->initialize(scalar caller)->add_override_method_modifier(@_);
+    return;
 }
 
 # We keep the same errors messages as Moose::Role emits, here.
@@ -85,26 +105,11 @@ sub augment {
     Carp::croak "Roles cannot support 'augment'";
 }
 
-sub has {
-    my $meta = Mouse::Meta::Role->initialize(scalar caller);
-    my $name = shift;
-
-    $meta->add_attribute($_ => @_) for ref($name) ? @{$name} : $name;
-}
-
-sub extends  {
-    Carp::croak "Roles do not support 'extends'"
-}
-
-sub with     {
-    my $meta = Mouse::Meta::Role->initialize(scalar caller);
-    Mouse::Util::apply_all_roles($meta->name, @_);
-}
-
 sub requires {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
     $meta->throw_error("Must specify at least one method") unless @_;
     $meta->add_required_methods(@_);
+    return;
 }
 
 sub excludes {

@@ -30,17 +30,16 @@ Mouse::Exporter->setup_import_methods(
    ],
 );
 
-# XXX: for backward compatibility
-our @EXPORT = qw(
-    extends with
-    has
-    before after around
-    override super
-    augment  inner
-    blessed confess
-);
 
-sub extends { Mouse::Meta::Class->initialize(scalar caller)->superclasses(@_) }
+sub extends {
+    Mouse::Meta::Class->initialize(scalar caller)->superclasses(@_);
+    return;
+}
+
+sub with {
+    Mouse::Util::apply_all_roles(scalar(caller), @_);
+    return;
+}
 
 sub has {
     my $meta = Mouse::Meta::Class->initialize(scalar caller);
@@ -49,7 +48,15 @@ sub has {
     $meta->throw_error(q{Usage: has 'name' => ( key => value, ... )})
         if @_ % 2; # odd number of arguments
 
-    $meta->add_attribute($_ => @_) for ref($name) ? @{$name} : $name;
+    if(ref $name){ # has [qw(foo bar)] => (...)
+        for (@{$name}){
+            $meta->add_attribute($_ => @_);
+        }
+    }
+    else{ # has foo => (...)
+        $meta->add_attribute($_ => @_);
+    }
+    return;
 }
 
 sub before {
@@ -60,6 +67,7 @@ sub before {
     for (@_) {
         $meta->add_before_method_modifier($_ => $code);
     }
+    return;
 }
 
 sub after {
@@ -70,6 +78,7 @@ sub after {
     for (@_) {
         $meta->add_after_method_modifier($_ => $code);
     }
+    return;
 }
 
 sub around {
@@ -80,10 +89,7 @@ sub around {
     for (@_) {
         $meta->add_around_method_modifier($_ => $code);
     }
-}
-
-sub with {
-    Mouse::Util::apply_all_roles(scalar(caller), @_);
+    return;
 }
 
 our $SUPER_PACKAGE;
@@ -122,6 +128,7 @@ sub inner {
 sub augment {
     #my($name, $method) = @_;
     Mouse::Meta::Class->initialize(scalar caller)->add_augment_method_modifier(@_);
+    return;
 }
 
 sub init_meta {
