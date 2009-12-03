@@ -147,10 +147,10 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 #define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key) \
     (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_reader, NULL, 0)
 
-#define INSTALL_SIMPLE_READER_WITH_DEFAULTSV(klass, name, dsv) \
+#define INSTALL_CLASS_HOLDER_SV(klass, name, dsv) \
     (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #name, sizeof(#name)-1, XS_Mouse_simple_reader, (dsv), HEf_SVKEY)
-#define INSTALL_SIMPLE_READER_WITH_DEFAULTS(klass, name, ds) \
-    INSTALL_SIMPLE_READER_WITH_DEFAULTSV(klass, name, newSVpvs(ds))
+#define INSTALL_CLASS_HOLDER(klass, name, ds) \
+    INSTALL_CLASS_HOLDER_SV(klass, name, newSVpvs(ds))
 
 #define INSTALL_SIMPLE_WRITER(klass, name) \
     NSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, name)
