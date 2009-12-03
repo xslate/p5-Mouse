@@ -84,6 +84,8 @@ if (author_context()) {
     }
 }
 
+repository 'git://git.moose.perl.org/Mouse.git';
+
 tests 't/*.t t/*/*.t';
 
 clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';

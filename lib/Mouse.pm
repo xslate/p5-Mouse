@@ -392,7 +392,7 @@ keywords (such as L</extends>) it will break loudly instead breaking subtly.
 
 We have a public git repository:
 
- git clone git://jules.scsys.co.uk/gitmo/Mouse.git
+ git clone git://git.moose.perl.org/Mouse.git
 
 =head1 DEPENDENCIES
 
