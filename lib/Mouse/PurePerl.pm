@@ -18,14 +18,19 @@ sub is_class_loaded {
     return 0 if ref($class) || !defined($class) || !length($class);
 
     # walk the symbol table tree to avoid autovififying
-    # \*{${main::}{"Foo::"}} == \*main::Foo::
+    # \*{${main::}{"Foo::"}{"Bar::"}} == \*main::Foo::Bar::
 
     my $pack = \%::;
     foreach my $part (split('::', $class)) {
-        my $entry = \$pack->{$part . '::'};
+        $part .= '::';
+        return 0 if !exists $pack->{$part};
+
+        my $entry = \$pack->{$part};
         return 0 if ref($entry) ne 'GLOB';
-        $pack = *{$entry}{HASH} or return 0;
+        $pack = *{$entry}{HASH};
     }
+
+    return 0 if !%{$pack};
 
     # check for $VERSION or @ISA
     return 1 if exists $pack->{VERSION}
