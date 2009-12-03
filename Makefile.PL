@@ -21,7 +21,9 @@ test_requires 'Test::Exception' => 0.27;
 
 include_deps 'Test::Exception'; # work around 0.27_0x (its use of diehook might be wrong)
 
-recommends 'MRO::Compat' if $] < 5.010;
+if($] < 5.010) {
+    recommends 'Class::C3';
+}
 
 require 'lib/Mouse/Spec.pm'; # for the version
 
@@ -61,14 +63,15 @@ if (author_context()) {
     my $require_version = Mouse::Spec->MooseVersion;
 
     if (eval { require Moose; Moose->VERSION($require_version) }) {
+        print "You have Moose ", Moose->VERSION, ".\n";
         if (eval { require Module::Install::AuthorTests }) {
             do 'tool/create-moose-compatibility-tests.pl';
             recursive_author_tests('xt');
         } else {
-            print "you don't have a M::I::AuthorTests.\n";
+            print "You don't have a M::I::AuthorTests.\n";
         }
     } else {
-        print "you don't have Moose $require_version. skipping moose compatibility test\n";
+        print "You don't have Moose $require_version. skipping moose compatibility test\n";
     }
 
     if($use_xs){
