@@ -54,7 +54,7 @@ sub has {
         }
     }
     else{ # has foo => (...)
-        $meta->add_attribute($_ => @_);
+        $meta->add_attribute($name => @_);
     }
     return;
 }
