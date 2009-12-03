@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 1;
 
 require Mouse;
-ok($INC{"Mouse/Object.pm"}, "loading Mouse loads Mouse::Object");
-can_ok('Mouse::Object' => 'new');
 
+can_ok('Mouse::Object' => 'new');
