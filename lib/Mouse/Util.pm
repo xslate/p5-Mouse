@@ -43,8 +43,6 @@ BEGIN{
     my $xs = !(exists $INC{'Mouse/PurePerl.pm'} || $ENV{MOUSE_PUREPERL});
 
     if($xs){
-        local $@;
-
         # XXX: XSLoader tries to get the object path from caller's file name
         #      $hack_mouse_file fools its mechanism
 
@@ -115,36 +113,43 @@ BEGIN {
         require mro;
         $get_linear_isa = \&mro::get_linear_isa;
     } else {
-        my $e = do {
-            local $@;
-            eval { require MRO::Compat };
-            $@;
-        };
-        if (!$e) {
-            $get_linear_isa = \&mro::get_linear_isa;
-        } else {
 #       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
-            my $_get_linear_isa_dfs; # this recurses so it isn't pretty
-            $_get_linear_isa_dfs = sub ($;$){
-                no strict 'refs';
+        my $_get_linear_isa_dfs; # this recurses so it isn't pretty
+        $_get_linear_isa_dfs = sub {
+            my($classname) = @_;
 
-                my $classname = shift;
+            my @lin = ($classname);
+            my %stored;
 
-                my @lin = ($classname);
-                my %stored;
-                foreach my $parent (@{"$classname\::ISA"}) {
-                    my $plin = $_get_linear_isa_dfs->($parent);
-                    foreach  my $p(@$plin) {
-                        next if exists $stored{$p};
-                        push(@lin, $p);
-                        $stored{$p} = 1;
-                    }
+            no strict 'refs';
+            foreach my $parent (@{"$classname\::ISA"}) {
+                my $plin = $_get_linear_isa_dfs->($parent);
+                foreach  my $p(@$plin) {
+                    next if exists $stored{$p};
+                    push(@lin, $p);
+                    $stored{$p} = 1;
                 }
-                return \@lin;
-            };
+            }
+            return \@lin;
+        };
 #       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
-            $get_linear_isa = $_get_linear_isa_dfs;
-        }
+
+        eval{ require Class::C3 };
+
+        # MRO::Compat::__get_linear_isa has no prototype, so
+        # we define a prototyped version for compatibility with core's
+        # See also MRO::Compat::__get_linear_isa.
+        $get_linear_isa = sub ($;$){
+            my($classname, $type) = @_;
+            if(!defined $type){
+                package Class::C3;
+                our %MRO;
+                $type = exists $MRO{$classname} ? 'c3' : 'dfs';
+            }
+            return $type eq 'c3'
+                ? [Class::C3::calculateMRO($classname)]
+                : $_get_linear_isa_dfs->($classname);
+        };
     }
 
     *get_linear_isa = $get_linear_isa;
