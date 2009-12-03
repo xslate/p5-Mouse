@@ -32,13 +32,13 @@ if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
 
 my $use_xs;
 
+if($] < 5.008_001){
+    $use_xs = 0;
+}
+
 for (@ARGV) {
     /^--pp$/ and $use_xs = 0;
     /^--xs$/ and $use_xs = 1;
-}
-
-if($] < 5.008_001){
-    $use_xs = 0;
 }
 
 if(!defined $use_xs){
