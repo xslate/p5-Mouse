@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.40_09
+0.40_09 Thu Dec  3 13:42:17 2009
     * Mouse
         - Remove @Mouse::EXPORT, which was no longer used (gfx)
 
