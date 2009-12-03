@@ -623,7 +623,7 @@ get_all_attributes(SV* self)
 PPCODE:
 {
     AV* const xc        = mouse_get_xc(aTHX_ self);
-    AV* const all_attrs =  MOUSE_xc_attrall(xc);
+    AV* const all_attrs = MOUSE_xc_attrall(xc);
     I32 const len       = AvFILLp(all_attrs) + 1;
     I32 i;
 
