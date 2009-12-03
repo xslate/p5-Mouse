@@ -1,6 +1,20 @@
 Revision history for Mouse
 
-0.40_08
+0.40_09
+    * Mouse
+        - Remove @Mouse::EXPORT, which was no longer used (gfx)
+
+    * Mouse::Role
+        - Remove @Mouse::Role::EXPORT, which was no longer used (gfx)
+
+    * Mouse::Util
+        - Fix a bug which caused segv on 5.6.2 (gfx)
+
+    * Mouse::Meta::Module
+        - Add has_package_symbol and get_package_symbol (gfx)
+
+
+0.40_08 Thu Nov 26 21:36:49 2009
     * Mouse::Exporter
         - Add the "-traits => ..." subdirective (gfx)
 
@@ -55,19 +69,13 @@ Revision history for Mouse
 
     * SUMMARY from 0.37 to 0.38
         - Add documents about compatiblity and incompatibility to Mouse::Spec
-
         - Refactor type constraints and type coercions
             - Now ArrayRef[Foo | Bar] is parsed correctly
             - Type coercions are stored in type constraint objects
-
         - Add Mouse::Exporter for import/unimport methods
-
         - Make roles applicable to instances
-
         - Implement inner/augment keywords
-
         - Port a lot of Moose's tests
-
         - Fix a lot of bugs
 
 
