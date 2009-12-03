@@ -257,8 +257,8 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     }
 
     for(i = 0; i < len; i++){
-        SV* const attr = AvARRAY(attrs)[i];
-        AV* const xa   = mouse_get_xa(aTHX_ AvARRAY(attrs)[i]);
+        SV* const attr = MOUSE_av_at(attrs, i);
+        AV* const xa   = mouse_get_xa(aTHX_ attr);
 
         SV* const slot     = MOUSE_xa_slot(xa);
         U16 const flags    = (U16)MOUSE_xa_flags(xa);
