@@ -306,7 +306,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     }
 
     if(MOUSE_xc_flags(xc) & MOUSEf_XC_IS_ANON){
-        set_slot(object, newSVpvs_flags("__ANON__", SVs_TEMP), meta);
+        set_slot(object, newSVpvs_flags("__METACLASS__", SVs_TEMP), meta);
     }
 
     FREETMPS;
