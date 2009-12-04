@@ -261,6 +261,7 @@ mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
             SV* const value = hv_iterval(hv, he);
             SvGETMAGIC(value);
             if(!mouse_tc_check(aTHX_ param, value)){
+                hv_iterinit(hv); /* reset */
                 return FALSE;
             }
         }
