@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 46;
+use Test::More tests => 51;
 use Test::Exception;
 
+use Tie::Hash;
+use Tie::Array;
 {
     {
         package My::Role;
@@ -183,4 +185,29 @@ ok $x->check([[10, undef]]);
 ok!$x->check([[10, 3.14]]);
 ok!$x->check({});
 
+$x = tie my @ta, 'Tie::StdArray';
 
+my $array_of_int = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('ArrayRef[Int]');
+
+@$x = (1, 2, 3);
+ok $array_of_int->check(\@ta), 'magical array';
+
+@$x = (1, 2, 3.14);
+ok !$array_of_int->check(\@ta);
+
+$x = tie my %th, 'Tie::StdHash';
+
+my $hash_of_int = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('HashRef[Int]');
+
+%$x = (foo => 1, bar => 3, baz => 5);
+ok $hash_of_int->check(\%th), 'magical hash';
+
+$x->{foo} = 3.14;
+ok!$hash_of_int->check(\%th);
+
+my %th_clone;
+while(my($k, $v) = each %th){
+    $th_clone{$k} = $v;
+}
+
+is_deeply \%th_clone, \%th, 'the hash iterator is initialized';
