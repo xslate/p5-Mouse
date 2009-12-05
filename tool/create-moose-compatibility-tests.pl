@@ -25,7 +25,8 @@ my %SKIP_TEST = (
     '602-mouse-tiny.t'    => "Moose doesn't support ::Tiny",
     '603-mouse-pureperl.t'=> "Moose doesn't have ::PurePerl",
 
-    '031_roles_applied_in_create.t' => 't/lib/* classes are not Moose classes/roles',
+    '031_roles_applied_in_create.t' => 't/lib/*.pm are not for Moose',
+    '013_metaclass_traits.t'        => 't/lib/*.pm are not for Moose',
 );
 
 my @compat_tests;

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 17;
+use Test::More;
 
 {
     package Foo;
@@ -19,7 +19,7 @@ use Test::More tests => 17;
 
 my $meta = Foo->meta;
 
-foreach my $sym(qw(&code $scalar %hash @array *code *scalar *hash *array)){
+foreach my $sym(qw(&code $scalar %hash @array)){
     ok $meta->has_package_symbol($sym),      "has_package_symbol('$sym')";
 }
 
@@ -30,8 +30,9 @@ is $meta->get_package_symbol('&code'),   \&Foo::code;
 is $meta->get_package_symbol('$scalar'), \$Foo::scalar;
 is $meta->get_package_symbol('%hash'),   \%Foo::hash;
 is $meta->get_package_symbol('@array'),  \@Foo::array;
-is $meta->get_package_symbol('*code'), \*Foo::code;
 
-is $meta->get_package_symbol('$hogehoge'), undef;
+is $meta->get_package_symbol('@hogehoge'), undef;
 is $meta->get_package_symbol('%array'),    undef;
+is $meta->get_package_symbol('&hash'),     undef;
 
+done_testing;
