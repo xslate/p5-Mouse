@@ -178,7 +178,7 @@ once.
 
 This function will apply the specified roles to the object's base class.
 
-=head1 SEE ASLSO
+=head1 SEE ALSO
 
 L<Moose::Util::MetaRole>
 
