@@ -394,9 +394,13 @@ C<eval "use $module"> or using C<require>.
 
 =head3 C<get_code_info>
 
-=head1 UTILITIES FOR MOUSE
+=head1 Mouse specific utilities
 
 =head3 C<not_supported>
+
+=head3 C<get_code_package>
+
+=head3 C<get_code_ref>
 
 =head1 SEE ALSO
 
