@@ -59,6 +59,14 @@ else{
     print "Mouse configured with Pure Perl.\n";
 }
 
+
+tests 't/*.t t/*/*.t';
+
+repository 'git://git.moose.perl.org/Mouse.git';
+
+clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';
+
+
 if (author_context()) {
     my $require_version = Mouse::Spec->MooseVersion;
 
@@ -86,11 +94,5 @@ if (author_context()) {
                 . qq{\t} . $test_via_harness;
     }
 }
-
-repository 'git://git.moose.perl.org/Mouse.git';
-
-tests 't/*.t t/*/*.t';
-
-clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';
 
 WriteAll check_nmake => 0;
