@@ -140,13 +140,14 @@ BEGIN {
         # See also MRO::Compat::__get_linear_isa.
         $get_linear_isa = sub ($;$){
             my($classname, $type) = @_;
+            package # hide from PAUSE
+                Class::C3;
             if(!defined $type){
-                package Class::C3;
                 our %MRO;
                 $type = exists $MRO{$classname} ? 'c3' : 'dfs';
             }
             return $type eq 'c3'
-                ? [Class::C3::calculateMRO($classname)]
+                ? [calculateMRO($classname)]
                 : $_get_linear_isa_dfs->($classname);
         };
     }
