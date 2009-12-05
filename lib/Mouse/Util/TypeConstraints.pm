@@ -342,7 +342,6 @@ sub find_or_create_isa_type_constraint {
 }
 
 1;
-
 __END__
 
 =head1 NAME

@@ -253,7 +253,6 @@ sub _get_caller_package {
 #sub _spec{ %SPEC }
 
 1;
-
 __END__
 
 =head1 NAME

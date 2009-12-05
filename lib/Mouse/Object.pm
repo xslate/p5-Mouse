@@ -3,7 +3,6 @@ use Mouse::Util qw(does dump meta); # enables strict and warnings
 
 sub new;
 
-
 sub BUILDALL {
     my $self = shift;
 
@@ -40,7 +39,6 @@ sub DEMOLISHALL {
 }
 
 1;
-
 __END__
 
 =head1 NAME

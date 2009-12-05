@@ -16,10 +16,7 @@ BEGIN {
 }
 
 1;
-
 __END__
-
-=pod
 
 =head1 NAME
 

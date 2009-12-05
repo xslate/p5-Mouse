@@ -28,7 +28,7 @@ sub package_name         { $_[0]->{package} }
 sub associated_metaclass { $_[0]->{associated_metaclass} }
 
 sub fully_qualified_name {
-    my $self = shift;
+    my($self) = @_;
     return $self->package_name . '::' . $self->name;
 }
 

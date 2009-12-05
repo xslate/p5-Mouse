@@ -8,7 +8,6 @@ use Mouse::Meta::TypeConstraint;
 #use Mouse::Meta::Method::Accessor;
 use Mouse::Meta::Method::Delegation;
 
-
 sub _process_options{
     my($class, $name, $args) = @_;
 
@@ -376,7 +375,6 @@ sub associate_method{
     return;
 }
 
-
 sub delegation_metaclass() { 'Mouse::Meta::Method::Delegation' }
 
 sub install_accessors{
@@ -409,7 +407,6 @@ sub install_accessors{
         }
     }
 
-
     if($attribute->can('create') != \&create){
         # backword compatibility
         $attribute->create($metaclass, $attribute->name, %{$attribute});
@@ -426,7 +423,6 @@ sub throw_error{
 }
 
 1;
-
 __END__
 
 =head1 NAME

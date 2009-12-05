@@ -78,7 +78,6 @@ sub _make_new_class {
 }
 
 1;
-
 __END__
 
 =head1 NAME

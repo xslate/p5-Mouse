@@ -65,7 +65,6 @@ BEGIN{
     *MOUSE_XS = sub(){ $xs };
 }
 
-
 use Carp         ();
 use Scalar::Util ();
 
@@ -260,7 +259,6 @@ sub load_class {
 
 sub is_class_loaded;
 
-
 sub apply_all_roles {
     my $applicant = Scalar::Util::blessed($_[0])
         ?                                shift   # instance
@@ -306,7 +304,6 @@ sub english_list {
     return join q{, }, @items, "and $tail";
 }
 
-
 # common utilities
 
 sub not_supported{
@@ -339,7 +336,6 @@ sub does :method;
 *does = \&does_role; # alias
 
 1;
-
 __END__
 
 =head1 NAME
