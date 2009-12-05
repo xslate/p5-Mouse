@@ -350,7 +350,7 @@ Mouse::Util::TypeConstraints - Type constraint system for Mouse
 
 =head1 VERSION
 
-This document describes Mouse version 0.41
+This document describes Mouse version 0.42
 
 =head2 SYNOPSIS
 

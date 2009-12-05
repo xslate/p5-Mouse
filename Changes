@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.42 Sat Dec  5 16:05:06 2009
+    * Fix a PAUSE indexing issue (gfx)
+
 0.41 Sat Dec  5 15:00:33 2009
     * This is the first stable version of Mouse::XS
         - Mouse::XS is about 2 times faster than Mouse::PurePerl
