@@ -1,10 +1,17 @@
 Revision history for Mouse
 
-0.41
+0.41 Sat Dec  5 15:00:33 2009
     * This is the first stable version of Mouse::XS
+        - Mouse::XS is about 2 times faster than Mouse::PurePerl
 
-    * SUMMARY from 0.40 to 0.40_09
+    * SUMMARY
         - Many stuff are now in XS
+        - Support "use Mouse -traits => ..." subdirective
+
+    * INCOMPATIBILITY CHANGES (but compatible with Moose)
+        - The type of default value is constrained correctly
+        - The default values is weakend correctly
+        - BUILDALL/DEMOLISHALL are no longer called
 
 0.40_09 Thu Dec  3 13:42:17 2009
     * Mouse

@@ -27,10 +27,10 @@ if($] < 5.010) {
 
 require 'lib/Mouse/Spec.pm'; # for the version
 
-if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
-    require Carp::Always; Carp::Always->import();
-    include_deps 'Carp::Always';
-}
+#if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
+#    require Carp::Always; Carp::Always->import();
+#    include_deps 'Carp::Always';
+#}
 
 my $use_xs;
 
