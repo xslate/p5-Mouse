@@ -5,6 +5,7 @@ Revision history for Mouse
 
     * Mouse::Meta::Module
         - Remove undocumented has_package_symbol and get_package_symbol (gfx)
+            (They are introduced in 0.41, but seem useless in Mouse)
 
 0.42 Sat Dec  5 16:05:06 2009
     * Fix a PAUSE indexing issue (gfx)
