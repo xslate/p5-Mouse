@@ -256,9 +256,11 @@ Installs a "before" method modifier. See L<Moose/before>.
 =head2 C<< after (method|methods) => CodeRef >>
 
 Installs an "after" method modifier. See L<Moose/after>.
+
 =head2 C<< around (method|methods) => CodeRef >>
 
 Installs an "around" method modifier. See L<Moose/around>.
+
 =head2 C<< has (name|names) => parameters >>
 
 Adds an attribute (or if passed an arrayref of names, multiple attributes) to
