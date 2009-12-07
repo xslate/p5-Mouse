@@ -28,7 +28,13 @@ option to F<Makefile.PL>.
 
 It can be used to enable the use of Mouse::PurePerl.
 
+=head1 DEPENDENCIES
+
+The XS implementation requires Perl 5.8.1 or later, and a C compiler.
+
 =head1 SEE ALSO
+
+L<Mouse>
 
 L<Mouse::PurePerl>
 
