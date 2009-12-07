@@ -30,16 +30,21 @@ This document describes Mouse version 0.42
 
 =head1 DESCRIPTION
 
-(TODO)
+Mouse is a subset of Moose. This document describes to what extend Mouse is
+compatible with Moose.
 
 =head2 Compatibility with Moose
+
+The sugary API is highly compatible with Moose.
 
 =head2 Incompatibility with Moose
 
 =head3 Meta object protocols
 
-Any MOP has no attributes, so
-C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
+Any MOP in Mouse has no attributes.
+
+And C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
+B<Don not make metaclasses immutalbe>.
 
 =head3 Mouse::Meta::Instance
 
@@ -49,10 +54,10 @@ Meta instance mechanism is not implemented.
 
 Role exclusion, C<exclude()>, is not implemented.
 
-=head3 -traits and -metaclass in Mouse::Exporter
+=head3 -metaclass in Mouse::Exporter
 
-C<< use Mouse -traits => ... >> and C<< use Mouse -metaclass => ... >> are not
-yet implemented.
+C<< use Mouse -metaclass => ... >> are not implemented.
+Use C<< use Mouse -traits => ... >> instead.
 
 =head2 Notes about Moose::Cookbook
 
