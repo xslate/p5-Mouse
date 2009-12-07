@@ -99,26 +99,6 @@ package Mouse::Tiny;
 Mouse::Exporter->setup_import_methods(also => 'Mouse');
 
 1;
-__END__
-
-=head1 NAME
-
-Mouse::Tiny - Mouse in a single file
-
-=head1 DESCRIPTION
-
-Mouse::Tiny is Mouse, but it is in a single file.
-
-This is B<not> tiny. In fact, it requires a little more memory and time than Mouse.
-
-Use Mouse directly unless you know what you are doing.
-
-=head1 SEE ALSO
-
-L<Mouse>
-
-=cut
-
 EOF
 
 close $handle;
