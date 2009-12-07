@@ -54,7 +54,7 @@ sub around{
 {
     package MouseClass;
     use parent -norequire => qw(Base);
-    use Moose;
+    use Mouse;
 
     before f => sub{ $i++ };
     around g => \&main::around;
