@@ -418,18 +418,18 @@ yet to have been created, is to quote the type name:
 This module also provides a simple hierarchy for Perl 5 types, here is
 that hierarchy represented visually.
 
-  Any
+ Any
   Item
       Bool
       Maybe[`a]
       Undef
       Defined
           Value
-              Num
-                Int
               Str
-                ClassName
-                RoleName
+                  Num
+                      Int
+                  ClassName
+                  RoleName
           Ref
               ScalarRef
               ArrayRef[`a]
@@ -437,7 +437,7 @@ that hierarchy represented visually.
               CodeRef
               RegexpRef
               GlobRef
-                FileHandle
+                  FileHandle
               Object
 
 B<NOTE:> Any type followed by a type parameter C<[`a]> can be
