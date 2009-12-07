@@ -610,10 +610,10 @@ CODE:
         SAVESPTR(GvSV(statusvalue)); /* local $? */
         SAVESPTR(ERRSV); /* local $@ */
 
-        GvSV(statusvalue) = sv_2mortal(newSViv(0));
-        ERRSV             = sv_2mortal(newSVpvs(""));
+        GvSV(statusvalue) = sv_newmortal();
+        ERRSV             = newSVpvs_flags("", SVs_TEMP);
         for(i = 0; i < len; i++){
-            dSP;
+            SPAGAIN;
 
             PUSHMARK(SP);
             XPUSHs(object);
