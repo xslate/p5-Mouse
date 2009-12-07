@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.43 Mon Dec  7 14:21:59 2009
+    * Improve documents
+
+    * Mouse::Meta::Module
+        - Remove undocumented has_package_symbol and get_package_symbol (gfx)
+
 0.42 Sat Dec  5 16:05:06 2009
     * Fix a PAUSE indexing issue (gfx)
 
