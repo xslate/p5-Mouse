@@ -111,7 +111,7 @@ Mouse::Tiny is Mouse, but it is in a single file.
 
 This is B<not> tiny. In fact, it requires a little more memory and time than Mouse.
 
-Use Mouse directly unless you know what you do.
+Use Mouse directly unless you know what you are doing.
 
 =head1 SEE ALSO
 

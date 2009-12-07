@@ -11,7 +11,6 @@ use Mouse::Meta::Method::Delegation;
 sub _process_options{
     my($class, $name, $args) = @_;
 
-
     # XXX: for backward compatibility (with method modifiers)
     if($class->can('canonicalize_args') != \&canonicalize_args){
         %{$args} = $class->canonicalize_args($name, %{$args});
