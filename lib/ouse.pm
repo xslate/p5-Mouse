@@ -1,7 +1,6 @@
 package ouse;
 
-use strict;
-use warnings;
+use Mouse::Util; # enables strict and warnings
 
 BEGIN {
     my $package;
@@ -9,7 +8,7 @@ BEGIN {
         $package = $_[1] || 'Class';
         if ($package =~ /^\+/) {
             $package =~ s/^\+//;
-            eval "require $package; 1" or die;
+            Mouse::Util::load_class($package);
         }
     }
     use Filter::Simple sub { s/^/package $package;\nuse Mouse;\n/; }
