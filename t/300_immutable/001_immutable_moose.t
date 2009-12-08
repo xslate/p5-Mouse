@@ -6,10 +6,11 @@ use warnings;
 use Test::More tests => 15;
 use Test::Exception;
 
-use lib 't/lib';
-use Test::Mouse; # Mouse::Meta::Module->version
+use Test::Mouse;
 use Mouse::Meta::Role;
 
+use lib 't/lib';
+use MooseCompat;
 
 {
     package FooRole;

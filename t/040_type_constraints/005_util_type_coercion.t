@@ -7,7 +7,7 @@ use Test::More tests => 8; # tests => 26;
 use Test::Exception;
 
 use lib 't/lib';
-use Test::Mouse;
+use MooseCompat;
 
 BEGIN {
 	use_ok('Mouse::Util::TypeConstraints');

@@ -9,6 +9,8 @@ use Test::More tests => 12;
 use Test::Exception;
 use Test::Mouse;
 
+use MooseCompat;
+
 {
     package My::Attribute::Trait;
     use Mouse::Role;

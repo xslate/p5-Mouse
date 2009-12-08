@@ -3,9 +3,10 @@ use strict;
 use warnings;
 use Test::More tests => 21;
 use Test::Exception;
+use Test::Mouse;
 
 use lib 't/lib';
-use Test::Mouse;
+use MooseCompat;
 
 do {
     package Class;

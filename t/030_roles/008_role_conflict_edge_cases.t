@@ -8,6 +8,7 @@ use Test::Exception;
 
 use lib 't/lib';
 use Test::Mouse;
+use MooseCompat;
 
 =pod
 

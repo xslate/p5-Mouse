@@ -9,7 +9,7 @@ use Scalar::Util ();
 
 use lib 't/lib';
 use Mouse::Util::TypeConstraints;
-use Test::Mouse; # for export_type_constraints_as_functions()
+use MooseCompat;
 
 enum Letter => 'a'..'z', 'A'..'Z';
 enum Language => 'Perl 5', 'Perl 6', 'PASM', 'PIR'; # any others? ;)
