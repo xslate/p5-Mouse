@@ -103,6 +103,7 @@ RemoteName
 MethodName
 OwnerClass
 AttributeName
+RoleName
 
 clearers
 composable
