@@ -3,7 +3,7 @@ use warnings;
 use inc::Module::Install;
 
 # for co-developpers
-use Module::Install::XSUtil 0.17;
+use Module::Install::XSUtil 0.19;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";
@@ -32,27 +32,15 @@ require 'lib/Mouse/Spec.pm'; # for the version
 #    include_deps 'Carp::Always';
 #}
 
-my $use_xs;
-
-if($] < 5.008_001){
-    $use_xs = 0;
-}
-
-for (@ARGV) {
-    /^--pp$/ and $use_xs = 0;
-    /^--xs$/ and $use_xs = 1;
-}
-
-if(!defined $use_xs){
-    $use_xs = cc_available();
-}
+# cc_available recognizes the '--pp' and '--xs' options
+my $use_xs = ($] >= 5.008_001 && cc_available());
 
 if($use_xs){
     print "Mouse configured with XS.\n",
           "NOTE: You can try --pp option to configure Mouse with Pure Perl.\n";
 
-    use_ppport(3.19);
     cc_warnings();
+    use_ppport(3.19);
     cc_src_paths('xs-src');
 }
 else{
