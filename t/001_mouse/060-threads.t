@@ -11,29 +11,36 @@ use Test::More HAS_THREADS ? (tests => 6) : (skip_all => "This is a test for thr
 
     has foo => (
         is => 'rw',
-        isa => 'Int',
+        isa => 'Foo',
+    );
+
+    package Foo;
+    use Mouse;
+
+    has value => (
+        is => 'rw',
     );
 }
 
-my $o = MyClass->new(foo => 42);
+my $o = MyClass->new(foo => Foo->new(value => 42));
 threads->create(sub{
-    my $x = MyClass->new(foo => 1);
-    is $x->foo, 1;
+    my $x = MyClass->new(foo => Foo->new(value => 1));
+    is $x->foo->value, 1;
 
-    $x->foo(2);
+    $x->foo(Foo->new(value => 2));
 
-    is $x->foo, 2;
+    is $x->foo->value, 2;
 
     MyClass->meta->make_immutable();
 
-    $x = MyClass->new(foo => 10);
-    is $x->foo, 10;
+    $x = MyClass->new(foo => Foo->new(value => 10));
+    is $x->foo->value, 10;
 
-    $x->foo(20);
+    $x->foo(Foo->new(value => 20));
 
-    is $x->foo, 20;
+    is $x->foo->value, 20;
 })->join();
 
-is $o->foo, 42;
+is $o->foo->value, 42;
 ok !$o->meta->is_immutable;
 
