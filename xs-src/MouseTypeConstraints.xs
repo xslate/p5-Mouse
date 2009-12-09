@@ -320,6 +320,7 @@ mouse_types_check(pTHX_ AV* const types, SV* const sv) {
 #define MY_CXT_KEY "Mouse::Util::TypeConstraints::_guts" XS_VERSION
 typedef struct sui_cxt{
     GV* universal_isa;
+    GV* universal_can;
 } my_cxt_t;
 START_MY_CXT
 
@@ -411,6 +412,56 @@ mouse_is_an_instance_of_universal(pTHX_ SV* const data, SV* const sv){
     return SvROK(sv) && SvOBJECT(SvRV(sv));
 }
 
+static int
+mouse_can_methods(pTHX_ AV* const methods, SV* const instance){
+    if(IsObject(instance)){
+        dMY_CXT;
+        HV* const mystash      = SvSTASH(SvRV(instance));
+        GV* const mycan        = gv_fetchmeth_autoload(mystash, "can", sizeof("can")-1, 0);
+        bool const use_builtin = (mycan == NULL || GvCV(mycan) == GvCV(MY_CXT.universal_isa)) ? TRUE : FALSE;
+        I32 const len           = AvFILLp(methods) + 1;
+        I32 i;
+        for(i = 0; i < len; i++){
+            SV* const name = MOUSE_av_at(methods, i);
+
+            if(use_builtin){
+                if(!gv_fetchmeth_autoload(mystash, SvPVX(name), SvCUR(name), 0)){
+                    return FALSE;
+                }
+            }
+            else{
+                bool ok;
+                dSP;
+
+                ENTER;
+                SAVETMPS;
+
+                PUSHMARK(SP);
+                EXTEND(SP, 2);
+                PUSHs(instance);
+                PUSHs(sv_mortalcopy(name));
+                PUTBACK;
+
+                call_method("can", G_SCALAR);
+
+                SPAGAIN;
+                ok = SvTRUE(TOPs);
+                (void)POPs;
+                PUTBACK;
+
+                FREETMPS;
+                LEAVE;
+
+                if(!ok){
+                    return FALSE;
+                }
+            }
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
 
 static CV*
@@ -456,6 +507,32 @@ mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predic
     return mouse_tc_generate(aTHX_ predicate_name, fptr, param);
 }
 
+CV*
+mouse_generate_can_predicate_for(pTHX_ SV* const methods, const char* const predicate_name){
+    AV* av;
+    AV* const param = newAV_mortal();
+    I32 len;
+    I32 i;
+
+    SvGETMAGIC(methods);
+    if(!IsArrayRef(methods)){
+        croak("You must pass an ARRAY ref method names");
+    }
+    av = (AV*)SvRV(methods);
+
+    len = av_len(av) + 1;
+    for(i = 0; i < len; i++){
+        SV* const name = *av_fetch(av, i, TRUE);
+        STRLEN pvlen;
+        const char* const pv = SvPV_const(name, pvlen);
+
+        av_push(param, newSVpvn_share(pv, pvlen, 0U));
+    }
+
+    return mouse_tc_generate(aTHX_ predicate_name, (check_fptr_t)mouse_can_methods, (SV*)param);
+}
+
+
 XS(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
@@ -474,6 +551,9 @@ static void
 setup_my_cxt(pTHX_ pMY_CXT){
     MY_CXT.universal_isa = gv_fetchpvs("UNIVERSAL::isa", GV_ADD, SVt_PVCV);
     SvREFCNT_inc_simple_void_NN(MY_CXT.universal_isa);
+
+    MY_CXT.universal_can = gv_fetchpvs("UNIVERSAL::can", GV_ADD, SVt_PVCV);
+    SvREFCNT_inc_simple_void_NN(MY_CXT.universal_can);
 }
 
 #define DEFINE_TC(name) mouse_tc_generate(aTHX_ "Mouse::Util::TypeConstraints::" STRINGIFY(name), CAT2(mouse_tc_, name), NULL)

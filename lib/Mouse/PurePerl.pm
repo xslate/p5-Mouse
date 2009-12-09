@@ -97,6 +97,32 @@ sub generate_isa_predicate_for {
     return $predicate;
 }
 
+sub generate_can_predicate_for {
+    my($methods_ref, $name) = @_;
+
+    my @methods = @{$methods_ref};
+
+    my $predicate = sub{
+        my($instance) = @_;
+        if(Scalar::Util::blessed($instance)){
+            foreach my $method(@methods){
+                if(!$instance->can($method)){
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        return 0;
+    };
+
+    if(defined $name){
+        no strict 'refs';
+        *{ caller() . '::' . $name } = $predicate;
+        return;
+    }
+
+    return $predicate;
+}
 
 package
     Mouse::Util::TypeConstraints;

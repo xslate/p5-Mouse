@@ -347,27 +347,35 @@ OUTPUT:
     RETVAL
 
 void
-generate_isa_predicate_for(SV* klass, SV* predicate_name = NULL)
+generate_isa_predicate_for(SV* arg, SV* predicate_name = NULL)
+ALIAS:
+    generate_isa_predicate_for = 0
+    generate_can_predicate_for = 1
 PPCODE:
 {
     const char* name_pv = NULL;
     CV* xsub;
 
-    SvGETMAGIC(klass);
+    SvGETMAGIC(arg);
 
-    if(!SvOK(klass)){
-        croak("You must define a class name");
+    if(!SvOK(arg)){
+        croak("You must define %s", ix == 0 ? "a class name" : "method names");
     }
 
     if(predicate_name){
         SvGETMAGIC(predicate_name);
         if(!SvOK(predicate_name)){
-            croak("You must define a predicate_name");
+            croak("You must define %s", "a predicate name");
         }
         name_pv = SvPV_nolen_const(predicate_name);
     }
 
-    xsub = mouse_generate_isa_predicate_for(aTHX_ klass, name_pv);
+    if(ix == 0){
+        xsub = mouse_generate_isa_predicate_for(aTHX_ arg, name_pv);
+    }
+    else{
+        xsub = mouse_generate_can_predicate_for(aTHX_ arg, name_pv);
+    }
 
     if(predicate_name == NULL){ /* anonymous predicate */
         XPUSHs( newRV_noinc((SV*)xsub) );

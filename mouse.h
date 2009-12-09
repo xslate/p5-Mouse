@@ -201,6 +201,7 @@ int mouse_tc_FileHandle(pTHX_ SV*, SV* const sv);
 int mouse_tc_Object    (pTHX_ SV*, SV* const sv);
 
 CV* mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predicate_name);
+CV* mouse_generate_can_predicate_for(pTHX_ SV* const klass, const char* const predicate_name);
 
 int mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance);
 

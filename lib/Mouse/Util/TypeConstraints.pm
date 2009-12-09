@@ -11,7 +11,11 @@ Mouse::Exporter->setup_import_methods(
     as_is => [qw(
         as where message optimize_as
         from via
-        type subtype coerce class_type role_type enum
+
+        type subtype class_type role_type duck_type
+        enum
+        coerce
+
         find_type_constraint
     )],
 );
@@ -169,6 +173,22 @@ sub role_type {
         optimized_as => sub { Scalar::Util::blessed($_[0]) && does_role($_[0], $role) },
 
         type => 'Role',
+    );
+}
+
+sub duck_type {
+    my($name, @methods);
+
+    if(!(@_ == 1 && ref($_[0]) eq 'ARRAY')){
+        $name = shift;
+    }
+
+    @methods = (@_ == 1 && ref($_[0]) eq 'ARRAY') ? @{$_[0]} : @_;
+
+    return _create_type 'type', $name => (
+        optimized_as => Mouse::Util::generate_can_predicate_for(\@methods),
+
+        type => 'DuckType',
     );
 }
 
