@@ -1,5 +1,8 @@
 Revision history for Mouse
 
+0.44
+    * Add Test::Mouse
+
 0.43 Mon Dec  7 14:21:59 2009
     * Improve documents
 
