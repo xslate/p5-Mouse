@@ -24,6 +24,7 @@ my $cxsa_is_loaded = eval q{
 {
     package MouseOne;
     use Mouse;
+    use Mouse::Util::TypeConstraints;
     has simple => (
         is => 'rw',
     );
@@ -45,12 +46,18 @@ my $cxsa_is_loaded = eval q{
     has with_tc_array_of_int => (
         is  => 'rw',
         isa => 'ArrayRef[Int]',
+    );
+
+    has with_tc_duck_type => (
+        is  => 'rw',
+        isa => duck_type([qw(simple)]),
     );
     __PACKAGE__->meta->make_immutable;
 }
 {
     package MooseOne;
     use Moose;
+    use Moose::Util::TypeConstraints;
     has simple => (
         is => 'rw',
     );
@@ -70,6 +77,10 @@ my $cxsa_is_loaded = eval q{
     has with_tc_array_of_int => (
         is  => 'rw',
         isa => 'ArrayRef[Int]',
+    );
+    has with_tc_duck_type => (
+        is  => 'rw',
+        isa => duck_type([qw(simple)]),
     );
 
     __PACKAGE__->meta->make_immutable;
@@ -153,6 +164,26 @@ cmpthese -1 => {
     'Moose' => sub{
         $mx->with_tc_array_of_int($foo);
         $mx->with_tc_array_of_int($foo);
+    },
+    $cxsa_is_loaded ? (
+    'C::XSAccessor' => sub{
+        $cx->simple($foo);
+        $cx->simple($foo);
+    },
+    ) : (),
+};
+
+print "\nSETTING for attributes with type constraints duck_type() (except for C::XSAccessor)\n";
+
+$foo = MouseOne->new();
+cmpthese -1 => {
+    'Mouse' => sub{
+        $mi->with_tc_duck_type($foo);
+        $mi->with_tc_duck_type($foo);
+    },
+    'Moose' => sub{
+        $mx->with_tc_duck_type($foo);
+        $mx->with_tc_duck_type($foo);
     },
     $cxsa_is_loaded ? (
     'C::XSAccessor' => sub{
