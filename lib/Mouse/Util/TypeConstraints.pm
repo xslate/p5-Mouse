@@ -557,6 +557,8 @@ Returns the names of all the type constraints.
 
 =item C<< enum (\@values) -> Mouse::Meta::TypeConstraint >>
 
+=item C<< coerce $type => from $another_type, via { }, ... >>
+
 =back
 
 =over 4
