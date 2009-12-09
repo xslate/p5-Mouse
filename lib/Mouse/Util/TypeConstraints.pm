@@ -184,16 +184,12 @@ sub typecast_constraints { # DEPRECATED
 sub enum {
     my($name, %valid);
 
-    # enum ['small', 'medium', 'large']
-    if (ref($_[0]) eq 'ARRAY') {
-        %valid = map{ $_ => undef } @{ $_[0] };
-        $name  = sprintf '(%s)', join '|', sort @{$_[0]};
+    if(!(@_ == 1 && ref($_[0]) eq 'ARRAY')){
+        $name = shift;
     }
-    # enum size => 'small', 'medium', 'large'
-    else{
-        $name  = shift;
-        %valid = map{ $_ => undef } @_;
-    }
+
+    %valid = map{ $_ => undef } (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
+
     return _create_type 'type', $name => (
         optimized_as  => sub{ defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]} },
 

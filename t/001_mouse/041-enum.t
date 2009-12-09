@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More tests => 19;
 use Test::Exception;
 
 do {
@@ -37,4 +37,12 @@ for my $class ('Shirt', 'Shirt::Anon') {
     throws_ok { $class->new(size => 'small ') } qr/^Attribute \(size\) does not pass the type constraint because: Validation failed for '\S+' failed with value small /;
     throws_ok { $class->new(size => ' small') } qr/^Attribute \(size\) does not pass the type constraint because: Validation failed for '\S+' failed with value  small/;
 }
+
+use Mouse::Util::TypeConstraints qw(enum);
+
+my $t = enum 'Foo', [qw(foo bar)];
+
+ok $t->check('foo'), 'enum $name, $array_ref';
+ok $t->check('bar');
+ok!$t->check('baz');
 
