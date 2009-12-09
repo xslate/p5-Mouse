@@ -360,6 +360,19 @@ mouse_lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
     return FALSE;
 }
 
+#define find_method_pvn(a, b, c) mouse_stash_find_method(aTHX_ a, b, c)
+#define find_method_pvs(a, b)    mouse_stash_find_method(aTHX_ a, STR_WITH_LEN(b))
+
+static inline GV*
+mouse_stash_find_method(pTHX_ HV* const stash, const char* const name, I32 const namelen){
+    GV** const gvp = (GV**)hv_fetch(stash, name, namelen, FALSE);
+    if(gvp && isGV(*gvp) && GvCV(*gvp)){ /* shortcut */
+        return *gvp;
+    }
+
+    return gv_fetchmeth_autoload(stash, name, namelen, 0);
+}
+
 int
 mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance){
     assert(stash);
@@ -368,7 +381,7 @@ mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance){
     if(IsObject(instance)){
         dMY_CXT;
         HV* const instance_stash = SvSTASH(SvRV(instance));
-        GV* const instance_isa   = gv_fetchmeth_autoload(instance_stash, "isa", sizeof("isa")-1, 0);
+        GV* const instance_isa   = find_method_pvs(instance_stash, "isa");
 
         /* the instance has no own isa method */
         if(instance_isa == NULL || GvCV(instance_isa) == GvCV(MY_CXT.universal_isa)){
@@ -417,15 +430,15 @@ mouse_can_methods(pTHX_ AV* const methods, SV* const instance){
     if(IsObject(instance)){
         dMY_CXT;
         HV* const mystash      = SvSTASH(SvRV(instance));
-        GV* const mycan        = gv_fetchmeth_autoload(mystash, "can", sizeof("can")-1, 0);
-        bool const use_builtin = (mycan == NULL || GvCV(mycan) == GvCV(MY_CXT.universal_isa)) ? TRUE : FALSE;
+        GV* const mycan        = find_method_pvs(mystash, "can");
+        bool const use_builtin = (mycan == NULL || GvCV(mycan) == GvCV(MY_CXT.universal_can)) ? TRUE : FALSE;
         I32 const len           = AvFILLp(methods) + 1;
         I32 i;
         for(i = 0; i < len; i++){
             SV* const name = MOUSE_av_at(methods, i);
 
             if(use_builtin){
-                if(!gv_fetchmeth_autoload(mystash, SvPVX(name), SvCUR(name), 0)){
+                if(!find_method_pvn(mystash, SvPVX(name), SvCUR(name))){
                     return FALSE;
                 }
             }
