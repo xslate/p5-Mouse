@@ -539,13 +539,21 @@ Returns the names of all the type constraints.
 
 =over 4
 
-=item C<< subtype 'Name' => as 'Parent' => where { } ... -> Mouse::Meta::TypeConstraint >>
+=item C<< type $name => where { } ... -> Mouse::Meta::TypeConstraint >>
 
-=item C<< subtype as 'Parent' => where { } ...  -> Mouse::Meta::TypeConstraint >>
+=item C<< subtype $name => as $parent => where { } ... -> Mouse::Meta::TypeConstraint >>
+
+=item C<< subtype as $parent => where { } ...  -> Mouse::Meta::TypeConstraint >>
 
 =item C<< class_type ($class, ?$options) -> Mouse::Meta::TypeConstraint >>
 
 =item C<< role_type ($role, ?$options) -> Mouse::Meta::TypeConstraint >>
+
+=item C<< duck_type($name, @methods | \@methods) -> Mouse::Meta::TypeConstraint >>
+
+=item C<< duck_type(\@methods) -> Mouse::Meta::TypeConstraint >>
+
+=item C<< enum($name, @values | \@values) -> Mouse::Meta::TypeConstraint >>
 
 =item C<< enum (\@values) -> Mouse::Meta::TypeConstraint >>
 
