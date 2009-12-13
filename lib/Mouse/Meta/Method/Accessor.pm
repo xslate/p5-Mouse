@@ -23,7 +23,7 @@ sub _generate_accessor_any{
     my $self  = '$_[0]';
     my $slot  = $method_class->_inline_slot($self, $name);;
 
-    my $accessor = sprintf(qq{package %s;\n#line 1 "%s for %s (%s)"\n}, $class->name, $type, $name, __FILE__)
+    my $accessor = sprintf(qq{package %s;\n#line 1 "%s-accessor for %s (%s)"\n}, $class->name, $type, $name, __FILE__)
                  . "sub {\n";
 
     if ($type eq 'rw' || $type eq 'wo') {
