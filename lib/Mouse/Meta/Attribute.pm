@@ -303,45 +303,65 @@ sub get_parent_args { # DEPRECATED
 
 
 sub get_read_method {
-    $_[0]->reader || $_[0]->accessor
+    return $_[0]->reader || $_[0]->accessor
 }
 sub get_write_method {
-    $_[0]->writer || $_[0]->accessor
+    return $_[0]->writer || $_[0]->accessor
+}
+
+sub _get_accessor_method_ref {
+    my($self, $type, $generator) = @_;
+
+    my $metaclass = $self->associated_class
+        || $self->throw_error('No asocciated class for ' . $self->name);
+
+    my $accessor = $self->$type();
+    if($accessor){
+        return $metaclass->get_method_body($accessor);
+    }
+    else{
+        return $self->accessor_metaclass->$generator($self, $metaclass);
+    }
 }
 
 sub get_read_method_ref{
     my($self) = @_;
 
-    $self->{_read_method_ref} ||= do{
-        my $metaclass = $self->associated_class
-            or $self->throw_error('No asocciated class for ' . $self->name);
-
-        my $reader = $self->{reader} || $self->{accessor};
-        if($reader){
-            $metaclass->name->can($reader);
-        }
-        else{
-            $self->accessor_metaclass->_generate_reader($self, $metaclass);
-        }
-    };
+    return $self->{_read_method_ref} ||= $self->_get_accessor_method_ref('get_read_method', '_generate_reader');
 }
 
 sub get_write_method_ref{
     my($self) = @_;
 
-    $self->{_write_method_ref} ||= do{
-        my $metaclass = $self->associated_class
-            or $self->throw_error('No asocciated class for ' . $self->name);
-
-        my $reader = $self->{writer} || $self->{accessor};
-        if($reader){
-            $metaclass->name->can($reader);
-        }
-        else{
-            $self->accessor_metaclass->_generate_writer($self, $metaclass);
-        }
-    };
+    return $self->{_write_method_ref} ||= $self->_get_accessor_method_ref('get_write_method', '_generate_writer');
 }
+
+sub set_value {
+    my($self, $object, $value) = @_;
+    return $self->get_write_method_ref()->($object, $value);
+}
+
+sub get_value {
+    my($self, $object) = @_;
+    return $self->get_read_method_ref()->($object);
+}
+
+sub has_value {
+    my($self, $object) = @_;
+    my $predicate_ref = $self->{_predicate_ref}
+        ||= $self->_get_accessor_method_ref('predicate', '_generate_predicate');
+
+    return $predicate_ref->($object);
+}
+
+sub clear_value {
+    my($self, $object) = @_;
+    my $predicate_ref = $self->{_crealer_ref}
+        ||= $self->_get_accessor_method_ref('clearer', '_generate_clearer');
+
+    return $predicate_ref->($object);
+}
+
 
 sub _canonicalize_handles {
     my($self, $handles) = @_;
