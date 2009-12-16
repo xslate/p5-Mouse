@@ -264,7 +264,11 @@ sub make_immutable {
     return 1;
 }
 
-sub make_mutable { not_supported }
+sub make_mutable {
+    my($self) = @_;
+    $self->{is_immutable} = 0;
+    return;
+}
 
 sub is_immutable {  $_[0]->{is_immutable} }
 sub is_mutable   { !$_[0]->{is_immutable} }
