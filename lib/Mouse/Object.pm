@@ -2,41 +2,11 @@ package Mouse::Object;
 use Mouse::Util qw(does dump meta); # enables strict and warnings
 
 sub new;
+sub BUILDARGS;
+sub BUILDALL;
 
-sub BUILDALL {
-    my $self = shift;
-
-    # short circuit
-    return unless $self->can('BUILD');
-
-    for my $class (reverse $self->meta->linearized_isa) {
-        my $build = Mouse::Util::get_code_ref($class, 'BUILD')
-            || next;
-
-        $self->$build(@_);
-    }
-    return;
-}
-
-sub DEMOLISHALL {
-    my $self = shift;
-
-    # short circuit
-    return unless $self->can('DEMOLISH');
-
-    # We cannot count on being able to retrieve a previously made
-    # metaclass, _or_ being able to make a new one during global
-    # destruction. However, we should still be able to use mro at
-    # that time (at least tests suggest so ;)
-
-    foreach my $class (@{ Mouse::Util::get_linear_isa(ref $self) }) {
-        my $demolish = Mouse::Util::get_code_ref($class, 'DEMOLISH')
-            || next;
-
-        $self->$demolish();
-    }
-    return;
-}
+sub DESTROY;
+sub DEMOLISHALL;
 
 1;
 __END__

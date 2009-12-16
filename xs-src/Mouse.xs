@@ -335,6 +335,24 @@ mouse_initialize_metaclass(pTHX_ SV* const klass) {
     return meta;
 }
 
+static void
+mouse_buildall(pTHX_ AV* const xc, SV* const object, SV* const args) {
+    AV* const buildall = MOUSE_xc_buildall(xc);
+    I32 const len      = AvFILLp(buildall) + 1;
+    I32 i;
+    for(i = 0; i < len; i++){
+        dSP;
+
+        PUSHMARK(SP);
+        EXTEND(SP, 2);
+        PUSHs(object);
+        PUSHs(args);
+        PUTBACK;
+
+        call_sv(AvARRAY(buildall)[i], G_VOID | G_DISCARD);
+    }
+}
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -520,11 +538,10 @@ CODE:
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     UV const flags = MOUSE_xc_flags(xc);
     SV* args;
-    AV* buildall;
-    I32 len, i;
 
     /* BUILDARGS */
     if(flags & MOUSEf_XC_HAS_BUILDARGS){
+        I32 i;
         SPAGAIN;
 
         PUSHMARK(SP);
@@ -552,31 +569,23 @@ CODE:
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, (HV*)SvRV(args), FALSE);
 
-    /* BUILDALL */
-    buildall = MOUSE_xc_buildall(xc);
-    len      = AvFILLp(buildall) + 1;
-    for(i = 0; i < len; i++){
-        dSP;
-
-        PUSHMARK(SP);
-        EXTEND(SP, 2);
-        PUSHs(RETVAL); /* self */
-        PUSHs(args);
-        PUTBACK;
-
-        call_sv(AvARRAY(buildall)[i], G_VOID | G_DISCARD);
-    }
+    mouse_buildall(aTHX_ xc, RETVAL, args);
 }
 OUTPUT:
     RETVAL
 
 void
 DESTROY(SV* object)
+ALIAS:
+    DESTROY     = 0
+    DEMOLISHALL = 1
 CODE:
 {
     SV* const meta = get_metaclass(object);
     AV* demolishall;
     I32 len, i;
+
+    PERL_UNUSED_VAR(ix);
 
     if(!IsObject(object)){
         croak("You must not call DESTROY as a class method");
@@ -587,7 +596,7 @@ CODE:
 
         demolishall = MOUSE_xc_demolishall(xc);
     }
-    else {
+    else { /* The metaclass is already destroyed */
         AV* const linearized_isa = mro_get_linear_isa(SvSTASH(SvRV(object)));
 
         len = AvFILLp(linearized_isa) + 1;
@@ -603,7 +612,6 @@ CODE:
         }
     }
 
-    /* DEMOLISHALL */
     len      = AvFILLp(demolishall) + 1;
     if(len > 0){
         GV* const statusvalue = gv_fetchpvs("?", 0, SVt_PV);
@@ -644,3 +652,17 @@ OUTPUT:
     RETVAL
 
 
+void
+BUILDALL(SV* self, SV* args)
+CODE:
+{
+    AV* const xc = mouse_get_xc(aTHX_ self);
+
+    if(!IsHashRef(args)){
+        croak("You must pass a HASH reference to BUILDALL");
+    }
+    if(mg_find(SvRV(args), PERL_MAGIC_tied)){
+        croak("You cannot use tie HASH reference as args");
+    }
+    mouse_buildall(aTHX_ xc, self, args);
+}

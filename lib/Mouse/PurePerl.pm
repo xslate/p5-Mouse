@@ -513,6 +513,24 @@ sub DESTROY {
     die $e if $e; # rethrow
 }
 
+sub BUILDALL {
+    my $self = shift;
+
+    # short circuit
+    return unless $self->can('BUILD');
+
+    for my $class (reverse $self->meta->linearized_isa) {
+        my $build = Mouse::Util::get_code_ref($class, 'BUILD')
+            || next;
+
+        $self->$build(@_);
+    }
+    return;
+}
+
+sub DEMOLISHALL;
+*DEMOLISHALL = \&DESTROY;
+
 1;
 __END__
 
