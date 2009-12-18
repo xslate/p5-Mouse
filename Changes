@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.45
+    * Fix filename portability issue (RT #52828, thanks to Peter Edwards)
+
     * Mouse::Meta::Attributes
         - Add set_value/get_value/has_value/clear_value (gfx)
 
