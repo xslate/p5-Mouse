@@ -5,10 +5,19 @@ use warnings;
 use Test::More tests => 10;
 
 {
+    package OtherClass;
+    sub method {}
+
     package Class;
     use Mouse;
 
-    has foo => (is => 'rw');
+    # this attribute definition is intended to load submodules
+
+    has foo => (
+        is => 'rw',
+        isa => 'OtherClass',
+        handles => qr/./,
+    );
 
     __PACKAGE__->meta->make_immutable; # ensure metaclasses loaded
 

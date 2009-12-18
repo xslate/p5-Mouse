@@ -5,9 +5,6 @@ use Carp ();
 
 use Mouse::Meta::TypeConstraint;
 
-#use Mouse::Meta::Method::Accessor;
-use Mouse::Meta::Method::Delegation;
-
 sub _process_options{
     my($class, $name, $args) = @_;
 
@@ -414,6 +411,8 @@ sub install_accessors{
         my $delegation_class = $attribute->delegation_metaclass;
         my %handles = $attribute->_canonicalize_handles($attribute->{handles});
         my $reader  = $attribute->get_read_method_ref;
+
+        Mouse::Util::load_class($delegation_class);
 
         while(my($handle_name, $method_to_call) = each %handles){
             my $code = $delegation_class->_generate_delegation($attribute, $metaclass,
