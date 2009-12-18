@@ -233,20 +233,18 @@ sub do_unimport {
     return;
 }
 
-# 1 extra level because it's called by import so there's a layer
-# of indirection
-sub _LEVEL(){ 1 }
-
 sub _get_caller_package {
     my($arg) = @_;
 
+    # We need one extra level because it's called by import so there's a layer
+    # of indirection
     if(ref $arg){
         return defined($arg->{into})       ? $arg->{into}
-             : defined($arg->{into_level}) ? scalar caller(_LEVEL + $arg->{into_level})
-             :                               scalar caller(_LEVEL);
+             : defined($arg->{into_level}) ? scalar caller(1 + $arg->{into_level})
+             :                               scalar caller(1);
     }
     else{
-        return scalar caller(_LEVEL);
+        return scalar caller(1);
     }
 }
 
