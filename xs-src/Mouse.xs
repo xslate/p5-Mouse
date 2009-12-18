@@ -454,6 +454,7 @@ MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
+    INSTALL_SIMPLE_READER(Class, is_immutable);
 
     INSTALL_CLASS_HOLDER(Class, method_metaclass,     "Mouse::Meta::Method");
     INSTALL_CLASS_HOLDER(Class, attribute_metaclass,  "Mouse::Meta::Attribute");

@@ -270,8 +270,8 @@ sub make_mutable {
     return;
 }
 
-sub is_immutable {  $_[0]->{is_immutable} }
-sub is_mutable   { !$_[0]->{is_immutable} }
+sub is_immutable;
+sub is_mutable   { !$_[0]->is_immutable }
 
 sub _install_modifier_pp{
     my( $self, $type, $name, $code ) = @_;

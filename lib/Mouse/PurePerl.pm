@@ -317,6 +317,7 @@ sub _initialize_object{
     return;
 }
 
+sub is_immutable {  $_[0]->{is_immutable} }
 
 package
     Mouse::Meta::Role;
