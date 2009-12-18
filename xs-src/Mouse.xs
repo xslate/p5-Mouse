@@ -656,7 +656,8 @@ void
 BUILDALL(SV* self, SV* args)
 CODE:
 {
-    AV* const xc = mouse_get_xc(aTHX_ self);
+    SV* const meta = get_metaclass(self);
+    AV* const xc   = mouse_get_xc(aTHX_ meta);
 
     if(!IsHashRef(args)){
         croak("You must pass a HASH reference to BUILDALL");
