@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 9;
+use Test::Mouse;
 
 my @called;
 
@@ -36,22 +37,19 @@ do {
 
 is_deeply([splice @called], [], "no BUILD calls yet");
 
-my $object = Class->new;
+with_immutable {
+    my $object = Class->new;
 
-is_deeply([splice @called], ["Class::BUILD"]);
+    ok defined($object), $object->meta->is_immutable() ? 'mutable' : 'immutable';
 
-my $child = Child->new;
+    is_deeply([splice @called], ["Class::BUILD"]);
 
-is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"]);
+    my $child = Child->new;
 
-Class->meta->make_immutable;
-Child->meta->make_immutable;
+    is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"]);
 
-$object = Class->new;
+    $child->BUILDALL({});
 
-is_deeply([splice @called], ["Class::BUILD"], 'after make_immutable');
-
-$child = Child->new;
-
-is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"], 'after make_immutable');
+    is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"], 'BUILDALL');
+} qw(Class Child);
 
