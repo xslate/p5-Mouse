@@ -326,13 +326,11 @@ sub _get_accessor_method_ref {
 
 sub get_read_method_ref{
     my($self) = @_;
-
     return $self->{_read_method_ref} ||= $self->_get_accessor_method_ref('get_read_method', '_generate_reader');
 }
 
 sub get_write_method_ref{
     my($self) = @_;
-
     return $self->{_write_method_ref} ||= $self->_get_accessor_method_ref('get_write_method', '_generate_writer');
 }
 
