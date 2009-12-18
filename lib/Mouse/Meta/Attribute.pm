@@ -348,18 +348,18 @@ sub get_value {
 
 sub has_value {
     my($self, $object) = @_;
-    my $predicate_ref = $self->{_predicate_ref}
+    my $accessor_ref = $self->{_predicate_ref}
         ||= $self->_get_accessor_method_ref('predicate', '_generate_predicate');
 
-    return $predicate_ref->($object);
+    return $accessor_ref->($object);
 }
 
 sub clear_value {
     my($self, $object) = @_;
-    my $predicate_ref = $self->{_crealer_ref}
+    my $accessor_ref = $self->{_crealer_ref}
         ||= $self->_get_accessor_method_ref('clearer', '_generate_clearer');
 
-    return $predicate_ref->($object);
+    return $accessor_ref->($object);
 }
 
 
