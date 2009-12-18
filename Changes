@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.45
+    * Mouse::Meta::Attributes
+        - Add set_value/get_value/has_value/clear_value (gfx)
+
+    * Test::Mouse
+        - Add with_immutable (gfx)
+
 0.44 Wed Dec  9 21:43:21 2009
     * Shipped with Module::Install::XSUtil 0.19 (gfx)
 
