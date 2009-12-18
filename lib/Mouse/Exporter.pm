@@ -225,6 +225,7 @@ sub do_unimport {
     };
 
     for my $keyword (@{ $spec->{REMOVABLES} }) {
+        next if !exists $stash->{$keyword};
         my $gv = \$stash->{$keyword};
         if(ref($gv) eq 'GLOB' && *{$gv}{CODE} == $spec->{EXPORTS}{$keyword}){ # make sure it is from us
             delete $stash->{$keyword};
