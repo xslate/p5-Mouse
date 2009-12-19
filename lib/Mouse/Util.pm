@@ -54,7 +54,7 @@ BEGIN{
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Destructor::XS'  }, ':meta');
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Accessor::XS'    }, ':meta');
             return 1;
-        };
+        } || 0;
         #warn $@ if $@;
     }
 

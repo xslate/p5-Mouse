@@ -37,7 +37,7 @@ do {
 
 is_deeply([splice @called], [], "no BUILD calls yet");
 
-with_immutable {
+with_immutable sub {
     my $object = Class->new;
 
     ok defined($object), $object->meta->is_immutable() ? 'mutable' : 'immutable';
@@ -51,5 +51,5 @@ with_immutable {
     $child->BUILDALL({});
 
     is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"], 'BUILDALL');
-} qw(Class Child);
+}, qw(Class Child);
 

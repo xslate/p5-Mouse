@@ -37,7 +37,7 @@ do {
 
 is_deeply([splice @called], [], "no DEMOLISH calls yet");
 
-with_immutable {
+with_immutable sub {
     ok(Class->meta, Class->meta->is_immutable ? 'mutable' : 'immutable');
 
     {
@@ -64,4 +64,4 @@ with_immutable {
     }
 
     is_deeply([splice @called], ['Child::DEMOLISH', 'Class::DEMOLISH'], 'DEMOLISHALL');
-} qw(Class Child);
+}, qw(Class Child);
