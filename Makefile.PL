@@ -25,12 +25,13 @@ if($] < 5.010) {
     recommends 'Class::C3';
 }
 
-require 'lib/Mouse/Spec.pm'; # for the version
+if(eval{ require MouseX::AttributeHelpers }){
+    if(!eval{ MouseX::AttributeHelpers->VERSION(0.06) }){
+        requires 'MouseX::AttributeHelpers' => 0.06;
+    }
+}
 
-#if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
-#    require Carp::Always; Carp::Always->import();
-#    include_deps 'Carp::Always';
-#}
+require 'lib/Mouse/Spec.pm'; # for the version
 
 # cc_available recognizes the '--pp' and '--xs' options
 my $use_xs = ($] >= 5.008_001 && cc_available());
