@@ -49,7 +49,7 @@ sub _generate_accessor_any{
             $accessor .= 
                 "\n".
                 '$compiled_type_constraint->('.$value.') or
-                    $attribute->verify_type_constraint_error($name, '.$value.', $constraint);' . "\n";
+                    $attribute->verify_type_constraint_error('.$value.', $constraint);' . "\n";
         }
 
         # if there's nothing left to do for the attribute we can return during
@@ -96,7 +96,7 @@ sub _generate_accessor_any{
             $accessor .= "my \$tmp = $value;\n";
 
             $accessor .= "\$compiled_type_constraint->(\$tmp)";
-            $accessor .= " || \$attribute->verify_type_constraint_error(\$name, \$tmp, \$constraint);\n";
+            $accessor .= " || \$attribute->verify_type_constraint_error(\$tmp, \$constraint);\n";
             $accessor .= "$slot = \$tmp;\n";
         }
         else{

@@ -238,13 +238,17 @@ sub verify_against_type_constraint {
     return 1 if !$type_constraint;
     return 1 if $type_constraint->check($value);
 
-    $self->verify_type_constraint_error($self->name, $value, $type_constraint);
+    $self->verify_type_constraint_error($value, $type_constraint);
 }
 
 sub verify_type_constraint_error {
-    my($self, $name, $value, $type) = @_;
-    $self->throw_error("Attribute ($name) does not pass the type constraint because: "
-        . $type->get_message($value));
+    my($self, $value, $type) = @_;
+
+    $self->throw_error(
+        sprintf q{Attribute (%s) does not pass the type constraint because: %s},
+            $self->name,
+            $type->get_message($value),
+    );
 }
 
 sub coerce_constraint { # DEPRECATED
