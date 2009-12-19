@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 14;
 use Test::Exception;
 
 use Mouse::Util::TypeConstraints;
@@ -24,8 +24,6 @@ do {
         is  => 'ro',
         isa => 'NonemptyStr',
     );
-
-
 };
 
 ok(My::Class->new(name => 'foo'));
@@ -48,3 +46,13 @@ lives_and{
     ok!$tc->check([]);
     ok!$tc->check(undef);
 };
+
+package Foo;
+use Mouse::Util::TypeConstraints;
+
+$st = subtype as 'Int', where{ $_ > 0 };
+
+::ok $st->is_a_type_of('Int');
+::ok $st->check(10);
+::ok!$st->check(0);
+

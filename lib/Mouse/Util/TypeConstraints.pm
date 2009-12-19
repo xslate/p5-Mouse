@@ -99,9 +99,7 @@ sub _create_type{
     }
 
     if(!defined $name){
-        if(!defined($name = $args{name})){
-            $name = '__ANON__';
-        }
+        $name = $args{name};
     }
 
     $args{name} = $name;
@@ -110,16 +108,20 @@ sub _create_type{
         $parent = delete $args{as};
         if(!$parent){
             $parent = delete $args{name};
-            $name   = '__ANON__';
+            $name   = undef;
         }
     }
 
-    my $package_defined_in = $args{package_defined_in} ||= caller(1);
-
-    my $existing = $TYPE{$name};
-    if($existing && $existing->{package_defined_in} ne $package_defined_in){
-        confess("The type constraint '$name' has already been created in "
-              . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
+    if(defined $name){
+        my $package_defined_in = $args{package_defined_in} ||= caller(1);
+        my $existing = $TYPE{$name};
+        if($existing && $existing->{package_defined_in} ne $package_defined_in){
+            confess("The type constraint '$name' has already been created in "
+                  . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
+        }
+    }
+    else{
+        $args{name} = '__ANON__';
     }
 
     $args{constraint} = delete $args{where}        if exists $args{where};
@@ -133,7 +135,12 @@ sub _create_type{
         $constraint = Mouse::Meta::TypeConstraint->new(%args);
     }
 
-    return $TYPE{$name} = $constraint;
+    if(defined $name){
+        return $TYPE{$name} = $constraint;
+    }
+    else{
+        return $constraint;
+    }
 }
 
 sub type {
