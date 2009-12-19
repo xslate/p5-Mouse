@@ -3,6 +3,8 @@ Revision history for Mouse
 0.45
     * Fix filename portability issue (RT #52828, thanks to Peter Edwards)
 
+    * Fix an issue that definitions of anonymous types could fail (gfx)
+
     * Mouse::Meta::Attributes
         - Add set_value/get_value/has_value/clear_value (gfx)
 
