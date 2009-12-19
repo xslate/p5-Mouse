@@ -1,12 +1,13 @@
 Revision history for Mouse
 
-0.45
+0.45 Sat Dec 19 17:22:46 2009
     * Fix filename portability issue (RT #52828, thanks to Peter Edwards)
 
     * Fix an issue that definitions of anonymous types could fail (gfx)
 
     * Mouse::Meta::Attributes
         - Add set_value/get_value/has_value/clear_value (gfx)
+          (Note that thsese methods are depend on the accessors)
 
     * Test::Mouse
         - Add with_immutable (gfx)

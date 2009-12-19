@@ -5,7 +5,7 @@ Mouse::Tiny - Mouse in a single file
 
 =head1 VERSION
 
-This document describes Mouse version 0.44
+This document describes Mouse version 0.45
 
 =head1 DESCRIPTION
 
