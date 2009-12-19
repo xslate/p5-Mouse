@@ -358,6 +358,50 @@ sub clear_value {
 }
 
 
+sub associate_method{
+    my ($attribute, $method_name) = @_;
+    $attribute->{associated_methods}++;
+    return;
+}
+
+sub install_accessors{
+    my($attribute) = @_;
+
+    my $metaclass      = $attribute->associated_class;
+    my $accessor_class = $attribute->accessor_metaclass;
+
+    foreach my $type(qw(accessor reader writer predicate clearer)){
+        if(exists $attribute->{$type}){
+            my $generator = '_generate_' . $type;
+            my $code      = $accessor_class->$generator($attribute, $metaclass);
+            $metaclass->add_method($attribute->{$type} => $code);
+            $attribute->associate_method($attribute->{$type});
+        }
+    }
+
+    # install delegation
+    if(exists $attribute->{handles}){
+        my %handles = $attribute->_canonicalize_handles($attribute->{handles});
+
+        while(my($handle, $method_to_call) = each %handles){
+            $metaclass->add_method($handle =>
+                $attribute->_make_delegation_method(
+                    $handle, $method_to_call));
+
+            $attribute->associate_method($handle);
+        }
+    }
+
+    if($attribute->can('create') != \&create){
+        # backword compatibility
+        $attribute->create($metaclass, $attribute->name, %{$attribute});
+    }
+
+    return;
+}
+
+sub delegation_metaclass() { 'Mouse::Meta::Method::Delegation' }
+
 sub _canonicalize_handles {
     my($self, $handles) = @_;
 
@@ -383,52 +427,12 @@ sub _canonicalize_handles {
     }
 }
 
-sub associate_method{
-    my ($attribute, $method_name) = @_;
-    $attribute->{associated_methods}++;
-    return;
-}
+sub _make_delegation_method {
+    my($self, $handle, $method_to_call) = @_;
+    my $delegator = $self->delegation_metaclass;
+    Mouse::Util::load_class($delegator);
 
-sub delegation_metaclass() { 'Mouse::Meta::Method::Delegation' }
-
-sub install_accessors{
-    my($attribute) = @_;
-
-    my $metaclass      = $attribute->associated_class;
-    my $accessor_class = $attribute->accessor_metaclass;
-
-    foreach my $type(qw(accessor reader writer predicate clearer)){
-        if(exists $attribute->{$type}){
-            my $generator = '_generate_' . $type;
-            my $code      = $accessor_class->$generator($attribute, $metaclass);
-            $metaclass->add_method($attribute->{$type} => $code);
-            $attribute->associate_method($attribute->{$type});
-        }
-    }
-
-    # install delegation
-    if(exists $attribute->{handles}){
-        my $delegation_class = $attribute->delegation_metaclass;
-        my %handles = $attribute->_canonicalize_handles($attribute->{handles});
-        my $reader  = $attribute->get_read_method_ref;
-
-        Mouse::Util::load_class($delegation_class);
-
-        while(my($handle_name, $method_to_call) = each %handles){
-            my $code = $delegation_class->_generate_delegation($attribute, $metaclass,
-                $reader, $handle_name, $method_to_call);
-
-            $metaclass->add_method($handle_name => $code);
-            $attribute->associate_method($handle_name);
-        }
-    }
-
-    if($attribute->can('create') != \&create){
-        # backword compatibility
-        $attribute->create($metaclass, $attribute->name, %{$attribute});
-    }
-
-    return;
+    return $delegator->_generate_delegation($self, $handle, $method_to_call);
 }
 
 sub throw_error{
