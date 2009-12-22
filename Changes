@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.4501 Tue Dec 22 16:02:15 2009
+    * Fix an issue on circular dependencies (RT #52939, thanks to t0m)
+     - (see also http://rt.cpan.org/Public/Bug/Display.html?id=52939 )
+
 0.45 Sat Dec 19 17:22:46 2009
     * Fix filename portability issue (RT #52828, thanks to Peter Edwards)
 
