@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.46
+0.46 Sat Jan  9 17:54:30 2010
     * Mouse::Meta::Attribute
         - Add support for code references for handles
             patched by Frank Cuny (gfx)
