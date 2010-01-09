@@ -170,9 +170,13 @@ mouse_tc_Ref(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 }
 
 int
-mouse_tc_ScalarRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
+mouse_tc_ScalarRef(pTHX_ SV* const data PERL_UNUSED_DECL, SV* sv) {
     assert(sv);
-    return SvROK(sv) && !SvOBJECT(SvRV(sv)) && (SvTYPE(SvRV(sv)) <= SVt_PVLV && !isGV(SvRV(sv)));
+    if(SvROK(sv)){
+         sv = SvRV(sv);
+         return !SvOBJECT(sv) && (SvTYPE(sv) <= SVt_PVLV && !isGV(sv));
+    }
+    return FALSE;
 }
 
 int
