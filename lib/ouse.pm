@@ -11,7 +11,7 @@ BEGIN {
             Mouse::Util::load_class($package);
         }
     }
-    use Filter::Simple sub { s/^/package $package;\nuse Mouse;\n/; }
+    use Filter::Simple sub { s/^/package $package;\nuse Mouse;\nuse Mouse::Util::TypeConstraints;\n/; }
 }
 
 1;
