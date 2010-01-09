@@ -199,15 +199,6 @@ sub duck_type {
     );
 }
 
-sub typecast_constraints { # DEPRECATED
-    my($class, $pkg, $type, $value) = @_;
-    Carp::croak("wrong arguments count") unless @_ == 4;
-
-    Carp::cluck("typecast_constraints() has been deprecated, which was an internal utility anyway");
-
-    return $type->coerce($value);
-}
-
 sub enum {
     my($name, %valid);
 

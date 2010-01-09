@@ -24,13 +24,6 @@ sub new {
 
     my $check = delete $args{optimized};
 
-    if($args{_compiled_type_constraint}){
-        Carp::cluck("'_compiled_type_constraint' has been deprecated, use 'optimized' instead")
-            if Mouse::Util::_MOUSE_VERBOSE;
-
-        $check = $args{_compiled_type_constraint};
-    }
-
     if($check){
         $args{hand_optimized_type_constraint} = $check;
         $args{compiled_type_constraint}       = $check;
