@@ -249,6 +249,10 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     assert(args);
     assert(SvTYPE(args) == SVt_PVHV);
 
+    if(mg_find((SV*)args, PERL_MAGIC_tied)){
+        croak("You cannot use tied HASH reference as initializing arguments");
+    }
+
     ENTER;
     SAVETMPS;
 
@@ -662,9 +666,6 @@ CODE:
 
     if(!IsHashRef(args)){
         croak("You must pass a HASH reference to BUILDALL");
-    }
-    if(mg_find(SvRV(args), PERL_MAGIC_tied)){
-        croak("You cannot use tie HASH reference as args");
     }
     mouse_buildall(aTHX_ xc, self, args);
 }
