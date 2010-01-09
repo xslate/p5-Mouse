@@ -491,7 +491,7 @@ mouse_tc_generate(pTHX_ const char* const name, check_fptr_t const fptr, SV* con
         param,       /* mg_obj: refcnt will be increased */
         PERL_MAGIC_ext,
         &mouse_util_type_constraints_vtbl,
-        (void*)fptr, /* mg_ptr */
+        (char*)fptr, /* mg_ptr */
         0            /* mg_len: 0 for static data */
     );
 
@@ -507,18 +507,18 @@ mouse_generate_isa_predicate_for(pTHX_ SV* const klass, const char* const predic
     STRLEN klass_len;
     const char* klass_pv = SvPV_const(klass, klass_len);
     SV*   param;
-    void* fptr;
+    check_fptr_t fptr;
 
     klass_pv = mouse_canonicalize_package_name(klass_pv);
 
     if(strNE(klass_pv, "UNIVERSAL")){
         param = (SV*)gv_stashpvn(klass_pv, klass_len, GV_ADD);
-        fptr = (void*)mouse_is_an_instance_of;
+        fptr = (check_fptr_t)mouse_is_an_instance_of;
 
     }
     else{
         param = NULL;
-        fptr = (void*)mouse_is_an_instance_of_universal;
+        fptr = (check_fptr_t)mouse_is_an_instance_of_universal;
     }
 
     return mouse_tc_generate(aTHX_ predicate_name, fptr, param);
