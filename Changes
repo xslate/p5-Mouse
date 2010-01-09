@@ -1,5 +1,15 @@
 Revision history for Mouse
 
+0.46
+    * Mouse::Meta::Attribute
+        - Add support for code references for handles
+            patched by Frank Cuny (gfx)
+    * Mouse::Util::TypeConstraints
+        - Fix Str and ScalarRef for typeglobs, lvalues, and etc. (gfx)
+    * oose.pm
+        - Add Moose::Util::TypeConstraints exports to allow easier testing
+            of TypeConsraints from the command line (gfx)
+
 0.4501 Tue Dec 22 16:02:15 2009
     * Fix an issue on circular dependencies (RT #52939, thanks to t0m)
      - (see also http://rt.cpan.org/Public/Bug/Display.html?id=52939 )
