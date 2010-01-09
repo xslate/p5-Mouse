@@ -16,6 +16,7 @@ if(Mouse::Util::MOUSE_XS){
 
 sub _metaclass_cache { # DEPRECATED
     my($class, $name) = @_;
+    Carp::cluck('_metaclass_cache() has been deprecated. Use Mouse::Util::get_metaclass_by_name() instead');
     return $METAS{$name};
 }
 
@@ -78,7 +79,7 @@ sub namespace;
 # add_attribute is an abstract method
 
 sub get_attribute_map { # DEPRECATED
-    Carp::cluck('get_attribute_map() has been deprecated');
+    Carp::cluck('get_attribute_map() has been deprecated. Use get_attribute_list() and get_attribute() instead');
     return $_[0]->{attributes};
 }
 
