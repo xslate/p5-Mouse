@@ -448,7 +448,7 @@ interface at L<http://rt.cpan.org/Public/Dist/Display.html?Name=Mouse>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 Infinity Interactive, Inc.
+Copyright (c) 2008-2010 Infinity Interactive, Inc.
 
 http://www.iinteractive.com/
 
