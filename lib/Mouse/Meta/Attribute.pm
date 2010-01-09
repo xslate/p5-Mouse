@@ -412,6 +412,11 @@ sub _canonicalize_handles {
     elsif (ref($handles) eq 'ARRAY') {
         return map { $_ => $_ } @$handles;
     }
+    elsif ( ref($handles) eq 'CODE' ) {
+        my $class_or_role = ( $self->{isa} || $self->{does} )
+            || $self->throw_error( "Cannot find delegate metaclass for attribute " . $self->name );
+        return $handles->( $self, Mouse::Meta::Class->initialize("$class_or_role"));
+    }
     elsif (ref($handles) eq 'Regexp') {
         my $class_or_role = ($self->{isa} || $self->{does})
             || $self->throw_error("Cannot delegate methods based on a Regexp without a type constraint (isa)");

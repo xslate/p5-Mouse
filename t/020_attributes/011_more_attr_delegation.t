@@ -123,9 +123,6 @@ do not fail at compile time.
         );
     } "can't create attr with generative handles parameter and no isa";
 
-    our $TODO;
-{
-    local $TODO = 'handles => CODE is not supported';
     ::lives_ok {
         has child_d => (
             isa     => "ChildD",
@@ -137,7 +134,6 @@ do not fail at compile time.
             }
         );
     } "can't create attr with generative handles parameter and no isa";
-}
 
     ::lives_ok {
         has child_e => (
@@ -148,8 +144,6 @@ do not fail at compile time.
         );
     } "can delegate to non moose class using explicit method list";
 
-{
-    local $TODO = 'handles => CODE is not supported';
     my $delegate_class;
     ::lives_ok {
         has child_f => (
@@ -164,7 +158,6 @@ do not fail at compile time.
     } "subrefs on non moose class give no meta";
 
     ::is( $delegate_class, "ChildF", "plain classes are handed down to subs" );
-}
 
     ::lives_ok {
         has child_g => (
