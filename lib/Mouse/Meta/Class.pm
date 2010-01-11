@@ -345,7 +345,7 @@ sub _install_modifier {
     # load Class::Method::Modifiers first
     my $no_cmm_fast = do{
         local $@;
-        eval q{ require Class::Method::Modifiers::Fast };
+        eval q{ use Class::Method::Modifiers::Fast 0.041 () };
         $@;
     };
 
@@ -354,7 +354,7 @@ sub _install_modifier {
         $impl = \&_install_modifier_pp;
     }
     else{
-        my $install_modifier = Class::Method::Modifiers::Fast->can('_install_modifier');
+        my $install_modifier = Class::Method::Modifiers::Fast->can('install_modifier');
         $impl = sub {
             my ( $self, $type, $name, $code ) = @_;
             my $into = $self->name;
