@@ -220,3 +220,208 @@ BOOT:
 
     INSTALL_CLASS_HOLDER(Attribute, accessor_metaclass, "Mouse::Meta::Method::Accessor::XS");
 
+void
+_process_options(SV* klass, SV* name, HV* args)
+CODE:
+{
+    SV** svp;
+    SV* tc = NULL;
+
+    /* 'required' requires eigher 'init_arg', 'builder', or 'default' */
+    bool can_be_required = FALSE;
+    bool has_default     = FALSE;
+    bool has_builder     = FALSE;
+
+    /* taken from Class::MOP::Attribute::new */
+
+    if(!SvOK(name)){
+        mouse_throw_error(klass, NULL,
+            "You must provide a name for the attribute");
+    }
+
+    svp = hv_fetchs(args, "init_arg", FALSE);
+    if(!svp){
+        (void)hv_stores(args, "init_arg", newSVsv(name));
+        can_be_required = TRUE;
+    }
+    else{
+        can_be_required = SvOK(*svp) ? TRUE : FALSE;
+    }
+
+    svp = hv_fetchs(args, "builder", FALSE);
+    if(svp){
+        if(!SvOK(*svp)){
+            mouse_throw_error(klass, NULL,
+                "builder must be a defined scalar value which is a method name");
+        }
+        can_be_required = TRUE;
+        has_builder     = TRUE;
+    }
+    else if((svp = hv_fetchs(args, "default", FALSE))){
+        if(SvROK(*svp) && SvTYPE(SvRV(*svp)) != SVt_PVCV) {
+            mouse_throw_error(klass, NULL,
+               "References are not allowed as default values, you must "
+                "wrap the default of '%"SVf"' in a CODE reference "
+                "(ex: sub { [] } and not [])", name);
+        }
+        can_be_required = TRUE;
+        has_default     = TRUE;
+    }
+
+    svp = hv_fetchs(args, "required", FALSE);
+    if( (svp && sv_true(*svp)) && !can_be_required){
+        mouse_throw_error(klass, NULL,
+            "You cannot have a required attribute (%"SVf") "
+            "without a default, builder, or an init_arg", name);
+    }
+
+     /* taken from Mouse::Meta::Attribute->new and ->_process_args */
+
+    svp = hv_fetchs(args, "is", FALSE);
+    if(svp){
+        const char* const is = SvOK(*svp) ? SvPV_nolen_const(*svp) : "undef";
+        if(strEQ(is, "ro")){
+            svp = hv_fetchs(args, "reader", TRUE);
+            if(!sv_true(*svp)){
+                sv_setsv(*svp, name);
+            }
+        }
+        else if(strEQ(is, "rw")){
+            if(hv_fetchs(args, "writer", FALSE)){
+                svp = hv_fetchs(args, "reader", TRUE);
+            }
+            else{
+                svp = hv_fetchs(args, "accessor", TRUE);
+            }
+            sv_setsv(*svp, name);
+        }
+        else if(strEQ(is, "bare")){
+            /* do nothing, but don't complain (later) about missing methods */
+        }
+        else{
+            mouse_throw_error(klass, NULL,
+                "I do not understand this option (is => %s) on attribute (%"SVf")",
+                is, name);
+        }
+    }
+
+    svp = hv_fetchs(args, "isa", FALSE);
+    if(svp){
+        SPAGAIN;
+        PUSHMARK(SP);
+        XPUSHs(*svp);
+        PUTBACK;
+
+        call_pv("Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint",
+            G_SCALAR);
+        SPAGAIN;
+        tc = newSVsv(POPs);
+        PUTBACK;
+    }
+    else if((svp = hv_fetchs(args, "does", FALSE))){
+        SPAGAIN;
+        PUSHMARK(SP);
+        XPUSHs(*svp);
+        PUTBACK;
+
+        call_pv("Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint",
+            G_SCALAR);
+        SPAGAIN;
+        tc = newSVsv(POPs);
+        PUTBACK;
+    }
+    if(tc){
+        (void)hv_stores(args, "type_constraint", tc);
+    }
+
+    svp = hv_fetchs(args, "coerce", FALSE);
+    if(svp){
+        if(!tc){
+            mouse_throw_error(klass, NULL,
+                "You cannot have coercion without specifying a type constraint "
+                "on attribute (%"SVf")", name);
+        }
+        svp = hv_fetchs(args, "weak_ref", FALSE);
+        if(svp && sv_true(*svp)){
+            mouse_throw_error(klass, NULL,
+                "You cannot have a weak reference to a coerced value on "
+                "attribute (%"SVf")", name);
+        }
+    }
+
+    svp = hv_fetchs(args, "lazy_build", FALSE);
+    if(svp){
+        SV* clearer;
+        SV* predicate;
+        if(has_default){
+            mouse_throw_error(klass, NULL,
+                "You can not use lazy_build and default for the same "
+                "attribute (%"SVf")", name);
+        }
+
+        svp = hv_fetchs(args, "lazy", TRUE);
+        sv_setiv(*svp, TRUE);
+
+        svp = hv_fetchs(args, "builder", TRUE);
+        if(!sv_true(*svp)){
+            sv_setpvf(*svp, "_build_%"SVf, name);
+        }
+        has_builder = TRUE;
+
+        clearer   = *hv_fetchs(args, "clearer",   TRUE);
+        predicate = *hv_fetchs(args, "predicate", TRUE);
+
+        if(SvPV_nolen_const(name)[0] == '_'){
+            if(!sv_true(clearer)){
+                sv_setpvf(clearer, "_clear%"SVf, name);
+            }
+            if(!sv_true(predicate)){
+                sv_setpvf(predicate, "_has%"SVf, name);
+            }
+        }
+        else{
+            if(!sv_true(clearer)){
+                sv_setpvf(clearer, "clear_%"SVf, name);
+            }
+            if(!sv_true(predicate)){
+                sv_setpvf(predicate, "has_%"SVf, name);
+            }
+        }
+    }
+
+    svp = hv_fetchs(args, "auto_deref", FALSE);
+    if(svp && sv_true(*svp)){
+        SV* const meth = sv_2mortal(newSVpvs_share("is_a_type_of"));
+        if(!tc){
+            mouse_throw_error(klass, NULL,
+                "You cannot auto-dereference without specifying a type "
+                "constraint on attribute (%"SVf")", name);
+        }
+
+        if(!(sv_true(mcall1(tc, meth, newSVpvs_flags("ArrayRef", SVs_TEMP)))
+            || sv_true(mcall1(tc, meth, newSVpvs_flags("HashRef", SVs_TEMP))) )){
+            mouse_throw_error(klass, NULL,
+                "You cannot auto-dereference anything other than a ArrayRef "
+                "or HashRef on attribute (%"SVf")", name);
+        }
+    }
+
+    svp = hv_fetchs(args, "trigger", FALSE);
+    if(svp){
+        if(!IsCodeRef(*svp)){
+            mouse_throw_error(klass, NULL,
+                "Trigger must be a CODE ref on attribute (%"SVf")",
+                name);
+        }
+    }
+
+
+    svp = hv_fetchs(args, "lazy", FALSE);
+    if(svp && sv_true(*svp)){
+        if(!(has_default || has_builder)){
+            mouse_throw_error(klass, NULL,
+                "You cannot have lazy attribute (%"SVf") without specifying "
+                "a default value for it", name);
+        }
+    }
+}

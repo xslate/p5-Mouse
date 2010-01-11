@@ -5,132 +5,18 @@ use Carp ();
 
 use Mouse::Meta::TypeConstraint;
 
-sub _process_options{
-    my($class, $name, $args) = @_;
-
-    # XXX: for backward compatibility (with method modifiers)
-    if($class->can('canonicalize_args') != \&canonicalize_args){
-        %{$args} = $class->canonicalize_args($name, %{$args});
-    }
-
-    # taken from Class::MOP::Attribute::new
-
-    defined($name)
-        or $class->throw_error('You must provide a name for the attribute');
-
-    if(!exists $args->{init_arg}){
-        $args->{init_arg} = $name;
-    }
-
-    # 'required' requires eigher 'init_arg', 'builder', or 'default'
-    my $can_be_required = defined( $args->{init_arg} );
-
-    if(exists $args->{builder}){
-        # XXX:
-        # Moose refuses a CODE ref builder, but Mouse doesn't for backward compatibility
-        # This feature will be changed in a future. (gfx)
-        $class->throw_error('builder must be a defined scalar value which is a method name')
-            #if ref $args->{builder} || !defined $args->{builder};
-            if !defined $args->{builder};
-
-        $can_be_required++;
-    }
-    elsif(exists $args->{default}){
-        if(ref $args->{default} && ref($args->{default}) ne 'CODE'){
-            $class->throw_error("References are not allowed as default values, you must "
-                              . "wrap the default of '$name' in a CODE reference (ex: sub { [] } and not [])");
-        }
-        $can_be_required++;
-    }
-
-    if( $args->{required} && !$can_be_required ) {
-        $class->throw_error("You cannot have a required attribute ($name) without a default, builder, or an init_arg");
-    }
-
-    # taken from Mouse::Meta::Attribute->new and _process_args->
-
-    if(exists $args->{is}){
-        my $is = $args->{is};
-
-        if($is eq 'ro'){
-            $args->{reader} ||= $name;
-        }
-        elsif($is eq 'rw'){
-            if(exists $args->{writer}){
-                $args->{reader} ||= $name;
-             }
-             else{
-                $args->{accessor} ||= $name;
-             }
-        }
-        elsif($is eq 'bare'){
-            # do nothing, but don't complain (later) about missing methods
-        }
-        else{
-            $is = 'undef' if !defined $is;
-            $class->throw_error("I do not understand this option (is => $is) on attribute ($name)");
-        }
-    }
-
-    my $tc;
-    if(exists $args->{isa}){
-        $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($args->{isa});
-    }
-    elsif(exists $args->{does}){
-        $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($args->{does});
-    }
-    $tc = $args->{type_constraint};
-
-    if($args->{coerce}){
-        defined($tc)
-            || $class->throw_error("You cannot have coercion without specifying a type constraint on attribute ($name)");
-
-        $args->{weak_ref}
-            && $class->throw_error("You cannot have a weak reference to a coerced value on attribute ($name)");
-    }
-
-    if ($args->{lazy_build}) {
-        exists($args->{default})
-            && $class->throw_error("You can not use lazy_build and default for the same attribute ($name)");
-
-        $args->{lazy}      = 1;
-        $args->{builder} ||= "_build_${name}";
-        if ($name =~ /^_/) {
-            $args->{clearer}   ||= "_clear${name}";
-            $args->{predicate} ||= "_has${name}";
-        }
-        else {
-            $args->{clearer}   ||= "clear_${name}";
-            $args->{predicate} ||= "has_${name}";
-        }
-    }
-
-    if ($args->{auto_deref}) {
-        defined($tc)
-            || $class->throw_error("You cannot auto-dereference without specifying a type constraint on attribute ($name)");
-
-        ( $tc->is_a_type_of('ArrayRef') || $tc->is_a_type_of('HashRef') )
-            || $class->throw_error("You cannot auto-dereference anything other than a ArrayRef or HashRef on attribute ($name)");
-    }
-
-    if (exists $args->{trigger}) {
-        ('CODE' eq ref $args->{trigger})
-            || $class->throw_error("Trigger must be a CODE ref on attribute ($name)");
-    }
-
-    if ($args->{lazy}) {
-        (exists $args->{default} || defined $args->{builder})
-            || $class->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it");
-    }
-
-    return;
-}
 
 sub new {
     my $class = shift;
     my $name  = shift;
 
     my %args  = (@_ == 1) ? %{ $_[0] } : @_;
+
+
+    # XXX: for backward compatibility (with method modifiers)
+    if($class->can('canonicalize_args') != \&canonicalize_args){
+        %args = $class->canonicalize_args($name, %args);
+    }
 
     $class->_process_options($name, \%args);
 
