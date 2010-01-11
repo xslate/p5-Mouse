@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Test::More tests => 36;
+use Test::Mouse;
 
 do {
     package Class;
@@ -14,7 +15,7 @@ do {
 
     has 'y' => (
         is      => 'rw',
-        default => 20,
+        default => sub{ 20 },
     );
 
     has 'z' => (
@@ -22,7 +23,7 @@ do {
     );
 };
 
-for(1 .. 2){
+with_immutable(sub{
     my $object = Class->new;
     is($object->x, 10, "attribute has a default of 10");
     is($object->y, 20, "attribute has a default of 20");
@@ -49,5 +50,4 @@ for(1 .. 2){
     is($object2->y, 25, "setting a new value does not trigger default");
     is($object2->z, 125, "setting a new value does not trigger default");
 
-    Class->meta->make_immutable;
-}
+}, qw(Class));
