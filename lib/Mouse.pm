@@ -402,6 +402,21 @@ You may use L</extends> to replace the superclass list.
 Please unimport Mouse (C<no Mouse>) so that if someone calls one of the
 keywords (such as L</extends>) it will break loudly instead breaking subtly.
 
+=head1 CAVEATS
+
+If you use Mouse::XS you might see a silent fatal error when you use
+callbacks which include C<eval 'use MayNotBeInstalled'>. This is not
+a bug in Mouse. In fact, it is a bug in Perl (RT #69939).
+
+To work around this problem, surround C<eval STRING> with C<eval BLOCK>:
+
+    sub callback {
+        # eval 'use MayNotBeInstalled';       # NG
+        eval{ eval 'use MayNotBeInstalled' }; # OK
+    }
+
+It seems ridiculous, but it works as you expected.
+
 =head1 SOURCE CODE ACCESS
 
 We have a public git repository:
