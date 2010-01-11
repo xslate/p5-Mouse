@@ -48,10 +48,10 @@ mouse_get_xa(pTHX_ SV* const attr) {
                 SV* const is_a_type_of = sv_2mortal(newSVpvs_share("is_a_type_of"));
 
                 flags |= MOUSEf_ATTR_SHOULD_AUTO_DEREF;
-                if( SvTRUEx(mcall1(tc, is_a_type_of, newSVpvs_flags("ArrayRef", SVs_TEMP))) ){
+                if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("ArrayRef", SVs_TEMP))) ){
                     flags |= MOUSEf_TC_IS_ARRAYREF;
                 }
-                else if( SvTRUEx(mcall1(tc, is_a_type_of, newSVpvs_flags("HashRef", SVs_TEMP))) ){
+                else if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("HashRef", SVs_TEMP))) ){
                     flags |= MOUSEf_TC_IS_HASHREF;
                 }
                 else{

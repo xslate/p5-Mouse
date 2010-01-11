@@ -202,8 +202,7 @@ mouse_call1 (pTHX_ SV* const self, SV* const method, SV* const arg1) {
 
 int
 mouse_predicate_call(pTHX_ SV* const self, SV* const method) {
-    SV* const value = mcall0(self, method);
-    return SvTRUE(value);
+    return sv_true( mcall0(self, method) );
 }
 
 SV*

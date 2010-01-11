@@ -44,7 +44,7 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
         call_sv(tc_code, G_SCALAR);
 
         SPAGAIN;
-        ok = SvTRUEx(POPs);
+        ok = sv_true(POPs);
         PUTBACK;
 
         FREETMPS;
@@ -69,7 +69,7 @@ int
 mouse_tc_Bool(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
 
-    if(SvTRUE(sv)){
+    if(sv_true(sv)){
         if(SvIOKp(sv)){
             return SvIVX(sv) == 1;
         }
@@ -409,9 +409,7 @@ mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance){
             call_sv((SV*)instance_isa, G_SCALAR);
 
             SPAGAIN;
-
-            retval = SvTRUEx(POPs);
-
+            retval = sv_true(POPs);
             PUTBACK;
 
             FREETMPS;
@@ -462,8 +460,7 @@ mouse_can_methods(pTHX_ AV* const methods, SV* const instance){
                 call_method("can", G_SCALAR);
 
                 SPAGAIN;
-                ok = SvTRUE(TOPs);
-                (void)POPs;
+                ok = sv_true(POPs);
                 PUTBACK;
 
                 FREETMPS;

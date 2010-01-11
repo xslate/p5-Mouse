@@ -633,7 +633,7 @@ CODE:
             PUTBACK;
 
             call_sv(AvARRAY(demolishall)[i], G_VOID | G_DISCARD | G_EVAL);
-            if(SvTRUE(ERRSV)){
+            if(sv_true(ERRSV)){
                 SV* const e = newSVsv(ERRSV);
 
                 FREETMPS;
