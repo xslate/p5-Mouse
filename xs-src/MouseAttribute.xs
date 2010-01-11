@@ -324,7 +324,7 @@ CODE:
         XPUSHs(*svp);
         PUTBACK;
 
-        call_pv("Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint",
+        call_pv("Mouse::Util::TypeConstraints::find_or_create_does_type_constraint",
             G_SCALAR);
         SPAGAIN;
         tc = newSVsv(POPs);
