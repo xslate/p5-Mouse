@@ -590,10 +590,9 @@ CODE:
     AV* demolishall;
     I32 len, i;
 
-    PERL_UNUSED_VAR(ix);
-
     if(!IsObject(object)){
-        croak("You must not call DESTROY as a class method");
+        croak("You must not call %s as a class method",
+            ix == 0 ? "DESTROY" : "DEMOLISHALL");
     }
 
     if(SvOK(meta)){
