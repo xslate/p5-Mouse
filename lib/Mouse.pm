@@ -405,8 +405,8 @@ keywords (such as L</extends>) it will break loudly instead breaking subtly.
 =head1 CAVEATS
 
 If you use Mouse::XS you might see a fatal error on callbacks
-which include C<eval 'BEGIN{ die }'>, which typically occurs in sutch code
-like C<eval 'use NotInstalledModule'>. This is not
+which include C<eval 'BEGIN{ die }'>, which typically occurs in such code
+as C<eval 'use NotInstalledModule'>. This is not
 a bug in Mouse. In fact, it is a bug in Perl (RT #69939).
 
 To work around this problem, surround C<eval STRING> with C<eval BLOCK>:
