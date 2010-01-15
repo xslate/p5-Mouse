@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.47 Fri Jan 15 15:07:21 2010
+    * Makefile.PL
+        - Shipped with M::I::XSUtil 0.21 (gfx)
+        - Fixed an issue that gcc 4.0 don't support -Wc++-compat (gfx)
+    * Mouse
+        - Add a caveat on XS callbacks to the pod (gfx)
+
 0.46 Sat Jan  9 17:54:30 2010
     * Mouse::Meta::Attribute
         - Add support for code references for handles
