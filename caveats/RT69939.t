@@ -11,13 +11,11 @@ use Test::More;
         is  => 'rw',
 
         default => sub{
-            # Those eval()s which try to load missing modules in
-            # compile-time triggers a Perl bug (Ticket #69939).
-            # This is related not only to Mouse, but also to tie-modules.
+            # Ticket #69939
+            # See the Mouse manpage
 
-            #eval 'use MayNotBeInstalled';              # NG
-            #eval 'BEGIN{ require MayNotBeInstalled }'; # NG
-            eval{ eval 'use MayNotBeInstalled' };       # OK
+            #eval       'BEGIN{ die }';   # NG
+            eval{ eval 'BEGIN{ die }' }; # OK
             ::pass 'in a default callback';
         },
     );
