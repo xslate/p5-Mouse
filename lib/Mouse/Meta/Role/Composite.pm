@@ -50,7 +50,9 @@ sub has_override_method_modifier{
 }
 
 sub add_attribute{
-    my($self, $attr_name, $spec) = @_;
+    my $self      = shift;
+    my $attr_name = shift;
+    my $spec      = (@_ == 1 ? $_[0] : {@_});
 
     my $existing = $self->{attributes}{$attr_name};
     if($existing && $existing != $spec){

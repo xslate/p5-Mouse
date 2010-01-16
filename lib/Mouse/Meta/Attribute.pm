@@ -10,23 +10,22 @@ sub new {
     my $class = shift;
     my $name  = shift;
 
-    my %args  = (@_ == 1) ? %{ $_[0] } : @_;
-
+    my $args  = $class->Mouse::Object::BUILDARGS(@_);
 
     # XXX: for backward compatibility (with method modifiers)
     if($class->can('canonicalize_args') != \&canonicalize_args){
-        %args = $class->canonicalize_args($name, %args);
+        %{$args} = $class->canonicalize_args($name, %{$args});
     }
 
-    $class->_process_options($name, \%args);
+    $class->_process_options($name, $args);
 
-    $args{name} = $name;
+    $args->{name} = $name;
 
-    my $self = bless \%args, $class;
+    my $self = bless $args, $class;
 
     # extra attributes
     if($class ne __PACKAGE__){
-        $class->meta->_initialize_object($self, \%args);
+        $class->meta->_initialize_object($self, $args);
     }
 
 # XXX: there is no fast way to check attribute validity
@@ -136,18 +135,19 @@ sub _throw_type_constraint_error {
 }
 
 sub clone_and_inherit_options{
-    my($self, %args) = @_;
+    my $self = shift;
+    my $args = $self->Mouse::Object::BUILDARGS(@_);
 
-    my($attribute_class, @traits) = ref($self)->interpolate_class(\%args);
+    my($attribute_class, @traits) = ref($self)->interpolate_class($args);
 
-    $args{traits} = \@traits if @traits;
+    $args->{traits} = \@traits if @traits;
     # do not inherit the 'handles' attribute
     foreach my $name(keys %{$self}){
-        if(!exists $args{$name} && $name ne 'handles'){
-            $args{$name} = $self->{$name};
+        if(!exists $args->{$name} && $name ne 'handles'){
+            $args->{$name} = $self->{$name};
         }
     }
-    return $attribute_class->new($self->name, %args);
+    return $attribute_class->new($self->name, $args);
 }
 
 sub clone_parent { # DEPRECATED

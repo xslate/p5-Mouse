@@ -207,13 +207,13 @@ sub new_object;
 sub clone_object {
     my $class  = shift;
     my $object = shift;
-    my %params = (@_ == 1) ? %{$_[0]} : @_;
+    my $args   = $object->Mouse::Object::BUILDARGS(@_);
 
     (blessed($object) && $object->isa($class->name))
         || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
 
     my $cloned = bless { %$object }, ref $object;
-    $class->_initialize_object($cloned, \%params);
+    $class->_initialize_object($cloned, $args);
 
     return $cloned;
 }
