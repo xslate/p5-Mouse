@@ -67,6 +67,8 @@ else{
 
 
 tests 't/*.t t/*/*.t';
+author_tests 'xt';
+
 
 repository 'git://git.moose.perl.org/Mouse.git';
 
@@ -80,7 +82,15 @@ if (author_context()) {
         print "You have Moose ", Moose->VERSION, ".\n";
         if (eval { require Module::Install::AuthorTests }) {
             do 'tool/create-moose-compatibility-tests.pl';
-            recursive_author_tests('xt');
+            # repeat testing
+            # see also ExtUtils::MM_Any::test_via_harness()
+            my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                          .q{ "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                          .q{ xt/compatibility/t/*/*.t } . "\n";
+
+            postamble qq{test_dynamic :: test_moose\n\n}
+                    . qq{test_moose :: pure_all\n}
+                    . qq{\t} . $t_moose;
         } else {
             print "You don't have a M::I::AuthorTests.\n";
         }
@@ -91,14 +101,15 @@ if (author_context()) {
     if($use_xs){
         # repeat testing
         # see also ExtUtils::MM_Any::test_via_harness()
-        my $test_via_harness =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                               .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                               .q{ $(TEST_FILES)} . "\n";
+        my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                   .q{ $(TEST_FILES)} . "\n";
 
         postamble qq{test_dynamic :: test_pp\n\n}
                 . qq{test_pp :: pure_all\n}
-                . qq{\t} . $test_via_harness;
+                . qq{\t} . $t_pp;
     }
 }
+
 
 WriteAll check_nmake => 0;
