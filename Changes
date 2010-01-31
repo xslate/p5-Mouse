@@ -1,9 +1,13 @@
 Revision history for Mouse
 
+0.48 Sun Jan 31 17:53:31 2010
+    * TypeConstraints.xs
+        - Fix magic handling in type constraints (gfx)
+
 0.47 Fri Jan 15 15:07:21 2010
     * Makefile.PL
         - Shipped with M::I::XSUtil 0.21 (gfx)
-        - Fixed an issue that gcc 4.0 don't support -Wc++-compat (gfx)
+        - Fix an issue that gcc 4.0 don't support -Wc++-compat (gfx)
     * Mouse
         - Add a caveat on XS callbacks to the pod (gfx)
 
