@@ -16,11 +16,15 @@
 
 typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
+/*
+    NOTE: mouse_tc_check() handles GETMAGIC
+*/
 int
 mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     CV* const cv = (CV*)SvRV(tc_code);
     assert(SvTYPE(cv) == SVt_PVCV);
 
+    SvGETMAGIC(sv);
     if(CvXSUB(cv) == XS_Mouse_constraint_check){ /* built-in type constraints */
         MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
 
@@ -244,7 +248,6 @@ mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
         I32 i;
         for(i = 0; i < len; i++){
             SV* const value = *av_fetch(av, i, TRUE);
-            SvGETMAGIC(value);
             if(!mouse_tc_check(aTHX_ param, value)){
                 return FALSE;
             }
@@ -263,7 +266,6 @@ mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
         hv_iterinit(hv);
         while((he = hv_iternext(hv))){
             SV* const value = hv_iterval(hv, he);
-            SvGETMAGIC(value);
             if(!mouse_tc_check(aTHX_ param, value)){
                 hv_iterinit(hv); /* reset */
                 return FALSE;
