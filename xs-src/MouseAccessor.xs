@@ -425,7 +425,7 @@ CV*
 _generate_clearer(klass, SV* attr, metaclass)
 CODE:
 {
-    SV* const slot = mcall0s(attr, "name");
+    SV* const slot = mcall0(attr, mouse_name);
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
     RETVAL = mouse_simple_accessor_generate(aTHX_ NULL, pv, len, XS_Mouse_simple_clearer, NULL, 0);
@@ -437,7 +437,7 @@ CV*
 _generate_predicate(klass, SV* attr, metaclass)
 CODE:
 {
-    SV* const slot = mcall0s(attr, "name");
+    SV* const slot = mcall0(attr, mouse_name);
     STRLEN len;
     const char* const pv = SvPV_const(slot, len);
     RETVAL = mouse_simple_accessor_generate(aTHX_ NULL, pv, len, XS_Mouse_simple_predicate, NULL, 0);
