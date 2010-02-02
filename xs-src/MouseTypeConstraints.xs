@@ -738,6 +738,6 @@ CODE:
     else{
         check = newRV_inc((SV*)mouse_tc_generate(aTHX_ NULL, (check_fptr_t)mouse_types_check, (SV*)checks));
     }
-    set_slots(self, "compiled_type_constraint", check);
+    (void)set_slots(self, "compiled_type_constraint", check);
 }
 

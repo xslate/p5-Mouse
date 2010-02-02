@@ -271,7 +271,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
             if(flags & MOUSEf_ATTR_HAS_TC){
                 value = mouse_xa_apply_type_constraint(aTHX_ xa, value, flags);
             }
-            set_slot(object, slot, value);
+            value = set_slot(object, slot, value);
             if(SvROK(value) && flags & MOUSEf_ATTR_IS_WEAK_REF){
                 weaken_slot(object, slot);
             }
@@ -307,7 +307,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     }
 
     if(MOUSE_xc_flags(xc) & MOUSEf_XC_IS_ANON){
-        set_slot(object, newSVpvs_flags("__METACLASS__", SVs_TEMP), meta);
+        (void)set_slot(object, newSVpvs_flags("__METACLASS__", SVs_TEMP), meta);
     }
 
 }
@@ -439,7 +439,7 @@ CODE:
     }
     sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */
 
-    set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
+    (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 
     /* name the CODE ref if it's anonymous */
     {
