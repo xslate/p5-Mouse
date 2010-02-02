@@ -1,8 +1,13 @@
 Revision history for Mouse
 
+0.49 Tue Feb  2 12:58:45 2010
+    * MouseAccessor.xs
+        - Fix RT #54203 that writers might return undef in setting values
+            reported by chocolateboy (gfx)
+
 0.48 Sun Jan 31 17:53:31 2010
-    * TypeConstraints.xs
-        - Fix magic handling in type constraints (gfx)
+    * MouseTypeConstraints.xs
+        - Fix magic handling in type constraints reported by sunnavy (gfx)
 
 0.47 Fri Jan 15 15:07:21 2010
     * Makefile.PL
