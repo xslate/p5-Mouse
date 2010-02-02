@@ -111,7 +111,7 @@ mouse_xa_apply_type_constraint(pTHX_ AV* const xa, SV* value, U16 const flags){
     SV* tc_code;
 
     if(flags & MOUSEf_ATTR_SHOULD_COERCE){
-          value = mcall1s(tc, "coerce", value);
+          value = mcall1(tc, mouse_coerce, value);
     }
 
     if(!SvOK(MOUSE_xa_tc_code(xa))){

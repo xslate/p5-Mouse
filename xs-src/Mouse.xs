@@ -1,12 +1,14 @@
 #define  NEED_newSVpvn_flags_GLOBAL
 #include "mouse.h"
 
+/* keywords for methods/keys */
 SV* mouse_package;
 SV* mouse_namespace;
 SV* mouse_methods;
 SV* mouse_name;
 SV* mouse_get_attribute;
 SV* mouse_get_attribute_list;
+SV* mouse_coerce;
 
 #define MOUSE_xc_flags(a)       SvUVX(MOUSE_av_at((a), MOUSE_XC_FLAGS))
 #define MOUSE_xc_gen(a)         MOUSE_av_at((a), MOUSE_XC_GEN)
@@ -366,6 +368,7 @@ BOOT:
     mouse_namespace = newSVpvs_share("namespace");
     mouse_methods   = newSVpvs_share("methods");
     mouse_name      = newSVpvs_share("name");
+    mouse_coerce    = newSVpvs_share("coerce");
 
     mouse_get_attribute      = newSVpvs_share("get_attribute");
     mouse_get_attribute_list = newSVpvs_share("get_attribute_list");

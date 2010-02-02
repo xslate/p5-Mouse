@@ -60,6 +60,7 @@ extern SV* mouse_package;
 extern SV* mouse_namespace;
 extern SV* mouse_methods;
 extern SV* mouse_name;
+extern SV* mouse_coerce;
 
 void
 mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)
