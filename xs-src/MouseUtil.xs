@@ -377,6 +377,6 @@ PPCODE:
     }
 
     if(predicate_name == NULL){ /* anonymous predicate */
-        XPUSHs( newRV_noinc((SV*)xsub) );
+        mXPUSHs( newRV_inc((SV*)xsub) );
     }
 }
