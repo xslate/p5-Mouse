@@ -65,19 +65,19 @@ sub add_attribute {
 }
 
 sub _check_required_methods{
-    my($role, $applicant, $args) = @_;
+    my($role, $consumer, $args) = @_;
 
     if($args->{_to} eq 'role'){
-        $applicant->add_required_methods($role->get_required_method_list);
+        $consumer->add_required_methods($role->get_required_method_list);
     }
     else{ # to class or instance
-        my $applicant_class_name = $applicant->name;
+        my $consumer_class_name = $consumer->name;
 
         my @missing;
         foreach my $method_name(@{$role->{required_methods}}){
             next if exists $args->{aliased_methods}{$method_name};
             next if exists $role->{methods}{$method_name};
-            next if $applicant_class_name->can($method_name);
+            next if $consumer_class_name->can($method_name);
 
             push @missing, $method_name;
         }
@@ -86,7 +86,7 @@ sub _check_required_methods{
                 $role->name,
                 (@missing == 1 ? '' : 's'), # method or methods
                 english_list(map{ sprintf q{'%s'}, $_ } @missing),
-                $applicant_class_name);
+                $consumer_class_name);
         }
     }
 
@@ -94,7 +94,7 @@ sub _check_required_methods{
 }
 
 sub _apply_methods{
-    my($role, $applicant, $args) = @_;
+    my($role, $consumer, $args) = @_;
 
     my $alias    = $args->{-alias};
     my $excludes = $args->{-excludes};
@@ -105,22 +105,22 @@ sub _apply_methods{
         my $code = $role->get_method_body($method_name);
 
         if(!exists $excludes->{$method_name}){
-            if(!$applicant->has_method($method_name)){
+            if(!$consumer->has_method($method_name)){
                 # The third argument $role is used in Role::Composite
-                $applicant->add_method($method_name => $code, $role);
+                $consumer->add_method($method_name => $code, $role);
             }
         }
 
         if(exists $alias->{$method_name}){
             my $dstname = $alias->{$method_name};
 
-            my $dstcode = $applicant->get_method_body($dstname);
+            my $dstcode = $consumer->get_method_body($dstname);
 
             if(defined($dstcode) && $dstcode != $code){
                 $role->throw_error("Cannot create a method alias if a local method of the same name exists");
             }
             else{
-                $applicant->add_method($dstname => $code, $role);
+                $consumer->add_method($dstname => $code, $role);
             }
         }
     }
@@ -129,22 +129,22 @@ sub _apply_methods{
 }
 
 sub _apply_attributes{
-    my($role, $applicant, $args) = @_;
+    my($role, $consumer, $args) = @_;
 
     for my $attr_name ($role->get_attribute_list) {
-        next if $applicant->has_attribute($attr_name);
+        next if $consumer->has_attribute($attr_name);
 
-        $applicant->add_attribute($attr_name => $role->get_attribute($attr_name));
+        $consumer->add_attribute($attr_name => $role->get_attribute($attr_name));
     }
     return;
 }
 
 sub _apply_modifiers{
-    my($role, $applicant, $args) = @_;
+    my($role, $consumer, $args) = @_;
 
     if(my $modifiers = $role->{override_method_modifiers}){
         foreach my $method_name (keys %{$modifiers}){
-            $applicant->add_override_method_modifier($method_name => $modifiers->{$method_name});
+            $consumer->add_override_method_modifier($method_name => $modifiers->{$method_name});
         }
     }
 
@@ -156,8 +156,8 @@ sub _apply_modifiers{
 
         foreach my $method_name (keys %{$modifiers}){
             foreach my $code(@{ $modifiers->{$method_name} }){
-                next if $applicant->{"_applied_$modifier_type"}{$method_name, $code}++; # skip applied modifiers
-                $applicant->$add_modifier($method_name => $code);
+                next if $consumer->{"_applied_$modifier_type"}{$method_name, $code}++; # skip applied modifiers
+                $consumer->$add_modifier($method_name => $code);
             }
         }
     }
@@ -165,12 +165,12 @@ sub _apply_modifiers{
 }
 
 sub _append_roles{
-    my($role, $applicant, $args) = @_;
+    my($role, $consumer, $args) = @_;
 
-    my $roles = ($args->{_to} eq 'role') ? $applicant->get_roles : $applicant->roles;
+    my $roles = ($args->{_to} eq 'role') ? $consumer->get_roles : $consumer->roles;
 
     foreach my $r($role, @{$role->get_roles}){
-        if(!$applicant->does_role($r->name)){
+        if(!$consumer->does_role($r->name)){
             push @{$roles}, $r;
         }
     }
@@ -179,24 +179,24 @@ sub _append_roles{
 
 # Moose uses Application::ToInstance, Application::ToClass, Application::ToRole
 sub apply {
-    my $self      = shift;
-    my $applicant = shift;
+    my $self     = shift;
+    my $consumer = shift;
 
     my %args = (@_ == 1) ? %{ $_[0] } : @_;
 
     my $instance;
 
-    if(Mouse::Util::is_a_metaclass($applicant)){  # Application::ToClass
+    if(Mouse::Util::is_a_metaclass($consumer)){  # Application::ToClass
         $args{_to} = 'class';
     }
-    elsif(Mouse::Util::is_a_metarole($applicant)){ # Application::ToRole
+    elsif(Mouse::Util::is_a_metarole($consumer)){ # Application::ToRole
         $args{_to} = 'role';
     }
     else{                                       # Appplication::ToInstance
         $args{_to} = 'instance';
-        $instance = $applicant;
+        $instance  = $consumer;
 
-        $applicant = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')->create_anon_class(
+        $consumer = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')->create_anon_class(
             superclasses => [ref $instance],
             cache        => 1,
         );
@@ -224,17 +224,17 @@ sub apply {
         }
     }
 
-    $self->_check_required_methods($applicant, \%args);
-    $self->_apply_attributes($applicant, \%args);
-    $self->_apply_methods($applicant, \%args);
-    $self->_apply_modifiers($applicant, \%args);
-    $self->_append_roles($applicant, \%args);
+    $self->_check_required_methods($consumer, \%args);
+    $self->_apply_attributes($consumer, \%args);
+    $self->_apply_methods($consumer, \%args);
+    $self->_apply_modifiers($consumer, \%args);
+    $self->_append_roles($consumer, \%args);
 
 
     if(defined $instance){ # Application::ToInstance
         # rebless instance
-        bless $instance, $applicant->name;
-        $applicant->_initialize_object($instance, $instance);
+        bless $instance, $consumer->name;
+        $consumer->_initialize_object($instance, $instance);
     }
 
     return;

@@ -79,19 +79,19 @@ sub add_override_method_modifier{
 # components of apply()
 
 sub _apply_methods{
-    my($self, $applicant, $args) = @_;
+    my($self, $consumer, $args) = @_;
 
     if(exists $self->{conflicting_methods}){
-        my $applicant_class_name = $applicant->name;
+        my $consumer_class_name = $consumer->name;
 
-        my @conflicting = sort grep{ !$applicant_class_name->can($_) } keys %{ $self->{conflicting_methods} };
+        my @conflicting = sort grep{ !$consumer_class_name->can($_) } keys %{ $self->{conflicting_methods} };
 
         if(@conflicting == 1){
             my $method_name = $conflicting[0];
             my @roles       = sort @{ $self->{composed_roles_by_method}{$method_name} };
             $self->throw_error(
                sprintf q{Due to a method name conflict in roles %s, the method '%s' must be implemented or excluded by '%s'},
-                   english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $applicant->name
+                   english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $consumer->name
             );
         }
         elsif(@conflicting > 1){
@@ -105,12 +105,12 @@ sub _apply_methods{
 
             $self->throw_error(
                sprintf q{Due to method name conflicts in roles %s, the methods %s must be implemented or excluded by '%s'},
-                   $roles, $methods, $applicant->name
+                   $roles, $methods, $consumer->name
             );
         }
     }
 
-    $self->SUPER::_apply_methods($applicant, $args);
+    $self->SUPER::_apply_methods($consumer, $args);
     return;
 }
 1;

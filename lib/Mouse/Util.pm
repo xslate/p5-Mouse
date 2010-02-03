@@ -266,7 +266,7 @@ sub load_class {
 sub is_class_loaded;
 
 sub apply_all_roles {
-    my $applicant = Scalar::Util::blessed($_[0])
+    my $consumer = Scalar::Util::blessed($_[0])
         ?                                shift   # instance
         : Mouse::Meta::Class->initialize(shift); # class or role name
 
@@ -284,15 +284,15 @@ sub apply_all_roles {
         load_class($role_name);
 
         is_a_metarole( get_metaclass_by_name($role_name) )
-            || $applicant->meta->throw_error("You can only consume roles, $role_name is not a Mouse role");
+            || $consumer->meta->throw_error("You can only consume roles, $role_name is not a Mouse role");
     }
 
     if ( scalar @roles == 1 ) {
         my ( $role_name, $params ) = @{ $roles[0] };
-        get_metaclass_by_name($role_name)->apply( $applicant, defined $params ? $params : () );
+        get_metaclass_by_name($role_name)->apply( $consumer, defined $params ? $params : () );
     }
     else {
-        Mouse::Meta::Role->combine(@roles)->apply($applicant);
+        Mouse::Meta::Role->combine(@roles)->apply($consumer);
     }
     return;
 }
