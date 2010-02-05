@@ -54,6 +54,8 @@ for my $file (uniq
     $contents =~ s/__END__\b.*//s;          # remove documentation
     $contents =~ s/1;\n*$//;                # remove success indicator
 
+    $contents =~ s{^( (?:[ ]{4})+ )}{ "\t" x (length($1) / 4) }xmsge; # spaces to tabs
+
     $mouse_tiny .= "BEGIN{ # $file\n";
     $mouse_tiny .= $contents;
     $mouse_tiny .= "}\n";
@@ -71,7 +73,7 @@ EOF
 print { $handle } << 'EOF';
 # if regular Mouse is loaded, bail out
 unless ($INC{'Mouse.pm'}) {
-    # tell Perl we already have all of the Mouse files loaded:
+# tell Perl we already have all of the Mouse files loaded:
 EOF
 
 for my $file (@files) {
