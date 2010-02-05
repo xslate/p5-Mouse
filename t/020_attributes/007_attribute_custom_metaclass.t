@@ -44,7 +44,6 @@ use Test::Exception;
 
     is($foo_attr_type_constraint->name, 'Foo', '... got the right type constraint name');
 
-    local $TODO = '$type_constraint->parent is not reliable';
     is($foo_attr_type_constraint->parent, 'Object', '... got the right type constraint parent name');
 }
 {
