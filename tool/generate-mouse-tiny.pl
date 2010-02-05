@@ -32,6 +32,7 @@ find({
             &&  /\.pm$/
             && !/Squirrel/
             && !/Tiny/
+            && !/Test/         # only for testing
             && !/Spec/         # has no functionality
             && !/TypeRegistry/ # deprecated
             && !/\bouse/       # ouse.pm
