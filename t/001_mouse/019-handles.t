@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 27;
+use Test::More tests => 24;
 use Test::Exception;
 
 do {
@@ -37,36 +37,6 @@ do {
         predicate => 'quid',
         handles => [qw/name age/],
     );
-
-    TODO: {
-        local our $TODO = "Mouse lacks this";
-        eval {
-            has error => (
-                handles => "string",
-            );
-        };
-        ::ok(!$@, "handles => role");
-    }
-
-    TODO: {
-        local our $TODO = "Mouse lacks this";
-        eval {
-            has error2 => (
-                handles => \"ref_to_string",
-            );
-        };
-        ::ok(!$@, "handles => \\str");
-    }
-
-    TODO: {
-        local our $TODO = "Mouse lacks this";
-        eval {
-            has error4 => (
-                handles => sub { "code" },
-            );
-        };
-        ::ok(!$@, "handles => sub { code }");
-    }
 };
 
 can_ok(Class => qw(person has_person person_name person_age name age quid));
@@ -110,7 +80,6 @@ is_deeply(
 
 
 {
-    local $TODO = "failed on some environment, but I don't know why it happens (gfx)";
     throws_ok{
         $object->person(undef);
         $object->person_name();
