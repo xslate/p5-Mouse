@@ -81,8 +81,8 @@ sub superclasses {
 sub _reconcile_with_superclass_meta {
     my($self, $super_meta) = @_;
 
+    # find incompatible traits
     my @incompatibles;
-
     foreach my $metaclass_type(@MetaClassTypes){
         my $super_c = $super_meta->$metaclass_type();
         my $self_c  = $self->$metaclass_type();
@@ -93,9 +93,8 @@ sub _reconcile_with_superclass_meta {
     }
 
     my @roles;
-
-    foreach my $role($self->meta->calculate_all_roles){
-        if(!$super_meta->meta->does_role($role->name)){
+    foreach my $role($super_meta->meta->calculate_all_roles){
+        if(!$self->meta->does_role($role->name)){
             push @roles, $role->name;
         }
     }

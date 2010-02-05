@@ -1,44 +1,105 @@
 package Mouse::Util::MetaRole;
 use Mouse::Util; # enables strict and warnings
+use Scalar::Util ();
 
-my @MetaClassTypes = qw(
-    metaclass
-    attribute_metaclass
-    method_metaclass
-    constructor_class
-    destructor_class
-);
-
-# In Mouse::Exporter::do_import():
-# apply_metaclass_roles(for_class => $class, metaclass_roles => \@traits)
 sub apply_metaclass_roles {
-    my %options = @_;
+    my %args = @_;
+    _fixup_old_style_args(\%args);
 
-    my $for = Scalar::Util::blessed($options{for_class})
-        ? $options{for_class}
-        : Mouse::Util::get_metaclass_by_name($options{for_class});
+    return apply_metaroles(%args);
+}
 
-    my $new_metaclass = _make_new_class( ref $for,
-        $options{metaclass_roles},
-        $options{metaclass} ? [$options{metaclass}] : undef,
-    );
+sub apply_metaroles {
+    my %args = @_;
 
-    my @metaclass_map;
+    my $for = Scalar::Util::blessed($args{for})
+        ?                                     $args{for}
+        : Mouse::Util::get_metaclass_by_name( $args{for} );
 
-    foreach my $mc_type(@MetaClassTypes){
-        next if !$for->can($mc_type);
+    if ( Mouse::Util::is_a_metarole($for) ) {
+        return _make_new_metaclass( $for, $args{role_metaroles}, 'role' );
+    }
+    else {
+        return _make_new_metaclass( $for, $args{class_metaroles}, 'class' );
+    }
+}
 
-        if(my $roles = $options{ $mc_type . '_roles' }){
-            push @metaclass_map,
-                ($mc_type => _make_new_class($for->$mc_type(), $roles));
-        }
-        elsif(my $mc = $options{$mc_type}){
-            push @metaclass_map, ($mc_type => $mc);
-        }
+sub _make_new_metaclass {
+    my($for, $roles, $primary) = @_;
+
+    return $for unless keys %{$roles};
+
+    my $new_metaclass = exists($roles->{$primary})
+        ? _make_new_class( ref $for, $roles->{$primary} ) # new class with traits
+        :                  ref $for;
+
+    my %classes;
+
+    for my $key ( grep { $_ ne $primary } keys %{$roles} ) {
+        my $metaclass;
+        my $attr = $for->can($metaclass = ($key . '_metaclass'))
+                || $for->can($metaclass = ($key . '_class'))
+                || $for->throw_error("Unknown metaclass '$key'");
+
+        $classes{ $metaclass }
+            = _make_new_class( $for->$attr(), $roles->{$key} );
     }
 
-    return $new_metaclass->reinitialize( $for, @metaclass_map );
+    return $new_metaclass->reinitialize( $for, %classes );
 }
+
+
+sub _fixup_old_style_args {
+    my $args = shift;
+
+    return if $args->{class_metaroles} || $args->{roles_metaroles};
+
+    $args->{for} = delete $args->{for_class}
+        if exists $args->{for_class};
+
+    my @old_keys = qw(
+        attribute_metaclass_roles
+        method_metaclass_roles
+        wrapped_method_metaclass_roles
+        instance_metaclass_roles
+        constructor_class_roles
+        destructor_class_roles
+        error_class_roles
+
+        application_to_class_class_roles
+        application_to_role_class_roles
+        application_to_instance_class_roles
+        application_role_summation_class_roles
+    );
+
+    my $for = Scalar::Util::blessed($args->{for})
+        ?                                     $args->{for}
+        : Mouse::Util::get_metaclass_by_name( $args->{for} );
+
+    my $top_key;
+    if( Mouse::Util::is_a_metaclass($for) ){
+        $top_key = 'class_metaroles';
+
+        $args->{class_metaroles}{class} = delete $args->{metaclass_roles}
+            if exists $args->{metaclass_roles};
+    }
+    else {
+        $top_key = 'role_metaroles';
+
+        $args->{role_metaroles}{role} = delete $args->{metaclass_roles}
+            if exists $args->{metaclass_roles};
+    }
+
+    for my $old_key (@old_keys) {
+        my ($new_key) = $old_key =~ /^(.+)_(?:class|metaclass)_roles$/;
+
+        $args->{$top_key}{$new_key} = delete $args->{$old_key}
+            if exists $args->{$old_key};
+    }
+
+    return;
+}
+
 
 sub apply_base_class_roles {
     my %options = @_;
