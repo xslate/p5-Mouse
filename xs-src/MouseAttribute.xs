@@ -1,11 +1,99 @@
 #include "mouse.h"
 
+static MGVTBL mouse_xa_vtbl; /* identity */
+
+static AV*
+mouse_build_xa(pTHX_ SV* const attr) {
+    AV*    xa;
+    MAGIC* mg;
+
+    SV* slot;
+    STRLEN len;
+    const char* pv;
+    U16 flags = 0x00;
+
+    ENTER;
+    SAVETMPS;
+
+    xa    = newAV();
+
+    mg = sv_magicext(SvRV(attr), (SV*)xa, PERL_MAGIC_ext, &mouse_xa_vtbl, NULL, 0);
+    SvREFCNT_dec(xa); /* refcnt++ in sv_magicext */
+
+    av_extend(xa, MOUSE_XA_last - 1);
+
+    slot = mcall0(attr, mouse_name);
+    pv = SvPV_const(slot, len);
+    av_store(xa, MOUSE_XA_SLOT, newSVpvn_share(pv, len, 0U));
+
+    av_store(xa, MOUSE_XA_ATTRIBUTE, newSVsv(attr));
+
+    av_store(xa, MOUSE_XA_INIT_ARG, newSVsv(mcall0s(attr, "init_arg")));
+
+    if(predicate_calls(attr, "has_type_constraint")){
+        SV* tc;
+        flags |= MOUSEf_ATTR_HAS_TC;
+
+        tc = mcall0s(attr, "type_constraint");
+        av_store(xa, MOUSE_XA_TC, newSVsv(tc));
+
+        if(predicate_calls(attr, "should_auto_deref")){
+            SV* const is_a_type_of = sv_2mortal(newSVpvs_share("is_a_type_of"));
+
+            flags |= MOUSEf_ATTR_SHOULD_AUTO_DEREF;
+            if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("ArrayRef", SVs_TEMP))) ){
+                flags |= MOUSEf_TC_IS_ARRAYREF;
+            }
+            else if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("HashRef", SVs_TEMP))) ){
+                flags |= MOUSEf_TC_IS_HASHREF;
+            }
+            else{
+                mouse_throw_error(attr, tc,
+                    "Can not auto de-reference the type constraint '%"SVf"'",
+                        mcall0(tc, mouse_name));
+            }
+        }
+
+        if(predicate_calls(attr, "should_coerce")){
+            flags |= MOUSEf_ATTR_SHOULD_COERCE;
+        }
+
+    }
+
+    if(predicate_calls(attr, "has_trigger")){
+        flags |= MOUSEf_ATTR_HAS_TRIGGER;
+    }
+
+    if(predicate_calls(attr, "is_lazy")){
+        flags |= MOUSEf_ATTR_IS_LAZY;
+    }
+    if(predicate_calls(attr, "has_builder")){
+        flags |= MOUSEf_ATTR_HAS_BUILDER;
+    }
+    else if(predicate_calls(attr, "has_default")){
+        flags |= MOUSEf_ATTR_HAS_DEFAULT;
+    }
+
+    if(predicate_calls(attr, "is_weak_ref")){
+        flags |= MOUSEf_ATTR_IS_WEAK_REF;
+    }
+
+    if(predicate_calls(attr, "is_required")){
+        flags |= MOUSEf_ATTR_IS_REQUIRED;
+    }
+
+    av_store(xa, MOUSE_XA_FLAGS, newSVuv(flags));
+    MOUSE_mg_flags(mg) = flags;
+
+    FREETMPS;
+    LEAVE;
+
+    return xa;
+}
 
 AV*
 mouse_get_xa(pTHX_ SV* const attr) {
-    static MGVTBL mouse_xa_vtbl; /* identity */
-
-    AV* xa;
+    AV*    xa;
     MAGIC* mg;
 
     if(!IsObject(attr)){
@@ -14,89 +102,10 @@ mouse_get_xa(pTHX_ SV* const attr) {
 
     mg = mouse_mg_find(aTHX_ SvRV(attr), &mouse_xa_vtbl, 0x00);
     if(!mg){
-        SV* slot;
-        STRLEN len;
-        const char* pv;
-        U16 flags = 0x00;
-
-        ENTER;
-        SAVETMPS;
-
-        xa    = newAV();
-
-        mg = sv_magicext(SvRV(attr), (SV*)xa, PERL_MAGIC_ext, &mouse_xa_vtbl,NULL, 0);
-        SvREFCNT_dec(xa); /* refcnt++ in sv_magicext */
-
-        av_extend(xa, MOUSE_XA_last - 1);
-
-        slot = mcall0(attr, mouse_name);
-        pv = SvPV_const(slot, len);
-        av_store(xa, MOUSE_XA_SLOT, newSVpvn_share(pv, len, 0U));
-
-        av_store(xa, MOUSE_XA_ATTRIBUTE, newSVsv(attr));
-
-        av_store(xa, MOUSE_XA_INIT_ARG, newSVsv(mcall0s(attr, "init_arg")));
-
-        if(predicate_calls(attr, "has_type_constraint")){
-            SV* tc;
-            flags |= MOUSEf_ATTR_HAS_TC;
-
-            tc = mcall0s(attr, "type_constraint");
-            av_store(xa, MOUSE_XA_TC, newSVsv(tc));
-
-            if(predicate_calls(attr, "should_auto_deref")){
-                SV* const is_a_type_of = sv_2mortal(newSVpvs_share("is_a_type_of"));
-
-                flags |= MOUSEf_ATTR_SHOULD_AUTO_DEREF;
-                if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("ArrayRef", SVs_TEMP))) ){
-                    flags |= MOUSEf_TC_IS_ARRAYREF;
-                }
-                else if( sv_true(mcall1(tc, is_a_type_of, newSVpvs_flags("HashRef", SVs_TEMP))) ){
-                    flags |= MOUSEf_TC_IS_HASHREF;
-                }
-                else{
-                    mouse_throw_error(attr, tc,
-                        "Can not auto de-reference the type constraint '%"SVf"'",
-                            mcall0(tc, mouse_name));
-                }
-            }
-
-            if(predicate_calls(attr, "should_coerce")){
-                flags |= MOUSEf_ATTR_SHOULD_COERCE;
-            }
-
-        }
-
-        if(predicate_calls(attr, "has_trigger")){
-            flags |= MOUSEf_ATTR_HAS_TRIGGER;
-        }
-
-        if(predicate_calls(attr, "is_lazy")){
-            flags |= MOUSEf_ATTR_IS_LAZY;
-        }
-        if(predicate_calls(attr, "has_builder")){
-            flags |= MOUSEf_ATTR_HAS_BUILDER;
-        }
-        else if(predicate_calls(attr, "has_default")){
-            flags |= MOUSEf_ATTR_HAS_DEFAULT;
-        }
-
-        if(predicate_calls(attr, "is_weak_ref")){
-            flags |= MOUSEf_ATTR_IS_WEAK_REF;
-        }
-
-        if(predicate_calls(attr, "is_required")){
-            flags |= MOUSEf_ATTR_IS_REQUIRED;
-        }
-
-        av_store(xa, MOUSE_XA_FLAGS, newSVuv(flags));
-        MOUSE_mg_flags(mg) = flags;
-
-        FREETMPS;
-        LEAVE;
+        xa = mouse_build_xa(aTHX_ attr);
     }
     else{
-        xa    = (AV*)MOUSE_mg_obj(mg);
+        xa = (AV*)MOUSE_mg_obj(mg);
 
         assert(xa);
         assert(SvTYPE(xa) == SVt_PVAV);
