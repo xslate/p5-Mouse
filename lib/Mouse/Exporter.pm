@@ -183,9 +183,11 @@ sub do_import {
                 } @traits;
 
             require Mouse::Util::MetaRole;
-            Mouse::Util::MetaRole::apply_metaclass_roles(
-                for_class       => $into,
-                metaclass_roles => \@traits,
+            Mouse::Util::MetaRole::apply_metaroles(
+                for       => $into,
+                Mouse::Util::is_a_metarole($into->meta)
+                    ? (role_metaroles  => { role  => \@traits })
+                    : (class_metaroles => { class => \@traits }),
             );
         }
     }
