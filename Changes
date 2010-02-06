@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.49_01
+    * Mouse::Util::MetaRole
+        - Add Mouse::Util::MetaRole::apply_metaroles
+            to catch up the latest Moose API for metaroles (gfx)
+
 0.49 Tue Feb  2 12:58:45 2010
     * MouseAccessor.xs
         - Fix RT #54203 that writers might return undef in setting values
