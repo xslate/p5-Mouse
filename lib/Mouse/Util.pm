@@ -350,8 +350,9 @@ sub dump :method {
 }
 
 # general does() method
-sub does :method;
-*does = \&does_role; # alias
+sub does :method {
+    goto &does_role;
+}
 
 1;
 __END__
