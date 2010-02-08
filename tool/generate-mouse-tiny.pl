@@ -96,8 +96,10 @@ END_OF_TINY
 } # unless Mouse.pm is loaded
 EOF
 
-print { $handle } << 'EOF';
+print { $handle } << "EOF";
 package Mouse::Tiny;
+
+our \$VERSION = '$Mouse::Spec::VERSION';
 
 Mouse::Exporter->setup_import_methods(also => 'Mouse');
 
