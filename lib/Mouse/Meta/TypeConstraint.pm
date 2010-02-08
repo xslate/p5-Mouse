@@ -81,6 +81,15 @@ sub create_child_type{
    );
 }
 
+sub name;
+sub parent;
+sub message;
+sub has_coercion;
+sub _compiled_type_constraint;
+sub _compiled_type_coercion;
+
+sub compile_type_constraint;
+
 sub _add_type_coercions{
     my $self = shift;
 
