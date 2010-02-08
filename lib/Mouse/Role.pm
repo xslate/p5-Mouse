@@ -56,30 +56,27 @@ sub has {
 
 sub before {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
-
     my $code = pop;
-    for (@_) {
-        $meta->add_before_method_modifier($_ => $code);
+    for my $name($meta->_collect_methods(@_)) {
+        $meta->add_before_method_modifier($name => $code);
     }
     return;
 }
 
 sub after {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
-
     my $code = pop;
-    for (@_) {
-        $meta->add_after_method_modifier($_ => $code);
+    for my $name($meta->_collect_methods(@_)) {
+        $meta->add_after_method_modifier($name => $code);
     }
     return;
 }
 
 sub around {
     my $meta = Mouse::Meta::Role->initialize(scalar caller);
-
     my $code = pop;
-    for (@_) {
-        $meta->add_around_method_modifier($_ => $code);
+    for my $name($meta->_collect_methods(@_)) {
+        $meta->add_around_method_modifier($name => $code);
     }
     return;
 }
