@@ -344,7 +344,7 @@ sub dump :method {
 
     require 'Data/Dumper.pm'; # we don't want to create its namespace
     my $dd = Data::Dumper->new([$self]);
-    $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 2);
+    $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 3);
     $dd->Indent(1);
     return $dd->Dump();
 }
