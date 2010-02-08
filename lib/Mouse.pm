@@ -243,15 +243,15 @@ Returns this class' metaclass instance.
 
 Sets this class' superclasses.
 
-=head2 C<< before (method|methods) => CodeRef >>
+=head2 C<< before (method|methods|regexp) => CodeRef >>
 
 Installs a "before" method modifier. See L<Moose/before>.
 
-=head2 C<< after (method|methods) => CodeRef >>
+=head2 C<< after (method|methods|regexp) => CodeRef >>
 
 Installs an "after" method modifier. See L<Moose/after>.
 
-=head2 C<< around (method|methods) => CodeRef >>
+=head2 C<< around (method|methods|regexp) => CodeRef >>
 
 Installs an "around" method modifier. See L<Moose/around>.
 

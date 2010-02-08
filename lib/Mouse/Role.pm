@@ -158,15 +158,15 @@ This document describes Mouse version 0.50
 
 Returns this role's metaclass instance.
 
-=head2 C<< before (method|methods) -> CodeRef >>
+=head2 C<< before (method|methods|regexp) -> CodeRef >>
 
 Sets up a B<before> method modifier. See L<Moose/before>.
 
-=head2 C<< after (method|methods) => CodeRef >>
+=head2 C<< after (method|methods|regexp) => CodeRef >>
 
 Sets up an B<after> method modifier. See L<Moose/after>.
 
-=head2 C<< around (method|methods) => CodeRef >>
+=head2 C<< around (method|methods|regexp) => CodeRef >>
 
 Sets up an B<around> method modifier. See L<Moose/around>.
 
