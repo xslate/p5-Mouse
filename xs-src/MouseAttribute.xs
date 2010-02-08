@@ -54,7 +54,7 @@ mouse_build_xa(pTHX_ SV* const attr) {
             }
         }
 
-        if(predicate_calls(attr, "should_coerce")){
+        if(predicate_calls(attr, "should_coerce") && predicate_calls(tc, "has_coercion")){
             flags |= MOUSEf_ATTR_SHOULD_COERCE;
         }
 

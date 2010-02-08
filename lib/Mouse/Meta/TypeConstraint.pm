@@ -138,10 +138,14 @@ sub check {
 sub coerce {
     my $self = shift;
 
+    my $coercion = $self->_compiled_type_coercion;
+    if(!$coercion){
+        Carp::confess("Cannot coerce without a type coercion");
+    }
+
     return $_[0] if $self->_compiled_type_constraint->(@_);
 
-    my $coercion = $self->_compiled_type_coercion;
-    return $coercion ? $coercion->(@_) : $_[0];
+    return  $coercion->(@_);
 }
 
 sub get_message {
