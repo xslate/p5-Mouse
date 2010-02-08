@@ -161,22 +161,24 @@ Mouse::Util::MetaRole - Apply roles to any metaclass, as well as the object base
 
   sub init_meta {
       shift;
-      my %options = @_;
+      my %args = @_;
 
-      Mouse->init_meta(%options);
+      Mouse->init_meta(%args);
 
-      Mouse::Util::MetaRole::apply_metaclass_roles(
-          for_class               => $options{for_class},
-          metaclass_roles         => ['MyApp::Role::Meta::Class'],
-          constructor_class_roles => ['MyApp::Role::Meta::Method::Constructor'],
+      Mouse::Util::MetaRole::apply_metaroles(
+          for             => $args{for_class},
+          class_metaroles => {
+              class       => ['MyApp::Role::Meta::Class'],
+              constructor => ['MyApp::Role::Meta::Method::Constructor'],
+          },
       );
 
       Mouse::Util::MetaRole::apply_base_class_roles(
-          for_class => $options{for_class},
-          roles     => ['MyApp::Role::Object'],
+          for   => $args{for_class},
+          roles => ['MyApp::Role::Object'],
       );
 
-      return $options{for_class}->meta();
+      return $args{for_class}->meta();
   }
 
 =head1 DESCRIPTION
@@ -207,34 +209,60 @@ method for you, and make sure it is called when imported.
 
 This module provides two functions.
 
-=head2 apply_metaclass_roles( ... )
+=head2 apply_metaroles( ... )
 
 This function will apply roles to one or more metaclasses for the
 specified class. It accepts the following parameters:
 
 =over 4
 
-=item * for_class => $name
+=item * for => $name
 
-This specifies the class for which to alter the meta classes.
+This specifies the class or for which to alter the meta classes. This can be a
+package name, or an appropriate meta-object (a L<Mouse::Meta::Class> or
+L<Mouse::Meta::Role>).
 
-=item * metaclass_roles => \@roles
+=item * class_metaroles => \%roles
 
-=item * attribute_metaclass_roles => \@roles
+This is a hash reference specifying which metaroles will be applied to the
+class metaclass and its contained metaclasses and helper classes.
 
-=item * method_metaclass_roles => \@roles
+Each key should in turn point to an array reference of role names.
 
-=item * constructor_class_roles => \@roles
+It accepts the following keys:
 
-=item * destructor_class_roles => \@roles
+=over 8
 
-These parameter all specify one or more roles to be applied to the
-specified metaclass. You can pass any or all of these parameters at
-once.
+=item class
+
+=item attribute
+
+=item method
+
+=item constructor
+
+=item destructor
 
 =back
 
-=head2 apply_base_class_roles( for_class => $class, roles => \@roles )
+=item * role_metaroles => \%roles
+
+This is a hash reference specifying which metaroles will be applied to the
+role metaclass and its contained metaclasses and helper classes.
+
+It accepts the following keys:
+
+=over 8
+
+=item role
+
+=item method
+
+=back
+
+=back
+
+=head2 apply_base_class_roles( for => $class, roles => \@roles )
 
 This function will apply the specified roles to the object's base class.
 
