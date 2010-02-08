@@ -1,5 +1,5 @@
 package Mouse::Meta::Role::Composite;
-use Mouse::Util qw(english_list); # enables strict and warnings
+use Mouse::Util; # enables strict and warnings
 use Mouse::Meta::Role;
 our @ISA = qw(Mouse::Meta::Role);
 
@@ -91,16 +91,17 @@ sub _apply_methods{
             my @roles       = sort @{ $self->{composed_roles_by_method}{$method_name} };
             $self->throw_error(
                sprintf q{Due to a method name conflict in roles %s, the method '%s' must be implemented or excluded by '%s'},
-                   english_list(map{ sprintf q{'%s'}, $_->name } @roles), $method_name, $consumer->name
+                   Mouse::Util::quoted_english_list(map{ $_->name } @roles), $method_name, $consumer->name
             );
         }
         elsif(@conflicting > 1){
-            my $methods = english_list(map{ sprintf q{'%s'}, $_ } @conflicting);
+            my $methods = Mouse::Util::quoted_english_list(@conflicting);
 
             my %seen;
-            my $roles   = english_list(
-                sort map{ my $name = $_->name; $seen{$name}++ ? () : sprintf q{'%s'}, $name }
-                map{ @{$_} } @{ $self->{composed_roles_by_method} }{@conflicting}
+            my $roles   = Mouse::Util::quoted_english_list(sort
+                grep{ !$seen{$_}++ } # uniq
+                map { $_->name }
+                map { @{$_} } @{ $self->{composed_roles_by_method} }{@conflicting}
             );
 
             $self->throw_error(

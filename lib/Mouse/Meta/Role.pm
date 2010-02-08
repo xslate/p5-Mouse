@@ -1,5 +1,5 @@
 package Mouse::Meta::Role;
-use Mouse::Util qw(:meta not_supported english_list); # enables strict and warnings
+use Mouse::Util qw(:meta not_supported); # enables strict and warnings
 
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
@@ -85,7 +85,7 @@ sub _check_required_methods{
             $role->throw_error(sprintf "'%s' requires the method%s %s to be implemented by '%s'",
                 $role->name,
                 (@missing == 1 ? '' : 's'), # method or methods
-                english_list(map{ sprintf q{'%s'}, $_ } @missing),
+                Mouse::Util::quoted_english_list(@missing),
                 $consumer_class_name);
         }
     }
