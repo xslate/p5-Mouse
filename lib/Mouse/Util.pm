@@ -311,15 +311,7 @@ sub english_list {
 }
 
 sub quoted_english_list {
-    return qq{'$_[0]'} if @_ == 1;
-
-    my @items = sort @_;
-
-    return qq{'$items[0]' and '$items[1]'} if @items == 2;
-
-    my $tail = pop @items;
-
-    return join q{, }, (map{ qq{'$_'} } @items), qq{and '$tail'};
+    return english_list(map { qq{'$_'} } @_);
 }
 
 # common utilities
