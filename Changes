@@ -1,6 +1,9 @@
 Revision history for Mouse
 
-0.49_01
+0.50 Mon Feb  8 13:43:19 2010
+    * Mouse::Tiny
+        - Allow "use Mouse::Tiny VERSION" with a patch contributed by
+          chocolateboy, RT #54383 (gfx)
     * Mouse::Util::MetaRole
         - Add Mouse::Util::MetaRole::apply_metaroles
             to catch up the latest Moose API for metaroles (gfx)
