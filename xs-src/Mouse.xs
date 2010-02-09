@@ -449,6 +449,24 @@ CODE:
         CV* const code_entity = (CV*)SvRV(code_ref);
         if(CvANON(code_entity)
             && CvGV(code_entity) /* a cv under construction has no gv */ ){
+            HV* dbsub;
+
+            /* update %DB::sub to make NYTProf happy */
+            if((PL_perldb & (PERLDBf_SUBLINE|PERLDB_NAMEANON))
+                && PL_DBsub && (dbsub = GvHV(PL_DBsub))
+            ){
+                /* see Perl_newATTRSUB() in op.c */
+                SV* const subname = sv_newmortal();
+                HE* orig;
+
+                gv_efullname3(subname, CvGV(code_entity), NULL);
+                orig = hv_fetch_ent(dbsub, subname, FALSE, 0U);
+                if(orig){
+                    gv_efullname3(subname, gv, NULL);
+                    (void)hv_store_ent(dbsub, subname, HeVAL(orig), 0U);
+                    SvREFCNT_inc_simple_void_NN(HeVAL(orig));
+                }
+            }
 
             CvGV(code_entity) = gv;
             CvANON_off(code_entity);
