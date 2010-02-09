@@ -34,3 +34,7 @@ my $point3d = Point3D->new(x => 5, y => 42, z => -5);
 print "point1: ", $point1->dump();
 print "point2: ", $point2->dump();
 print "point3: ", $point3d->dump();
+
+print "point3d->clear()\n";
+$point3d->clear();
+print "point3: ", $point3d->dump();
