@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.51
+    * Mouse::Object
+        - Support the global destruction flag in DEMOLISH (gfx)
+
 0.50 Mon Feb  8 13:43:19 2010
     * Mouse::Tiny
         - Allow "use Mouse::Tiny VERSION" with a patch contributed by
