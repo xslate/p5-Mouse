@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
-use Mouse::Role ();
+use Test::More;
+use Mouse ();
 
 my $role = Mouse::Meta::Role->create_anon_role(
     attributes => {
@@ -27,9 +27,10 @@ ok($visored->is_worn, "accessor was consumed");
 $visored->remove;
 ok(!$visored->is_worn, "method was consumed");
 
-like($role->name, qr/::__ANON__::/, "the role name (is " . $role->name . ")");
+like($role->name, qr/::__ANON__::/, "");
 ok($role->is_anon_role, "the role knows it's anonymous");
 
 ok(Mouse::Util::is_class_loaded(Mouse::Meta::Role->create_anon_role->name), "creating an anonymous role satisifes is_class_loaded");
-ok(Mouse::Util::find_meta(Mouse::Meta::Role->create_anon_role->name), "creating an anonymous role satisifes class_of");
+ok(Mouse::Util::class_of(Mouse::Meta::Role->create_anon_role->name), "creating an anonymous role satisifes class_of");
 
+done_testing;

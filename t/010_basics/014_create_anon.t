@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More;
 
 use Mouse::Meta::Class;
 
@@ -70,3 +70,18 @@ use Mouse::Meta::Class;
 
     ok $class_and_bar->name->bar_role_applied;
 }
+
+# This tests that a cached metaclass can be reinitialized and still retain its
+# metaclass object.
+{
+    my $name = Mouse::Meta::Class->create_anon_class(
+        superclasses => ['Class'],
+        cache        => 1,
+    )->name;
+
+    $name->meta->reinitialize( $name );
+
+    can_ok( $name, 'meta' );
+}
+
+done_testing;

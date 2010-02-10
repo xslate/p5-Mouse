@@ -2,9 +2,9 @@
 
 use strict;
 use warnings;
-use Test::More tests => 74;
-use Test::Exception;
 
+use Test::More;
+use Test::Exception;
 
 
 {
@@ -253,3 +253,5 @@ use Test::Exception;
         is( eval { $class->method }, "concrete b", "provided by concrete b" );
     }
 }
+
+done_testing;

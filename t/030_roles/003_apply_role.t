@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 86;
+use Test::More;
 use Test::Exception;
 
 {
@@ -92,7 +92,6 @@ ok( !$foobar_class_meta->does_role('OtherRole'),
     '... the FooBarClass->meta !does_role OtherRole' );
 
 foreach my $method_name (qw(bar baz foo boo blau goo)) {
-    #use Data::Dumper; $Data::Dumper::Maxdepth=1; diag(Dumper $foo_class_meta->{methods});
     ok( $foo_class_meta->has_method($method_name),
         '... FooClass has the method ' . $method_name );
     ok( $foobar_class_meta->has_method($method_name),
@@ -184,3 +183,5 @@ foreach my $foo ( $foo, $foobar ) {
 
     is( $foo->bar, $foo2, '... got the right value for bar now' );
 }
+
+done_testing;
