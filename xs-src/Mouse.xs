@@ -650,6 +650,7 @@ CODE:
 
             PUSHMARK(SP);
             XPUSHs(object);
+            XPUSHs(boolSV(PL_dirty));
             PUTBACK;
 
             call_sv(AvARRAY(demolishall)[i], G_VOID | G_EVAL);
