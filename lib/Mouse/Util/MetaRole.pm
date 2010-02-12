@@ -16,6 +16,10 @@ sub apply_metaroles {
         ?                                     $args{for}
         : Mouse::Util::get_metaclass_by_name( $args{for} );
 
+    if(!$for){
+        Carp::confess("You must pass an initialized class, but '$args{for}' has no metaclass");
+    }
+
     if ( Mouse::Util::is_a_metarole($for) ) {
         return _make_new_metaclass( $for, $args{role_metaroles}, 'role' );
     }
