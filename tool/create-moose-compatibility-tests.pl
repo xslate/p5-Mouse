@@ -66,7 +66,7 @@ File::Find::find(
                 };
                 $src =~ s/Mouse::(?:Util::)?is_class_loaded/Class::MOP::is_class_loaded/g;
                 $src =~ s/Mouse::(?:Util::)?load_class/Class::MOP::load_class/g;
-                $src =~ s/Mouse:::Util::class_of/Class::MOP::class_of/g;
+                $src =~ s/Mouse::Util::class_of/Class::MOP::class_of/g;
                 $src =~ s/Mouse/Moose/g;
                 $src;
             };
