@@ -40,25 +40,7 @@ sub new {
     my $self = bless \%args, $class;
     $self->compile_type_constraint() if !$self->{hand_optimized_type_constraint};
 
-    if($self->{type_constraints}){ # Union
-        my @coercions;
-        foreach my $type(@{$self->{type_constraints}}){
-            if($type->has_coercion){
-                push @coercions, $type;
-            }
-        }
-        if(@coercions){
-            $self->{_compiled_type_coercion} = sub {
-                my($thing) = @_;
-                foreach my $type(@coercions){
-                    my $value = $type->coerce($thing);
-                    return $value if $self->check($value);
-                }
-                return $thing;
-            };
-        }
-    }
-
+    $self->_compile_union_type_coercion() if $self->{type_constraints};
     return $self;
 }
 
@@ -115,16 +97,47 @@ sub _add_type_coercions{
         Carp::confess("Cannot add additional type coercions to Union types");
     }
     else{
+        $self->_compile_type_coercion();
+    }
+    return;
+}
+
+sub _compile_type_coercion {
+    my($self) = @_;
+
+    my @coercions = @{$self->{_coercion_map}};
+
+    $self->{_compiled_type_coercion} = sub {
+       my($thing) = @_;
+       foreach my $pair (@coercions) {
+            #my ($constraint, $converter) = @$pair;
+            if ($pair->[0]->check($thing)) {
+              local $_ = $thing;
+              return $pair->[1]->($thing);
+            }
+       }
+       return $thing;
+    };
+    return;
+}
+
+sub _compile_union_type_coercion {
+    my($self) = @_;
+
+    my @coercions;
+    foreach my $type(@{$self->{type_constraints}}){
+        if($type->has_coercion){
+            push @coercions, $type;
+        }
+    }
+    if(@coercions){
         $self->{_compiled_type_coercion} = sub {
-           my($thing) = @_;
-           foreach my $pair (@{$coercions}) {
-                #my ($constraint, $converter) = @$pair;
-                if ($pair->[0]->check($thing)) {
-                  local $_ = $thing;
-                  return $pair->[1]->($thing);
-                }
-           }
-           return $thing;
+            my($thing) = @_;
+            foreach my $type(@coercions){
+                my $value = $type->coerce($thing);
+                return $value if $self->check($value);
+            }
+            return $thing;
         };
     }
     return;
