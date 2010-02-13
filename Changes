@@ -1,8 +1,12 @@
 Revision history for Mouse
 
-0.51
+0.50_01
     * Mouse::Object
         - Support the global destruction flag in DEMOLISH (gfx)
+    * Mouse::Meta::Attribute
+        - Attribute constructors now warn very noisily about unknown (or
+          misspelled) arguments (gfx)
+
 
 0.50 Mon Feb  8 13:43:19 2010
     * Mouse::Tiny
