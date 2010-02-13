@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.50_01
+0.50_01 Sat Feb 13 16:39:48 2010
     * Mouse::Object
         - Support the global destruction flag in DEMOLISH (gfx)
     * Mouse::Meta::Attribute
