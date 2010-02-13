@@ -5,6 +5,44 @@ use Carp ();
 
 use Mouse::Meta::TypeConstraint;
 
+my %valid_options = map { $_ => undef } (
+  'accessor',
+  'auto_deref',
+  'builder',
+  'clearer',
+  'coerce',
+  'default',
+  'documentation',
+  'does',
+  'handles',
+  'init_arg',
+  'is',
+  'isa',
+  'lazy',
+  'lazy_build',
+  'name',
+  'predicate',
+  'reader',
+  'required',
+  'traits',
+  'trigger',
+  'type_constraint',
+  'weak_ref',
+  'writer',
+
+  # internally used
+  'associated_class',
+  'associated_methods',
+
+  # Moose defines, but Mouse doesn't
+  #'definition_context',
+  #'initializer',
+  #'insertion_order',
+
+  # special case for AttributeHelpers
+  'provides',
+  'curries',
+);
 
 sub new {
     my $class = shift;
@@ -21,19 +59,33 @@ sub new {
 
     $args->{name} = $name;
 
+    # check options
+    # (1) known by core
+    my @bad = grep{ !exists $valid_options{$_} } keys %{$args};
+
+    # (2) known by subclasses
+    if(@bad && $class ne __PACKAGE__){
+        my %valid_attrs = (
+            map { $_ => undef }
+            grep { defined }
+            map { $_->init_arg() }
+            $class->meta->get_all_attributes()
+        );
+        @bad = grep{ !exists $valid_attrs{$_} } @bad;
+    }
+
+    # (3) bad options found
+    if(@bad){
+        @bad = sort @bad;
+        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
+    }
+
     my $self = bless $args, $class;
 
     # extra attributes
     if($class ne __PACKAGE__){
         $class->meta->_initialize_object($self, $args);
     }
-
-# XXX: there is no fast way to check attribute validity
-#    my @bad = ...;
-#    if(@bad){
-#        @bad = sort @bad;
-#        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
-#    }
 
     return $self;
 }
@@ -147,6 +199,14 @@ sub clone_and_inherit_options{
             $args->{$name} = $self->{$name};
         }
     }
+
+    # remove temporary caches
+    foreach my $attr(keys %{$args}){
+        if($attr =~ /\A _/xms){
+            delete $args->{$attr};
+        }
+    }
+
     return $attribute_class->new($self->name, $args);
 }
 
