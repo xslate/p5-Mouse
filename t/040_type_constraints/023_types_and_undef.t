@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 54;
 use Test::Exception;
 
-
+use t::lib::MooseCompat;
 
 {
     package Foo;
