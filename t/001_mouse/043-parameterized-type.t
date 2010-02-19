@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 51;
+use Test::More tests => 54;
 use Test::Exception;
 
 use Tie::Hash;
@@ -208,6 +208,17 @@ ok!$hash_of_int->check(\%th);
 my %th_clone;
 while(my($k, $v) = each %th){
     $th_clone{$k} = $v;
+}
+
+is( $hash_of_int->type_parameter, 'Int' );
+
+if('Mouse' eq ('Mo' . 'use')){ # under Mouse
+    ok $hash_of_int->__is_parameterized();
+    ok!$hash_of_int->type_parameter->__is_parameterized();
+}
+else{ # under Moose
+    ok $hash_of_int->can('type_parameter');
+    ok!$hash_of_int->type_parameter->can('type_parameter');
 }
 
 is_deeply \%th_clone, \%th, 'the hash iterator is initialized';

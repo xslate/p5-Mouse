@@ -511,6 +511,9 @@ sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
 sub message { $_[0]->{message} }
 
+sub type_parameter { $_[0]->{type_parameter} }
+sub __is_parameterized { exists $_[0]->{type_parameter} }
+
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 
 sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }

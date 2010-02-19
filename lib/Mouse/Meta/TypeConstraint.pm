@@ -211,12 +211,12 @@ sub parameterize{
         || Carp::confess("The $name constraint cannot be used, because $param doesn't subtype from a parameterizable type");
 
     return Mouse::Meta::TypeConstraint->new(
-        name        => $name,
-        parent      => $self,
-        parameter   => $param,
-        constraint  => $generator->($param), # must be 'constraint', not 'optimized'
+        name           => $name,
+        parent         => $self,
+        type_parameter => $param,
+        constraint     => $generator->($param), # must be 'constraint', not 'optimized'
 
-        type        => 'Parameterized',
+        type           => 'Parameterized',
     );
 }
 
