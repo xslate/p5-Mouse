@@ -3,7 +3,7 @@ use Mouse::Util qw(:meta); # enables strict and warnings
 use Scalar::Util;
 
 sub _generate_delegation{
-    my (undef, $attribute, $handle_name, $method_to_call) = @_;
+    my (undef, $attribute, $handle_name, $method_to_call, @curried_args) = @_;
 
     my $reader = $attribute->get_read_method_ref();
     return sub {
@@ -21,7 +21,7 @@ sub _generate_delegation{
                     . $error
              );
         }
-        $proxy->$method_to_call(@_);
+        $proxy->$method_to_call(@curried_args, @_);
     };
 }
 

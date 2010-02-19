@@ -375,7 +375,10 @@ sub _make_delegation_method {
     my $delegator = $self->delegation_metaclass;
     Mouse::Util::load_class($delegator);
 
-    return $delegator->_generate_delegation($self, $handle, $method_to_call);
+    return $delegator->_generate_delegation($self, $handle,
+        ref($method_to_call) eq 'ARRAY'
+            ? @{$method_to_call}
+            :   $method_to_call);
 }
 
 sub throw_error{

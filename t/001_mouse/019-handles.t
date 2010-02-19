@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 24;
+use Test::More tests => 26;
 use Test::Exception;
 
 do {
@@ -17,6 +17,11 @@ do {
     sub name { $_[0]->{name} = $_[1] if @_ > 1; $_[0]->{name} }
     sub age { $_[0]->{age} = $_[1] if @_ > 1; $_[0]->{age} }
 
+    sub make_string {
+        my($self, $template) = @_;
+        return sprintf $template, $self->name;
+    }
+
     package Class;
     use Mouse;
 
@@ -28,6 +33,7 @@ do {
         handles   => {
             person_name => 'name',
             person_age  => 'age',
+            person_hello => [make_string => 'Hello, %s'],
         },
     );
 
@@ -51,6 +57,7 @@ is($object->person_name, "Todd", "handles method");
 is($object->person->name, "Todd", "traditional lookup");
 is($object->person_age, 37, "handles method");
 is($object->person->age, 37, "traditional lookup");
+is($object->person_hello, 'Hello, Todd', 'curring');
 
 my $object2 = Class->new(person => Person->new(name => "Philbert"));
 ok($object2->has_person, "we have a person from the constructor");
@@ -58,7 +65,7 @@ is($object2->person_name, "Philbert", "handles method");
 is($object2->person->name, "Philbert", "traditional lookup");
 is($object2->person_age, undef, "no age because we didn't use the default");
 is($object2->person->age, undef, "no age because we didn't use the default");
-
+is($object2->person_hello, 'Hello, Philbert', 'currying');
 
 ok($object->quid, "we have a Shawn");
 is($object->name, "Shawn", "name handle");
@@ -74,7 +81,7 @@ is_deeply(
 
 is_deeply(
     $object->meta->get_attribute('person')->handles,
-    { person_name => 'name', person_age => 'age' },
+    { person_name => 'name', person_age => 'age', person_hello => [make_string => 'Hello, %s']},
     "correct handles layout for 'person'",
 );
 
