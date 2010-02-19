@@ -1,8 +1,12 @@
 Revision history for Mouse
 
+0.50_02
+    * Mouse::Meta::Attribute
+        - Implement argument currying for delegation (gfx)
+
 0.50_01 Sat Feb 13 16:39:48 2010
     * Mouse
-        - before/around/after now accept regexps to be modified
+        - before/around/after now accept regexps (gfx)
     * Mouse::Object
         - Support the global destruction flag in DEMOLISH (gfx)
     * Mouse::Meta::Attribute
