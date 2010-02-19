@@ -220,6 +220,15 @@ sub parameterize{
     );
 }
 
+sub assert_valid {
+    my ($self, $value) = @_;
+
+    if(!$self->_compiled_type_constraint->($value)){
+        Carp::confess($self->get_message($value));
+    }
+    return 1;
+}
+
 1;
 __END__
 
