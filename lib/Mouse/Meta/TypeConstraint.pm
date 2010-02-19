@@ -67,6 +67,10 @@ sub name;
 sub parent;
 sub message;
 sub has_coercion;
+
+sub type_parameter;
+sub __is_parameterized;
+
 sub _compiled_type_constraint;
 sub _compiled_type_coercion;
 
