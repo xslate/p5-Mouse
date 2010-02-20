@@ -176,6 +176,9 @@ This document describes Mouse version 0.50_01
         $self->y(0);
     }
 
+
+    __PACKAGE__->meta->make_immutable();
+
     package Point3D;
     use Mouse;
 
@@ -187,6 +190,8 @@ This document describes Mouse version 0.50_01
         my $self = shift;
         $self->z(0);
     };
+
+    __PACKAGE__->meta->make_immutable();
 
 =head1 DESCRIPTION
 
