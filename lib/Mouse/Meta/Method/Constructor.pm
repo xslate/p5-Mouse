@@ -51,6 +51,12 @@ sub _generate_processattrs {
     my @res;
 
     my $has_triggers;
+    my $strict_constructor = $metaclass->__strict_constructor;
+
+
+    if($strict_constructor){
+        push @res, 'my $used = 0;';
+    }
 
     for my $index (0 .. @$attrs - 1) {
         my $code = '';
@@ -100,7 +106,11 @@ sub _generate_processattrs {
                 $code .= "push \@triggers, [$attr_var\->{trigger}, $instance_slot];\n";
             }
 
-            $code .= "\n} else {\n";
+            if ($strict_constructor){
+                $code .= '$used++;' . "\n";
+            }
+
+            $code .= "\n} else {\n"; # $value exists
         }
 
         if ($attr->has_default || $attr->has_builder) {
@@ -141,13 +151,18 @@ sub _generate_processattrs {
         push @res, $code;
     }
 
+    if($strict_constructor){
+        push @res, q{if($used < keys %{$args})}
+            . q{{ Mouse::Meta::Method::Constructor::_report_unknown_args($metaclass, \@attrs, $instance, $args) }};
+    }
+
     if($metaclass->is_anon_class){
         push @res, q{$instance->{__METACLASS__} = $metaclass;};
     }
 
     if($has_triggers){
         unshift @res, q{my @triggers;};
-        push    @res,  q{$_->[0]->($instance, $_->[1]) for @triggers;};
+        push    @res, q{$_->[0]->($instance, $_->[1]) for @triggers;};
     }
 
     return join "\n", @res;
@@ -186,6 +201,30 @@ sub _generate_BUILDALL {
         }
     }
     return join "\n", @code;
+}
+
+sub _report_unknown_args {
+    my($metaclass, $attrs, $instance, $args) = @_;
+
+    my @unknowns;
+    my %init_args;
+    foreach my $attr(@{$attrs}){
+        my $init_arg = $attr->init_arg;
+        if(defined $init_arg){
+            $init_args{$init_arg}++;
+        }
+    }
+
+    while(my $key = each %{$args}){
+        if(!exists $init_args{$key}){
+            push @unknowns, $key;
+        }
+    }
+
+    $metaclass->throw_error( sprintf
+        "Unknown attribute passed to the constructor of %s: %s",
+        ref($instance), join ', ', @unknowns
+    );
 }
 
 1;

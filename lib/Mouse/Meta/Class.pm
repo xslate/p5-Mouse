@@ -244,6 +244,8 @@ sub make_immutable {
 
     $self->{is_immutable}++;
 
+    $self->{strict_constructor} = $args{strict_constructor};
+
     if ($args{inline_constructor}) {
         my $c = $self->constructor_class;
         Mouse::Util::load_class($c);

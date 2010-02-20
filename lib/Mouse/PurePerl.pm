@@ -325,6 +325,8 @@ sub _initialize_object{
 
 sub is_immutable {  $_[0]->{is_immutable} }
 
+sub __strict_constructor{ $_[0]->{strict_constructor} }
+
 package
     Mouse::Meta::Role;
 

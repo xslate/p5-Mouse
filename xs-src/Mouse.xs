@@ -21,6 +21,8 @@ enum mouse_xc_flags_t {
     MOUSEf_XC_IS_IMMUTABLE   = 0x0001,
     MOUSEf_XC_IS_ANON        = 0x0002,
     MOUSEf_XC_HAS_BUILDARGS  = 0x0004,
+    MOUSEf_XC_CONSTRUCTOR_IS_STRICT
+                             = 0x0008,
 
     MOUSEf_XC_mask           = 0xFFFF /* not used */
 };
@@ -113,6 +115,10 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
 
     if(mouse_class_has_custom_buildargs(aTHX_ stash)){
         flags |= MOUSEf_XC_HAS_BUILDARGS;
+    }
+
+    if(predicate_calls(metaclass, "__strict_constructor")){
+        flags |= MOUSEf_XC_CONSTRUCTOR_IS_STRICT;
     }
 
     av_store(xc, MOUSE_XC_FLAGS,       newSVuv(flags));
@@ -240,12 +246,52 @@ mouse_buildargs(pTHX_ SV* metaclass, SV* const klass, I32 ax, I32 items) {
 }
 
 static void
+mouse_report_unknown_args(pTHX_ SV* const meta, AV* const attrs, HV* const args) {
+    HV* const attr_map = newHV_mortal();
+    SV* const unknown  = newSVpvs_flags("", SVs_TEMP);
+    I32 const len      = AvFILLp(attrs) + 1;
+    I32 i;
+    HE* he;
+
+    for(i = 0; i < len; i++){
+        SV* const attr = MOUSE_av_at(attrs, i);
+        AV* const xa   = mouse_get_xa(aTHX_ attr);
+        SV* const init_arg = MOUSE_xa_init_arg(xa);
+        if(SvOK(init_arg)){
+            (void)hv_store_ent(attr_map, init_arg, &PL_sv_undef, 0U);
+        }
+    }
+
+    hv_iterinit(args);
+    while((he = hv_iternext(args))){
+        SV* const key = hv_iterkeysv(he);
+        if(!hv_exists_ent(attr_map, key, 0U)){
+            sv_catpvf(unknown, "%"SVf", ", key);
+        }
+    }
+
+    if(SvCUR(unknown) > 0){
+        SvCUR(unknown) -= 2; /* chop "," */
+    }
+    else{
+        sv_setpvs(unknown, "(unknown)");
+    }
+
+    mouse_throw_error(meta, NULL,
+        "Unknown attribute passed to the constructor of %"SVf": %"SVf,
+        mcall0(meta, mouse_name), unknown);
+}
+
+
+
+static void
 mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const ignore_triggers) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
     I32 len         = AvFILLp(attrs) + 1;
     I32 i;
     AV* triggers_queue = NULL;
+    I32 used = 0;
 
     assert(meta || object);
     assert(args);
@@ -259,6 +305,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
         triggers_queue = newAV_mortal();
     }
 
+    /* for each attribute */
     for(i = 0; i < len; i++){
         SV* const attr = MOUSE_av_at(attrs, i);
         AV* const xa   = mouse_get_xa(aTHX_ attr);
@@ -284,6 +331,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
 
                 av_push(triggers_queue, (SV*)pair);
             }
+            used++;
         }
         else { /* no init arg */
             if(flags & (MOUSEf_ATTR_HAS_DEFAULT | MOUSEf_ATTR_HAS_BUILDER)){
@@ -295,7 +343,11 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
                 mouse_throw_error(attr, NULL, "Attribute (%"SVf") is required", slot);
             }
         }
-    } /* for each attributes */
+    } /* for each attribute */
+
+    if(MOUSE_xc_flags(xc) & MOUSEf_XC_CONSTRUCTOR_IS_STRICT && used < HvUSEDKEYS(args)){
+        mouse_report_unknown_args(aTHX_ meta, attrs, args);
+    }
 
     if(triggers_queue){
         len = AvFILLp(triggers_queue) + 1;
@@ -480,6 +532,7 @@ BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
     INSTALL_SIMPLE_READER(Class, is_immutable);
+    INSTALL_SIMPLE_READER_WITH_KEY(Class, __strict_constructor, strict_constructor);
 
     INSTALL_CLASS_HOLDER(Class, method_metaclass,     "Mouse::Meta::Method");
     INSTALL_CLASS_HOLDER(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
