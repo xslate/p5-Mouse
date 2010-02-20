@@ -1,11 +1,11 @@
 Revision history for Mouse
 
-0.50_02
+0.50_02 Sat Feb 20 14:37:16 2010
     * Mouse::Meta::Attribute
         - Implement argument currying for delegation (gfx)
     * Mouse::Meta::Method::Constructor
-        - Implement strict constructors, which will warn unkown constructor
-          arguments. Note that it is currently Mouse specific (gfx)
+        - Implement strict constructors experimentally, which will warn
+          unkown constructor arguments (gfx)
 
 0.50_01 Sat Feb 13 16:39:48 2010
     * Mouse
