@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-
+no warnings 'once'; # work around 5.6.2
 
 {
     package Foo;
