@@ -41,7 +41,7 @@ The sugary API is highly compatible with Moose.
 
 =head3 Meta object protocols
 
-Any MOP in Mouse has no attributes.
+Any MOP in Mouse has no attributes by default.
 
 For this reason, C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
 B<Don not make metaclasses immutable>.
@@ -58,6 +58,14 @@ Role exclusion, C<exclude()>, is not implemented.
 
 C<< use Mouse -metaclass => ... >> are not implemented.
 Use C<< use Mouse -traits => ... >> instead.
+
+=head3 Mouse::Meta::Attribute::Native
+
+Native traits are not supported directly, but C<MouseX::NativeTraits> is
+available on CPAN. Once you have installed it, you can use it as the same way
+in Moose. That is, native traits are automatically loaded by Mouse.
+
+See L<MouseX::NativeTraits> for details.
 
 =head2 Notes about Moose::Cookbook
 
