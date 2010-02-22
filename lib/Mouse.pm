@@ -212,10 +212,9 @@ B<no dependencies> except for testing modules.
 
 =head2 MOOSE COMPATIBILITY
 
-Compatibility with Moose has been the utmost concern. Fewer than 1% of the
-tests fail when run against Moose instead of Mouse. Mouse code coverage is also
-over 96%. Even the error messages are taken from Moose. The Mouse code just
-runs the test suite 4x faster.
+Compatibility with Moose has been the utmost concern. The sugary interface is
+highly compatible with Moose. Even the error messages are taken from Moose.
+The Mouse code just runs the test suite 4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
@@ -226,7 +225,7 @@ Moose, if you run into weird errors, it would be worth running:
     ANY_MOOSE=Moose perl your-script.pl
 
 to see if the bug is caused by Mouse. Moose's diagnostics and validation are
-also much better.
+also better.
 
 See also L<Mouse::Spec> for compatibility and incompatibility with Moose.
 
