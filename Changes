@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.50_03
+    * Mouse::Util::TypeConstraints
+        - Implement the built-in type hierarchy (gfx)
+
 0.50_02 Sat Feb 20 14:37:16 2010
     * Mouse::Meta::Attribute
         - Implement argument currying for delegation (gfx)

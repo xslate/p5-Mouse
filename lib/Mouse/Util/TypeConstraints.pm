@@ -22,6 +22,64 @@ Mouse::Exporter->setup_import_methods(
 
 my %TYPE;
 
+# The root type
+$TYPE{Any} = Mouse::Meta::TypeConstraint->new(
+    name => 'Any',
+);
+
+my @builtins = (
+    # $name    => $parent,   $code,
+
+    # the base type
+    Item       => 'Any',     undef,
+
+    # the maybe[] type
+    Maybe      => 'Item',    undef,
+
+    # value types
+    Undef      => 'Item',    \&Undef,
+    Defined    => 'Item',    \&Defined,
+    Bool       => 'Item',    \&Bool,
+    Value      => 'Defined', \&Value,
+    Str        => 'Value',   \&Str,
+    Num        => 'Str',     \&Num,
+    Int        => 'Num',     \&Int,
+
+    # ref types
+    Ref        => 'Defined', \&Ref,
+    ScalarRef  => 'Ref',     \&ScalarRef,
+    ArrayRef   => 'Ref',     \&ArrayRef,
+    HashRef    => 'Ref',     \&HashRef,
+    CodeRef    => 'Ref',     \&CodeRef,
+    RegexpRef  => 'Ref',     \&RegexpRef,
+    GlobRef    => 'Ref',     \&GlobRef,
+
+    # object types
+    FileHandle => 'GlobRef', \&FileHandle,
+    Object     => 'Ref',     \&Object,
+
+    # special string types
+    ClassName  => 'Str',       \&ClassName,
+    RoleName   => 'ClassName', \&RoleName,
+);
+
+
+while (my ($name, $parent, $code) = splice @builtins, 0, 3) {
+    $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
+        name      => $name,
+        parent    => $TYPE{$parent},
+        optimized => $code,
+    );
+}
+
+# make it parametarizable
+
+$TYPE{Maybe}   {constraint_generator} = \&_parameterize_Maybe_for;
+$TYPE{ArrayRef}{constraint_generator} = \&_parameterize_ArrayRef_for;
+$TYPE{HashRef} {constraint_generator} = \&_parameterize_HashRef_for;
+
+# sugars
+
 sub as          ($) { (as          => $_[0]) }
 sub where       (&) { (where       => $_[0]) }
 sub message     (&) { (message     => $_[0]) }
@@ -30,53 +88,19 @@ sub optimize_as (&) { (optimize_as => $_[0]) }
 sub from    { @_ }
 sub via (&) { $_[0] }
 
-BEGIN {
-    my %builtins = (
-        Any        => undef, # null check
-        Item       => undef, # null check
-        Maybe      => undef, # null check
+# type utilities
 
-        Bool       => \&Bool,
-        Undef      => \&Undef,
-        Defined    => \&Defined,
-        Value      => \&Value,
-        Num        => \&Num,
-        Int        => \&Int,
-        Str        => \&Str,
-        Ref        => \&Ref,
-
-        ScalarRef  => \&ScalarRef,
-        ArrayRef   => \&ArrayRef,
-        HashRef    => \&HashRef,
-        CodeRef    => \&CodeRef,
-        RegexpRef  => \&RegexpRef,
-        GlobRef    => \&GlobRef,
-
-        FileHandle => \&FileHandle,
-
-        Object     => \&Object,
-
-        ClassName  => \&ClassName,
-        RoleName   => \&RoleName,
-    );
-
-    while (my ($name, $code) = each %builtins) {
-        $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
-            name      => $name,
-            optimized => $code,
-        );
-    }
-
-    sub optimized_constraints { # DEPRECATED
-        Carp::cluck('optimized_constraints() has been deprecated');
-        return \%TYPE;
-    }
-
-    my @builtins = keys %TYPE;
-    sub list_all_builtin_type_constraints { @builtins }
-
-    sub list_all_type_constraints         { keys %TYPE }
+sub optimized_constraints { # DEPRECATED
+    Carp::cluck('optimized_constraints() has been deprecated');
+    return \%TYPE;
 }
+
+undef @builtins;        # free the allocated memory
+@builtins = keys %TYPE; # reuse it
+sub list_all_builtin_type_constraints { @builtins }
+
+sub list_all_type_constraints         { keys %TYPE }
+
 
 sub _create_type{
     my $mode = shift;
@@ -113,11 +137,20 @@ sub _create_type{
     }
 
     if(defined $name){
-        my $package_defined_in = $args{package_defined_in} ||= caller(1);
-        my $existing = $TYPE{$name};
-        if($existing && $existing->{package_defined_in} ne $package_defined_in){
-            confess("The type constraint '$name' has already been created in "
-                  . "$existing->{package_defined_in} and cannot be created again in $package_defined_in");
+        # set 'package_defined_in' only if it is not a core package
+        my $this = $args{package_defined_in};
+        if(!$this){
+            $this = caller(1);
+            if($this !~ /\A Mouse \b/xms){
+                $args{package_defined_in} = $this;
+            }
+        }
+
+        if($TYPE{$name}){
+            my $that = $TYPE{$name}->{package_defined_in} || __PACKAGE__;
+            ($this eq $that) or confess(
+                "The type constraint '$name' has already been created in $that and cannot be created again in $this"
+            );
         }
     }
     else{
@@ -164,22 +197,22 @@ sub coerce {
 sub class_type {
     my($name, $options) = @_;
     my $class = $options->{class} || $name;
+
+    # ClassType
     return _create_type 'subtype', $name => (
         as           => 'Object',
         optimized_as => Mouse::Util::generate_isa_predicate_for($class),
-
-        type => 'Class',
     );
 }
 
 sub role_type {
     my($name, $options) = @_;
     my $role = $options->{role} || $name;
+
+    # RoleType
     return _create_type 'subtype', $name => (
         as           => 'Object',
         optimized_as => sub { Scalar::Util::blessed($_[0]) && does_role($_[0], $role) },
-
-        type => 'Role',
     );
 }
 
@@ -192,10 +225,9 @@ sub duck_type {
 
     @methods = (@_ == 1 && ref($_[0]) eq 'ARRAY') ? @{$_[0]} : @_;
 
+    # DuckType
     return _create_type 'type', $name => (
         optimized_as => Mouse::Util::generate_can_predicate_for(\@methods),
-
-        type => 'DuckType',
     );
 }
 
@@ -208,10 +240,9 @@ sub enum {
 
     %valid = map{ $_ => undef } (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
 
+    # EnumType
     return _create_type 'type', $name => (
         optimized_as  => sub{ defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]} },
-
-        type => 'Enum',
     );
 }
 
@@ -231,10 +262,6 @@ sub _find_or_create_regular_type{
     }
 }
 
-$TYPE{ArrayRef}{constraint_generator} = \&_parameterize_ArrayRef_for;
-$TYPE{HashRef}{constraint_generator}  = \&_parameterize_HashRef_for;
-$TYPE{Maybe}{constraint_generator}    = \&_parameterize_Maybe_for;
-
 sub _find_or_create_parameterized_type{
     my($base, $param) = @_;
 
@@ -248,11 +275,10 @@ sub _find_or_create_union_type{
 
     my $name = join '|', @types;
 
+    # UnionType
     $TYPE{$name} ||= Mouse::Meta::TypeConstraint->new(
         name              => $name,
         type_constraints  => \@types,
-
-        type              => 'Union',
     );
 }
 
@@ -329,6 +355,7 @@ sub _parse_type{
 sub find_type_constraint {
     my($spec) = @_;
     return $spec if Mouse::Util::is_a_type_constraint($spec);
+    return undef if !defined $spec;
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec};
@@ -337,6 +364,7 @@ sub find_type_constraint {
 sub find_or_parse_type_constraint {
     my($spec) = @_;
     return $spec if Mouse::Util::is_a_type_constraint($spec);
+    return undef if !defined $spec;
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec} || do{
