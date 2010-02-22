@@ -236,7 +236,7 @@ Mouse::Meta::Method::Constructor - A Mouse method generator for constructors
 
 =head1 VERSION
 
-This document describes Mouse version 0.50_02
+This document describes Mouse version 0.50_03
 
 =head1 SEE ALSO
 

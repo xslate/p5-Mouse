@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.50_03
+0.50_03 Mon Feb 22 17:56:47 2010
     * Mouse::Meta::Attribute
         - Catch up about Moose 0.84 about warnings (gfx)
           - If an attribute generates no accessors, it will be warned
