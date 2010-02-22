@@ -2,8 +2,7 @@ package Mouse::PurePerl;
 
 require Mouse::Util;
 
-package
-    Mouse::Util;
+package Mouse::Util;
 
 use strict;
 use warnings;
@@ -124,8 +123,7 @@ sub generate_can_predicate_for {
     return $predicate;
 }
 
-package
-    Mouse::Util::TypeConstraints;
+package Mouse::Util::TypeConstraints;
 
 use Scalar::Util qw(blessed looks_like_number openhandle);
 
@@ -199,8 +197,7 @@ sub _parameterize_Maybe_for {
 
 
 
-package
-    Mouse::Meta::Module;
+package Mouse::Meta::Module;
 
 sub name          { $_[0]->{package} }
 
@@ -236,8 +233,7 @@ sub add_method {
     return;
 }
 
-package
-    Mouse::Meta::Class;
+package Mouse::Meta::Class;
 
 sub method_metaclass    { $_[0]->{method_metaclass}    || 'Mouse::Meta::Method'    }
 sub attribute_metaclass { $_[0]->{attribute_metaclass} || 'Mouse::Meta::Attribute' }
@@ -327,8 +323,7 @@ sub is_immutable {  $_[0]->{is_immutable} }
 
 sub __strict_constructor{ $_[0]->{strict_constructor} }
 
-package
-    Mouse::Meta::Role;
+package Mouse::Meta::Role;
 
 sub method_metaclass{ $_[0]->{method_metaclass} || 'Mouse::Meta::Role::Method' }
 
@@ -338,8 +333,7 @@ sub is_anon_role{
 
 sub get_roles { $_[0]->{roles} }
 
-package
-    Mouse::Meta::Attribute;
+package Mouse::Meta::Attribute;
 
 require Mouse::Meta::Method::Accessor;
 
@@ -506,8 +500,7 @@ sub _process_options{
 }
 
 
-package
-    Mouse::Meta::TypeConstraint;
+package Mouse::Meta::TypeConstraint;
 
 sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
@@ -569,8 +562,7 @@ sub compile_type_constraint{
     return;
 }
 
-package
-    Mouse::Object;
+package Mouse::Object;
 
 
 sub BUILDARGS {
