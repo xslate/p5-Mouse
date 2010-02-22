@@ -335,6 +335,12 @@ sub install_accessors{
         $attribute->create($metaclass, $attribute->name, %{$attribute});
     }
 
+    if(!$attribute->{associated_methods} && ($attribute->{is} || '') ne 'bare'){
+        Carp::cluck(
+            'Attribute (' . $attribute->name . ') of class ' . $metaclass->name
+            . ' has no associated methods (did you mean to provide an "is" argument?)');
+    }
+
     return;
 }
 

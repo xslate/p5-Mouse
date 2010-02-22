@@ -1,6 +1,11 @@
 Revision history for Mouse
 
 0.50_03
+    * Mouse::Meta::Attribute
+        - Catch up about Moose 0.84 about warnings (gfx)
+          - If an attribute generates no accessors, it will be warned
+          - If both 'isa' and 'does' are specified and 'isa' does not do
+            'does', then it will be warned
     * Mouse::Object
         - Fix a possible segv which is caused by destructors (gfx)
     * Mouse::Util::TypeConstraints

@@ -184,6 +184,43 @@ mouse_xa_set_default(pTHX_ AV* const xa, SV* const object) {
     return value;
 }
 
+static void
+mouse_check_isa_does_does(pTHX_ SV* const klass, SV* const name, SV* const isa, SV* const does){
+    STRLEN len;
+    const char* const pv = SvPV_const(isa, len); /* need strigify */
+    bool does_ok;
+    dSP;
+
+    ENTER;
+    SAVETMPS;
+
+    SAVESPTR(ERRSV);
+    ERRSV = sv_newmortal();
+
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    mPUSHp(pv, len);
+    PUSHs(does);
+    PUTBACK;
+
+    call_method("does", G_EVAL | G_SCALAR);
+
+    SPAGAIN;
+    does_ok = sv_true(POPs);
+    PUTBACK;
+
+    FREETMPS;
+    LEAVE;
+
+    if(!does_ok){
+        mouse_throw_error(klass, NULL,
+            "Cannot have both an isa option and a does option"
+            "because '%"SVf"' does not do '%"SVf"' on attribute (%"SVf")",
+            isa, does, name
+        );
+    }
+}
+
 MODULE = Mouse::Meta::Attribute  PACKAGE = Mouse::Meta::Attribute
 
 PROTOTYPES: DISABLE
@@ -327,17 +364,25 @@ CODE:
         tc = newSVsv(POPs);
         PUTBACK;
     }
-    else if((svp = hv_fetchs(args, "does", FALSE))){
-        SPAGAIN;
-        PUSHMARK(SP);
-        XPUSHs(*svp);
-        PUTBACK;
 
-        call_pv("Mouse::Util::TypeConstraints::find_or_create_does_type_constraint",
-            G_SCALAR);
-        SPAGAIN;
-        tc = newSVsv(POPs);
-        PUTBACK;
+    if((svp = hv_fetchs(args, "does", FALSE))){
+        /* check 'isa' does 'does' */
+        if(tc){
+            mouse_check_isa_does_does(aTHX_ klass, name, tc, *svp);
+            /* nothing to do */
+        }
+        else{
+            SPAGAIN;
+            PUSHMARK(SP);
+            XPUSHs(*svp);
+            PUTBACK;
+
+            call_pv("Mouse::Util::TypeConstraints::find_or_create_does_type_constraint",
+                G_SCALAR);
+            SPAGAIN;
+            tc = newSVsv(POPs);
+            PUTBACK;
+        }
     }
     if(tc){
         (void)hv_stores(args, "type_constraint", tc);

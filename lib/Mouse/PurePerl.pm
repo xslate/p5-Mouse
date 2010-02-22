@@ -447,12 +447,23 @@ sub _process_options{
 
     my $tc;
     if(exists $args->{isa}){
-        $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($args->{isa});
+        $tc = $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($args->{isa});
     }
-    elsif(exists $args->{does}){
-        $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($args->{does});
+
+    if(exists $args->{does}){
+        if(defined $tc){ # both isa and does supplied
+            my $does_ok = do{
+                local $@;
+                eval{ "$tc"->does($args) };
+            };
+            if(!$does_ok){
+                $class->throw_error("Cannot have both an isa option and a does option because '$tc' does not do '$args->{does}' on attribute ($name)");
+            }
+        }
+        else {
+            $tc = $args->{type_constraint} = Mouse::Util::TypeConstraints::find_or_create_does_type_constraint($args->{does});
+        }
     }
-    $tc = $args->{type_constraint};
 
     if($args->{coerce}){
         defined($tc)

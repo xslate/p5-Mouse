@@ -28,7 +28,7 @@ use Test::Exception;
     # if isa and does appear together, then see if Class->does(Role)
     # if it does work... then the does() check is actually not needed
     # since the isa() check will imply the does() check
-    has 'foo' => (is => 'rw', isa => 'Foo::Class', does => 'Foo::Role');
+    has 'foo' => (is => 'rw', isa => 'Foo::Class');
 
     package Foo::Class;
     use Mouse;
@@ -77,12 +77,10 @@ lives_ok {
     use Test::More;
     use Mouse;
 
-    local $TODO = 'setting both isa and does';
-
     # if isa and does appear together, then see if Class->does(Role)
     # if it does not,.. we have a conflict... so we die loudly
     ::dies_ok {
-        has 'foo' => (isa => 'Foo::Class', does => 'Bar::Class');
+        has 'foo' => (is => 'rw', isa => 'Foo::Class', does => 'Bar::Class');
     } '... cannot have a does() which is not done by the isa()';
 }
 
@@ -97,12 +95,10 @@ lives_ok {
     use Test::More;
     use Mouse;
 
-    local $TODO = 'setting both isa and does';
-
     # if isa and does appear together, then see if Class->does(Role)
     # if it does not,.. we have a conflict... so we die loudly
     ::dies_ok {
-        has 'foo' => (isa => 'Bling', does => 'Bar::Class');
+        has 'foo' => (is => 'rw', isa => 'Bling', does => 'Bar::Class');
     } '... cannot have a isa() which is cannot does()';
 }
 
