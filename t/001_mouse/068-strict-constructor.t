@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+use if 'Mouse' eq 'Moose',
+    'Test::More' => skip_all => 'Moose does nots support strict constructor';
 use Test::More;
 use Test::Exception;
 
