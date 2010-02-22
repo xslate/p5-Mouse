@@ -1,21 +1,15 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 26;
+use Test::More;
 use Test::Exception;
 
 do {
     package Person;
+    use Mouse;
 
-    sub new {
-        my $class = shift;
-        my %args  = @_;
-
-        bless \%args, $class;
-    }
-
-    sub name { $_[0]->{name} = $_[1] if @_ > 1; $_[0]->{name} }
-    sub age { $_[0]->{age} = $_[1] if @_ > 1; $_[0]->{age} }
+    has name => (is => 'rw');
+    has age  => (is => 'rw');
 
     sub make_string {
         my($self, $template) = @_;
@@ -38,11 +32,13 @@ do {
     );
 
     has me => (
-        is => 'rw',
+        is  => 'rw',
+        isa => 'Person',
         default => sub { Person->new(age => 21, name => "Shawn") },
         predicate => 'quid',
         handles => [qw/name age/],
     );
+
 };
 
 can_ok(Class => qw(person has_person person_name person_age name age quid));
@@ -85,29 +81,26 @@ is_deeply(
     "correct handles layout for 'person'",
 );
 
-
-{
-    throws_ok{
-        $object->person(undef);
-        $object->person_name();
-    } qr/Cannot delegate person_name to name because the value of person is not defined/;
-
-    throws_ok{
-        $object->person([]);
-        $object->person_age();
-    } qr/Cannot delegate person_age to age because the value of person is not an object/;
-}
-
-eval{
+throws_ok{
     $object->person(undef);
     $object->person_name();
-};
-like $@, qr/Cannot delegate person_name to name because the value of person is not defined/;
+} qr/Cannot delegate person_name to name because the value of person is not defined/;
 
-eval{
+throws_ok{
     $object->person([]);
     $object->person_age();
-};
-like $@, qr/Cannot delegate person_age to age because the value of person is not an object/;
+} qr/Cannot delegate person_age to age because the value of person is not an object/;
 
+throws_ok{
+    $object->person(undef);
+    $object->person_name();
+} qr/Cannot delegate person_name to name because the value of person is not defined/;
+
+throws_ok{
+    $object->person([]);
+    $object->person_age();
+} qr/Cannot delegate person_age to age because the value of person is not an object/;
+
+
+done_testing;
 
