@@ -35,8 +35,6 @@ sub new {
         Carp::confess("Constraint for $args{name} is not a CODE reference");
     }
 
-    $args{package_defined_in} ||= caller;
-
     my $self = bless \%args, $class;
     $self->compile_type_constraint() if !$self->{hand_optimized_type_constraint};
 
