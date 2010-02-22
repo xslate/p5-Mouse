@@ -693,11 +693,14 @@ CODE:
     len      = AvFILLp(demolishall) + 1;
     if(len > 0){
         GV* const statusvalue = gv_fetchpvs("?", 0, SVt_PV);
-        SAVESPTR(GvSV(statusvalue)); /* local $? */
-        SAVESPTR(ERRSV); /* local $@ */
 
-        GvSV(statusvalue) = sv_newmortal();
-        ERRSV             = newSVpvs_flags("", SVs_TEMP);
+        if(statusvalue){ /* it can be NULL */
+            SAVESPTR(GvSV(statusvalue)); /* local $? */
+            GvSV(statusvalue) = sv_newmortal();
+        }
+        SAVESPTR(ERRSV); /* local $@ */
+        ERRSV = newSVpvs_flags("", SVs_TEMP);
+
         for(i = 0; i < len; i++){
             SPAGAIN;
 

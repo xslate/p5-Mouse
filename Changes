@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.50_03
+    * Mouse::Object
+        - Fix a possible segv which is caused by destructors (gfx)
     * Mouse::Util::TypeConstraints
         - Implement the built-in type hierarchy (gfx)
 

@@ -12,7 +12,7 @@ no warnings 'once'; # work around 5.6.2
         my $self = shift;
         my ($igd) = @_;
 
-        print $igd;
+        print $igd || 0, "\n";
     }
 }
 
@@ -24,7 +24,7 @@ no warnings 'once'; # work around 5.6.2
         my $self = shift;
         my ($igd) = @_;
 
-        print $igd;
+        print $igd || 0, "\n";
     }
 
     __PACKAGE__->meta->make_immutable;
