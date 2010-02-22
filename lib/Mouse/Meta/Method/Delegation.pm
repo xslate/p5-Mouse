@@ -3,7 +3,12 @@ use Mouse::Util qw(:meta); # enables strict and warnings
 use Scalar::Util;
 
 sub _generate_delegation{
-    my (undef, $attr, $handle_name, $method_to_call, @curried_args) = @_;
+    my (undef, $attr, $handle_name, $method_to_call) = @_;
+
+    my @curried_args;
+    if(ref($method_to_call) eq 'ARRAY'){
+        ($method_to_call, @curried_args) = @{$method_to_call};
+    }
 
     my $reader = $attr->get_read_method_ref();
 
