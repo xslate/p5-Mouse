@@ -67,66 +67,64 @@ sub build_import_methods{
         @export_from = ($exporting_package);
     }
 
-    {
-        my %exports;
-        my @removables;
-        my @all;
+    my %exports;
+    my @removables;
+    my @all;
 
-        my @init_meta_methods;
+    my @init_meta_methods;
 
-        foreach my $package(@export_from){
-            my $spec = $SPEC{$package} or next;
+    foreach my $package(@export_from){
+        my $spec = $SPEC{$package} or next;
 
-            if(my $as_is = $spec->{as_is}){
-                foreach my $thingy (@{$as_is}){
-                    my($code_package, $code_name, $code);
+        if(my $as_is = $spec->{as_is}){
+            foreach my $thingy (@{$as_is}){
+                my($code_package, $code_name, $code);
 
-                    if(ref($thingy)){
-                        $code = $thingy;
-                        ($code_package, $code_name) = Mouse::Util::get_code_info($code);
-                    }
-                    else{
-                        no strict 'refs';
-                        $code_package = $package;
-                        $code_name    = $thingy;
-                        $code         = \&{ $code_package . '::' . $code_name };
-                   }
-
-                    push @all, $code_name;
-                    $exports{$code_name} = $code;
-                    if($code_package eq $package){
-                        push @removables, $code_name;
-                    }
+                if(ref($thingy)){
+                    $code = $thingy;
+                    ($code_package, $code_name) = Mouse::Util::get_code_info($code);
                 }
-            }
+                else{
+                    no strict 'refs';
+                    $code_package = $package;
+                    $code_name    = $thingy;
+                    $code         = \&{ $code_package . '::' . $code_name };
+               }
 
-            if(my $init_meta = $package->can('init_meta')){
-                if(!grep{ $_ == $init_meta } @init_meta_methods){
-                    push @init_meta_methods, $init_meta;
+                push @all, $code_name;
+                $exports{$code_name} = $code;
+                if($code_package eq $package){
+                    push @removables, $code_name;
                 }
             }
         }
-        $args{EXPORTS}    = \%exports;
-        $args{REMOVABLES} = \@removables;
 
-        $args{groups}{all}     ||= \@all;
-
-        if(my $default_list = $args{groups}{default}){
-            my %default;
-            foreach my $keyword(@{$default_list}){
-                $default{$keyword} = $exports{$keyword}
-                    || confess(qq{The $exporting_package package does not export "$keyword"});
+        if(my $init_meta = $package->can('init_meta')){
+            if(!grep{ $_ == $init_meta } @init_meta_methods){
+                push @init_meta_methods, $init_meta;
             }
-            $args{DEFAULT} = \%default;
         }
-        else{
-            $args{groups}{default} ||= \@all;
-            $args{DEFAULT}           = $args{EXPORTS};
-        }
+    }
+    $args{EXPORTS}    = \%exports;
+    $args{REMOVABLES} = \@removables;
 
-        if(@init_meta_methods){
-            $args{INIT_META} = \@init_meta_methods;
+    $args{groups}{all}     ||= \@all;
+
+    if(my $default_list = $args{groups}{default}){
+        my %default;
+        foreach my $keyword(@{$default_list}){
+            $default{$keyword} = $exports{$keyword}
+                || confess(qq{The $exporting_package package does not export "$keyword"});
         }
+        $args{DEFAULT} = \%default;
+    }
+    else{
+        $args{groups}{default} ||= \@all;
+        $args{DEFAULT}           = $args{EXPORTS};
+    }
+
+    if(@init_meta_methods){
+        $args{INIT_META} = \@init_meta_methods;
     }
 
     return (\&do_import, \&do_unimport);

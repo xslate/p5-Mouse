@@ -101,7 +101,6 @@ sub list_all_builtin_type_constraints { @builtins }
 
 sub list_all_type_constraints         { keys %TYPE }
 
-
 sub _create_type{
     my $mode = shift;
 

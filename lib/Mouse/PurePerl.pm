@@ -528,14 +528,12 @@ sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
 sub message { $_[0]->{message} }
 
-sub type_parameter { $_[0]->{type_parameter} }
-sub __is_parameterized { exists $_[0]->{type_parameter} }
-
+sub type_parameter           { $_[0]->{type_parameter} }
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
-
 sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }
 
-sub has_coercion{ exists $_[0]->{_compiled_type_coercion} }
+sub __is_parameterized { exists $_[0]->{type_parameter} }
+sub has_coercion {       exists $_[0]->{_compiled_type_coercion} }
 
 
 sub compile_type_constraint{
@@ -586,7 +584,6 @@ sub compile_type_constraint{
 
 package Mouse::Object;
 
-
 sub BUILDARGS {
     my $class = shift;
 
@@ -634,7 +631,6 @@ sub DESTROY {
     my $e = do{
         local $@;
         eval{
-
             # DEMOLISHALL
 
             # We cannot count on being able to retrieve a previously made
