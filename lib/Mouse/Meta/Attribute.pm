@@ -77,7 +77,9 @@ sub new {
     # (3) bad options found
     if(@bad){
         @bad = sort @bad;
-        Carp::cluck("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
+        local $Carp::Internal{'Mouse'}              = 1;
+        local $Carp::Internal{'Mouse::Meta::Class'} = 1;
+        Carp::carp("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
     }
 
     my $self = bless $args, $class;
@@ -333,12 +335,6 @@ sub install_accessors{
     if($attribute->can('create') != \&create){
         # backword compatibility
         $attribute->create($metaclass, $attribute->name, %{$attribute});
-    }
-
-    if(!$attribute->{associated_methods} && ($attribute->{is} || '') ne 'bare'){
-        Carp::cluck(
-            'Attribute (' . $attribute->name . ') of class ' . $metaclass->name
-            . ' has no associated methods (did you mean to provide an "is" argument?)');
     }
 
     return;

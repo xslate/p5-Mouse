@@ -6,6 +6,8 @@ use Scalar::Util qw/blessed weaken/;
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
 
+our @CARP_NOT = qw(Mouse); # trust Mouse
+
 sub attribute_metaclass;
 sub method_metaclass;
 
@@ -187,8 +189,9 @@ sub add_attribute {
     $self->{attributes}{$attr->name} = $attr;
     $attr->install_accessors();
 
-    if(Mouse::Util::_MOUSE_VERBOSE && !$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
-        Carp::cluck(qq{Attribute (}.$attr->name.qq{) of class }.$self->name.qq{ has no associated methods (did you mean to provide an "is" argument?)});
+    if(!$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
+        Carp::carp(qq{Attribute ($name) of class }.$self->name
+            .qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
     return $attr;
 }
