@@ -8,7 +8,7 @@ our $VERSION = '0.50_03';
 use Carp         qw(confess);
 use Scalar::Util qw(blessed);
 
-use Mouse::Util qw(load_class is_class_loaded get_code_package not_supported);
+use Mouse::Util ();
 
 use Mouse::Meta::Module;
 use Mouse::Meta::Class;

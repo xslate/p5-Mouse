@@ -74,11 +74,15 @@ use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
 # it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
 require Mouse::Meta::Module; # for the entities of metaclass cache utilities
 
-BEGIN {
+# aliases
+{
     *class_of                    = \&Mouse::Meta::Module::_class_of;
     *get_metaclass_by_name       = \&Mouse::Meta::Module::_get_metaclass_by_name;
     *get_all_metaclass_instances = \&Mouse::Meta::Module::_get_all_metaclass_instances;
     *get_all_metaclass_names     = \&Mouse::Meta::Module::_get_all_metaclass_names;
+
+    *Mouse::load_class           = \&load_class;
+    *Mouse::is_class_loaded      = \&is_class_loaded;
 
     # is-a predicates
     #generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
