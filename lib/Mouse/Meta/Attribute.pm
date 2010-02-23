@@ -378,10 +378,8 @@ sub _canonicalize_handles {
 
 sub _make_delegation_method {
     my($self, $handle, $method_to_call) = @_;
-    my $delegator = $self->delegation_metaclass;
-    Mouse::Util::load_class($delegator);
-
-    return $delegator->_generate_delegation($self, $handle, $method_to_call);
+    return Mouse::Util::load_class($self->delegation_metaclass)
+        ->_generate_delegation($self, $handle, $method_to_call);
 }
 
 sub throw_error{

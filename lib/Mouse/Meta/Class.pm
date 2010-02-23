@@ -247,17 +247,15 @@ sub make_immutable {
     $self->{strict_constructor} = $args{strict_constructor};
 
     if ($args{inline_constructor}) {
-        my $c = $self->constructor_class;
-        Mouse::Util::load_class($c);
         $self->add_method($args{constructor_name} =>
-            $c->_generate_constructor($self, \%args));
+            Mouse::Util::load_class($self->constructor_class)
+                ->_generate_constructor($self, \%args));
     }
 
     if ($args{inline_destructor}) {
-        my $c = $self->destructor_class;
-        Mouse::Util::load_class($c);
         $self->add_method(DESTROY =>
-            $c->_generate_destructor($self, \%args));
+            Mouse::Util::load_class($self->destructor_class)
+                ->_generate_destructor($self, \%args));
     }
 
     # Moose's make_immutable returns true allowing calling code to skip setting an explicit true value

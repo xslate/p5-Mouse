@@ -244,12 +244,12 @@ sub _try_load_one_class {
 
     return undef if $is_class_loaded_cache{$class} ||= is_class_loaded($class);
 
-    my $file = $class . '.pm';
-    $file =~ s{::}{/}g;
+    $class  =~ s{::}{/}g;
+    $class .= '.pm';
 
     return do {
         local $@;
-        eval { require($file) };
+        eval { require $class };
         $@;
     };
 }
@@ -260,7 +260,7 @@ sub load_class {
     my $e = _try_load_one_class($class);
     Carp::confess "Could not load class ($class) because : $e" if $e;
 
-    return 1;
+    return $class;
 }
 
 sub is_class_loaded;

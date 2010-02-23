@@ -1,5 +1,5 @@
 package Mouse::Meta::Module;
-use Mouse::Util qw/:meta get_code_package get_code_ref load_class not_supported/; # enables strict and warnings
+use Mouse::Util qw/:meta get_code_package get_code_ref not_supported/; # enables strict and warnings
 
 use Carp         ();
 use Scalar::Util ();
@@ -130,10 +130,7 @@ sub get_method{
     my($self, $method_name) = @_;
 
     if(my $code = $self->get_method_body($method_name)){
-        my $method_metaclass = $self->method_metaclass;
-        load_class($method_metaclass);
-
-        return $method_metaclass->wrap(
+        return Mouse::Util::load_class($self->method_metaclass)->wrap(
             body                 => $code,
             name                 => $method_name,
             package              => $self->name,
