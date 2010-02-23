@@ -121,7 +121,7 @@ BEGIN {
         require mro;
         $get_linear_isa = \&mro::get_linear_isa;
     } else {
-#       VVVVV   CODE TAKEN FROM MRO::COMPAT   VVVVV
+        # this code is based on MRO::Compat::__get_linear_isa
         my $_get_linear_isa_dfs; # this recurses so it isn't pretty
         $_get_linear_isa_dfs = sub {
             my($classname) = @_;
@@ -131,8 +131,7 @@ BEGIN {
 
             no strict 'refs';
             foreach my $parent (@{"$classname\::ISA"}) {
-                my $plin = $_get_linear_isa_dfs->($parent);
-                foreach  my $p(@$plin) {
+                foreach  my $p(@{ $_get_linear_isa_dfs->($parent) }) {
                     next if exists $stored{$p};
                     push(@lin, $p);
                     $stored{$p} = 1;
@@ -140,24 +139,29 @@ BEGIN {
             }
             return \@lin;
         };
-#       ^^^^^   CODE TAKEN FROM MRO::COMPAT   ^^^^^
 
-        eval{ require Class::C3 };
+        {
+            package # hide from PAUSE
+                Class::C3;
+            our %MRO; # work around 'once' warnings
+        }
 
         # MRO::Compat::__get_linear_isa has no prototype, so
         # we define a prototyped version for compatibility with core's
         # See also MRO::Compat::__get_linear_isa.
         $get_linear_isa = sub ($;$){
             my($classname, $type) = @_;
-            package # hide from PAUSE
-                Class::C3;
+
             if(!defined $type){
-                our %MRO;
-                $type = exists $MRO{$classname} ? 'c3' : 'dfs';
+                $type = exists $Class::C3::MRO{$classname} ? 'c3' : 'dfs';
             }
-            return $type eq 'c3'
-                ? [calculateMRO($classname)]
-                : $_get_linear_isa_dfs->($classname);
+            if($type eq 'c3'){
+                require Class::C3;
+                return [Class::C3::calculateMRO($classname)];
+            }
+            else{
+                return $_get_linear_isa_dfs->($classname);
+            }
         };
     }
 
