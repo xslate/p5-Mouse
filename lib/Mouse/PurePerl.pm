@@ -206,9 +206,7 @@ sub _parameterize_Maybe_for {
     return sub{
         return !defined($_) || $check->($_);
     };
-};
-
-
+}
 
 package Mouse::Meta::Module;
 
