@@ -285,6 +285,29 @@ CODE:
 }
 
 bool
+is_valid_class_name(SV* sv)
+CODE:
+{
+    SvGETMAGIC(sv);
+    if(SvPOKp(sv) && SvCUR(sv) > 0){
+        UV i;
+        RETVAL = TRUE;
+        for(i = 0; i < SvCUR(sv); i++){
+            char const c = SvPVX(sv)[i];
+            if(!(isALNUM(c) || c == ':')){
+                RETVAL = FALSE;
+                break;
+            }
+        }
+    }
+    else{
+        RETVAL = SvNIOKp(sv) ? TRUE : FALSE;
+    }
+}
+OUTPUT:
+    RETVAL
+
+bool
 is_class_loaded(SV* sv)
 
 void

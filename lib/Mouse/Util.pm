@@ -197,17 +197,7 @@ BEGIN {
 sub get_code_info;
 sub get_code_package;
 
-# taken from Class/MOP.pm
-sub is_valid_class_name {
-    my $class = shift;
-
-    return 0 if ref($class);
-    return 0 unless defined($class);
-
-    return 1 if $class =~ /\A \w+ (?: :: \w+ )* \z/xms;
-
-    return 0;
-}
+sub is_valid_class_name;
 
 # taken from Class/MOP.pm
 sub load_first_existing_class {
