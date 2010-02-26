@@ -430,10 +430,7 @@ mouse_get_modifier_storage(pTHX_
     SV* table;
     SV* storage_ref;
 
-    SvGETMAGIC(name);
-    if(!SvOK(name)){
-        mouse_throw_error(meta, NULL, "You must define a method name for '%s' modifiers", keys[m]);
-    }
+    must_defined(name, "a method name");
 
     table = get_slot(meta, key);
 
@@ -512,24 +509,15 @@ CODE:
         croak("No package name defined");
     }
 
-    SvGETMAGIC(name);
-    SvGETMAGIC(code);
-
-    if(!SvOK(name)){
-        mouse_throw_error(self, NULL, "You must define a method name");
-    }
-    if(!SvROK(code)){
-        mouse_throw_error(self, NULL, "You must define a CODE reference");
-    }
+    must_defined(name, "a method name");
+    must_ref    (code, "a CODE reference", SVt_NULL); /* any reftype is OK */
 
     code_ref = code;
     if(SvTYPE(SvRV(code_ref)) != SVt_PVCV){
         SV*  sv = code_ref;  /* used in tryAMAGICunDEREF */
         SV** sp = &sv;       /* used in tryAMAGICunDEREF */
         tryAMAGICunDEREF(to_cv); /* try \&{$code} */
-        if(!(SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVCV)){
-            mouse_throw_error(self, NULL, "You must pass a CODE reference to add_method");
-        }
+        must_ref(code, "a CODE reference", SVt_PVCV);
         code_ref = sv;
     }
 
@@ -793,8 +781,6 @@ CODE:
     SV* const meta = get_metaclass(self);
     AV* const xc   = mouse_get_xc(aTHX_ meta);
 
-    if(!IsHashRef(args)){
-        croak("You must pass a HASH reference to BUILDALL");
-    }
+    must_ref(args, "a HASH reference to BUILDALL", SVt_PVHV);
     mouse_buildall(aTHX_ xc, self, args);
 }

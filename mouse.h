@@ -103,6 +103,12 @@ GV* mouse_stash_fetch(pTHX_ HV* const stash, const char* const name, I32 const n
 
 void mouse_install_sub(pTHX_ GV* const gv, SV* const code_ref);
 
+void mouse_must_defined(pTHX_ SV* const value, const char* const name);
+void mouse_must_ref(pTHX_ SV* const value, const char* const name, svtype const t);
+
+#define must_defined(sv, name)   mouse_must_defined(aTHX_ sv, name)
+#define must_ref(sv, name, svt)  mouse_must_ref(aTHX_ sv, name, svt)
+
 #define MOUSEf_DIE_ON_FAIL 0x01
 MAGIC* mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags);
 

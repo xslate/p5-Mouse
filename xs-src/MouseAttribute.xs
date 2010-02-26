@@ -280,10 +280,7 @@ CODE:
 
     /* taken from Class::MOP::Attribute::new */
 
-    if(!SvOK(name)){
-        mouse_throw_error(klass, NULL,
-            "You must provide a name for the attribute");
-    }
+    must_defined(name, "an attribute name");
 
     svp = hv_fetchs(args, "init_arg", FALSE);
     if(!svp){

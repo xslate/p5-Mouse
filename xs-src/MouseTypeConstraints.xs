@@ -530,10 +530,7 @@ mouse_generate_can_predicate_for(pTHX_ SV* const methods, const char* const pred
     I32 len;
     I32 i;
 
-    SvGETMAGIC(methods);
-    if(!IsArrayRef(methods)){
-        croak("You must pass an ARRAY ref method names");
-    }
+    must_ref(methods, "an ARRAY ref for method names", SVt_PVAV);
     av = (AV*)SvRV(methods);
 
     len = av_len(av) + 1;

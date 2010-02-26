@@ -120,6 +120,30 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
+void
+mouse_must_defined(pTHX_ SV* const value, const char* const name) {
+    assert(value);
+    assert(name);
+
+    SvGETMAGIC(value);
+    if(!SvOK(value)){
+        croak("You must define %s", name);
+    }
+}
+
+void
+mouse_must_ref(pTHX_ SV* const value, const char* const name, svtype const t) {
+    assert(value);
+    assert(name);
+
+    SvGETMAGIC(value);
+    if(!(SvROK(value) && (t == SVt_NULL || SvTYPE(SvRV(value)) == t))) {
+        croak("You must pass %s, not %s",
+            name, SvOK(value) ? SvPV_nolen(value) : "undef");
+    }
+}
+
+
 bool
 mouse_is_class_loaded(pTHX_ SV * const klass){
     HV *stash;
@@ -272,6 +296,7 @@ mouse_install_sub(pTHX_ GV* const gv, SV* const code_ref) {
         SvREFCNT_dec(GvCV(gv));
         GvCV(gv) = NULL;
     }
+
     sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */
 
     /* name the CODE ref if it's anonymous */
@@ -390,12 +415,8 @@ CODE:
     const char* name_pv;
     GV* gv;
 
-    if(!SvOK(package)){
-        croak("You must define %s", "a package name");
-    }
-    if(!SvOK(name)){
-        croak("You must define %s", "a subroutine name");
-    }
+    must_defined(package, "a package name");
+    must_defined(name,    "a subroutine name");
 
     stash = gv_stashsv(package, FALSE);
     if(!stash){
@@ -423,17 +444,10 @@ PPCODE:
     const char* name_pv = NULL;
     CV* xsub;
 
-    SvGETMAGIC(arg);
-
-    if(!SvOK(arg)){
-        croak("You must define %s", ix == 0 ? "a class name" : "method names");
-    }
+    must_defined(arg, ix == 0 ? "a class_name" : "method names");
 
     if(predicate_name){
-        SvGETMAGIC(predicate_name);
-        if(!SvOK(predicate_name)){
-            croak("You must define %s", "a predicate name");
-        }
+        must_defined(predicate_name, "a predicate name");
         name_pv = SvPV_nolen_const(predicate_name);
     }
 
@@ -457,10 +471,7 @@ CODE:
     HV* stash;
     I32 i;
 
-    SvGETMAGIC(into);
-    if(!SvOK(into)){
-        croak("You must define %s", "a package name");
-    }
+    must_defined(into, "a package name");
     stash = gv_stashsv(into, TRUE);
 
     if( ((items-1) % 2) != 0 ){
@@ -474,14 +485,8 @@ CODE:
         const char* pv;
         GV* gv;
 
-        SvGETMAGIC(name);
-        if(!SvOK(name)){
-            croak("You must define %s", "a subroutine name");
-        }
-        SvGETMAGIC(code);
-        if(!IsCodeRef(code)){
-            croak("You must define %s", "a CODE reference");
-        }
+        must_defined(name, "a subroutine name");
+        must_ref(code, "a CODE reference", SVt_PVCV);
 
         pv = SvPV_const(name, len);
         gv = stash_fetch(stash, pv, len, TRUE);
