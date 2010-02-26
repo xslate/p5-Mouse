@@ -6,14 +6,15 @@ use Carp qw(confess);
 
 my %SPEC;
 
-use constant _strict_bits => strict::bits(qw(subs refs vars));
+my $strict_bits;
+BEGIN{ $strict_bits = strict::bits(qw(subs refs vars)); }
 
 # it must be "require", because Mouse::Util depends on Mouse::Exporter,
 # which depends on Mouse::Util::import()
 require Mouse::Util;
 
 sub import{
-    $^H              |= _strict_bits;         # strict->import;
+    $^H              |= $strict_bits;         # strict->import;
     ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
     return;
 }
@@ -162,7 +163,7 @@ sub do_import {
         }
     }
 
-    $^H              |= _strict_bits;         # strict->import;
+    $^H              |= $strict_bits;         # strict->import;
     ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
 
     if($spec->{INIT_META}){
