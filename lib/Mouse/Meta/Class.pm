@@ -96,7 +96,7 @@ sub _reconcile_with_superclass_meta {
 
     my @roles;
     foreach my $role($super_meta->meta->calculate_all_roles){
-        if(!$self->meta->does_role($role->name)){
+        if(!$self->meta->does_role($role)){
             push @roles, $role->name;
         }
     }
@@ -438,6 +438,8 @@ sub does_role {
 
     (defined $role_name)
         || $self->throw_error("You must supply a role name to look for");
+
+    $role_name = $role_name->name if ref $role_name;
 
     for my $class ($self->linearized_isa) {
         my $meta = Mouse::Util::get_metaclass_by_name($class)

@@ -170,7 +170,7 @@ sub _append_roles{
     my $roles = $consumer->{roles};
 
     foreach my $r($role, @{$role->get_roles}){
-        if(!$consumer->does_role($r->name)){
+        if(!$consumer->does_role($r)){
             push @{$roles}, $r;
         }
     }
@@ -287,6 +287,8 @@ sub does_role {
 
     (defined $role_name)
         || $self->throw_error("You must supply a role name to look for");
+
+    $role_name = $role_name->name if ref $role_name;
 
     # if we are it,.. then return true
     return 1 if $role_name eq $self->name;
