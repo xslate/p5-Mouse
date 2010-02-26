@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.50_04 Fri Feb 26 18:57:24 2010
+    * All
+        - Warnings are less noisy, as shown by example/warns.pl (gfx)
+        - Various optimization and refactoring (gfx)
+
 0.50_03 Mon Feb 22 17:56:47 2010
     * Mouse::Meta::Attribute
         - Catch up about Moose 0.84 about warnings (gfx)
