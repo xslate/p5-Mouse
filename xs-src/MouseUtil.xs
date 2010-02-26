@@ -108,8 +108,12 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
         PUSHs(metaobject);
         mPUSHs(message);
 
-        mPUSHs(newSVpvs("depth"));
-        mPUSHi(-1);
+        if(data){ /* extra arg, might be useful for debugging */
+            mPUSHs(newSVpsv("data"));
+            PUSHs(data);
+            mPUSHs(newSVpvs("depth"));
+            mPUSHi(-1);
+        }
 
         PUTBACK;
 

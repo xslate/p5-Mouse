@@ -44,6 +44,8 @@ my %valid_options = map { $_ => undef } (
   'curries',
 );
 
+our @CARP_NOT = qw(Mouse::Meta::Class);
+
 sub new {
     my $class = shift;
     my $name  = shift;
@@ -76,10 +78,9 @@ sub new {
 
     # (3) bad options found
     if(@bad){
-        @bad = sort @bad;
-        local $Carp::Internal{'Mouse'}              = 1;
-        local $Carp::Internal{'Mouse::Meta::Class'} = 1;
-        Carp::carp("Found unknown argument(s) passed to '$name' attribute constructor in '$class': @bad");
+        Carp::carp(
+            "Found unknown argument(s) passed to '$name' attribute constructor in '$class': "
+            . Mouse::Util::english_list(@bad));
     }
 
     my $self = bless $args, $class;
