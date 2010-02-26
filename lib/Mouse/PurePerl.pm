@@ -344,6 +344,38 @@ sub is_anon_role{
 
 sub get_roles { $_[0]->{roles} }
 
+sub add_before_method_modifier {
+    my ($self, $method_name, $method) = @_;
+
+    push @{ $self->{before_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
+sub add_around_method_modifier {
+    my ($self, $method_name, $method) = @_;
+
+    push @{ $self->{around_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
+sub add_after_method_modifier {
+    my ($self, $method_name, $method) = @_;
+
+    push @{ $self->{after_method_modifiers}{$method_name} ||= [] }, $method;
+    return;
+}
+
+sub get_before_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{before_method_modifiers}{$method_name} ||= [] }
+}
+sub get_around_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{around_method_modifiers}{$method_name} ||= [] }
+}
+sub get_after_method_modifiers {
+    my ($self, $method_name) = @_;
+    return @{ $self->{after_method_modifiers}{$method_name} ||= [] }
+}
+
 package Mouse::Meta::Attribute;
 
 require Mouse::Meta::Method::Accessor;

@@ -41,6 +41,12 @@ enum mouse_xc_ix_t{
     MOUSE_XC_last
 };
 
+enum mouse_modifier_t {
+    MOUSE_M_BEFORE,
+    MOUSE_M_AROUND,
+    MOUSE_M_AFTER,
+};
+
 static MGVTBL mouse_xc_vtbl; /* for identity */
 
 static void
@@ -411,6 +417,47 @@ mouse_buildall(pTHX_ AV* const xc, SV* const object, SV* const args) {
     }
 }
 
+static AV*
+mouse_get_modifier_storage(pTHX_
+        SV* const meta,
+        enum mouse_modifier_t const m, SV* const name) {
+    static const char* const keys[] = {
+        "before",
+        "around",
+        "after",
+    };
+    SV* const key = sv_2mortal(Perl_newSVpvf(aTHX_ "%s_method_modifiers", keys[m]));
+    SV* table;
+    SV* storage_ref;
+
+    SvGETMAGIC(name);
+    if(!SvOK(name)){
+        mouse_throw_error(meta, NULL, "You must define a method name for '%s' modifiers", keys[m]);
+    }
+
+    table = get_slot(meta, key);
+
+    if(!table){
+        /* $meta->{$key} = {} */
+        table = sv_2mortal(newRV_noinc((SV*)newHV()));
+        set_slot(meta, key, table);
+    }
+
+    storage_ref = get_slot(table, name);
+
+    if(!storage_ref){
+        storage_ref = sv_2mortal(newRV_noinc((SV*)newAV()));
+        set_slot(table, name, storage_ref);
+    }
+    else{
+        if(!IsArrayRef(storage_ref)){
+            croak("Modifier strorage for '%s' is not an ARRAY reference", keys[m]);
+        }
+    }
+
+    return (AV*)SvRV(storage_ref);
+}
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -606,6 +653,39 @@ BOOT:
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Role, is_anon_role, anon_serial_id);
 
     INSTALL_CLASS_HOLDER(Role, method_metaclass,  "Mouse::Meta::Role::Method");
+
+void
+add_before_modifier(SV* self, SV* name, SV* modifier)
+CODE:
+{
+    av_push(mouse_get_modifier_storage(aTHX_ self, ix, name), newSVsv(modifier));
+}
+ALIAS:
+    add_before_method_modifier = MOUSE_M_BEFORE
+    add_around_method_modifier = MOUSE_M_AROUND
+    add_after_method_modifier  = MOUSE_M_AFTER
+
+void
+get_before_modifiers(SV* self, SV* name)
+ALIAS:
+    get_before_method_modifiers = MOUSE_M_BEFORE
+    get_around_method_modifiers = MOUSE_M_AROUND
+    get_after_method_modifiers  = MOUSE_M_AFTER
+PPCODE:
+{
+    AV* const storage = mouse_get_modifier_storage(aTHX_ self, ix, name);
+    I32 const len     = av_len(storage) + 1;
+    if(GIMME_V == G_ARRAY) {
+        I32 i;
+        EXTEND(SP, len);
+        for(i = 0; i < len; i++){
+            PUSHs(*av_fetch(storage, i, TRUE));
+        }
+    }
+    else{
+        mPUSHi(len);
+    }
+}
 
 MODULE = Mouse  PACKAGE = Mouse::Object
 
