@@ -81,8 +81,6 @@ BEGIN{
 use Carp         ();
 use Scalar::Util ();
 
-use constant _MOUSE_VERBOSE => !!$ENV{MOUSE_VERBOSE};
-
 # aliases as public APIs
 # it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
 require Mouse::Meta::Module; # for the entities of metaclass cache utilities
