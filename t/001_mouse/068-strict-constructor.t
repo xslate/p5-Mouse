@@ -20,12 +20,26 @@ use Test::Exception;
         init_arg => undef,
     );
 
+    has baz => (
+        is      => 'rw',
+        default => 42,
+    );
+
     __PACKAGE__->meta->make_immutable(strict_constructor => 1);
 }
 
-lives_ok {
-    MyClass->new(foo => 1);
-};
+lives_and {
+    my $o = MyClass->new(foo => 1);
+    isa_ok($o, 'MyClass');
+    is $o->baz, 42;
+} 'correc use of the constructor';
+
+lives_and {
+    my $o = MyClass->new(foo => 1, baz => 10);
+    isa_ok($o, 'MyClass');
+    is $o->baz, 10;
+} 'correc use of the constructor';
+
 
 throws_ok {
     MyClass->new(foo => 1, hoge => 42);
@@ -38,14 +52,14 @@ throws_ok {
 
 throws_ok {
     MyClass->new(aaa => 1, bbb => 2, ccc => 3);
-} qr/\b aaa \b/xms;
+} qr/\b aaa \b/xms, $@;
 
 throws_ok {
     MyClass->new(aaa => 1, bbb => 2, ccc => 3);
-} qr/\b bbb \b/xms;
+} qr/\b bbb \b/xms, $@;
 
 throws_ok {
     MyClass->new(aaa => 1, bbb => 2, ccc => 3);
-} qr/\b ccc \b/xms;
+} qr/\b ccc \b/xms, $@;
 
 done_testing;
