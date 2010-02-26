@@ -297,7 +297,7 @@ CODE:
     svp = hv_fetchs(args, "builder", FALSE);
     if(svp){
         if(!SvOK(*svp)){
-            mouse_throw_error(klass, NULL,
+            mouse_throw_error(klass, *svp,
                 "builder must be a defined scalar value which is a method name");
         }
         can_be_required = TRUE;
@@ -305,7 +305,7 @@ CODE:
     }
     else if((svp = hv_fetchs(args, "default", FALSE))){
         if(SvROK(*svp) && SvTYPE(SvRV(*svp)) != SVt_PVCV) {
-            mouse_throw_error(klass, NULL,
+            mouse_throw_error(klass, *svp,
                "References are not allowed as default values, you must "
                 "wrap the default of '%"SVf"' in a CODE reference "
                 "(ex: sub { [] } and not [])", name);

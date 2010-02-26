@@ -91,8 +91,6 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     va_list args;
     SV* message;
 
-    PERL_UNUSED_ARG(data); /* for moose-compat */
-
     assert(metaobject);
     assert(fmt);
 
@@ -103,13 +101,13 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     {
         dSP;
         PUSHMARK(SP);
-        EXTEND(SP, 4);
+        EXTEND(SP, 6);
 
         PUSHs(metaobject);
         mPUSHs(message);
 
         if(data){ /* extra arg, might be useful for debugging */
-            mPUSHs(newSVpsv("data"));
+            mPUSHs(newSVpvs("data"));
             PUSHs(data);
             mPUSHs(newSVpvs("depth"));
             mPUSHi(-1);
