@@ -2,10 +2,8 @@ package Mouse::Meta::TypeConstraint;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
 use overload
-    'bool'   => sub { 1 },             # always true
-
+    'bool'   => sub (){ 1 },           # always true
     '""'     => sub { $_[0]->name },   # stringify to tc name
-
     '|'      => sub {                  # or-combination
         require Mouse::Util::TypeConstraints;
         return Mouse::Util::TypeConstraints::find_or_parse_type_constraint(
@@ -44,7 +42,6 @@ sub new {
 
 sub create_child_type{
     my $self = shift;
-    # XXX: FIXME
     return ref($self)->new(
         # a child inherits its parent's attributes
         %{$self},
@@ -77,7 +74,7 @@ sub compile_type_constraint;
 sub _add_type_coercions{
     my $self = shift;
 
-    my $coercions = ($self->{_coercion_map} ||= []);
+    my $coercions = ($self->{coercion_map} ||= []);
     my %has       = map{ $_->[0] => undef } @{$coercions};
 
     for(my $i = 0; $i < @_; $i++){
@@ -107,7 +104,7 @@ sub _add_type_coercions{
 sub _compile_type_coercion {
     my($self) = @_;
 
-    my @coercions = @{$self->{_coercion_map}};
+    my @coercions = @{$self->{coercion_map}};
 
     $self->{_compiled_type_coercion} = sub {
        my($thing) = @_;
@@ -217,8 +214,6 @@ sub parameterize{
         parent         => $self,
         type_parameter => $param,
         constraint     => $generator->($param), # must be 'constraint', not 'optimized'
-
-        type           => 'Parameterized',
     );
 }
 
