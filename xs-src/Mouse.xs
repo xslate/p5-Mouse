@@ -535,42 +535,8 @@ CODE:
 
     /*  *{$package . '::' . $name} -> *gv */
     gv = gv_fetchpv(form("%"SVf"::%"SVf, package, name), GV_ADDMULTI, SVt_PVCV);
-    if(GvCVu(gv)){ /* delete *slot{gv} to work around "redefine" warning */
-        SvREFCNT_dec(GvCV(gv));
-        GvCV(gv) = NULL;
-    }
-    sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */
-
+    mouse_install_sub(aTHX_ gv, code_ref);
     (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
-
-    /* name the CODE ref if it's anonymous */
-    {
-        CV* const code_entity = (CV*)SvRV(code_ref);
-        if(CvANON(code_entity)
-            && CvGV(code_entity) /* a cv under construction has no gv */ ){
-            HV* dbsub;
-
-            /* update %DB::sub to make NYTProf happy */
-            if((PL_perldb & (PERLDBf_SUBLINE|PERLDB_NAMEANON))
-                && PL_DBsub && (dbsub = GvHV(PL_DBsub))
-            ){
-                /* see Perl_newATTRSUB() in op.c */
-                SV* const subname = sv_newmortal();
-                HE* orig;
-
-                gv_efullname3(subname, CvGV(code_entity), NULL);
-                orig = hv_fetch_ent(dbsub, subname, FALSE, 0U);
-                if(orig){
-                    gv_efullname3(subname, gv, NULL);
-                    (void)hv_store_ent(dbsub, subname, HeVAL(orig), 0U);
-                    SvREFCNT_inc_simple_void_NN(HeVAL(orig));
-                }
-            }
-
-            CvGV(code_entity) = gv;
-            CvANON_off(code_entity);
-        }
-    }
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class

@@ -60,6 +60,7 @@ BEGIN{
 
         (my $hack_mouse_file = __FILE__) =~ s/.Util//; # .../Mouse/Util.pm -> .../Mouse.pm
         $xs = eval sprintf("#line %d %s\n", __LINE__, $hack_mouse_file) . q{
+            local $^W = 0; # work around 'redefine' warning to &install_subroutines
             require XSLoader;
             XSLoader::load('Mouse', $VERSION);
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Constructor::XS' }, ':meta');

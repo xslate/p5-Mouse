@@ -101,6 +101,7 @@ GV* mouse_stash_fetch(pTHX_ HV* const stash, const char* const name, I32 const n
 #define stash_fetch(s, n, l, c) mouse_stash_fetch(aTHX_ (s), (n), (l), (c))
 #define stash_fetchs(s, n, c)   mouse_stash_fetch(aTHX_ (s), STR_WITH_LEN(n), (c))
 
+void mouse_install_sub(pTHX_ GV* const gv, SV* const code_ref);
 
 #define MOUSEf_DIE_ON_FAIL 0x01
 MAGIC* mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const flags);
