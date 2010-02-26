@@ -33,10 +33,15 @@ sub setup_import_methods{
 
         export_to_level => sub {
             my($package, $level, undef, @args) = @_; # the third argument is redundant
+
+            Carp::carp("$package->export_to_level has been deprecated."
+                ." Use $package->import({ into_level => LEVEL }) instead");
             $package->import({ into_level => $level + 1 }, @args);
         },
         export => sub {
             my($package, $into, @args) = @_;
+            Carp::carp("$package->export has been deprecated."
+                ." Use $package->import({ into => PACKAGE }) instead");
             $package->import({ into => $into }, @args);
         },
     );

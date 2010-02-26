@@ -4,6 +4,8 @@ use warnings;
 use Test::More tests => 3;
 
 BEGIN{
+    $SIG{__WARN__} = sub { $_[0] =~ /deprecated/ or warn @_ };
+
     package Foo;
     use Mouse;
 
