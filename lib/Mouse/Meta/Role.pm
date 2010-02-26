@@ -149,13 +149,13 @@ sub _apply_modifiers{
     }
 
     for my $modifier_type (qw/before around after/) {
-        my $modifiers = $role->{"${modifier_type}_method_modifiers"}
+        my $table = $role->{"${modifier_type}_method_modifiers"}
             or next;
 
         my $add_modifier = "add_${modifier_type}_method_modifier";
 
-        foreach my $method_name (keys %{$modifiers}){
-            foreach my $code(@{ $modifiers->{$method_name} }){
+        while(my($method_name, $modifiers) = each %{$table}){
+            foreach my $code(@{ $modifiers }){
                 next if $consumer->{"_applied_$modifier_type"}{$method_name, $code}++; # skip applied modifiers
                 $consumer->$add_modifier($method_name => $code);
             }
@@ -167,7 +167,7 @@ sub _apply_modifiers{
 sub _append_roles{
     my($role, $consumer, $args) = @_;
 
-    my $roles = ($args->{_to} eq 'role') ? $consumer->get_roles : $consumer->roles;
+    my $roles = $consumer->{roles};
 
     foreach my $r($role, @{$role->get_roles}){
         if(!$consumer->does_role($r->name)){
