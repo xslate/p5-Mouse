@@ -362,10 +362,7 @@ sub _install_modifier {
             my $into = $self->name;
             $install_modifier->($into, $type, $name, $code);
 
-            $self->add_method($name => do{
-                no strict 'refs';
-                \&{ $into . '::' . $name };
-            });
+            $self->add_method($name => Mouse::Util::get_code_ref($into, $name));
             return;
         };
     }

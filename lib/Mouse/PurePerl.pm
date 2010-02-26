@@ -101,8 +101,7 @@ sub generate_isa_predicate_for {
     my $predicate = sub{ Scalar::Util::blessed($_[0]) && $_[0]->isa($for_class) };
 
     if(defined $name){
-        no strict 'refs';
-        *{ caller() . '::' . $name } = $predicate;
+        Mouse::Util::install_subroutines(scalar caller, $name => $predicate);
         return;
     }
 
@@ -128,8 +127,7 @@ sub generate_can_predicate_for {
     };
 
     if(defined $name){
-        no strict 'refs';
-        *{ caller() . '::' . $name } = $predicate;
+        Mouse::Util::install_subroutines(scalar caller, $name => $predicate);
         return;
     }
 
@@ -237,10 +235,9 @@ sub add_method {
 
     $self->{methods}->{$name} = $code; # Moose stores meta object here.
 
-    my $pkg = $self->name;
-    no strict 'refs';
-    no warnings 'redefine', 'once';
-    *{ $pkg . '::' . $name } = $code;
+    Mouse::Util::install_subroutines($self->name,
+        $name => $code,
+    );
     return;
 }
 

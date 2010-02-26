@@ -3,6 +3,18 @@ use Mouse::Exporter; # enables strict and warnings
 
 sub get_linear_isa($;$); # must be here
 
+sub install_subroutines { # must be here
+    my $into = shift;
+
+    while(my($name, $code) = splice @_, 0, 2){
+        no strict 'refs';
+        no warnings 'once', 'redefine';
+        use warnings FATAL => 'uninitialized';
+        *{$into . '::' . $name} = \&{$code};
+    }
+    return;
+}
+
 BEGIN{
     # This is used in Mouse::PurePerl
     Mouse::Exporter->setup_import_methods(

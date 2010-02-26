@@ -26,20 +26,19 @@ sub setup_import_methods{
 
     my($import, $unimport) = $class->build_import_methods(%args);
 
-    no strict 'refs';
+    Mouse::Util::install_subroutines($exporting_package,
+        import   => $import,
+        unimport => $unimport,
 
-    *{$exporting_package . '::import'}    = $import;
-    *{$exporting_package . '::unimport'}  = $unimport;
-
-    # for backward compatibility
-    *{$exporting_package . '::export_to_level'} = sub{
-        my($package, $level, undef, @args) = @_; # the third argument is redundant
-        $package->import({ into_level => $level + 1 }, @args);
-    };
-    *{$exporting_package . '::export'} = sub{
-        my($package, $into, @args) = @_;
-        $package->import({ into => $into }, @args);
-    };
+        export_to_level => sub {
+            my($package, $level, undef, @args) = @_; # the third argument is redundant
+            $package->import({ into_level => $level + 1 }, @args);
+        },
+        export => sub {
+            my($package, $into, @args) = @_;
+            $package->import({ into => $into }, @args);
+        },
+    );
     return;
 }
 
@@ -85,9 +84,9 @@ sub build_import_methods{
                     ($code_package, $code_name) = Mouse::Util::get_code_info($code);
                 }
                 else{
-                    no strict 'refs';
                     $code_package = $package;
                     $code_name    = $thingy;
+                    no strict 'refs';
                     $code         = \&{ $code_package . '::' . $code_name };
                }
 
@@ -194,18 +193,17 @@ sub do_import {
     }
 
     if(@exports){
+        my @export_table;
         foreach my $keyword(@exports){
-            no strict 'refs';
-            *{$into.'::'.$keyword} = $spec->{EXPORTS}{$keyword}
-                || confess(qq{The $package package does not export "$keyword"});
+            push @export_table,
+                $keyword => ($spec->{EXPORTS}{$keyword}
+                    || confess(qq{The $package package does not export "$keyword"})
+                );
         }
+        Mouse::Util::install_subroutines($into, @export_table);
     }
     else{
-        my $default = $spec->{DEFAULT};
-        while(my($keyword, $code) = each %{$default}){
-            no strict 'refs';
-            *{$into.'::'.$keyword} = $code;
-        }
+        Mouse::Util::install_subroutines($into, %{$spec->{DEFAULT}});
     }
     return;
 }
