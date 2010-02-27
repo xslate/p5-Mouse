@@ -24,13 +24,13 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     CV* const cv = (CV*)SvRV(tc_code);
     assert(SvTYPE(cv) == SVt_PVCV);
 
-    SvGETMAGIC(sv);
     if(CvXSUB(cv) == XS_Mouse_constraint_check){ /* built-in type constraints */
         MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
 
         assert(CvXSUBANY(cv).any_ptr != NULL);
         assert(mg->mg_ptr            != NULL);
 
+        SvGETMAGIC(sv);
         /* call the check function directly, skipping call_sv() */
         return CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, sv);
     }
