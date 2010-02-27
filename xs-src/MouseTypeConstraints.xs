@@ -120,8 +120,13 @@ mouse_tc_Num(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 int
 mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    if(SvIOKp(sv) || SvNOKp(sv)){
+    if(SvIOKp(sv)){
         return TRUE;
+    }
+    else if(SvNOKp(sv)) {
+        NV const nv = SvNVX(sv);
+        NV mod = Perl_fmod( nv, 1 );
+        return mod == 0;
     }
     else if(SvPOKp(sv)){
         int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);
