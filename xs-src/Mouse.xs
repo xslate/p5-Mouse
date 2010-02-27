@@ -377,18 +377,7 @@ mouse_initialize_metaclass(pTHX_ SV* const klass) {
     SV* meta = get_metaclass(klass);
 
     if(!SvOK(meta)){
-        dSP;
-        PUSHMARK(SP);
-
-        EXTEND(SP, 2);
-        mPUSHp("Mouse::Meta::Class", sizeof("Mouse::Meta::Class")-1);
-        PUSHs(klass);
-        PUTBACK;
-
-        call_method("initialize", G_SCALAR);
-        SPAGAIN;
-        meta = POPs;
-        PUTBACK;
+        meta = mcall1s(newSVpvs_flags("Mouse::Meta::Class", SVs_TEMP), "initialize", klass);
     }
 
     return meta;
