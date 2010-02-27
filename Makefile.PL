@@ -4,6 +4,7 @@ use inc::Module::Install;
 
 # for co-developpers
 use Module::Install::XSUtil 0.21;
+use Module::Install::AuthorTests;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";
