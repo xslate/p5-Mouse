@@ -1,9 +1,9 @@
 #include "mouse.h"
 
-#define CHECK_INSTANCE(instance) STMT_START{      \
-        if(!IsHashRef(instance)){                 \
-            croak("Invalid object instance");     \
-        }                                         \
+#define CHECK_INSTANCE(instance) STMT_START{                           \
+        if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){  \
+            croak("Invalid object instance");                          \
+        }                                                              \
     } STMT_END
 
 
