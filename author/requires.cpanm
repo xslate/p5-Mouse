@@ -1,0 +1,21 @@
+# modules which the authors require:
+# $ cpanm < author/requires.cpanm
+# see also App::cpanminus (a.k.a. cpanm)
+
+# Module::Install stuff
+Module::Install
+Module::Install::AuthorTests
+Module::Install::XSUtil
+
+# Test stuff
+Test::More
+Test::Exception
+Test::LeakTrace
+Test::Output
+
+# required by recipes
+Regexp::Common
+Locale::US
+HTTP::Headers
+use Params::Coerce
+URI
