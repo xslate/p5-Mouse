@@ -176,11 +176,13 @@ mouse_is_class_loaded(pTHX_ SV * const klass){
         GV* const gv = (GV*)HeVAL(he);
 
         if(isGV(gv)){
-            if(GvCVu(gv)){
+            if(GvCVu(gv)){ /* is GV and has CV */
+                hv_iterinit(stash); /* reset */
                 return TRUE;
             }
         }
-        else if(SvOK(gv)){
+        else if(SvOK(gv)){ /* is a stub or constant */
+            hv_iterinit(stash); /* reset */
             return TRUE;
         }
     }
