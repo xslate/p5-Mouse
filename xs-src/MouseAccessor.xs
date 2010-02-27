@@ -1,9 +1,9 @@
 #include "mouse.h"
 
-#define CHECK_INSTANCE(instance) STMT_START{                          \
-        if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){ \
-            croak("Invalid object instance");                         \
-        }                                                             \
+#define CHECK_INSTANCE(instance) STMT_START{      \
+        if(!IsHashRef(instance)){                 \
+            croak("Invalid object instance");     \
+        }                                         \
     } STMT_END
 
 
@@ -88,9 +88,11 @@ mouse_push_values(pTHX_ SV* const value, U16 const flags){
             PUSHs(svp ? *svp : &PL_sv_undef);
         }
     }
-    else if(flags & MOUSEf_TC_IS_HASHREF){
+    else{
         HV* hv;
         HE* he;
+
+        assert(flags & MOUSEf_TC_IS_HASHREF);
 
         if(!IsHashRef(value)){
             croak("Mouse-panic: Not a HASH reference");
