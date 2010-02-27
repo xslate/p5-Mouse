@@ -2,16 +2,14 @@ package Mouse::Meta::Method::Accessor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 use warnings FATAL => 'recursion';
 
-
-sub _inline_slot{
-    my(undef, $self_var, $attr_name) = @_;
-    return sprintf '%s->{q{%s}}', $self_var, $attr_name;
-}
+use Mouse::Meta::Method::Constructor; # for slot access
 
 sub _generate_accessor_any{
     my($method_class, $type, $attribute, $class) = @_;
 
-    my $name          = $attribute->name;
+    my $c             = 'Mouse::Meta::Method::Constructor';
+
+    my $key           = $attribute->name;
     my $default       = $attribute->default;
     my $constraint    = $attribute->type_constraint;
     my $builder       = $attribute->builder;
@@ -22,11 +20,14 @@ sub _generate_accessor_any{
 
     my $compiled_type_constraint = defined($constraint) ? $constraint->_compiled_type_constraint : undef;
 
-    my $self  = '$_[0]';
-    my $slot  = $method_class->_inline_slot($self, $name);;
+    my $instance  = '$_[0]';
+    my $slot      = $c->_inline_get_slot($instance, $key);;
 
-    my $accessor = sprintf(qq{package %s;\n#line 1 "%s-accessor for %s (%s)"\n}, $class->name, $type, $name, __FILE__)
-                 . "sub {\n";
+    my $accessor = sprintf(<<'END_SUB_START', $class->name, __LINE__, $type, $key, __FILE__);
+package %s;
+#line %d "%s-accessor for %s (%s)
+sub {
+END_SUB_START
 
     if ($type eq 'rw' || $type eq 'wo') {
         if($type eq 'rw'){
@@ -35,7 +36,7 @@ sub _generate_accessor_any{
         }
         else{ # writer
             $accessor .= 
-                'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of '.$name.'") }'.
+                'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of '.$key.'") }'.
                 '{' . "\n";
         }
                 
@@ -58,14 +59,14 @@ sub _generate_accessor_any{
         # this setter
         $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
-        $accessor .= "$slot = $value;\n";
+        $accessor .= $c->_inline_set_slot($instance, $key, $value) . ";\n";
 
         if ($is_weak) {
-            $accessor .= "Scalar::Util::weaken($slot) if ref $slot;\n";
+            $accessor .= $c->_inline_weaken_slot($instance, $key) ." if ref $slot;\n";
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->('.$self.', '.$value.');' . "\n";
+            $accessor .= '$trigger->('.$instance.', '.$value.');' . "\n";
         }
 
         $accessor .= "}\n";
@@ -81,31 +82,31 @@ sub _generate_accessor_any{
         my $value;
 
         if (defined $builder){
-            $value = "$self->\$builder()";
+            $value = "$instance->\$builder()";
         }
         elsif (ref($default) eq 'CODE'){
-            $value = "$self->\$default()";
+            $value = "$instance->\$default()";
         }
         else{
             $value = '$default';
         }
 
-        $accessor .= "if(!exists $slot){\n";
+        $accessor .= sprintf "if(!%s){\n", $c->_inline_has_slot($instance, $key);
         if($should_coerce){
-            $accessor .= "$slot = \$constraint->coerce($value)";
+            $value = "\$constraint->coerce($value)";
         }
         elsif(defined $constraint){
             $accessor .= "my \$tmp = $value;\n";
 
             $accessor .= "\$compiled_type_constraint->(\$tmp)";
             $accessor .= " || \$attribute->_throw_type_constraint_error(\$tmp, \$constraint);\n";
-            $accessor .= "$slot = \$tmp;\n";
+            $value = '$tmp';
         }
-        else{
-            $accessor .= "$slot = $value;\n";
-        }
+
+        $accessor .= $c->_inline_set_slot($instance, $key, $value) .";\n";
+
         if ($is_weak) {
-            $accessor .= "Scalar::Util::weaken($slot) if ref $slot;\n";
+            $accessor .= $c->_inline_weaken_slot($instance, $key) . " if ref $slot;\n";
         }
         $accessor .= "}\n";
     }
