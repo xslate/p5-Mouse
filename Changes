@@ -1,11 +1,13 @@
 Revision history for Mouse
 
-0.50_05 Sat Feb 27 20:37:15 2010
-    * Moose::Util::TypeConstraints
-        - Moose used an incorrect cast at the C-level which meant that
+0.50_05 Mon Mar  1 11:18:26 2010
+    * Mouse::Util::TypeConstraints
+        - Mouse used an incorrect cast at the C-level which meant that
           its idea of numbers was different from that of Perl's (and
-          Moose's). Notably > 2**32 Integers on 32 bit systems didn't
-          work.
+          Mouse's). Notably > 2**32 Integers on 32 bit systems didn't
+          work (AEvar).
+    * Mouse::Meta::Classs
+        - Fix an issue on metaclass compatibility (gfx)
 
 0.50_04 Fri Feb 26 18:57:24 2010
     * All
