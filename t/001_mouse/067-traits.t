@@ -86,13 +86,19 @@ BEGIN {
 
     sub b {}
 
-    package ClassC;
-    use Mouse;
+    package ClassXAFoo;
+    use MyMouseX::Foo;
 
-    #extends qw(ClassB ClassA);
     extends qw(ClassA);
 
-    sub c {}
+    sub xa {}
+
+    package ClassXABar;
+    use MyMouseX::Bar;
+
+    extends qw(ClassA);
+
+    sub xa {}
 }
 
 does_ok(ClassA->meta,                  'MyMouseX::Foo::Class');
@@ -101,15 +107,15 @@ does_ok(ClassA->meta->get_method('a'), 'MyMouseX::Foo::Method');
 does_ok(ClassB->meta,                  'MyMouseX::Bar::Class');
 does_ok(ClassB->meta->get_method('b'), 'MyMouseX::Bar::Method');
 
-# for ClassC
 
-does_ok(ClassC->meta,                  'MyMouseX::Foo::Class');
+does_ok(ClassXAFoo->meta,                   'MyMouseX::Foo::Class');
+does_ok(ClassXAFoo->meta->get_method('xa'), 'MyMouseX::Foo::Method');
 
-{
-    local $TODO = 'Metaclass incompatibility is not completed';
-    does_ok(ClassC->meta->get_method('c'), 'MyMouseX::Foo::Method');
-}
-#does_ok(ClassC->meta,                  'MyMouseX::Bar::Class');
-#does_ok(ClassC->meta->get_method('c'), 'MyMouseX::Bar::Method');
+does_ok(ClassXABar->meta,                   'MyMouseX::Foo::Class');
+does_ok(ClassXABar->meta->get_method('xa'), 'MyMouseX::Foo::Method');
+
+does_ok(ClassXABar->meta,                   'MyMouseX::Bar::Class');
+does_ok(ClassXABar->meta->get_method('xa'), 'MyMouseX::Bar::Method');
+
 
 done_testing;

@@ -14,12 +14,6 @@ sub method_metaclass;
 sub constructor_class;
 sub destructor_class;
 
-my @MetaClassTypes = qw(
-    attribute_metaclass
-    method_metaclass
-    constructor_class
-    destructor_class
-);
 
 sub _construct_meta {
     my($class, %args) = @_;
@@ -79,39 +73,68 @@ sub superclasses {
 
     return @{ $self->{superclasses} };
 }
+my @MetaClassTypes = (
+    'attribute',   # Mouse::Meta::Attribute
+    'method',      # Mouse::Meta::Method
+    'constructor', # Mouse::Meta::Method::Constructor
+    'destructor',  # Mouse::Meta::Method::Destructor
+);
 
 sub _reconcile_with_superclass_meta {
-    my($self, $super_meta) = @_;
+    my($self, $other) = @_;
 
     # find incompatible traits
-    my @incompatibles;
+    my %metaroles;
     foreach my $metaclass_type(@MetaClassTypes){
-        my $super_c = $super_meta->$metaclass_type();
-        my $self_c  = $self->$metaclass_type();
+        my $accessor = $self->can($metaclass_type . '_metaclass')
+            || $self->can($metaclass_type . '_class');
 
-        if(!$super_c->isa($self_c)){
-            push @incompatibles, ($metaclass_type => $super_c);
+        my $other_c = $other->$accessor();
+        my $self_c  = $self->$accessor();
+
+        if(!$self_c->isa($other_c)){
+            $metaroles{$metaclass_type}
+                = [ $self_c->meta->_collect_roles($other_c->meta) ];
         }
     }
 
-    my @roles;
-    foreach my $role($super_meta->meta->calculate_all_roles){
-        if(!$self->meta->does_role($role)){
-            push @roles, $role->name;
-        }
-    }
+    $metaroles{class} = [$self->meta->_collect_roles($other->meta)];
 
-    #print "reconcile($self vs. $super_meta; @roles; @incompatibles)\n";
+    #use Data::Dumper; print Data::Dumper->new([\%metaroles], ['*metaroles'])->Indent(1)->Dump;
 
     require Mouse::Util::MetaRole;
-    Mouse::Util::MetaRole::apply_metaclass_roles(
-        for_class       => $self,
-        metaclass       => ref $super_meta,
-        metaclass_roles => \@roles,
-        @incompatibles,
+    $_[0] = Mouse::Util::MetaRole::apply_metaroles(
+        for             => $self,
+        class_metaroles => \%metaroles,
     );
     return;
 }
+
+sub _collect_roles {
+    my ($self, $other) = @_;
+
+    # find common ancestor
+    my @self_lin_isa  = $self->linearized_isa;
+    my @other_lin_isa = $other->linearized_isa;
+
+    my(@self_anon_supers, @other_anon_supers);
+    push @self_anon_supers,  shift @self_lin_isa  while $self_lin_isa[0]->meta->is_anon_class;
+    push @other_anon_supers, shift @other_lin_isa while $other_lin_isa[0]->meta->is_anon_class;
+
+    my $common_ancestor = $self_lin_isa[0] eq $other_lin_isa[0] && $self_lin_isa[0];
+
+    if(!$common_ancestor){
+        $self->throw_error(sprintf '%s cannot have %s as a super class because of their metaclass incompatibility',
+            $self->name, $other->name);
+    }
+
+    my %seen;
+    return sort grep { !$seen{$_}++ }
+        (map{ $_->name } map{ $_->meta->calculate_all_roles } @self_anon_supers),
+        (map{ $_->name } map{ $_->meta->calculate_all_roles } @other_anon_supers),
+    ;
+}
+
 
 sub find_method_by_name{
     my($self, $method_name) = @_;
