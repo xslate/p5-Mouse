@@ -243,6 +243,9 @@ sub add_method {
 
 package Mouse::Meta::Class;
 
+use Mouse::Meta::Method::Constructor;
+use Mouse::Meta::Method::Destructor;
+
 sub method_metaclass    { $_[0]->{method_metaclass}    || 'Mouse::Meta::Method'    }
 sub attribute_metaclass { $_[0]->{attribute_metaclass} || 'Mouse::Meta::Attribute' }
 
