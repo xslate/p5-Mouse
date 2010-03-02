@@ -145,8 +145,16 @@ sub Bool       { $_[0] ? $_[0] eq '1' : 1 }
 sub Undef      { !defined($_[0]) }
 sub Defined    {  defined($_[0])  }
 sub Value      {  defined($_[0]) && !ref($_[0]) }
-sub Num        { !ref($_[0]) && looks_like_number($_[0]) }
-sub Int        {  defined($_[0]) && !ref($_[0]) && $_[0] =~ /^-?[0-9]+$/ }
+sub Num        {  looks_like_number($_[0]) }
+sub Int        {
+    my($value) = @_;
+    looks_like_number($value) && do{
+        # work around RT #55048
+        # This is for more than 32 bit int on 32 bit systems
+        require POSIX;
+        POSIX::fmod($value, 1) == 0;
+    };
+}
 sub Str        {
     my($value) = @_;
     return defined($value) && ref(\$value) eq 'SCALAR';
