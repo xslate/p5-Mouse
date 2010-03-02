@@ -50,7 +50,7 @@ BEGIN{
     # Because Mouse::Util is loaded first in all the Mouse sub-modules,
     # XS loader is placed here, not in Mouse.pm.
 
-    our $VERSION = '0.50_05';
+    our $VERSION = '0.50_06';
 
     my $xs = !(exists $INC{'Mouse/PurePerl.pm'} || $ENV{MOUSE_PUREPERL});
 
@@ -364,7 +364,7 @@ Mouse::Util - Features, with or without their dependencies
 
 =head1 VERSION
 
-This document describes Mouse version 0.50_05
+This document describes Mouse version 0.50_06
 
 =head1 IMPLEMENTATIONS FOR
 

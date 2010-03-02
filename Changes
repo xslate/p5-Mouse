@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.50_06 Tue Mar  2 18:35:12 2010
+    * Mouse::PurePerl
+        - Fix an issue on metaclass compatibility again (gfx)
+        - Fix more-than-32-bit-int progrem again (gfx)
+
 0.50_05 Mon Mar  1 11:18:26 2010
     * Mouse::Util::TypeConstraints
         - Mouse used an incorrect cast at the C-level which meant that
