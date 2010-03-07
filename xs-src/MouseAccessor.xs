@@ -144,6 +144,12 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         SV* const trigger = mcall0s(MOUSE_mg_attribute(mg), "trigger");
         dSP;
 
+        /* NOTE: triggers can remove value, so
+                 value must be copied here,
+                 revealed by Net::Google::DataAPI (DANJOU).
+         */
+        value = sv_mortalcopy(value);
+
         PUSHMARK(SP);
         EXTEND(SP, 2);
         PUSHs(self);
@@ -152,6 +158,8 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         PUTBACK;
         call_sv(trigger, G_VOID | G_DISCARD);
         /* need not SPAGAIN */
+
+        assert(SvTYPE(value) != SVTYPEMASK);
     }
 
     PUSH_VALUE(value, flags);

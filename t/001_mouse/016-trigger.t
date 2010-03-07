@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More;
 use Test::Exception;
 
 my @trigger;
@@ -18,6 +18,22 @@ do {
             push @trigger, [$self, $value, $attr];
         },
     );
+
+    has foobar => ( # from Net::Google::DataAPI
+        is  => 'rw',
+        isa => 'Str',
+
+        lazy => 1,
+        trigger => sub{ $_[0]->update },
+        default => sub{ 'piyo' },
+
+        clearer => 'clear_foobar',
+    );
+
+    sub update {
+        my($self) = @_;
+        $self->clear_foobar;
+    }
 
     ::lives_ok {
         has not_error => (
@@ -46,7 +62,12 @@ is($object->attr(50), 50, "setting the value");
 is(@trigger, 1, "trigger was called on read");
 is_deeply([splice @trigger], [[$object, 50, undef]], "correct arguments to trigger in the accessor");
 
+is($object->foobar,        'piyo');
+is($object->foobar('baz'), 'baz');
+is($object->foobar,        'piyo', "call clearer in triggers");
+
 my $object2 = Class->new(attr => 100);
 is(@trigger, 1, "trigger was called on new with the attribute specified");
 is_deeply([splice @trigger], [[$object2, 100, undef]], "correct arguments to trigger in the constructor");
 
+done_testing;

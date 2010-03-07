@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More;
 use Test::Exception;
 
 my $lazy_run = 0;
@@ -48,6 +48,9 @@ is($lazy_run, 1, "lazy coderef invoked once");
 is($object->lazy_value, "newp", "got new value");
 is($lazy_run, 1, "lazy coderef invoked once");
 
+is($object->lazy(42), 42);
+is($object->lazy_value(3.14), 3.14);
+
 my $object2 = Class->new(lazy => 'very', lazy_value => "heh");
 is($lazy_run, 1, "lazy attribute not initialized when an argument is passed to the constructor");
 
@@ -55,3 +58,4 @@ is($object2->lazy, 'very', 'value from the constructor');
 is($object2->lazy_value, 'heh', 'value from the constructor');
 is($lazy_run, 1, "lazy coderef not invoked, we already have a value");
 
+done_testing;

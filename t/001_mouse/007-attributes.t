@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More;
 use Test::Exception;
 use Test::Mouse;
 
@@ -63,6 +63,9 @@ $object->rw_attr(100);
 is $object->rw_attr, 100;
 is $object->read_attr, 100;
 
+is $object->write_attr("piyo"), "piyo";
+is $object->rw_attr("yopi"),    "yopi";
+
 dies_ok {
     Class->rw_attr();
 };
@@ -72,3 +75,5 @@ dies_ok {
 dies_ok {
     Class->write_attr(42);
 };
+
+done_testing;
