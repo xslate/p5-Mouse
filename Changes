@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.50_07 Sun Mar  7 19:59:37 2010
+    * Mouse::Meta::Attribute
+        - Fix a possible panic, caused by triggers, reported by
+          Nobuo Danjou (gfx)
+
 0.50_06 Tue Mar  2 18:35:12 2010
     * Mouse::PurePerl
         - Fix an issue on metaclass compatibility again (gfx)

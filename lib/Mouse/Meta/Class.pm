@@ -486,7 +486,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.50_06
+This document describes Mouse version 0.50_07
 
 =head1 METHODS
 
