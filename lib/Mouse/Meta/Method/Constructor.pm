@@ -1,71 +1,40 @@
 package Mouse::Meta::Method::Constructor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
-sub _inline_create_instance {
-    my(undef, $class_expr) = @_;
-    return "bless {}, $class_expr";
-}
-
-sub _inline_slot {
+sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
     return sprintf '%s->{q{%s}}', $self_var, $attr_name;
-}
-
-sub _inline_has_slot {
-    my($class, $self_var, $attr_name) = @_;
-
-    return sprintf 'exists(%s)', $class->_inline_slot($self_var, $attr_name);
-}
-
-sub _inline_get_slot {
-    my($class, $self_var, $attr_name) = @_;
-
-    return $class->_inline_slot($self_var, $attr_name);
-}
-
-sub _inline_set_slot {
-    my($class, $self_var, $attr_name, $rvalue) = @_;
-
-    return $class->_inline_slot($self_var, $attr_name) . " = $rvalue";
-}
-
-sub _inline_weaken_slot {
-    my($class, $self_var, $attr_name) = @_;
-
-    return sprintf 'Scalar::Util::weaken(%s)', $class->_inline_slot($self_var, $attr_name);
 }
 
 sub _generate_constructor {
     my ($class, $metaclass, $args) = @_;
 
+    my $associated_metaclass_name = $metaclass->name;
+
     my @attrs         = $metaclass->get_all_attributes;
 
-    my $init_attrs    = $class->_generate_processattrs($metaclass, \@attrs);
-    my $buildargs     = $class->_generate_BUILDARGS($metaclass);
     my $buildall      = $class->_generate_BUILDALL($metaclass);
+    my $buildargs     = $class->_generate_BUILDARGS($metaclass);
+    my $processattrs  = $class->_generate_processattrs($metaclass, \@attrs);
 
     my @checks = map { $_ && $_->_compiled_type_constraint }
                  map { $_->type_constraint } @attrs;
 
-    my $class_name  = $metaclass->name;
-    my $source = sprintf(<<'END_CONSTRUCTOR', $class_name, __LINE__, __FILE__, $class_name, $buildargs, $class->_inline_create_instance('$class'), $init_attrs, $buildall);
-package %s;
-#line %d "constructor of %s (%s)"
-        sub {
-            my $class = shift;
-            return $class->Mouse::Object::new(@_)
-                if $class ne __PACKAGE__;
+    my $source = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
+        sub \{
+            my \$class = shift;
+            return \$class->Mouse::Object::new(\@_)
+                if \$class ne q{$associated_metaclass_name};
             # BUILDARGS
-            %s;
-            # create instance
-            my $instance = %s;
+            $buildargs;
+            my \$instance = bless {}, \$class;
             # process attributes
-            %s;
+            $processattrs;
             # BUILDALL
-            %s;
-            return $instance;
+            $buildall;
+            return \$instance;
         }
-END_CONSTRUCTOR
+...
     #warn $source;
     my $code;
     my $e = do{
@@ -99,8 +68,7 @@ sub _generate_processattrs {
         my $is_weak_ref     = $attr->is_weak_ref;
         my $need_coercion;
 
-        my $instance       = '$instance';
-        my $instance_slot  = $method_class->_inline_get_slot($instance, $key);
+        my $instance_slot  = $method_class->_inline_slot('$instance', $key);
         my $attr_var       = "\$attrs[$index]";
         my $constraint_var;
 
@@ -117,7 +85,7 @@ sub _generate_processattrs {
             $post_process .= "  or $attr_var->_throw_type_constraint_error($instance_slot, $constraint_var);\n";
         }
         if($is_weak_ref){
-            $post_process .= $method_class->_inline_weaken_slot($instance, $key) . " if ref $instance_slot;\n";
+            $post_process .= "Scalar::Util::weaken($instance_slot) if ref $instance_slot;\n";
         }
 
         if (defined $init_arg) {
@@ -129,7 +97,7 @@ sub _generate_processattrs {
                 $value = "$constraint_var->coerce($value)";
             }
 
-            $code .= $method_class->_inline_set_slot($instance, $key, $value) . ";\n";
+            $code .= "$instance_slot = $value;\n";
             $code .= $post_process;
 
             if ($attr->has_trigger) {
@@ -167,9 +135,9 @@ sub _generate_processattrs {
                     $value = "$constraint_var->coerce($value)";
                 }
 
-                $code .= $method_class->_inline_set_slot($instance, $key, $value) . ";\n";
+                $code .= "$instance_slot = $value;\n";
                 if($is_weak_ref){
-                    $code .= $method_class->_inline_weaken_slot($instance, $key) . ";\n";
+                    $code .= "Scalar::Util::weaken($instance_slot);\n";
                 }
             }
         }
