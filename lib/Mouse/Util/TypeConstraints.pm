@@ -505,10 +505,6 @@ If Mouse finds a name in brackets that it does not recognize as an
 existing type, it assumes that this is a class name, for example
 C<ArrayRef[DateTime]>.
 
-B<NOTE:> Unless you parameterize a type, then it is invalid to include
-the square brackets. I.e. C<ArrayRef[]> will be treated as a new type
-name, I<not> as a parameterization of C<ArrayRef>.
-
 B<NOTE:> The C<Undef> type constraint for the most part works
 correctly now, but edge cases may still exist, please use it
 sparingly.

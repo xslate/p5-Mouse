@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.50_08
+    * Mouse::Util::TypeConstraints
+        - Change the type parser to check syntax (gfx)
+          (Now it throws erros to "ArrayRef[]", "ArrayRef[Int", etc.)
+
 0.50_07 Sun Mar  7 19:59:37 2010
     * Mouse::Meta::Attribute
         - Fix a possible panic, caused by triggers, reported by
