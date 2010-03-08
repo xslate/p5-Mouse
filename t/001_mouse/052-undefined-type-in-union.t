@@ -2,7 +2,8 @@
 
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More skip_all => 'suspending';
+use Test::More;
 
 use Mouse::Util::TypeConstraints;
 
@@ -32,3 +33,4 @@ ok $t->check('Foo');
 ok!$t->check(undef);
 ok!$t->check(bless {}, 'Foo');
 
+done_testing;

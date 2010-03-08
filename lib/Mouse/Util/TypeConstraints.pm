@@ -1,7 +1,7 @@
 package Mouse::Util::TypeConstraints;
 use Mouse::Util qw(does_role not_supported); # enables strict and warnings
 
-use Carp qw(confess);
+use Carp         ();
 use Scalar::Util ();
 
 use Mouse::Meta::TypeConstraint;
@@ -19,6 +19,8 @@ Mouse::Exporter->setup_import_methods(
         find_type_constraint
     )],
 );
+
+our @CARP_NOT = qw(Mouse::Meta::Attribute);
 
 my %TYPE;
 
@@ -147,7 +149,7 @@ sub _create_type{
 
         if($TYPE{$name}){
             my $that = $TYPE{$name}->{package_defined_in} || __PACKAGE__;
-            ($this eq $that) or confess(
+            ($this eq $that) or Carp::croak(
                 "The type constraint '$name' has already been created in $that and cannot be created again in $this"
             );
         }
@@ -187,7 +189,7 @@ sub coerce {
     my $type_name = shift;
 
     my $type = find_type_constraint($type_name)
-        or confess("Cannot find type '$type_name', perhaps you forgot to load it.");
+        or Carp::croak("Cannot find type '$type_name', perhaps you forgot to load it.");
 
     $type->_add_type_coercions(@_);
     return;
@@ -246,12 +248,15 @@ sub enum {
 }
 
 sub _find_or_create_regular_type{
-    my($spec)  = @_;
+    my($spec, $create)  = @_;
 
     return $TYPE{$spec} if exists $TYPE{$spec};
 
-    my $meta = Mouse::Util::get_metaclass_by_name($spec)
-        or return undef;
+    my $meta = Mouse::Util::get_metaclass_by_name($spec);
+
+    if(!defined $meta){
+        return $create ? class_type($spec) : undef;
+    }
 
     if(Mouse::Util::is_a_metarole($meta)){
         return role_type($spec);
@@ -270,6 +275,7 @@ sub _find_or_create_parameterized_type{
 }
 
 sub _find_or_create_union_type{
+    return if grep{ not defined } @_;
     my @types = sort map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
 
     my $name = join '|', @types;
@@ -282,72 +288,71 @@ sub _find_or_create_union_type{
 }
 
 # The type parser
-sub _parse_type{
-    my($spec, $start) = @_;
 
-    my @list;
-    my $subtype;
+# param : '[' type ']' | NOTHING
+sub _parse_param {
+    my($c) = @_;
 
-    my $len = length $spec;
-    my $i;
+    if($c->{spec} =~ s/^\[//){
+        my $type = _parse_type($c, 1);
 
-    for($i = $start; $i < $len; $i++){
-        my $char = substr($spec, $i, 1);
-
-        if($char eq '['){
-            my $base = _find_or_create_regular_type( substr($spec, $start, $i - $start) )
-                or return;
-
-            ($i, $subtype) = _parse_type($spec, $i+1)
-                or return;
-            $start = $i+1; # reset
-
-            push @list, _find_or_create_parameterized_type($base => $subtype);
+        if($c->{spec} =~ s/^\]//){
+            return $type;
         }
-        elsif($char eq ']'){
-            $len = $i+1;
-            last;
-        }
-        elsif($char eq '|'){
-            my $type = _find_or_create_regular_type( substr($spec, $start, $i - $start) );
-
-            if(!defined $type){
-                # XXX: Mouse creates a new class type, but Moose does not.
-                $type = class_type( substr($spec, $start, $i - $start) );
-            }
-
-            push @list, $type;
-
-            ($i, $subtype) = _parse_type($spec, $i+1)
-                or return;
-
-            $start = $i+1; # reset
-
-            push @list, $subtype;
-        }
-    }
-    if($i - $start){
-        my $type = _find_or_create_regular_type( substr $spec, $start, $i - $start );
-
-        if(defined $type){
-            push @list, $type;
-        }
-        elsif($start != 0) {
-            # RT #50421
-            # create a new class type
-            push @list, class_type( substr $spec, $start, $i - $start );
-        }
+        Carp::croak("Syntax error in type: missing right square bracket in '$c->{orig}'");
     }
 
-    if(@list == 0){
-       return;
+    return undef;
+}
+
+# name : [\w.:]+
+sub _parse_name {
+    my($c, $create) = @_;
+
+    if($c->{spec} =~ s/\A ([\w.:]+) //xms){
+        return _find_or_create_regular_type($1, $create);
     }
-    elsif(@list == 1){
-        return ($len, $list[0]);
+    Carp::croak("Syntax error in type: expect type name near '$c->{spec}' in '$c->{orig}'");
+}
+
+# single_type : name param
+sub _parse_single_type {
+    my($c, $create) = @_;
+
+    my $type  = _parse_name($c, $create);
+    my $param = _parse_param($c);
+
+    if(defined $type){
+        if(defined $param){
+            return _find_or_create_parameterized_type($type, $param);
+        }
+        else {
+            return $type;
+        }
+    }
+    elsif(defined $param){
+        Carp::croak("Undefined type with parameter [$param] in '$c->{orig}'");
     }
     else{
-        return ($len, _find_or_create_union_type(@list));
+        return undef;
     }
+}
+
+# type : single_type  ('|' single_type)*
+sub _parse_type {
+    my($c, $create) = @_;
+
+    my $type = _parse_single_type($c, $create);
+    if($c->{spec}){ # can be an union type
+        my @types;
+        while($c->{spec} =~ s/^\|//){
+            push @types, _parse_single_type($c, $create);
+        }
+        if(@types){
+            return _find_or_create_union_type($type, @types);
+        }
+    }
+    return $type;
 }
 
 
@@ -367,7 +372,15 @@ sub find_or_parse_type_constraint {
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec} || do{
-        my($pos, $type) = _parse_type($spec, 0);
+        my $context = {
+            spec => $spec,
+            orig => $spec,
+        };
+        my $type = _parse_type($context);
+
+        if($context->{spec}){
+            Carp::croak("Syntax error: extra elements '$context->{spec}' in '$context->{orig}'");
+        }
         $type;
     };
 }
