@@ -227,7 +227,8 @@ sub duck_type {
     @methods = (@_ == 1 && ref($_[0]) eq 'ARRAY') ? @{$_[0]} : @_;
 
     # DuckType
-    return _create_type 'type', $name => (
+    return _create_type 'subtype', $name => (
+        as           => 'Object',
         optimized_as => Mouse::Util::generate_can_predicate_for(\@methods),
     );
 }
@@ -242,7 +243,8 @@ sub enum {
     %valid = map{ $_ => undef } (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
 
     # EnumType
-    return _create_type 'type', $name => (
+    return _create_type 'subtype', $name => (
+        as            => 'Str',
         optimized_as  => sub{ defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]} },
     );
 }
