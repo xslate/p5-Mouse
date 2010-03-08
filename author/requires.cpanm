@@ -20,9 +20,13 @@ Test::Spelling
 Test::Pod::Coverage
 Test::DependentModules
 
-# required by recipes
+# required by recipes and examples
 Regexp::Common
 Locale::US
 HTTP::Headers
 use Params::Coerce
 URI
+Teclare::Constraints::Simple
+Test::Deep
+IO::String
+
