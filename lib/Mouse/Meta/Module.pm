@@ -231,7 +231,7 @@ sub create {
     Scalar::Util::weaken $METAS{$package_name}
         if $mortal;
 
-    $meta->add_method(meta => sub{
+    $meta->add_method(meta => sub {
         $self->initialize(ref($_[0]) || $_[0]);
     });
 

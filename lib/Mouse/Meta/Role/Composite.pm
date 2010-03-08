@@ -16,16 +16,18 @@ sub add_method {
         return;
     }
 
-    if($method_name ne 'meta'){
+    if($method_name eq 'meta'){
+        $self->SUPER::add_method($method_name => $code);
+    }
+    else{
+        # no need to add a subroutine to the stash
         my $roles = $self->{composed_roles_by_method}{$method_name} ||= [];
         push @{$roles}, $role;
         if(@{$roles} > 1){
             $self->{conflicting_methods}{$method_name}++;
         }
+        $self->{methods}{$method_name} = $code;
     }
-
-    $self->{methods}{$method_name} = $code;
-    # no need to add a subroutine to the stash
     return;
 }
 
