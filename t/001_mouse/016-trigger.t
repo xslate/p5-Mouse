@@ -14,8 +14,8 @@ do {
         is => 'rw',
         default => 10,
         trigger => sub {
-            my ($self, $value, $attr) = @_;
-            push @trigger, [$self, $value, $attr];
+            my ($self, $value) = @_;
+            push @trigger, [$self, $value];
         },
     );
 
@@ -60,14 +60,15 @@ is(@trigger, 0, "trigger not called on read");
 
 is($object->attr(50), 50, "setting the value");
 is(@trigger, 1, "trigger was called on read");
-is_deeply([splice @trigger], [[$object, 50, undef]], "correct arguments to trigger in the accessor");
+is_deeply([splice @trigger], [[$object, 50]], "correct arguments to trigger in the accessor");
 
 is($object->foobar,        'piyo');
-is($object->foobar('baz'), 'baz');
+lives_ok { $object->foobar('baz') } "triggers that clear the attr";
+
 is($object->foobar,        'piyo', "call clearer in triggers");
 
 my $object2 = Class->new(attr => 100);
 is(@trigger, 1, "trigger was called on new with the attribute specified");
-is_deeply([splice @trigger], [[$object2, 100, undef]], "correct arguments to trigger in the constructor");
+is_deeply([splice @trigger], [[$object2, 100]], "correct arguments to trigger in the constructor");
 
 done_testing;

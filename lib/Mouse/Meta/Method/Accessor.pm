@@ -90,6 +90,7 @@ sub _generate_accessor_any{
             $value = '$default';
         }
 
+        $accessor .= "els" if $type eq 'rw' || $type eq 'wo';
         $accessor .= "if(!exists $slot){\n";
         if($should_coerce){
             $accessor .= "$slot = \$constraint->coerce($value)";
