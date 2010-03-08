@@ -79,7 +79,7 @@ author_tests 'xt';
 
 repository 'git://git.moose.perl.org/Mouse.git';
 
-clean_files 'lib/Mouse/Tiny.pm $(O_FILES)';
+clean_files 'lib/Mouse/Tiny.pm $(O_FILES) test-mydeps-*.log';
 
 
 if (author_context()) {

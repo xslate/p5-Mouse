@@ -12,6 +12,13 @@ Test::More
 Test::Exception
 Test::LeakTrace
 Test::Output
+Test::Requires
+
+# author's tests
+Test::Pod
+Test::Spelling
+Test::Pod::Coverage
+Test::DependentModules
 
 # required by recipes
 Regexp::Common

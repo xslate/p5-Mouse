@@ -22,4 +22,4 @@ ppport.h
 *.o
 *.obj
 *.c
-
+test-mydeps-*.log
