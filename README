@@ -3,6 +3,9 @@ Mouse - Moose minus the antlers
 
 See the individual module documentation for more information
 
+    perldoc Mouse
+
+
 INSTALLATION
 
 To install this module type the following:
@@ -18,7 +21,7 @@ This module requires perl 5.6.2 or later.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2006-2009 Infinity Interactive, Inc.
+Copyright (C) 2006-2010 Infinity Interactive, Inc.
 
 http://www.iinteractive.com
 
