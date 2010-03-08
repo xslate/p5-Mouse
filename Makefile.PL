@@ -1,3 +1,11 @@
+# for developpers:
+BEGIN{
+    if(grep{ $_ eq '--author' } @ARGV){
+        print "^X -S cpanm < author/requires.cpanm\n";
+        system "$^X -S cpanm < author/requires.cpanm";
+    }
+}
+
 use strict;
 use warnings;
 use inc::Module::Install;
