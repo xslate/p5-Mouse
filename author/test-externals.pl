@@ -20,6 +20,9 @@ my %dist = (
                     => q{git://github.com/masaki/mousex-attributehelpers.git},
 
     'HTML-Shakan'   => q{git://github.com/tokuhirom/html-shakan.git},
+
+    'Net-Google-DataAPI'
+                    => q{git://github.com/lopnor/Net-Google-DataAPI.git},
 );
 
 my $distdir = 'externals';
