@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 26;
+use Test::More;
 use Test::Exception;
 {
     package Class;
@@ -17,6 +17,8 @@ use Test::Exception;
 
     sub stub;
     sub stub_with_attr :method;
+
+    sub king { 'king' }
 
     no Mouse;
 }
@@ -60,13 +62,23 @@ ok(!$meta->has_attribute('nonexistent_attribute'));
 
 ok($meta->has_method('pawn'));
 lives_and{
-    ok($meta->get_method('pawn'));
-    is($meta->get_method('pawn')->name, 'pawn');
-    is($meta->get_method('pawn')->package_name, 'Class');
+    my $pawn = $meta->get_method('pawn');
+    ok($pawn);
+    is($pawn->name, 'pawn');
+    is($pawn->package_name, 'Class');
+    is($pawn->fully_qualified_name, 'Class::pawn');
+
+    is $pawn, $pawn;
+
+    my $king = $meta->get_method('king');
+    isnt $pawn, $king;
+
+    $meta->add_method(king => sub{ 'fool' });
+    isnt $king, $meta->get_method('king');
 };
 
 is( join(' ', sort $meta->get_method_list),
-    join(' ', sort qw(meta pawn has_pawn MY_CONST stub stub_with_attr))
+    join(' ', sort qw(meta pawn king has_pawn MY_CONST stub stub_with_attr))
 );
 
 eval q{
@@ -106,7 +118,9 @@ is( join(' ', sort map{ $_->fully_qualified_name } grep{ $_->package_name ne 'Mo
     join(' ', sort qw(
         Child::bishop Child::child_method Child::meta
 
-        Class::MY_CONST Class::has_pawn Class::pawn Class::stub Class::stub_with_attr
+        Class::MY_CONST Class::has_pawn Class::pawn Class::king Class::stub Class::stub_with_attr
     ))
 );
+
+done_testing;
 

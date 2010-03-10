@@ -1,7 +1,10 @@
 package Mouse::Meta::Method;
 use Mouse::Util qw(:meta); # enables strict and warnings
+use Scalar::Util ();
 
 use overload
+    '=='  => '_equal',
+    'eq'  => '_equal',
     '&{}' => sub{ $_[0]->body },
     fallback => 1,
 ;
@@ -30,6 +33,16 @@ sub associated_metaclass { $_[0]->{associated_metaclass} }
 sub fully_qualified_name {
     my($self) = @_;
     return $self->package_name . '::' . $self->name;
+}
+
+# for Moose compat
+sub _equal {
+    my($l, $r) = @_;
+
+    return Scalar::Util::blessed($r)
+            && $l->body         == $r->body
+            && $l->name         eq $r->name
+            && $l->package_name eq $r->package_name;
 }
 
 1;
