@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 0.50_08
+    * Mouse::Exporter
+        - Turns on warnings FATAL => 'recursion' by default (gfx)
     * Mouse::Util::TypeConstraints
         - Change the type parser to check syntax (gfx)
           (Now it throws erros to "ArrayRef[]", "ArrayRef[Int", etc.)

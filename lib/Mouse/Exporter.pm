@@ -9,13 +9,19 @@ my %SPEC;
 my $strict_bits;
 BEGIN{ $strict_bits = strict::bits(qw(subs refs vars)); }
 
+my $warnings_extra_bits;
+BEGIN{ $warnings_extra_bits = warnings::bits(FATAL => 'recursion') }
+
 # it must be "require", because Mouse::Util depends on Mouse::Exporter,
 # which depends on Mouse::Util::import()
 require Mouse::Util;
 
 sub import{
-    $^H              |= $strict_bits;         # strict->import;
-    ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
+    # strict->import;
+    $^H              |= $strict_bits;
+    # warnings->import('all', FATAL => 'recursion');
+    ${^WARNING_BITS} |= $warnings::Bits{all};
+    ${^WARNING_BITS} |= $warnings_extra_bits;
     return;
 }
 
@@ -168,8 +174,10 @@ sub do_import {
         }
     }
 
-    $^H              |= $strict_bits;         # strict->import;
-    ${^WARNING_BITS} |= $warnings::Bits{all}; # warnings->import;
+    $^H              |= $strict_bits;                                 # strict->import;
+    # warnings->import('all', FATAL => 'recursion');
+    ${^WARNING_BITS} |= $warnings::Bits{all};
+    ${^WARNING_BITS} |= $warnings_extra_bits;
 
     if($spec->{INIT_META}){
         my $meta;
