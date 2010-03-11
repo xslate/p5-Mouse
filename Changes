@@ -1,6 +1,8 @@
 Revision history for Mouse
 
-0.50_08
+0.50_08 Thu Mar 11 19:28:58 2010
+    * Makefile.PL
+        - Resolved #55419: Add Devel::PPPort to build_requires (gfx)
     * Mouse::Exporter
         - Turns on warnings FATAL => 'recursion' by default (gfx)
     * Mouse::Util::TypeConstraints
