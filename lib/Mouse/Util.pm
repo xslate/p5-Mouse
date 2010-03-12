@@ -1,9 +1,11 @@
 package Mouse::Util;
 use Mouse::Exporter; # enables strict and warnings
 
-sub get_linear_isa($;$); # must be here
+# must be here because it will be refered by other modules loaded
+sub get_linear_isa($;$); ## no critic
 
-sub install_subroutines { # must be here
+# must be here because it will called in Mouse::Exporter
+sub install_subroutines {
     my $into = shift;
 
     while(my($name, $code) = splice @_, 0, 2){

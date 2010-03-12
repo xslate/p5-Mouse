@@ -20,7 +20,7 @@ my $Test = Test::Builder->new;
 
 ## exported functions
 
-sub meta_ok ($;$) {
+sub meta_ok ($;$) { ## no critic
     my ($class_or_obj, $message) = @_;
 
     $message ||= "The object has a meta";
@@ -33,7 +33,7 @@ sub meta_ok ($;$) {
     }
 }
 
-sub does_ok ($$;$) {
+sub does_ok ($$;$) { ## no critic
     my ($class_or_obj, $does, $message) = @_;
 
     $message ||= "The object does $does";
@@ -46,7 +46,7 @@ sub does_ok ($$;$) {
     }
 }
 
-sub has_attribute_ok ($$;$) {
+sub has_attribute_ok ($$;$) { ## no critic
     my ($class_or_obj, $attr_name, $message) = @_;
 
     $message ||= "The object does has an attribute named $attr_name";
@@ -61,7 +61,7 @@ sub has_attribute_ok ($$;$) {
     }
 }
 
-sub with_immutable (&@) {
+sub with_immutable (&@) { ## no critic
     my $block = shift;
 
     my $before = $Test->current_test;

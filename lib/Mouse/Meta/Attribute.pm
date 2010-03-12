@@ -345,7 +345,9 @@ sub install_accessors{
     return;
 }
 
-sub delegation_metaclass() { 'Mouse::Meta::Method::Delegation' }
+sub delegation_metaclass() { ## no critic
+    'Mouse::Meta::Method::Delegation'
+}
 
 sub _canonicalize_handles {
     my($self, $handles) = @_;

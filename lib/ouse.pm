@@ -2,17 +2,16 @@ package ouse;
 
 use Mouse::Util; # enables strict and warnings
 
-BEGIN {
-    my $package;
-    sub import { 
-        $package = $_[1] || 'Class';
-        if ($package =~ /^\+/) {
-            $package =~ s/^\+//;
-            Mouse::Util::load_class($package);
-        }
+
+my $package = 'Class';
+sub import {
+    $package = $_[1] || 'Class';
+    if ($package =~ /^\+/) {
+        $package =~ s/^\+//;
+        Mouse::Util::load_class($package);
     }
-    use Filter::Simple sub { s/^/package $package;\nuse Mouse;\nuse Mouse::Util::TypeConstraints;\n/; }
 }
+use Filter::Simple sub { s/^/package $package;\nuse Mouse;\nuse Mouse::Util::TypeConstraints;\n/; };
 
 1;
 __END__
