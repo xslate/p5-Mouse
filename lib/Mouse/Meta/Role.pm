@@ -129,7 +129,8 @@ sub _apply_methods{
 }
 
 sub _apply_attributes{
-    my($role, $consumer, $args) = @_;
+    #my($role, $consumer, $args) = @_;
+    my($role, $consumer) = @_;
 
     for my $attr_name ($role->get_attribute_list) {
         next if $consumer->has_attribute($attr_name);
@@ -140,7 +141,9 @@ sub _apply_attributes{
 }
 
 sub _apply_modifiers{
-    my($role, $consumer, $args) = @_;
+    #my($role, $consumer, $args) = @_;
+    my($role, $consumer) = @_;
+
 
     if(my $modifiers = $role->{override_method_modifiers}){
         foreach my $method_name (keys %{$modifiers}){
@@ -165,7 +168,8 @@ sub _apply_modifiers{
 }
 
 sub _append_roles{
-    my($role, $consumer, $args) = @_;
+    #my($role, $consumer, $args) = @_;
+    my($role, $consumer) = @_;
 
     my $roles = $consumer->{roles};
 
@@ -242,7 +246,7 @@ sub apply {
 
 
 sub combine {
-    my($role_class, @role_specs) = @_;
+    my($self, @role_specs) = @_;
 
     require 'Mouse/Meta/Role/Composite.pm'; # we don't want to create its namespace
 

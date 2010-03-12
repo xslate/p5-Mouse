@@ -136,22 +136,26 @@ sub _generate_accessor_any{
 }
 
 sub _generate_accessor{
-    my $class = shift;
-    return $class->_generate_accessor_any(rw => @_);
+    #my($self, $attribute, $metaclass) = @_;
+    my $self = shift;
+    return $self->_generate_accessor_any(rw => @_);
 }
 
 sub _generate_reader {
-    my $class = shift;
-    return $class->_generate_accessor_any(ro => @_);
+    #my($self, $attribute, $metaclass) = @_;
+    my $self = shift;
+    return $self->_generate_accessor_any(ro => @_);
 }
 
 sub _generate_writer {
-    my $class = shift;
-    return $class->_generate_accessor_any(wo => @_);
+    #my($self, $attribute, $metaclass) = @_;
+    my $self = shift;
+    return $self->_generate_accessor_any(wo => @_);
 }
 
 sub _generate_predicate {
-    my (undef, $attribute, $class) = @_;
+    #my($self, $attribute, $metaclass) = @_;
+    my(undef, $attribute) = @_;
 
     my $slot = $attribute->name;
     return sub{
@@ -160,7 +164,8 @@ sub _generate_predicate {
 }
 
 sub _generate_clearer {
-    my (undef, $attribute, $class) = @_;
+    #my($self, $attribute, $metaclass) = @_;
+    my(undef, $attribute) = @_;
 
     my $slot = $attribute->name;
     return sub{

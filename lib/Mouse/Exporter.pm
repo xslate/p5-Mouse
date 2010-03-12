@@ -55,7 +55,7 @@ sub setup_import_methods{
 }
 
 sub build_import_methods{
-    my($class, %args) = @_;
+    my($self, %args) = @_;
 
     my $exporting_package = $args{exporting_package} ||= caller();
 

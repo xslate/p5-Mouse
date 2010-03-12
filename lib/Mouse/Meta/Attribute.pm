@@ -136,7 +136,8 @@ sub interpolate_class{
 }
 
 sub canonicalize_args{ # DEPRECATED
-    my ($self, $name, %args) = @_;
+    #my($self, $name, %args) = @_;
+    my($self, undef, %args) = @_;
 
     Carp::cluck("$self->canonicalize_args has been deprecated."
         . "Use \$self->_process_options instead.");
@@ -145,7 +146,8 @@ sub canonicalize_args{ # DEPRECATED
 }
 
 sub create { # DEPRECATED
-    my ($self, $class, $name, %args) = @_;
+    #my($self, $class, $name, %args) = @_;
+    my($self) = @_;
 
     Carp::cluck("$self->create has been deprecated."
         . "Use \$meta->add_attribute and \$attr->install_accessors instead.");
@@ -155,7 +157,8 @@ sub create { # DEPRECATED
 }
 
 sub _coerce_and_verify {
-    my($self, $value, $instance) = @_;
+    #my($self, $value, $instance) = @_;
+    my($self, $value) = @_;
 
     my $type_constraint = $self->{type_constraint};
     return $value if !defined $type_constraint;
@@ -300,7 +303,8 @@ sub clear_value {
 
 
 sub associate_method{
-    my ($attribute, $method_name) = @_;
+    #my($attribute, $method_name) = @_;
+    my($attribute) = @_;
     $attribute->{associated_methods}++;
     return;
 }
