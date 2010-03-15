@@ -11,6 +11,10 @@ has bar => (
     isa => 'Str',
 );
 
+sub baz { }
+sub qux { }
+
+
 no Mouse;
 __PACKAGE__->meta->make_immutable;
 __END__
@@ -24,6 +28,14 @@ Foo - bar
 =over 4
 
 =item foo
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item baz
 
 =back
 
