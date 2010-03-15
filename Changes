@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.50_09
+    * (re)fix RT #55048 to grok 2**46+0.5 as Int, but
+      accept 2**46 as Int even on 32 bit environments;
+      note that an Int is exactly what is matched to /^[+-]?[0-9]+$/,
+      so 10e100 will not be groked as Int (gfx)
+
 0.50_08 Thu Mar 11 19:28:58 2010
     * Makefile.PL
         - Resolved #55419: Add Devel::PPPort to build_requires (gfx)
@@ -24,7 +30,7 @@ Revision history for Mouse
         - Mouse used an incorrect cast at the C-level which meant that
           its idea of numbers was different from that of Perl's (and
           Mouse's). Notably > 2**32 Integers on 32 bit systems didn't
-          work (AEvar).
+          work, RT #55048 (AEvar).
     * Mouse::Meta::Classs
         - Fix an issue on metaclass compatibility (gfx)
 
