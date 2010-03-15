@@ -1,6 +1,24 @@
 Revision history for Mouse
 
-0.50_09
+0.51 Mon Mar 15 15:25:58 2010
+    SUMMARY
+
+    [BUG FIXES]
+    * Mouse::Object::DESTROY could cause SEGVs
+    * Attribute triggers could cause panics
+    * Integers > 2**32 ware not groked as Int
+    * Incorrect types, e.g. "Array[Int", was accepted
+    * Metaclass compatibility was sometimes ignored
+
+    [MOOSE COMPATIBILITY]
+    * before/around/after accept regular expressions
+    * has() becomes strict
+    * the global destruction flag is passed to DEMOLISH methods
+    * Delegations can be curried
+    * Built-in type constraints have the same hierarchy as Moose's
+
+
+0.50_09 Mon Mar 15 12:02:28 2010
     * (re)fix RT #55048 to grok 2**46+0.5 as Int, but
       accept 2**46 as Int even on 32 bit environments;
       note that an Int is exactly what is matched to /^[+-]?[0-9]+$/,
