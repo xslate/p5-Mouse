@@ -29,7 +29,7 @@ my @modules = qw(
     HTTP::Engine::Middleware
 
     HTML::Shakan
-    Net::Google::API
+    Net::Google::DataAPI
 );
 
 test_module($_) for @modules;
