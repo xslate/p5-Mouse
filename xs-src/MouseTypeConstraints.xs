@@ -118,15 +118,37 @@ mouse_tc_Num(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 }
 
 int
+S_nv_is_integer(pTHX_ NV const nv) {
+    if(nv == (NV)(IV)nv){
+        return TRUE;
+    }
+    else {
+        char buf[64];  /* Must fit sprintf/Gconvert of longest NV */
+        char* p;
+        Gconvert(nv, NV_DIG, 0, buf);
+        p = &buf[0];
+
+        /* -?[0-9]+ */
+        if(*p == '-') p++;
+
+        while(*p){
+            if(!isDIGIT(*p)){
+                return FALSE;
+            }
+            p++;
+        }
+        return TRUE;
+    }
+}
+
+int
 mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
     if(SvIOKp(sv)){
         return TRUE;
     }
     else if(SvNOKp(sv)) {
-        NV const nv = SvNVX(sv);
-        NV mod = Perl_fmod( nv, 1 );
-        return mod == 0;
+        return S_nv_is_integer(aTHX_ SvNVX(sv));
     }
     else if(SvPOKp(sv)){
         int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);

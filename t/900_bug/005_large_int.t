@@ -1,3 +1,4 @@
+# See also http://rt.cpan.org/Public/Bug/Display.html?id=55048
 package MyInteger;
 use Mouse;
 
@@ -12,12 +13,25 @@ has a_num => (
 );
 
 package main;
-use Test::More tests => 212 * 2;
+use Test::More tests => 24;
 
-for (my $i = 1; $i <= 10e100; $i += $i * 2) {
-    my $int = MyInteger->new( a_int => $i )->a_int;
-    cmp_ok($int, '==', $i, "Mouse groked the Int $i");
+foreach my $i(2**32, 2**40, 2**46) {
+    for my $sig(1, -1) {
+        my $value = $i * $sig;
 
-    my $num = MyInteger->new( a_num => $i )->a_num;
-    cmp_ok($num, '==', $i, "Mouse groked the Num $i");
+        my $int = MyInteger->new( a_int => $value )->a_int;
+        cmp_ok($int, '==', $value, "Mouse groked the Int $i");
+
+
+        my $num = MyInteger->new( a_num => $value )->a_num;
+        cmp_ok($num, '==', $value, "Mouse groked the Num $i");
+
+        $value += 0.5;
+
+        eval { MyInteger->new( a_int => $value ) };
+        like $@, qr/does not pass the type constraint/, "Mouse does not regard $value as Int";
+        eval { MyInteger->new( a_num => $value ) };
+        is $@, '', "Mouse regards $value as Num";
+    }
 }
+

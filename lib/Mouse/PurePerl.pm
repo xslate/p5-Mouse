@@ -148,12 +148,7 @@ sub Value      {  defined($_[0]) && !ref($_[0]) }
 sub Num        {  looks_like_number($_[0]) }
 sub Int        {
     my($value) = @_;
-    looks_like_number($value) && do{
-        # work around RT #55048
-        # This is for more than 32 bit int on 32 bit systems
-        require POSIX;
-        POSIX::fmod($value, 1) == 0;
-    };
+    looks_like_number($value) && $value =~ /\A [+-]? [0-9]+  \z/xms;
 }
 sub Str        {
     my($value) = @_;
