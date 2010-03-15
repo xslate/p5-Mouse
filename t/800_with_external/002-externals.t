@@ -1,6 +1,7 @@
 #!perl
 
-use if !$ENV{RELEASE_TESTING}, 'Test::More' => (skip_all => "for release testing");
+use constant NEED_TESTING => $ENV{RELEASE_TESTING} || (grep { $_ eq '--test' } @ARGV);
+use if !NEED_TESTING, 'Test::More' => (skip_all => "for release testing");
 
 use strict;
 use warnings;
