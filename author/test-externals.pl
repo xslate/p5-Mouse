@@ -1,28 +1,16 @@
 #!perl -w
+# see also t/800_with_external/002-externals.t
+
 use strict;
 use FindBin qw($Bin);
 use autodie;
 
 my %dist = (
-    'HTTP-Engine'  => q{git://github.com/http-engine/HTTP-Engine.git},
-    'HTTP-Engine-Middleware'
-                   => q{git://github.com/http-engine/HTTP-Engine-Middleware.git},
-
-    'Ark'          => q{git://github.com/typester/ark-perl.git},
+    'Ark'           => q{git://github.com/typester/ark-perl.git},
     'Object-Container'
                     => q{git://github.com/typester/object-container-perl.git},
 
-    'MouseX-Types'  => q{git://github.com/yappo/p5-mousex-types.git},
-
     'Data-Localize' => q{git://github.com/lestrrat/Data-Localize.git},
-
-    'MouseX-AttributeHelpers'
-                    => q{git://github.com/masaki/mousex-attributehelpers.git},
-
-    'HTML-Shakan'   => q{git://github.com/tokuhirom/html-shakan.git},
-
-    'Net-Google-DataAPI'
-                    => q{git://github.com/lopnor/Net-Google-DataAPI.git},
 );
 
 my $distdir = 'externals';
