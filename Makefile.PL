@@ -26,6 +26,7 @@ requires 'Scalar::Util' => 1.14;
 
 test_requires 'Test::More'      => 0.88;
 test_requires 'Test::Exception' => 0.29;
+test_requires 'Test::Requires'  => 0.03;
 # test_requires 'Test::Output'    => 0.16; # too many dependencies!
 
 if($] < 5.010) {
