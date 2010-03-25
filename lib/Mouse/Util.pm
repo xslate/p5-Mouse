@@ -244,7 +244,6 @@ sub load_first_existing_class {
 }
 
 # taken from Class/MOP.pm
-my %is_class_loaded_cache;
 sub _try_load_one_class {
     my $class = shift;
 
@@ -253,7 +252,7 @@ sub _try_load_one_class {
         Carp::confess "Invalid class name ($display)";
     }
 
-    return undef if $is_class_loaded_cache{$class} ||= is_class_loaded($class);
+    return '' if is_class_loaded($class);
 
     $class  =~ s{::}{/}g;
     $class .= '.pm';
