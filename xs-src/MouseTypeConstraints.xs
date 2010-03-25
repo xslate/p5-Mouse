@@ -725,8 +725,7 @@ CODE:
             SV* const tc = *av_fetch(types, i, TRUE);
             SV* const c  = get_slots(tc, "compiled_type_constraint");
             if(!(c && mouse_tc_CodeRef(aTHX_ NULL, c))){
-                sv_dump(self);
-                croak("'%"SVf"' has no compiled type constraint", self);
+                mouse_throw_error(self, c, "'%"SVf"' has no compiled type constraint", self);
             }
             av_push(union_checks, newSVsv(c));
         }
@@ -743,4 +742,17 @@ CODE:
     }
     (void)set_slots(self, "compiled_type_constraint", check);
 }
+
+bool
+check(SV* self, SV* sv)
+CODE:
+{
+    SV* const check = get_slots(self, "compiled_type_constraint");
+    if(!(check && mouse_tc_CodeRef(aTHX_ NULL, check))){
+        mouse_throw_error(self, check, "'%"SVf"' has no compiled type constraint", self);
+    }
+    RETVAL = mouse_tc_check(aTHX_ check, sv) ? TRUE : FALSE;
+}
+OUTPUT:
+    RETVAL
 

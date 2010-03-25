@@ -617,6 +617,12 @@ sub compile_type_constraint{
     return;
 }
 
+sub check {
+    my $self = shift;
+    return $self->_compiled_type_constraint->(@_);
+}
+
+
 package Mouse::Object;
 
 sub BUILDARGS {

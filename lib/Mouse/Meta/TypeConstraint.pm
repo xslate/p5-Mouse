@@ -13,8 +13,6 @@ use overload
 
     fallback => 1;
 
-use Carp         ();
-
 sub new {
     my($class, %args) = @_;
 
@@ -30,7 +28,7 @@ sub new {
     $check = $args{constraint};
 
     if(defined($check) && ref($check) ne 'CODE'){
-        Carp::confess("Constraint for $args{name} is not a CODE reference");
+        $class->throw_error("Constraint for $args{name} is not a CODE reference");
     }
 
     my $self = bless \%args, $class;
@@ -63,6 +61,8 @@ sub parent;
 sub message;
 sub has_coercion;
 
+sub check;
+
 sub type_parameter;
 sub __is_parameterized;
 
@@ -70,6 +70,7 @@ sub _compiled_type_constraint;
 sub _compiled_type_coercion;
 
 sub compile_type_constraint;
+
 
 sub _add_type_coercions{
     my $self = shift;
@@ -82,18 +83,18 @@ sub _add_type_coercions{
         my $action = $_[++$i];
 
         if(exists $has{$from}){
-            Carp::confess("A coercion action already exists for '$from'");
+            $self->throw_error("A coercion action already exists for '$from'");
         }
 
         my $type = Mouse::Util::TypeConstraints::find_or_parse_type_constraint($from)
-            or Carp::confess("Could not find the type constraint ($from) to coerce from");
+            or $self->throw_error("Could not find the type constraint ($from) to coerce from");
 
         push @{$coercions}, [ $type => $action ];
     }
 
     # compile
     if(exists $self->{type_constraints}){ # union type
-        Carp::confess("Cannot add additional type coercions to Union types");
+        $self->throw_error("Cannot add additional type coercions to Union types");
     }
     else{
         $self->_compile_type_coercion();
@@ -142,20 +143,15 @@ sub _compile_union_type_coercion {
     return;
 }
 
-sub check {
-    my $self = shift;
-    return $self->_compiled_type_constraint->(@_);
-}
-
 sub coerce {
     my $self = shift;
 
     my $coercion = $self->_compiled_type_coercion;
     if(!$coercion){
-        Carp::confess("Cannot coerce without a type coercion");
+        $self->throw_error("Cannot coerce without a type coercion");
     }
 
-    return $_[0] if $self->_compiled_type_constraint->(@_);
+    return $_[0] if $self->check(@_);
 
     return  $coercion->(@_);
 }
@@ -207,7 +203,7 @@ sub parameterize{
     $name ||= sprintf '%s[%s]', $self->name, $param->name;
 
     my $generator = $self->{constraint_generator}
-        || Carp::confess("The $name constraint cannot be used, because $param doesn't subtype from a parameterizable type");
+        || $self->throw_error("The $name constraint cannot be used, because $param doesn't subtype from a parameterizable type");
 
     return Mouse::Meta::TypeConstraint->new(
         name           => $name,
@@ -220,10 +216,15 @@ sub parameterize{
 sub assert_valid {
     my ($self, $value) = @_;
 
-    if(!$self->_compiled_type_constraint->($value)){
-        Carp::confess($self->get_message($value));
+    if(!$self->check($value)){
+        $self->throw_error($self->get_message($value));
     }
     return 1;
+}
+
+sub throw_error {
+    require Mouse::Meta::Module;
+    goto &Mouse::Meta::Module::throw_error;
 }
 
 1;
