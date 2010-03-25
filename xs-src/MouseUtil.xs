@@ -350,7 +350,9 @@ CODE:
     }
     {
         dMY_CXT;
-        if(MY_CXT.metas) croak("Cannot set metaclass storage more than once");
+        if(MY_CXT.metas && ckWARN(WARN_REDEFINE)){
+            Perl_warner(aTHX_ packWARN(WARN_REDEFINE), "Metaclass storage more than once");
+        }
         MY_CXT.metas = metas;
         SvREFCNT_inc_simple_void_NN(metas);
     }
