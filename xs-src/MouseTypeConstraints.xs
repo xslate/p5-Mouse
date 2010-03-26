@@ -117,7 +117,7 @@ mouse_tc_Num(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     return LooksLikeNumber(sv);
 }
 
-int
+static int
 S_nv_is_integer(pTHX_ NV const nv) {
     if(nv == (NV)(IV)nv){
         return TRUE;
