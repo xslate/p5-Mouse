@@ -717,12 +717,9 @@ CODE:
 
     len      = AvFILLp(demolishall) + 1;
     if(len > 0){
-        GV* const statusvalue = gv_fetchpvs("?", 0, SVt_PV);
+        SAVEI32(PL_statusvalue);
+        PL_statusvalue = 0;
 
-        if(statusvalue){ /* it can be NULL */
-            SAVESPTR(GvSV(statusvalue)); /* local $? */
-            GvSV(statusvalue) = sv_newmortal();
-        }
         SAVESPTR(ERRSV); /* local $@ */
         ERRSV = sv_newmortal();
 
