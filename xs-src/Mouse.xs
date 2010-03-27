@@ -717,7 +717,8 @@ CODE:
 
     len      = AvFILLp(demolishall) + 1;
     if(len > 0){
-        SAVEI32(PL_statusvalue);
+        SV* const in_global_destruction = boolSV(PL_dirty);
+        SAVEI32(PL_statusvalue); /* local $? */
         PL_statusvalue = 0;
 
         SAVESPTR(ERRSV); /* local $@ */
@@ -730,7 +731,7 @@ CODE:
 
             PUSHMARK(SP);
             PUSHs(object);
-            PUSHs(boolSV(PL_dirty));
+            PUSHs(in_global_destruction);
             PUTBACK;
 
             call_sv(AvARRAY(demolishall)[i], G_VOID | G_EVAL);
