@@ -397,7 +397,7 @@ mouse_buildall(pTHX_ AV* const xc, SV* const object, SV* const args) {
         PUSHs(args);
         PUTBACK;
 
-        call_sv(AvARRAY(buildall)[i], G_VOID);
+        call_sv_safe(AvARRAY(buildall)[i], G_VOID);
 
         /* discard a scalar which G_VOID returns */
         SPAGAIN;
@@ -513,6 +513,7 @@ CODE:
     /*  *{$package . '::' . $name} -> *gv */
     gv = gv_fetchpv(form("%"SVf"::%"SVf, package, name), GV_ADDMULTI, SVt_PVCV);
     mouse_install_sub(aTHX_ gv, code_ref);
+    //CvMETHOD_on((CV*)SvRV(code_ref));
     (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 }
 
@@ -651,9 +652,10 @@ CODE:
         for(i = 0; i < items; i++){
             PUSHs(ST(i));
         }
-        //SP += items;
+
         PUTBACK;
-        call_method("BUILDARGS", G_SCALAR);
+        call_method_safes("BUILDARGS", G_SCALAR);
+
         SPAGAIN;
         args = POPs;
         PUTBACK;
@@ -722,14 +724,16 @@ CODE:
             GvSV(statusvalue) = sv_newmortal();
         }
         SAVESPTR(ERRSV); /* local $@ */
-        ERRSV = newSVpvs_flags("", SVs_TEMP);
+        ERRSV = sv_newmortal();
+
+        EXTEND(SP, 2);
 
         for(i = 0; i < len; i++){
             SPAGAIN;
 
             PUSHMARK(SP);
-            XPUSHs(object);
-            XPUSHs(boolSV(PL_dirty));
+            PUSHs(object);
+            PUSHs(boolSV(PL_dirty));
             PUTBACK;
 
             call_sv(AvARRAY(demolishall)[i], G_VOID | G_EVAL);

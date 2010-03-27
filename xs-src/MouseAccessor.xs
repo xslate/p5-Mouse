@@ -156,7 +156,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         PUSHs(value);
 
         PUTBACK;
-        call_sv(trigger, G_VOID | G_DISCARD);
+        call_sv_safe(trigger, G_VOID | G_DISCARD);
         /* need not SPAGAIN */
 
         assert(SvTYPE(value) != SVTYPEMASK);

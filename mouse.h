@@ -70,6 +70,15 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     ;
 #endif
 
+/* workaround RT #69939 */
+I32
+mouse_call_sv_safe(pTHX_ SV*, I32);
+
+#define call_sv_safe(sv, flags)     mouse_call_sv_safe(aTHX_ sv, flags)
+#define call_method_safe(m, flags)  mouse_call_sv_safe(aTHX_ newSVpvn_flags(m, strlen(m), SVs_TEMP), flags | G_METHOD)
+#define call_method_safes(m, flags) mouse_call_sv_safe(aTHX_ newSVpvs_flags(m, SVs_TEMP),            flags | G_METHOD)
+
+
 #define is_class_loaded(sv) mouse_is_class_loaded(aTHX_ sv)
 bool mouse_is_class_loaded(pTHX_ SV*);
 
