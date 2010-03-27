@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.52 Sat Mar 27 15:38:52 2010
+    * Workaround Perl-RT#69939 (eval "use $module" in Perl_call_sv()
+     may cause segmentation faults,
+     http://rt.perl.org/rt3/Public/Bug/Display.html?id=69939)
+
 0.51 Mon Mar 15 15:25:58 2010
     SUMMARY
 
