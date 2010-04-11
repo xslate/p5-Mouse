@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.53 Sun Apr 11 11:39:03 2010
+    [BUG FIX]
+    * Mouse::Meta::Class could not clone objects with "required" attrs (gfx)
+
 0.52 Sat Mar 27 15:38:52 2010
     * Workaround Perl-RT#69939 (eval "use $module" in Perl_call_sv()
      may cause segmentation faults,
