@@ -294,7 +294,7 @@ static void
 mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const is_cloning) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
-    I32 len         = AvFILLp(attrs) + 1;
+    I32 const len   = AvFILLp(attrs) + 1;
     I32 i;
     AV* triggers_queue = NULL;
     I32 used = 0;
@@ -355,7 +355,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     }
 
     if(triggers_queue){
-        len = AvFILLp(triggers_queue) + 1;
+        I32 const len = AvFILLp(triggers_queue) + 1;
         for(i = 0; i < len; i++){
             AV* const pair    = (AV*)AvARRAY(triggers_queue)[i];
             SV* const trigger = AvARRAY(pair)[0];
