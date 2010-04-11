@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More;
 use Test::Exception;
 
 my %triggered;
-do {
+{
     package Foo;
     use Mouse;
 
@@ -38,7 +38,24 @@ do {
         my ($self, @args) = @_;
         $self->meta->clone_object($self, @args);
     }
-};
+}
+
+{
+    package Bar;
+    use Mouse;
+
+    has id => (
+        is  => 'ro',
+        isa => 'Str',
+
+        required => 1,
+    );
+
+    sub clone {
+        my ($self, @args) = @_;
+        $self->meta->clone_object($self, @args);
+    }
+}
 
 my $foo = Foo->new(bar => [ 1, 2, 3 ], quuux => "indeed");
 
@@ -60,6 +77,13 @@ is_deeply($clone->bar, [ 1 .. 3 ], "clone attr");
 is($clone->baz, "foo", "init_arg=undef means the attr is ignored");
 is($clone->quux, "yes", "clone uses init_arg and not attribute name");
 
+lives_and {
+    my $bar = Bar->new(id => 'xyz');
+    my $c   = $bar->clone;
+
+    is_deeply $bar, $c, "clone() with required attributes";
+};
+
 throws_ok {
     Foo->meta->clone_object("constant");
 } qr/You must pass an instance of the metaclass \(Foo\), not \(constant\)/;
@@ -68,4 +92,4 @@ throws_ok {
     Foo->meta->clone_object(Foo->meta)
 } qr/You must pass an instance of the metaclass \(Foo\), not \(Mouse::Meta::Class=HASH\(\w+\)\)/;
 
-
+done_testing;

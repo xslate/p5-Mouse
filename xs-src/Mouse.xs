@@ -291,7 +291,7 @@ mouse_report_unknown_args(pTHX_ SV* const meta, AV* const attrs, HV* const args)
 
 
 static void
-mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const ignore_triggers) {
+mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const is_cloning) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
     I32 len         = AvFILLp(attrs) + 1;
@@ -305,10 +305,6 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
 
     if(mg_find((SV*)args, PERL_MAGIC_tied)){
         croak("You cannot use tied HASH reference as initializing arguments");
-    }
-
-    if(!ignore_triggers){
-        triggers_queue = newAV_mortal();
     }
 
     /* for each attribute */
@@ -330,16 +326,19 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
             if(SvROK(value) && flags & MOUSEf_ATTR_IS_WEAK_REF){
                 weaken_slot(object, slot);
             }
-            if(flags & MOUSEf_ATTR_HAS_TRIGGER && triggers_queue){
+            if(flags & MOUSEf_ATTR_HAS_TRIGGER){
                 AV* const pair = newAV();
                 av_push(pair, newSVsv( mcall0s(attr, "trigger") ));
                 av_push(pair, newSVsv(value));
 
+                if(!triggers_queue) {
+                    triggers_queue = newAV_mortal();
+                }
                 av_push(triggers_queue, (SV*)pair);
             }
             used++;
         }
-        else { /* no init arg */
+        else if(!is_cloning){ /* no init arg, noop while cloning */
             if(flags & (MOUSEf_ATTR_HAS_DEFAULT | MOUSEf_ATTR_HAS_BUILDER)){
                 if(!(flags & MOUSEf_ATTR_IS_LAZY)){
                     mouse_xa_set_default(aTHX_ xa, object);
@@ -584,10 +583,10 @@ OUTPUT:
     RETVAL
 
 void
-_initialize_object(SV* meta, SV* object, HV* args, bool ignore_triggers = FALSE)
+_initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE)
 CODE:
 {
-    mouse_class_initialize_object(aTHX_ meta, object, args, ignore_triggers);
+    mouse_class_initialize_object(aTHX_ meta, object, args, is_cloning);
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role

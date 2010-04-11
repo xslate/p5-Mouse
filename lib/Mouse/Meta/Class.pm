@@ -238,7 +238,7 @@ sub clone_object {
         || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
 
     my $cloned = bless { %$object }, ref $object;
-    $class->_initialize_object($cloned, $args);
+    $class->_initialize_object($cloned, $args, 1);
 
     return $cloned;
 }

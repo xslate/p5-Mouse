@@ -280,7 +280,7 @@ sub new_object {
 }
 
 sub _initialize_object{
-    my($self, $object, $args, $ignore_triggers) = @_;
+    my($self, $object, $args, $is_cloning) = @_;
 
     my @triggers_queue;
 
@@ -298,7 +298,7 @@ sub _initialize_object{
                 push @triggers_queue, [ $attribute->trigger, $object->{$slot} ];
             }
         }
-        else { # no init arg
+        elsif(!$is_cloning) { # no init arg, noop while cloning
             if ($attribute->has_default || $attribute->has_builder) {
                 if (!$attribute->is_lazy) {
                     my $default = $attribute->default;
@@ -319,7 +319,7 @@ sub _initialize_object{
         }
     }
 
-    if(!$ignore_triggers){
+    if(@triggers_queue){
         foreach my $trigger_and_value(@triggers_queue){
             my($trigger, $value) = @{$trigger_and_value};
             $trigger->($object, $value);
