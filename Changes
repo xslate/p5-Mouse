@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.54 Sat Apr 17 17:15:54 2010
+    [BUG FIX]
+    * Resolve RT#56523: has with reader, writer, lazy and builder
+      could not create a write-only accessor (Michael G Schwern)
+
 0.53 Sun Apr 11 11:39:03 2010
     [BUG FIX]
     * Mouse::Meta::Class could not clone objects with "required" attrs (gfx)
