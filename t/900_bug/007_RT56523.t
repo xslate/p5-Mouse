@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use Test::More;
-warn $Mouse::VERSION;
+#warn $Mouse::VERSION;
 {
     package Foo;
 
