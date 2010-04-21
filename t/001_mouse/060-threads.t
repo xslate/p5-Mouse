@@ -3,9 +3,13 @@ use strict;
 use warnings;
 use constant HAS_THREADS => eval{ require threads };
 
-use Test::More HAS_THREADS ? (tests => 6) : (skip_all => "This is a test for threads ($@)");
+use if !HAS_THREADS, 'Test::More', (skip_all => "This is a test for threads ($@)");
+use Test::More;
 
 {
+    package MyTraits;
+    use Mouse::Role;
+
     package MyClass;
     use Mouse;
 
@@ -19,6 +23,9 @@ use Test::More HAS_THREADS ? (tests => 6) : (skip_all => "This is a test for thr
 
     has value => (
         is => 'rw',
+        isa => 'Int',
+
+        traits => [qw(MyTraits)],
     );
 }
 
@@ -42,5 +49,10 @@ threads->create(sub{
 })->join();
 
 is $o->foo->value, 42;
+
+$o = MyClass->new(foo => Foo->new(value => 43));
+is $o->foo->value, 43;
+
 ok !$o->meta->is_immutable;
 
+done_testing;

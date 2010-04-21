@@ -283,6 +283,13 @@ sub DESTROY{
     return if !$serial_id;
     # mortal anonymous class
 
+    # XXX: cleaning stash with threads causes panic/SEGV.
+    if(exists $INC{'threads.pm'}) {
+        # (caller)[2] indicates the caller's line number,
+        # which is zero when the current thread is joining.
+        return if( (caller)[2] == 0);
+    }
+
     # @ISA is a magical variable, so we clear it manually.
     @{$self->{superclasses}} = () if exists $self->{superclasses};
 
@@ -293,7 +300,6 @@ sub DESTROY{
     delete $METAS{$name};
 
     $name =~ s/ $serial_id \z//xms;
-
     no strict 'refs';
     delete ${$name}{ $serial_id . '::' };
 
