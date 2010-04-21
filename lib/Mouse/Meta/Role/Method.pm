@@ -23,7 +23,7 @@ Mouse::Meta::Role::Method - A Mouse Method metaclass for Roles
 
 =head1 VERSION
 
-This document describes Mouse version 0.54
+This document describes Mouse version 0.55
 
 =head1 SEE ALSO
 

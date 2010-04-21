@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.55 Wed Apr 21 13:27:13 2010
+    [BUF FIX]
+    * Fix a bug that traits could cause panic/SEGV on threads (gfx)
+
 0.54 Sat Apr 17 17:15:54 2010
     [BUG FIX]
     * Resolve RT#56523: has with reader, writer, lazy and builder
