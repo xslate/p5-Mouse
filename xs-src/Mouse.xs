@@ -338,13 +338,15 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
             }
             used++;
         }
-        else if(!is_cloning){ /* no init arg, noop while cloning */
+        else { /* no init arg */
             if(flags & (MOUSEf_ATTR_HAS_DEFAULT | MOUSEf_ATTR_HAS_BUILDER)){
-                if(!(flags & MOUSEf_ATTR_IS_LAZY)){
+                /* skip if the object has the slot (it occurs on cloning/reblessing) */
+                if(!(flags & MOUSEf_ATTR_IS_LAZY) && !has_slot(object, slot)){
                     mouse_xa_set_default(aTHX_ xa, object);
                 }
             }
-            else if(flags & MOUSEf_ATTR_IS_REQUIRED) {
+            /* don't check while cloning (or reblesseing) */
+            else if(!is_cloning && flags & MOUSEf_ATTR_IS_REQUIRED) {
                 mouse_throw_error(attr, NULL, "Attribute (%"SVf") is required", slot);
             }
         }

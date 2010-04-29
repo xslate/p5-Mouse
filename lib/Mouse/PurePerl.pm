@@ -298,9 +298,9 @@ sub _initialize_object{
                 push @triggers_queue, [ $attribute->trigger, $object->{$slot} ];
             }
         }
-        elsif(!$is_cloning) { # no init arg, noop while cloning
+        else { # no init arg
             if ($attribute->has_default || $attribute->has_builder) {
-                if (!$attribute->is_lazy) {
+                if (!$attribute->is_lazy && !exists $object->{$slot}) {
                     my $default = $attribute->default;
                     my $builder = $attribute->builder;
                     my $value =   $builder                ? $object->$builder()
@@ -313,7 +313,7 @@ sub _initialize_object{
                         if ref($object->{$slot}) && $attribute->is_weak_ref;
                 }
             }
-            elsif($attribute->is_required) {
+            elsif(!$is_cloning && $attribute->is_required) {
                 $self->throw_error("Attribute (".$attribute->name.") is required");
             }
         }
