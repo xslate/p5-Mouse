@@ -1,7 +1,12 @@
 Revision history for Mouse
 
+0.56 Thu Apr 29 11:15:45 2010
+    [BUG FIX]
+    * Resolve RT#56837: Role application to instance with init_arg'd
+      attributes caused problems (Sanko Robinson)
+
 0.55 Wed Apr 21 13:27:13 2010
-    [BUF FIX]
+    [BUG FIX]
     * Fix a bug that traits could cause panic/SEGV on threads (gfx)
 
 0.54 Sat Apr 17 17:15:54 2010
