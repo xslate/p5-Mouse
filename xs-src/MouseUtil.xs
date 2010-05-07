@@ -123,12 +123,13 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
 /* workaround RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
+    const PERL_CONTEXT* const cx = &cxstack[cxstack_ix];
     assert( (flags & G_EVAL) == 0 );
-
-    if(!PL_in_eval) {
+    //warn("%d 0x%x 0x%x", (int)cx->cx_type, (int)cx->cx_type, (int)PL_in_eval);
+    if(!(cx->cx_type & (CXt_EVAL|CXp_TRYBLOCK))) {
         I32 count;
-        SAVESPTR(ERRSV);
-        ERRSV = sv_newmortal();
+        //SAVESPTR(ERRSV);
+        //ERRSV = sv_newmortal();
 
         count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
 

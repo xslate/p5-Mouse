@@ -35,11 +35,7 @@ package main;
 use strict;
 use warnings;
 
-pass 'The problem remains ...';
-
-if(0) {
-    my $hoge = Hoge->new;
-    is $hoge->msg, "HOGE";
-}
+my $hoge = Hoge->new;
+is $hoge->msg, "HOGE";
 
 done_testing;
