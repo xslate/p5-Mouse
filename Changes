@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.57 Fri May  7 14:27:00 2010
+    [BUG FIX]
+    * Resolve RT #57144: Fix problems in Perl_call_sv() again (gfx)
+
 0.56 Thu Apr 29 11:15:45 2010
     [BUG FIX]
     * Resolve RT#56837: Role application to instance with init_arg'd

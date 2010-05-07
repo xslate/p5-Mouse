@@ -3,7 +3,7 @@ use 5.006_002;
 
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = '0.56';
+our $VERSION = '0.57';
 
 use Carp         qw(confess);
 use Scalar::Util qw(blessed);
@@ -160,7 +160,7 @@ Mouse - Moose minus the antlers
 
 =head1 VERSION
 
-This document describes Mouse version 0.56
+This document describes Mouse version 0.57
 
 =head1 SYNOPSIS
 
