@@ -138,27 +138,35 @@ S_dopoptosub(pTHX_ I32 const startingblock)
     return i;
 }
 
-/* workaround RT #69939 */
+/* workaround Perl-RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
     const PERL_CONTEXT* const cx = &cxstack[S_dopoptosub(aTHX_ cxstack_ix)];
     assert( (flags & G_EVAL) == 0 );
 
     //warn("cx_type=0x%02x PL_eval=0x%02x (%"SVf")", (unsigned)cx->cx_type, (unsigned)PL_in_eval, sv);
-    if(!(cx->cx_type & CXp_TRYBLOCK)) {
+    if(cx->cx_type & CXp_TRYBLOCK) {
+        return Perl_call_sv(aTHX_ sv, flags);
+    }
+    else {
         I32 count;
-        //SAVESPTR(ERRSV);
-        //ERRSV = sv_newmortal();
+        ENTER;
+        /* Don't do SAVETMPS */
+
+        SAVESPTR(ERRSV);
+        ERRSV = sv_newmortal();
 
         count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
 
         if(sv_true(ERRSV)){
-            croak(NULL); /* rethrow */
+            SV* const err = sv_mortalcopy(ERRSV);
+            LEAVE;
+            croak("Exception caught: %"SVf, err); /* rethrow */
         }
+
+        LEAVE;
+
         return count;
-    }
-    else {
-        return Perl_call_sv(aTHX_ sv, flags);
     }
 }
 
