@@ -120,13 +120,32 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
+static I32
+S_dopoptosub(pTHX_ I32 const startingblock)
+{
+    const PERL_CONTEXT* const cxstk = cxstack;
+    I32 i;
+    for (i = startingblock; i >= 0; i--) {
+        const PERL_CONTEXT* const cx = &cxstk[i];
+
+        switch (CxTYPE(cx)) {
+        case CXt_EVAL:
+        case CXt_SUB:
+        case CXt_FORMAT:
+            return i;
+        }
+    }
+    return i;
+}
+
 /* workaround RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
-    const PERL_CONTEXT* const cx = &cxstack[cxstack_ix];
+    const PERL_CONTEXT* const cx = &cxstack[S_dopoptosub(aTHX_ cxstack_ix)];
     assert( (flags & G_EVAL) == 0 );
-    //warn("%d 0x%x 0x%x", (int)cx->cx_type, (int)cx->cx_type, (int)PL_in_eval);
-    if(!(cx->cx_type & (CXt_EVAL|CXp_TRYBLOCK))) {
+
+    //warn("cx_type=0x%02x PL_eval=0x%02x (%"SVf")", (unsigned)cx->cx_type, (unsigned)PL_in_eval, sv);
+    if(!(cx->cx_type & CXp_TRYBLOCK)) {
         I32 count;
         //SAVESPTR(ERRSV);
         //ERRSV = sv_newmortal();
