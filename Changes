@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.58 Sat May  8 11:18:17 2010
+    [BUG FIX]
+    * Compliant with 5.12.0+
+
 0.57 Fri May  7 14:27:00 2010
     [BUG FIX]
     * Resolve RT #57144: Fix problems in Perl_call_sv() again (gfx)
