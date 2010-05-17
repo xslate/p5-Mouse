@@ -11,7 +11,7 @@ use warnings;
 use inc::Module::Install;
 
 # for co-developpers
-use Module::Install::XSUtil 0.22;
+use Module::Install::XSUtil 0.24;
 use Module::Install::AuthorTests;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
@@ -58,8 +58,8 @@ require 'lib/Mouse/Spec.pm'; # for the version
 #    include_deps 'Carp::Always';
 #}
 
-# cc_available recognizes the '--pp' and '--xs' options
-my $use_xs = ($] >= 5.008_001 && cc_available());
+# cc_want deals with the '--pp' and '--xs' options
+my $use_xs = ($] >= 5.008_001 && want_xs());
 
 if($use_xs){
     print "Mouse configured with XS.\n",
