@@ -2,7 +2,7 @@
 
 #define CHECK_INSTANCE(instance) STMT_START{                           \
         if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){  \
-            croak("Invalid object instance");                          \
+            croak("Invalid object instance: '%"SVf"'", instance);      \
         }                                                              \
     } STMT_END
 
