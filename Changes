@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.59 Tue May 18 16:29:57 2010
+    [CHANGES]
+    * Improve error messages on $class->accessor() (gfx)
+
 0.58 Sat May  8 11:18:17 2010
     [BUG FIX]
     * Compliant with 5.12.0+
