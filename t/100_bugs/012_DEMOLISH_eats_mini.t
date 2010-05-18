@@ -104,3 +104,4 @@ if($] >= 5.013) {
         if Quux->meta->is_mutable
 }
 
+done_testing;
