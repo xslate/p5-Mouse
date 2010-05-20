@@ -367,10 +367,10 @@ sub _install_modifier_pp{
 sub _install_modifier {
     my ( $self, $type, $name, $code ) = @_;
 
-    # load Class::Method::Modifiers first
+    # load Data::Util first
     my $no_cmm_fast = do{
         local $@;
-        eval q{ use Class::Method::Modifiers::Fast 0.041 () };
+        eval q{ use Data::Util 0.55 () };
         $@;
     };
 
@@ -379,13 +379,27 @@ sub _install_modifier {
         $impl = \&_install_modifier_pp;
     }
     else{
-        my $install_modifier = Class::Method::Modifiers::Fast->can('install_modifier');
         $impl = sub {
             my ( $self, $type, $name, $code ) = @_;
             my $into = $self->name;
-            $install_modifier->($into, $type, $name, $code);
 
-            $self->add_method($name => Mouse::Util::get_code_ref($into, $name));
+            my $method = Mouse::Util::get_code_ref( $into, $name );
+
+            if ( !$method || !Data::Util::subroutine_modifier($method) ) {
+                unless ($method) {
+                    $method = $into->can($name)
+                        or Carp::confess("The method '$name' is not found in the inheritance hierarchy for class $into");
+                }
+                $method = Data::Util::modify_subroutine( $method,
+                    $type => [$code] );
+
+                $self->add_method($name => $method);
+            }
+            else {
+                Data::Util::subroutine_modifier( $method, $type => $code );
+                $self->add_method($name => Mouse::Util::get_code_ref($into, $name));
+            }
+
             return;
         };
     }

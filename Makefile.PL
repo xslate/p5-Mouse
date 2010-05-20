@@ -34,7 +34,7 @@ if($] < 5.010) {
 }
 
 my %suggests = (
-    'Class::Method::Modifiers::Fast' => 0.041,
+    'Data::Util'                     => 0.55,
     'MouseX::AttributeHelpers'       => 0.06,
 );
 
