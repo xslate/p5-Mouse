@@ -38,16 +38,16 @@ lives_ok {
 
 throws_ok {
     Class->new(tb => 3);
-} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' failed with value 3/;
+} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' with value 3/;
 
 throws_ok {
     my $class = Class->new;
     $class->tb(3);
-} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' failed with value 3/;
+} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' with value 3/;
 
 throws_ok {
     Class->new(tb => Class->new);
-} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' failed with value Class=HASH\(\w+\)/;
+} qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' with value Class=HASH\(\w+\)/;
 
 do {
     package Other;
@@ -62,7 +62,7 @@ do {
 
 throws_ok {
     Other->new;
-} qr/Attribute \(oops\) does not pass the type constraint because: Validation failed for 'Int' failed with value yikes/;
+} qr/Attribute \(oops\) does not pass the type constraint because: Validation failed for 'Int' with value yikes/;
 
 lives_ok {
     Other->new(oops => 10);
@@ -119,31 +119,31 @@ for ('Bx', 'D'..'E', 'G::H') {
 
 throws_ok {
     ClassNameTests->new(class => 'A');
-} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value A/;
 
 throws_ok {
         my $obj = ClassNameTests->new;
         $obj->class('A');
-} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value A/;
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value A/;
 
 throws_ok {
     ClassNameTests->new(class => 'C');
-} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value C/;
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value C/;
 
 throws_ok {
         my $obj = ClassNameTests->new;
         $obj->class('C');
-} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value C/;
+} qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value C/;
 
 for ('F', 'G', 'I', 'Z') {
     throws_ok {
         ClassNameTests->new(class => $_);
-    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value $_/;
+    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value $_/;
 
     throws_ok {
             my $obj = ClassNameTests->new;
             $obj->class($_);
-    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' failed with value $_/;
+    } qr/Attribute \(class\) does not pass the type constraint because: Validation failed for 'ClassName' with value $_/;
 };
 
 
@@ -175,8 +175,8 @@ lives_ok {
 };
 throws_ok {
     HasSausage->new(sausage => Class->new);   
-} qr/^Attribute \(sausage\) does not pass the type constraint because: Validation failed for 'SausageRole' failed with value Class=/;
+} qr/^Attribute \(sausage\) does not pass the type constraint because: Validation failed for 'SausageRole' with value Class=/;
 throws_ok {
     $hs->sausage(Class->new);   
-} qr/^Attribute \(sausage\) does not pass the type constraint because: Validation failed for 'SausageRole' failed with value Class=/;
+} qr/^Attribute \(sausage\) does not pass the type constraint because: Validation failed for 'SausageRole' with value Class=/;
 

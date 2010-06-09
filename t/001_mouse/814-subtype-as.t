@@ -45,15 +45,15 @@ use Scalar::Util qw/blessed/;
 }
 
 eval { Foo->new( str_obj => Obj1->new ) };
-like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' failed with value Obj1=HASH/;
+like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' with value Obj1=HASH/;
 eval { Foo->new( obj_str => Obj1->new ) };
-like $@, qr/Attribute \(obj_str\) does not pass the type constraint because: Validation failed for 'Type2' failed with value Obj1=HASH/;
+like $@, qr/Attribute \(obj_str\) does not pass the type constraint because: Validation failed for 'Type2' with value Obj1=HASH/;
 
 eval { Foo->new( str_obj => Obj2->new ) };
-like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' failed with value Obj2=HASH/;
+like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' with value Obj2=HASH/;
 
 eval { Foo->new( str_obj => 'Ref' ) };
-like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' failed with value Ref/;
+like $@, qr/Attribute \(str_obj\) does not pass the type constraint because: Validation failed for 'Type1' with value Ref/;
 
 my $f1 = eval { Foo->new( obj_str => Obj2->new ) };
 isa_ok $f1, 'Foo';

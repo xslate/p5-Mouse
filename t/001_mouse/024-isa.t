@@ -88,13 +88,13 @@ for my $type (@types) {
         my $via_new;
         throws_ok {
             $via_new = Class->new($type => $value);
-        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$display\E/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' with value \Q$display\E/;
         is($via_new, undef, "no object created");
 
         my $via_set = Class->new;
         throws_ok {
             $via_set->$type($value);
-        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' failed with value \Q$display\E/;
+        } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' with value \Q$display\E/;
 
         is($via_set->$type, undef, "value for $type not set");
     }

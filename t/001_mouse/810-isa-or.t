@@ -22,7 +22,7 @@ use Test::More tests => 22;
 eval {
     Foo->new( bar => +{} );
 };
-like($@, qr/^Attribute \(bar\) does not pass the type constraint because: Validation failed for 'Baz\|Str\|Undef' failed with value HASH\(\w+\)/, 'type constraint and coercion failed')
+like($@, qr/^Attribute \(bar\) does not pass the type constraint because: Validation failed for 'Baz\|Str\|Undef' with value HASH\(\w+\)/, 'type constraint and coercion failed')
     or diag "\$@='$@'";
 
 eval {
@@ -92,7 +92,7 @@ is $foo->foo, 'Name', 'foo is Name';
 }
 
 eval { Funk->new( foo => 'aaa' ) };
-like $@, qr/Attribute \(foo\) does not pass the type constraint because: Validation failed for 'KLASS\|Type3\|Undef' failed with value aaa/;
+like $@, qr/Attribute \(foo\) does not pass the type constraint because: Validation failed for 'KLASS\|Type3\|Undef' with value aaa/;
 
 my $k = Funk->new;
 ok $k, 'got an object 4';
