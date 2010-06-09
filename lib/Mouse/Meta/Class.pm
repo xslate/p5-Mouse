@@ -228,20 +228,8 @@ sub compute_all_applicable_attributes { # DEPRECATED
 sub linearized_isa;
 
 sub new_object;
+sub clone_object;
 
-sub clone_object {
-    my $class  = shift;
-    my $object = shift;
-    my $args   = $object->Mouse::Object::BUILDARGS(@_);
-
-    (blessed($object) && $object->isa($class->name))
-        || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
-
-    my $cloned = bless { %$object }, ref $object;
-    $class->_initialize_object($cloned, $args, 1);
-
-    return $cloned;
-}
 
 sub clone_instance { # DEPRECATED
     my ($class, $instance, %params) = @_;

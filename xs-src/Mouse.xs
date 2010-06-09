@@ -580,10 +580,30 @@ CODE:
 
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
-    mouse_buildall(aTHX_ xc, RETVAL, args); /* BUILDALL */
+    mouse_buildall(aTHX_ xc, RETVAL, sv_2mortal(newRV_inc((SV*)args))); /* BUILDALL */
 }
 OUTPUT:
     RETVAL
+
+SV*
+clone_object(SV* meta, SV* object, ...)
+CODE:
+{
+    AV* const xc   = mouse_get_xc(aTHX_ meta);
+    HV* const args = mouse_buildargs(aTHX_ meta, NULL, ax + 1, items - 1);
+
+    if(!mouse_is_an_instance_of(aTHX_ MOUSE_xc_stash(xc), object)) {
+        mouse_throw_error(meta, object,
+            "You must pass an instance of the metaclass (%"SVf"), not (%"SVf")",
+            mcall0(meta, mouse_name), object);
+    }
+
+    RETVAL = mouse_instance_clone(aTHX_ object);
+    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, TRUE);
+}
+OUTPUT:
+    RETVAL
+
 
 void
 _initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE)
