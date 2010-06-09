@@ -1,5 +1,13 @@
 #!perl -w
 
+use Test::More;
+
+BEGIN {
+    if($^O =~ /bsd/) {
+        plan skip_all => q{TODO: *bsd might fail on this tests (this test is an workaround to a core bug)};
+    }
+}
+
 package Foo;
 use Mouse;
 
