@@ -1,5 +1,20 @@
 Revision history for Mouse
 
+0.60 Wed Jun  9 19:43:55 2010
+    [CHANGES]
+    * BUILDALL is now called by Mouse::Meta::Class::new_object, rather than
+      by Mouse::Object::new. (Moose 1.05)
+
+    [BUG FIXES]
+    * Fix type constraint validation messages to not include the string
+      'failed' twice in the same sentence. (Moose 1.05)
+    * Resolve RT #57975: The prefix "Exception caught" is no longer added
+      to exceptions Mouse catches. (gfx)
+
+    [OTHERS]
+    * A difficult test (t/900_mouse_bugs/006_RT69939.t) will be skipped on
+      some platforms. (gfx)
+
 0.59 Tue May 18 16:29:57 2010
     [CHANGES]
     * Improve error messages on $class->accessor() (gfx)
