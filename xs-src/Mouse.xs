@@ -580,6 +580,7 @@ CODE:
 
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
+    mouse_buildall(aTHX_ xc, RETVAL, args); /* BUILDALL */
 }
 OUTPUT:
     RETVAL
@@ -673,8 +674,7 @@ CODE:
     /* new_object */
     RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, RETVAL, (HV*)SvRV(args), FALSE);
-
-    mouse_buildall(aTHX_ xc, RETVAL, args);
+    mouse_buildall(aTHX_ xc, RETVAL, args); /* BUILDALL */
 }
 OUTPUT:
     RETVAL

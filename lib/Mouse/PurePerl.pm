@@ -270,12 +270,21 @@ sub get_all_attributes {
 }
 
 sub new_object {
-    my $self = shift;
+    my $meta = shift;
     my %args = (@_ == 1 ? %{$_[0]} : @_);
 
-    my $object = bless {}, $self->name;
+    my $object = bless {}, $meta->name;
 
-    $self->_initialize_object($object, \%args);
+    $meta->_initialize_object($object, \%args);
+    # BUILDALL
+    if( $object->can('BUILD') ) {
+        for my $class (reverse $meta->linearized_isa) {
+            my $build = Mouse::Util::get_code_ref($class, 'BUILD')
+                || next;
+
+            $object->$build(\%args);
+        }
+    }
     return $object;
 }
 
@@ -647,19 +656,7 @@ sub new {
     my $args = $class->BUILDARGS(@_);
 
     my $meta = Mouse::Meta::Class->initialize($class);
-    my $self = $meta->new_object($args);
-
-    # BUILDALL
-    if( $self->can('BUILD') ) {
-        for my $class (reverse $meta->linearized_isa) {
-            my $build = Mouse::Util::get_code_ref($class, 'BUILD')
-                || next;
-
-            $self->$build($args);
-        }
-    }
-
-    return $self;
+    return $meta->new_object($args);
 }
 
 sub DESTROY {

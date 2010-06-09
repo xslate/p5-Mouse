@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More;
 use Test::Mouse;
 
 my @called;
@@ -51,5 +51,9 @@ with_immutable sub {
     $child->BUILDALL({});
 
     is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"], 'BUILDALL');
+
+    $child = Child->meta->new_object();
+    is_deeply([splice @called], ["Class::BUILD", "Child::BUILD"], 'new_object calls BUILDALL');
 }, qw(Class Child);
 
+done_testing;
