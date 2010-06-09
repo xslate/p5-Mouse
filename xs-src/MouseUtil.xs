@@ -161,7 +161,8 @@ mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
         if(sv_true(ERRSV)){
             SV* const err = sv_mortalcopy(ERRSV);
             LEAVE;
-            croak("Exception caught: %"SVf, err); /* rethrow */
+            sv_setsv(ERRSV, err);
+            croak(NULL); /* rethrow */
         }
 
         LEAVE;
