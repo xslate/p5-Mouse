@@ -1,6 +1,7 @@
 #include "mouse.h"
 
 #define CHECK_INSTANCE(instance) STMT_START{                           \
+        assert(instance);                                              \
         if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){  \
             croak("Invalid object instance: '%"SVf"'", instance);      \
         }                                                              \
@@ -331,24 +332,26 @@ XS(XS_Mouse_simple_predicate)
 
 SV*
 mouse_instance_create(pTHX_ HV* const stash) {
+    SV* instance;
     assert(stash);
     assert(SvTYPE(stash) == SVt_PVHV);
-    return sv_bless( newRV_noinc((SV*)newHV()), stash );
+    instance = sv_bless( newRV_noinc((SV*)newHV()), stash );
+    return sv_2mortal(instance);
 }
 
 SV*
 mouse_instance_clone(pTHX_ SV* const instance) {
-    HV* proto;
-    assert(instance);
-
+    SV* proto;
     CHECK_INSTANCE(instance);
-    proto = newHVhv((HV*)SvRV(instance));
-    return sv_bless( newRV_noinc((SV*)proto), SvSTASH(SvRV(instance)) );
+    assert(SvOBJECT(SvRV(instance)));
+
+    proto = newRV_noinc((SV*)newHVhv((HV*)SvRV(instance)));
+    sv_bless(proto, SvSTASH(SvRV(instance)));
+    return sv_2mortal(proto);
 }
 
 bool
 mouse_instance_has_slot(pTHX_ SV* const instance, SV* const slot) {
-    assert(instance);
     assert(slot);
     CHECK_INSTANCE(instance);
     return hv_exists_ent((HV*)SvRV(instance), slot, 0U);
@@ -357,7 +360,6 @@ mouse_instance_has_slot(pTHX_ SV* const instance, SV* const slot) {
 SV*
 mouse_instance_get_slot(pTHX_ SV* const instance, SV* const slot) {
     HE* he;
-    assert(instance);
     assert(slot);
     CHECK_INSTANCE(instance);
     he = hv_fetch_ent((HV*)SvRV(instance), slot, FALSE, 0U);
@@ -368,7 +370,6 @@ SV*
 mouse_instance_set_slot(pTHX_ SV* const instance, SV* const slot, SV* const value) {
     HE* he;
     SV* sv;
-    assert(instance);
     assert(slot);
     assert(value);
     CHECK_INSTANCE(instance);
@@ -390,7 +391,6 @@ mouse_instance_delete_slot(pTHX_ SV* const instance, SV* const slot) {
 void
 mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot) {
     HE* he;
-    assert(instance);
     assert(slot);
     CHECK_INSTANCE(instance);
     he = hv_fetch_ent((HV*)SvRV(instance), slot, FALSE, 0U);

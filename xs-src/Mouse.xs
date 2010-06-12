@@ -571,26 +571,28 @@ PPCODE:
     }
 }
 
-SV*
+void
 new_object(SV* meta, ...)
 CODE:
 {
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     HV* const args = mouse_buildargs(aTHX_ meta, NULL, ax, items);
+    SV* object;
 
-    RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
-    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, FALSE);
-    mouse_buildall(aTHX_ xc, RETVAL, sv_2mortal(newRV_inc((SV*)args))); /* BUILDALL */
+    object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
+    mouse_class_initialize_object(aTHX_ meta, object, args, FALSE);
+    mouse_buildall(aTHX_ xc, object, sv_2mortal(newRV_inc((SV*)args))); /* BUILDALL */
+    ST(0) = object; /* because object is mortal, we should return it as is */
+    XSRETURN(1);
 }
-OUTPUT:
-    RETVAL
 
-SV*
+void
 clone_object(SV* meta, SV* object, ...)
 CODE:
 {
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     HV* const args = mouse_buildargs(aTHX_ meta, NULL, ax + 1, items - 1);
+    SV* proto;
 
     if(!mouse_is_an_instance_of(aTHX_ MOUSE_xc_stash(xc), object)) {
         mouse_throw_error(meta, object,
@@ -598,12 +600,11 @@ CODE:
             mcall0(meta, mouse_name), object);
     }
 
-    RETVAL = mouse_instance_clone(aTHX_ object);
-    mouse_class_initialize_object(aTHX_ meta, RETVAL, args, TRUE);
+    proto = mouse_instance_clone(aTHX_ object);
+    mouse_class_initialize_object(aTHX_ meta, proto, args, TRUE);
+    ST(0) = proto; /* because object is mortal, we should return it as is */
+    XSRETURN(1);
 }
-OUTPUT:
-    RETVAL
-
 
 void
 _initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE)
@@ -655,7 +656,7 @@ PPCODE:
 
 MODULE = Mouse  PACKAGE = Mouse::Object
 
-SV*
+void
 new(SV* klass, ...)
 CODE:
 {
@@ -663,6 +664,7 @@ CODE:
     AV* const xc   = mouse_get_xc(aTHX_ meta);
     UV const flags = MOUSE_xc_flags(xc);
     SV* args;
+    SV* object;
 
     /* BUILDARGS */
     if(flags & MOUSEf_XC_HAS_BUILDARGS){
@@ -692,12 +694,12 @@ CODE:
     }
 
     /* new_object */
-    RETVAL = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
-    mouse_class_initialize_object(aTHX_ meta, RETVAL, (HV*)SvRV(args), FALSE);
-    mouse_buildall(aTHX_ xc, RETVAL, args); /* BUILDALL */
+    object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
+    mouse_class_initialize_object(aTHX_ meta, object, (HV*)SvRV(args), FALSE);
+    mouse_buildall(aTHX_ xc, object, args); /* BUILDALL */
+    ST(0) = object; /* because object is mortal, we should return it as is */
+    XSRETURN(1);
 }
-OUTPUT:
-    RETVAL
 
 void
 DESTROY(SV* object)
