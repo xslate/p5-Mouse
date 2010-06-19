@@ -5,7 +5,7 @@ use warnings;
 our $VERSION = '0.60';
 
 our $MouseVersion = $VERSION;
-our $MooseVersion = '0.93';
+our $MooseVersion = '1.05';
 
 sub MouseVersion{ $MouseVersion }
 sub MooseVersion{ $MooseVersion }
