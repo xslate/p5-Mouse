@@ -34,13 +34,36 @@ sub BUILD {
 
 package main;
 
-use Test::More tests => 3;
+use Test::More tests => 3 * 3;
 
 $@ = '(ERRSV)';
 
-my $foo = Foo->new;
-isa_ok $foo, 'Foo';
-is $foo->bar, 42;
-$foo->bar(100);
-is $foo->bar, 100;
-note("\$@=$@");
+note 'do {}';
+do {
+    my $foo = Foo->new;
+    isa_ok $foo, 'Foo';
+    is $foo->bar, 42;
+    $foo->bar(100);
+    is $foo->bar, 100;
+    note("\$@=$@");
+};
+
+note 'eval {}';
+eval {
+    my $foo = Foo->new;
+    isa_ok $foo, 'Foo';
+    is $foo->bar, 42;
+    $foo->bar(100);
+    is $foo->bar, 100;
+    note("\$@=$@");
+};
+
+note 'eval ""';
+eval q{
+    my $foo = Foo->new;
+    isa_ok $foo, 'Foo';
+    is $foo->bar, 42;
+    $foo->bar(100);
+    is $foo->bar, 100;
+    note("\$@=$@");
+};

@@ -120,55 +120,28 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
-static I32
-S_dopoptosub(pTHX_ I32 const startingblock)
-{
-    const PERL_CONTEXT* const cxstk = cxstack;
-    I32 i;
-    for (i = startingblock; i >= 0; i--) {
-        const PERL_CONTEXT* const cx = &cxstk[i];
-
-        switch (CxTYPE(cx)) {
-        case CXt_EVAL:
-        case CXt_SUB:
-        case CXt_FORMAT:
-            return i;
-        }
-    }
-    return i;
-}
-
 /* workaround Perl-RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
-    const PERL_CONTEXT* const cx = &cxstack[S_dopoptosub(aTHX_ cxstack_ix)];
-    assert( (flags & G_EVAL) == 0 );
+    I32 count;
+    ENTER;
+    /* Don't do SAVETMPS */
 
-    //warn("cx_type=0x%02x PL_eval=0x%02x (%"SVf")", (unsigned)cx->cx_type, (unsigned)PL_in_eval, sv);
-    if(cx->cx_type & CXp_TRYBLOCK) {
-        return Perl_call_sv(aTHX_ sv, flags);
-    }
-    else {
-        I32 count;
-        ENTER;
-        /* Don't do SAVETMPS */
+    SAVESPTR(ERRSV);
+    ERRSV = sv_newmortal();
 
-        SAVESPTR(ERRSV);
-        ERRSV = sv_newmortal();
+    count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
 
-        count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
-
-        if(sv_true(ERRSV)){
-            SV* const err = sv_mortalcopy(ERRSV);
-            LEAVE;
-            sv_setsv(ERRSV, err);
-            croak(NULL); /* rethrow */
-        }
-
+    if(sv_true(ERRSV)){
+        SV* const err = sv_mortalcopy(ERRSV);
         LEAVE;
-
-        return count;
+        sv_setsv(ERRSV, err);
+        croak(NULL); /* rethrow */
     }
+
+    LEAVE;
+
+    return count;
 }
 
 void
