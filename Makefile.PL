@@ -8,7 +8,7 @@ BEGIN{
 
 use strict;
 use warnings;
-use inc::Module::Install;
+use inc::Module::Install 0.99;
 
 # for co-developpers
 use Module::Install::XSUtil 0.24;
