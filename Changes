@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.61 Sat Jun 19 15:35:48 2010
+    [BUG FIXES]
+    * Workaround the Perl_call_sv() problem again (gfx)
+    * Update Module::Install to 0.99 for older versions of perls (gfx)
+
 0.60 Wed Jun  9 19:43:55 2010
     [CHANGES]
     * BUILDALL is now called by Mouse::Meta::Class::new_object, rather than

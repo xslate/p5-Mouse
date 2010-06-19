@@ -329,7 +329,7 @@ Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Rol
 
 =head1 VERSION
 
-This document describes Mouse version 0.60
+This document describes Mouse version 0.61
 
 =head1 SEE ALSO
 
