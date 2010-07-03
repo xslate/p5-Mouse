@@ -1,7 +1,7 @@
 #!perl
 use strict;
 use warnings;
-use constant HAS_THREADS => eval{ require threads };
+use constant HAS_THREADS => eval{ require threads && require threads::shared };
 
 use if !HAS_THREADS, 'Test::More', (skip_all => "This is a test for threads ($@)");
 use Test::More;
