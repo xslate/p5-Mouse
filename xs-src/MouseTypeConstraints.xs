@@ -7,7 +7,7 @@
 #if PERL_BCDVERSION >= 0x5008005
 #define LooksLikeNumber(sv) looks_like_number(sv)
 #else
-#define LooksLikeNumber(sv) ( SvPOKp(sv) ? looks_like_number(sv) : SvNIOKp(sv) )
+#define LooksLikeNumber(sv) ( SvPOKp(sv) ? looks_like_number(sv) : (I32)SvNIOKp(sv) )
 #endif
 
 #ifndef SvRXOK
