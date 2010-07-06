@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.62 Tue Jul  6 20:18:58 2010
+    [FEATURES]
+    * Support MouseX::StrictConstructor (gfx)
+
 0.61 Sat Jun 19 15:35:48 2010
     [BUG FIXES]
     * Workaround the Perl_call_sv() problem again (gfx)
@@ -61,7 +65,7 @@ Revision history for Mouse
     [BUG FIXES]
     * Mouse::Object::DESTROY could cause SEGVs
     * Attribute triggers could cause panics
-    * Integers > 2**32 ware not groked as Int
+    * Integers > 2**32 were not groked as Int
     * Incorrect types, e.g. "Array[Int", was accepted
     * Metaclass compatibility was sometimes ignored
 
