@@ -526,7 +526,6 @@ BOOT:
     INSTALL_SIMPLE_READER(Class, is_immutable);
 
     INSTALL_SIMPLE_READER_WITH_KEY(Class, __strict_constructor,     strict_constructor);
-    INSTALL_SIMPLE_WRITER_WITH_KEY(Class, __set_strict_constructor, strict_constructor);
 
     INSTALL_CLASS_HOLDER(Class, method_metaclass,     "Mouse::Meta::Method");
     INSTALL_CLASS_HOLDER(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
