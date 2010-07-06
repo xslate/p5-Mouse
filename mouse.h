@@ -29,7 +29,7 @@
 #define no_mro_get_linear_isa
 #define mro_get_linear_isa(stash) mouse_mro_get_linear_isa(aTHX_ stash)
 AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
-#define mro_method_changed_in(stash) ((void)((stash), ++PL_sub_generation))
+#define mro_method_changed_in(stash) ((void)++PL_sub_generation)
 #endif /* !mro_get_linear_isa */
 
 #ifndef mro_get_pkg_gen
