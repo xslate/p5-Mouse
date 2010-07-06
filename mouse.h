@@ -181,7 +181,6 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 
 CV* mouse_simple_accessor_generate(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen);
 
-XS(XS_Mouse_simple_accessor);
 XS(XS_Mouse_simple_reader);
 XS(XS_Mouse_simple_writer);
 XS(XS_Mouse_simple_clearer);

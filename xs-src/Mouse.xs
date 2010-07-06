@@ -524,7 +524,9 @@ BOOT:
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
     INSTALL_SIMPLE_READER(Class, is_immutable);
-    INSTALL_SIMPLE_READER_WITH_KEY(Class, __strict_constructor, strict_constructor);
+
+    INSTALL_SIMPLE_READER_WITH_KEY(Class, __strict_constructor,     strict_constructor);
+    INSTALL_SIMPLE_WRITER_WITH_KEY(Class, __set_strict_constructor, strict_constructor);
 
     INSTALL_CLASS_HOLDER(Class, method_metaclass,     "Mouse::Meta::Method");
     INSTALL_CLASS_HOLDER(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
@@ -535,7 +537,6 @@ BOOT:
         newRV_inc((SV*)get_cvs("Mouse::Object::new", TRUE)));
     newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Destructor::XS", TRUE), "_generate_destructor",
         newRV_inc((SV*)get_cvs("Mouse::Object::DESTROY", TRUE)));
-
 
 void
 linearized_isa(SV* self)
