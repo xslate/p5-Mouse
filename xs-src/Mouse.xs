@@ -123,7 +123,7 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
         flags |= MOUSEf_XC_HAS_BUILDARGS;
     }
 
-    if(predicate_calls(metaclass, "__strict_constructor")){
+    if(predicate_calls(metaclass, "strict_constructor")){
         flags |= MOUSEf_XC_CONSTRUCTOR_IS_STRICT;
     }
 
@@ -297,7 +297,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     I32 const len   = AvFILLp(attrs) + 1;
     I32 i;
     AV* triggers_queue = NULL;
-    I32 used = 0;
+    U32 used = 0;
 
     assert(meta || object);
     assert(args);
@@ -525,8 +525,6 @@ BOOT:
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
     INSTALL_SIMPLE_READER(Class, is_immutable);
 
-    INSTALL_SIMPLE_READER_WITH_KEY(Class, __strict_constructor,     strict_constructor);
-
     INSTALL_CLASS_HOLDER(Class, method_metaclass,     "Mouse::Meta::Method");
     INSTALL_CLASS_HOLDER(Class, attribute_metaclass,  "Mouse::Meta::Attribute");
     INSTALL_CLASS_HOLDER(Class, constructor_class,    "Mouse::Meta::Method::Constructor::XS");
@@ -611,6 +609,45 @@ _initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE)
 CODE:
 {
     mouse_class_initialize_object(aTHX_ meta, object, args, is_cloning);
+}
+
+void
+strict_constructor(SV* self, SV* value = NULL)
+CODE:
+{
+    SV* const slot      = sv_2mortal(newSVpvs_share("strict_constructor"));
+    SV* const stash_ref = mcall0(self, mouse_namespace);
+    HV* stash;
+
+    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)) {
+        croak("namespace() didn't return a HASH reference");
+    }
+    stash = (HV*)SvRV(stash_ref);
+
+    if(value) { /* setter */
+        set_slot(self, slot, value);
+        mro_method_changed_in(stash);
+    }
+
+    value = get_slot(self, slot);
+
+    if(!value) {
+        AV* const isa   = mro_get_linear_isa(stash);
+        I32 const len   = av_len(isa) + 1;
+        I32 i;
+        for(i = 1; i < len; i++) {
+            SV* const klass = MOUSE_av_at(isa, i);
+            SV* const meta  = get_metaclass(klass);
+            if(!SvOK(meta)){
+                continue; /* skip non-Mouse classes */
+            }
+            value = get_slot(meta, slot);
+            if(value) {
+                break;
+            }
+        }
+    }
+    ST(0) = value ? value : &PL_sv_no;
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role

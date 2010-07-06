@@ -307,6 +307,8 @@ sub _initialize_object{
 
     my @triggers_queue;
 
+    my $used = 0;
+
     foreach my $attribute ($self->get_all_attributes) {
         my $init_arg = $attribute->init_arg;
         my $slot     = $attribute->name;
@@ -320,6 +322,7 @@ sub _initialize_object{
             if ($attribute->has_trigger) {
                 push @triggers_queue, [ $attribute->trigger, $object->{$slot} ];
             }
+            $used++;
         }
         else { # no init arg
             if ($attribute->has_default || $attribute->has_builder) {
@@ -342,6 +345,10 @@ sub _initialize_object{
         }
     }
 
+    if($used < keys %{$args} && $self->strict_constructor) {
+        $self->_report_unknown_args([ $self->get_all_attributes ], $args);
+    }
+
     if(@triggers_queue){
         foreach my $trigger_and_value(@triggers_queue){
             my($trigger, $value) = @{$trigger_and_value};
@@ -358,7 +365,47 @@ sub _initialize_object{
 
 sub is_immutable {  $_[0]->{is_immutable} }
 
-sub __strict_constructor{ $_[0]->{strict_constructor} }
+sub strict_constructor{
+    my $self = shift;
+    if(@_) {
+        $self->{strict_constructor} = shift;
+    }
+
+    foreach my $class($self->linearized_isa) {
+        my $meta = Mouse::Util::get_metaclass_by_name($class)
+            or next;
+
+        if(exists $meta->{strict_constructor}) {
+            return $meta->{strict_constructor};
+        }
+    }
+
+    return 0; # false
+}
+
+sub _report_unknown_args {
+    my($metaclass, $attrs, $args) = @_;
+
+    my @unknowns;
+    my %init_args;
+    foreach my $attr(@{$attrs}){
+        my $init_arg = $attr->init_arg;
+        if(defined $init_arg){
+            $init_args{$init_arg}++;
+        }
+    }
+
+    while(my $key = each %{$args}){
+        if(!exists $init_args{$key}){
+            push @unknowns, $key;
+        }
+    }
+
+    $metaclass->throw_error( sprintf
+        "Unknown attribute passed to the constructor of %s: %s",
+        $metaclass->name, Mouse::Util::english_list(@unknowns),
+    );
+}
 
 package Mouse::Meta::Role;
 
