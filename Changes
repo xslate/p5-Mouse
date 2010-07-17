@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.63
+    [CHANGES]
+    * Resolve RT#59460: Test::Requires is not a required prerequisite unless
+      release-testing... (Curtis Jewell)
+      See also https://rt.cpan.org/Public/Bug/Display.html?id=59460
+
 0.62 Tue Jul  6 20:18:58 2010
     [FEATURES]
     * Support MouseX::StrictConstructor (gfx)

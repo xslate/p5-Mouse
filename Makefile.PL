@@ -1,7 +1,7 @@
 # for developpers:
 BEGIN{
     if(grep{ $_ eq '--author' } @ARGV){
-        print "^X -S cpanm < author/requires.cpanm\n";
+        print "$^X -S cpanm < author/requires.cpanm\n";
         system "$^X -S cpanm < author/requires.cpanm";
     }
 }
@@ -26,7 +26,9 @@ requires 'Scalar::Util' => 1.14;
 
 test_requires 'Test::More'      => 0.88;
 test_requires 'Test::Exception' => 0.29;
-test_requires 'Test::Requires'  => 0.03;
+if ( $ENV{RELEASE_TESTING} || (grep { $_ eq '--author' } @ARGV) ) {
+    test_requires 'Test::Requires'  => 0.03;
+}
 # test_requires 'Test::Output'    => 0.16; # too many dependencies!
 
 if($] < 5.010) {
