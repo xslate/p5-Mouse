@@ -17,6 +17,7 @@ Mouse::Exporter->setup_import_methods(
         coerce
 
         find_type_constraint
+        register_type_constraint
     )],
 );
 
@@ -365,6 +366,16 @@ sub find_type_constraint {
 
     $spec =~ s/\s+//g;
     return $TYPE{$spec};
+}
+
+sub register_type_constraint {
+    my($constraint) = @_;
+    Carp::croak("No type supplied / type is not a valid type constraint")
+        unless Mouse::Util::is_a_type_constraint($constraint);
+    my $name = $constraint->name;
+    Carp::croak("can't register an unnamed type constraint")
+        unless defined $name;
+    return $TYPE{$name} = $constraint;
 }
 
 sub find_or_parse_type_constraint {
