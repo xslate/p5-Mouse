@@ -25,6 +25,10 @@
 #define GvNAMELEN_get GvNAMELEN
 #endif
 
+#ifndef CvGV_set
+#define CvGV_set(cv, gv) (CvGV(cv) = (gv))
+#endif
+
 #ifndef mro_get_linear_isa
 #define no_mro_get_linear_isa
 #define mro_get_linear_isa(stash) mouse_mro_get_linear_isa(aTHX_ stash)

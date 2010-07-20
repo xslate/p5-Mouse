@@ -348,7 +348,7 @@ mouse_install_sub(pTHX_ GV* const gv, SV* const code_ref) {
             }
         }
 
-        CvGV(cv) = gv;
+        CvGV_set(cv, gv);
         CvANON_off(cv);
     }
 }
