@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More;
 use Test::Exception;
+use Scalar::Util qw(refaddr);
 
 BEGIN {
     use_ok('Mouse::Util::TypeConstraints');
@@ -65,3 +66,24 @@ ok $subtype2 => 'made a subtype of our subtype';
         "correct error thrown"
     );
 }
+
+{
+    for my $t (qw(Bar Foo)) {
+        my $tc = Mouse::Meta::TypeConstraint->new({
+            name => $t,
+        });
+
+        Mouse::Util::TypeConstraints::register_type_constraint($tc);
+    }
+
+    my $foo = Mouse::Util::TypeConstraints::find_type_constraint('Foo');
+    my $bar = Mouse::Util::TypeConstraints::find_type_constraint('Bar');
+
+    ok(!$foo->is_a_type_of($bar), "Foo type is not equal to Bar type");
+    ok( $foo->is_a_type_of($foo), "Foo equals Foo");
+    ok( 0+$foo == refaddr($foo), "overloading works");
+}
+
+ok $subtype1, "type constraint boolean overload works";
+
+done_testing;
