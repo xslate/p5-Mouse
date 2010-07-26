@@ -1,5 +1,15 @@
 Revision history for Mouse
 
+0.64
+    [BUG FIXES]
+    * Build failure on 5.13.3
+
+    [CHANGES]
+    * Illegal inheritance options for clone_and_inherit_options()
+      is now a black list, not a white list (Moose 1.09 feature)
+    * Remove long deprecated methods in Mouse::Meta::Attribute:
+        clone_parent, get_parent_args, canonicalize_args, create
+
 0.63 Tue Jul 20 19:26:30 2010
     [CHANGES]
     * Resolve RT#59460: Test::Requires is not a required prerequisite unless
