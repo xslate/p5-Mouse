@@ -201,7 +201,7 @@ sub clone_and_inherit_options{
     my $args = $self->Mouse::Object::BUILDARGS(@_);
 
     foreach my $illegal($self->illegal_options_for_inheritance) {
-        if(exists $args->{$illegal}) {
+        if(exists $args->{$illegal} and exists $self->{$illegal}) {
             $self->throw_error("Illegal inherited option: $illegal");
         }
     }
