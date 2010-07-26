@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More;
 use Test::Exception;
-
 
 
 {
@@ -68,6 +67,8 @@ use Test::Exception;
 
     ok( $attr->is_lazy, "it's lazy" );
 
+    note 'skip Moose specific features';
+    last;
     is( $attr->get_raw_value($foo), undef, "raw value" );
 
     is( $attr->get_value($foo), 10, "lazy value" );
@@ -83,5 +84,4 @@ use Test::Exception;
     is($foo->get_lazy_foo(), 100, '... got the correct value');
 }
 
-
-
+done_testing;
