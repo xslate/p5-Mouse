@@ -76,4 +76,8 @@ dies_ok {
     Class->write_attr(42);
 };
 
+my @attrs = map { $_->name }
+    sort { $a->insertion_order <=> $b->insertion_order } $object->meta->get_all_attributes;
+is join(' ', @attrs), 'x y z attr', 'insertion_order';
+
 done_testing;

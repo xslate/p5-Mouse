@@ -482,6 +482,7 @@ sub should_auto_deref    { $_[0]->{auto_deref}             }
 sub should_coerce        { $_[0]->{coerce}                 }
 
 sub documentation        { $_[0]->{documentation}          }
+sub insertion_order      { $_[0]->{insertion_order}        }
 
 # predicates
 

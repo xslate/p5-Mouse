@@ -16,6 +16,7 @@ my %valid_options = map { $_ => undef } (
   'does',
   'handles',
   'init_arg',
+  'insertion_order',
   'is',
   'isa',
   'lazy',
@@ -37,7 +38,6 @@ my %valid_options = map { $_ => undef } (
   # Moose defines, but Mouse doesn't
   #'definition_context',
   #'initializer',
-  #'insertion_order',
 
   # special case for AttributeHelpers
   'provides',

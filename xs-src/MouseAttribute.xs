@@ -249,6 +249,7 @@ BOOT:
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, should_auto_deref, auto_deref);
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, should_coerce, coerce);
     INSTALL_SIMPLE_READER(Attribute, documentation);
+    INSTALL_SIMPLE_READER(Attribute, insertion_order);
 
     /* predicates */
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Attribute, has_accessor, accessor);

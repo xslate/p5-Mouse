@@ -209,6 +209,7 @@ sub add_attribute {
 
     weaken( $attr->{associated_class} = $self );
 
+    $attr->{insertion_order} = keys %{ $self->{attributes} };
     $self->{attributes}{$attr->name} = $attr;
     $attr->install_accessors();
 
