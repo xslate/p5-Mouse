@@ -209,9 +209,12 @@ sub add_attribute {
 
     weaken( $attr->{associated_class} = $self );
 
+    # install accessors first
+    $attr->install_accessors();
+
+    # then register the attribute to the metaclass
     $attr->{insertion_order} = keys %{ $self->{attributes} };
     $self->{attributes}{$attr->name} = $attr;
-    $attr->install_accessors();
 
     if(!$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
         Carp::carp(qq{Attribute ($name) of class }.$self->name

@@ -3,12 +3,19 @@
 use strict;
 use warnings;
 
-use Test::More tests => 84;
+use Test::More;
 use Test::Exception;
 
 
-
 {
+    package Thing::Meta::Attribute;
+    use Mouse;
+
+    extends 'Mouse::Meta::Attribute';
+    around illegal_options_for_inheritance => sub {
+        return (shift->(@_), qw/trigger/);
+    };
+
     package Thing;
     use Mouse;
 
@@ -44,7 +51,7 @@ use Test::Exception;
 
     # this one will work here ....
     has 'fail' => (isa => 'CodeRef', is => 'bare');
-    has 'other_fail' => (is => 'bare');
+    has 'other_fail' => (metaclass => 'Thing::Meta::Attribute', is => 'bare', trigger => sub { });
 
     package Bar;
     use Mouse;
@@ -195,15 +202,9 @@ ok(Bar->meta->has_attribute('gorch'), '... Bar has a gorch attr');
 ok(Bar->meta->has_attribute('gloum'), '... Bar has a gloum attr');
 ok(Bar->meta->has_attribute('bling'), '... Bar has a bling attr');
 ok(Bar->meta->has_attribute('bunch_of_stuff'), '... Bar does have a bunch_of_stuff attr');
-{
-local $TODO = 'not supported';
-ok(!Bar->meta->has_attribute('blang'), '... Bar does not have a blang attr');
-}
+ok(!Bar->meta->has_attribute('blang'), '... Bar has a blang attr');
 ok(Bar->meta->has_attribute('fail'), '... Bar has a fail attr');
-{
-local $TODO = 'not supported';
 ok(!Bar->meta->has_attribute('other_fail'), '... Bar does not have an other_fail attr');
-}
 
 isnt(Foo->meta->get_attribute('foo'),
      Bar->meta->get_attribute('foo'),
@@ -267,4 +268,4 @@ ok(!Foo->meta->get_attribute('bling')->has_handles,
 ok(Bar->meta->get_attribute('bling')->has_handles,
    '... Bar::foo should handles');
 
-
+done_testing;

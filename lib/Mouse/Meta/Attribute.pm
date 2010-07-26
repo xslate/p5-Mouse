@@ -192,25 +192,39 @@ sub _throw_type_constraint_error {
     );
 }
 
+sub illegal_options_for_inheritance {
+    return qw(is reader writer accessor clearer predicate);
+}
+
 sub clone_and_inherit_options{
     my $self = shift;
     my $args = $self->Mouse::Object::BUILDARGS(@_);
 
-    my($attribute_class, @traits) = ref($self)->interpolate_class($args);
-
-    $args->{traits} = \@traits if @traits;
-    # do not inherit the 'handles' attribute
-    foreach my $name(keys %{$self}){
-        if(!exists $args->{$name} && $name ne 'handles'){
-            $args->{$name} = $self->{$name};
+    foreach my $illegal($self->illegal_options_for_inheritance) {
+        if(exists $args->{$illegal}) {
+            $self->throw_error("Illegal inherited option: $illegal");
         }
     }
+
+    foreach my $name(keys %{$self}){
+        if(!exists $args->{$name}){
+            $args->{$name} = $self->{$name}; # inherit from self
+        }
+    }
+
+    my($attribute_class, @traits) = ref($self)->interpolate_class($args);
+    $args->{traits} = \@traits if @traits;
 
     # remove temporary caches
     foreach my $attr(keys %{$args}){
         if($attr =~ /\A _/xms){
             delete $args->{$attr};
         }
+    }
+
+    # remove default if lazy_build => 1
+    if($args->{lazy_build}) {
+        delete $args->{default};
     }
 
     return $attribute_class->new($self->name, $args);
@@ -329,6 +343,10 @@ sub install_accessors{
         my %handles = $attribute->_canonicalize_handles($attribute->{handles});
 
         while(my($handle, $method_to_call) = each %handles){
+            if($metaclass->has_method($handle)) {
+                $attribute->throw_error("You cannot overwrite a locally defined method ($handle) with a delegation");
+            }
+
             $metaclass->add_method($handle =>
                 $attribute->_make_delegation_method(
                     $handle, $method_to_call));
