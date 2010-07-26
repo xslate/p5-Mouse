@@ -5,9 +5,8 @@ use warnings;
 
 use Scalar::Util 'isweak';
 
-use Test::More tests => 43;
+use Test::More;
 use Test::Exception;
-
 
 
 {
@@ -183,6 +182,9 @@ use Test::Exception;
 
     $attr->set_value( $foo, 3 );
 
+    note 'skip Moose specific features';
+    last;
+
     is_deeply(
         \@Foo::calls,
         [ [ $foo, 3, 2 ] ],
@@ -201,6 +203,9 @@ use Test::Exception;
 }
 
 {
+    note 'skip Moose specific features';
+    last;
+
     my $foo = Foo->new(foo => 2);
     is_deeply(
         \@Foo::calls,
@@ -219,4 +224,4 @@ use Test::Exception;
     Foo->meta->make_immutable, redo if Foo->meta->is_mutable;
 }
 
-
+done_testing;
