@@ -392,7 +392,7 @@ mouse_lookup_isa(pTHX_ HV* const instance_stash, const char* const klass_pv){
 #define find_method_pvn(a, b, c) mouse_stash_find_method(aTHX_ a, b, c)
 #define find_method_pvs(a, b)    mouse_stash_find_method(aTHX_ a, STR_WITH_LEN(b))
 
-static inline GV*
+STATIC_INLINE GV*
 mouse_stash_find_method(pTHX_ HV* const stash, const char* const name, I32 const namelen){
     GV** const gvp = (GV**)hv_fetch(stash, name, namelen, FALSE);
     if(gvp && isGV(*gvp) && GvCV(*gvp)){ /* shortcut */

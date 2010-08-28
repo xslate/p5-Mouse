@@ -44,11 +44,13 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif /* !no_mro_get_linear_isa */
 #endif /* mro_get_package_gen */
 
-#if !defined(__GNUC__)
-#  if (!defined(__cplusplus__) || !defined(__STDC_VERSION__) ||  (__STDC_VERSION__ < 199901L)) && !defined(inline)
-#    define inline /* nothing */
-#  endif
-#endif
+#ifndef STATIC_INLINE /* from 5.13.4 */
+#   if defined(__GNUC__) || defined(__cplusplus__) || (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
+#       define STATIC_INLINE static inline
+#   else
+#       define STATIC_INLINE static
+#   endif
+#endif /* STATIC_INLINE */
 
 /* Mouse stuff */
 
