@@ -4,9 +4,7 @@
 #define PERL_NO_GET_CONTEXT
 #include <EXTERN.h>
 #include <perl.h>
-#define PERL_CORE
 #include <XSUB.h>
-#undef PERL_CORE
 
 #include "ppport.h"
 
