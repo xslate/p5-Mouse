@@ -76,10 +76,10 @@ mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV
     }
 }
 
+XS(XS_Mouse__Object_BUILDARGS); /* prototype */
+
 static int
 mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
-    XS(XS_Mouse__Object_BUILDARGS); /* prototype */
-
     GV* const buildargs = gv_fetchmeth_autoload(stash, "BUILDARGS", sizeof("BUILDARGS")-1, 0);
 
     return buildargs && CvXSUB(GvCV(buildargs)) != XS_Mouse__Object_BUILDARGS;
@@ -445,6 +445,11 @@ mouse_get_modifier_storage(pTHX_
     return (AV*)SvRV(storage_ref);
 }
 
+DECL_BOOT(Mouse__Util);
+DECL_BOOT(Mouse__Util__TypeConstraints);
+DECL_BOOT(Mouse__Meta__Method__Accessor__XS);
+DECL_BOOT(Mouse__Meta__Attribute);
+
 MODULE = Mouse  PACKAGE = Mouse
 
 PROTOTYPES: DISABLE
@@ -459,10 +464,10 @@ BOOT:
     mouse_get_attribute      = newSVpvs_share("get_attribute");
     mouse_get_attribute_list = newSVpvs_share("get_attribute_list");
 
-    MOUSE_CALL_BOOT(Mouse__Util);
-    MOUSE_CALL_BOOT(Mouse__Util__TypeConstraints);
-    MOUSE_CALL_BOOT(Mouse__Meta__Method__Accessor__XS);
-    MOUSE_CALL_BOOT(Mouse__Meta__Attribute);
+    CALL_BOOT(Mouse__Util);
+    CALL_BOOT(Mouse__Util__TypeConstraints);
+    CALL_BOOT(Mouse__Meta__Method__Accessor__XS);
+    CALL_BOOT(Mouse__Meta__Attribute);
 
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Module
@@ -662,7 +667,7 @@ void
 add_before_modifier(SV* self, SV* name, SV* modifier)
 CODE:
 {
-    av_push(mouse_get_modifier_storage(aTHX_ self, ix, name), newSVsv(modifier));
+    av_push(mouse_get_modifier_storage(aTHX_ self, (enum mouse_modifier_t)ix, name), newSVsv(modifier));
 }
 ALIAS:
     add_before_method_modifier = MOUSE_M_BEFORE
@@ -677,7 +682,7 @@ ALIAS:
     get_after_method_modifiers  = MOUSE_M_AFTER
 PPCODE:
 {
-    AV* const storage = mouse_get_modifier_storage(aTHX_ self, ix, name);
+    AV* const storage = mouse_get_modifier_storage(aTHX_ self, (enum mouse_modifier_t)ix, name);
     I32 const len     = av_len(storage) + 1;
     if(GIMME_V == G_ARRAY) {
         I32 i;

@@ -1,33 +1,7 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#define PERL_NO_GET_CONTEXT
-#include <EXTERN.h>
-#include <perl.h>
-#include <XSUB.h>
-
-#include "ppport.h"
-
-/* Portability stuff */
-
-#ifndef newSVpvs_share
-#define newSVpvs_share(s) Perl_newSVpvn_share(aTHX_ s, sizeof(s)-1, 0U)
-#endif
-
-#ifndef get_cvs
-#define get_cvs(name, flags) get_cv(name, flags)
-#endif
-
-#ifndef GvNAME_get
-#define GvNAME_get GvNAME
-#endif
-#ifndef GvNAMELEN_get
-#define GvNAMELEN_get GvNAMELEN
-#endif
-
-#ifndef CvGV_set
-#define CvGV_set(cv, gv) (CvGV(cv) = (gv))
-#endif
+#include "perlxs.h"
 
 #ifndef mro_get_linear_isa
 #define no_mro_get_linear_isa
@@ -44,25 +18,6 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif /* !no_mro_get_linear_isa */
 #endif /* mro_get_package_gen */
 
-#ifndef STATIC_INLINE /* from 5.13.4 */
-#   if defined(__GNUC__) || defined(__cplusplus__) || (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
-#       define STATIC_INLINE static inline
-#   else
-#       define STATIC_INLINE static
-#   endif
-#endif /* STATIC_INLINE */
-
-/* Mouse stuff */
-
-#define newAV_mortal() (AV*)sv_2mortal((SV*)newAV())
-#define newHV_mortal() (HV*)sv_2mortal((SV*)newHV())
-
-#define MOUSE_CALL_BOOT(name) STMT_START {      \
-        EXTERN_C XS(CAT2(boot_, name));         \
-        PUSHMARK(SP);                           \
-        CALL_FPTR(CAT2(boot_, name))(aTHX_ cv); \
-    } STMT_END
-
 extern SV* mouse_package;
 extern SV* mouse_namespace;
 extern SV* mouse_methods;
@@ -71,11 +26,7 @@ extern SV* mouse_coerce;
 
 void
 mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)
-#ifdef __attribute__format__
     __attribute__format__(__printf__, 3, 4);
-#else
-    ;
-#endif
 
 /* workaround RT #69939 */
 I32
