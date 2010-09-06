@@ -26,7 +26,7 @@ use Test::More tests => 3;
     package MyApp;
     use Mouse;
     with ('Requires', 'Method');
-    with ('Method2' => { alias => { bar => 'baz' } });
+    with ('Method2' => { -alias => { bar => 'baz' } });
 }
 
 my $m = MyApp->new;
