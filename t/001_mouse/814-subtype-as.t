@@ -37,7 +37,7 @@ use Scalar::Util qw/blessed/;
     );
 
 
-    type 'Type4';
+    type 'Type4', where { 1 };
     has any => (
         is     => 'rw',
         isa    => 'Type4',

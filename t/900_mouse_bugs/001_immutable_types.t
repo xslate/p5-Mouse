@@ -14,7 +14,7 @@ subtype 'Foo', as 'Object', where { $_->isa('A') };
 {
     package C;
     use Mouse;
-    has a => ( is => 'rw', isa => 'Foo', coerce => 1 );
+    has a => ( is => 'rw', isa => 'Foo' );
 }
 
 isa_ok(C->new(a => A->new()), 'C');
