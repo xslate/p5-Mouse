@@ -4,12 +4,6 @@
 
 #include "mouse.h"
 
-#if PERL_BCDVERSION >= 0x5008005
-#define LooksLikeNumber(sv) looks_like_number(sv)
-#else
-#define LooksLikeNumber(sv) ( SvPOKp(sv) ? looks_like_number(sv) : (I32)SvNIOKp(sv) )
-#endif
-
 #ifndef SvRXOK
 #define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))
 #endif
