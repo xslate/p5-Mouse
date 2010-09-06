@@ -25,9 +25,10 @@ option to F<Makefile.PL>.
 
     perl Makefile.PL --pp
 
-=head2 The MOUSE_PUREPERL environment variable
+=head2 The MOUSE_PUREPERL (or PERL_ONLY) environment variable
 
-It can be used to enable the use of Mouse::PurePerl.
+It can be used to enable the use of Mouse::PurePerl in order to test
+and debug programs that use Mouse.
 
 =head1 DEPENDENCIES
 
