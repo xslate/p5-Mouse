@@ -167,7 +167,7 @@ sub _throw_type_constraint_error {
 }
 
 sub illegal_options_for_inheritance {
-    return qw(is reader writer accessor clearer predicate);
+    return qw(reader writer accessor clearer predicate);
 }
 
 sub clone_and_inherit_options{
