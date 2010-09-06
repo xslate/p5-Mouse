@@ -150,9 +150,18 @@ sub _create_type{
 
         if($TYPE{$name}){
             my $that = $TYPE{$name}->{package_defined_in} || __PACKAGE__;
-            ($this eq $that) or Carp::croak(
-                "The type constraint '$name' has already been created in $that and cannot be created again in $this"
-            );
+            if($this ne $that) {
+                my $note = '';
+                if($that eq __PACKAGE__) {
+                    $note = sprintf " ('%s' is %s type constraint)",
+                        $name,
+                        scalar(grep { $name eq $_ } list_all_builtin_type_constraints())
+                            ? 'a builtin'
+                            : 'an implicitly created';
+                }
+                Carp::croak("The type constraint '$name' has already been created in $that"
+                          . " and cannot be created again in $this" . $note);
+            }
         }
     }
     else{
