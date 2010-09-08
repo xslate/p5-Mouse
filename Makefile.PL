@@ -13,6 +13,7 @@ use inc::Module::Install 0.99;
 # for co-developpers
 use Module::Install::XSUtil 0.24;
 use Module::Install::AuthorTests;
+use Module::Install::TestAssemble;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";
@@ -85,39 +86,27 @@ repository 'git://git.moose.perl.org/Mouse.git';
 clean_files 'lib/Mouse/Tiny.pm $(O_FILES) test-mydeps-*.log';
 
 
-if (author_context()) {
+if ($Module::Install::AUTHOR) {
     my $require_version = Mouse::Spec->MooseVersion;
 
     if (eval { require Moose; Moose->VERSION($require_version) }) {
         print "You have Moose ", Moose->VERSION, ".\n";
-        if (eval { require Module::Install::AuthorTests }) {
-            do 'tool/create-moose-compatibility-tests.pl';
-            # repeat testing
-            # see also ExtUtils::MM_Any::test_via_harness()
-            my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                          .q{ "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                          .q{ xt/compatibility/t/*/*.t } . "\n";
-
-            postamble qq{test_dynamic :: test_moose\n\n}
-                    . qq{test_moose :: pure_all\n}
-                    . qq{\t} . $t_moose;
-        } else {
-            print "You don't have a M::I::AuthorTests.\n";
-        }
+        do 'tool/create-moose-compatibility-tests.pl';
+        test_assemble
+            tests  => ['xt/compatibility/t/*/*.t'],
+            target => 'test',
+            alias  => 'test_moose',
+        ;
     } else {
         print "You don't have Moose $require_version. skipping moose compatibility test\n";
     }
 
     if($use_xs){
-        # repeat testing
-        # see also ExtUtils::MM_Any::test_via_harness()
-        my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                   .q{ $(TEST_FILES)} . "\n";
-
-        postamble qq{test_dynamic :: test_pp\n\n}
-                . qq{test_pp :: pure_all\n}
-                . qq{\t} . $t_pp;
+        test_assemble
+            env    => { PERL_ONLY => 1 },
+            target => 'test',
+            alias  => 'test_pp',
+        ;
     }
 }
 
