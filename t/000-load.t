@@ -13,12 +13,6 @@ diag "Testing Mouse/$Mouse::VERSION (", exists $INC{'Mouse/PurePerl.pm'} ? 'Pure
 
 diag "Soft dependency versions:";
 
-eval{ require MRO::Compat };
-diag "    MRO::Compat: $MRO::Compat::VERSION";
-
 eval { require Moose };
 diag "    Class::MOP: $Class::MOP::VERSION";
 diag "    Moose: $Moose::VERSION";
-
-eval { require Class::Method::Modifiers::Fast };
-diag "    Class::Method::Modifiers::Fast: $Class::Method::Modifiers::Fast::VERSION";

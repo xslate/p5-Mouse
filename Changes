@@ -4,6 +4,14 @@ Revision history for Mouse
     [CHANGES]
     * An attribute in a subclass can now override the value of "is"
       (Moose 1.07 feature)
+    * Long deprecated methods:
+      _create_args(), compute_all_applicable_attributes(),
+      and clone_instance()
+
+    [BUG FIXES]
+    * Fix tests that misused test functions. This problem was revealed
+      by Test::Builder2
+    * Improve C++ compatibility in Mouse::XS
 
 0.64 Mon Jul 26 20:48:13 2010
     [BUG FIXES]
