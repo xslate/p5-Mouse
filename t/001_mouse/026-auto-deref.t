@@ -39,7 +39,7 @@ do {
 my $obj;
 lives_ok {
     $obj = Class->new;
-} qr/auto_deref without defaults don't explode on new/;
+} "auto_deref without defaults don't explode on new";
 
 my ($array, @array, $hash, %hash);
 lives_ok {
@@ -50,7 +50,7 @@ lives_ok {
 
     $obj->array;
     $obj->hash;
-} qr/auto_deref without default doesn't explode on get/;
+} "auto_deref without default doesn't explode on get";
 
 is($obj->array, undef, "array without value is undef in scalar context");
 is($obj->hash, undef, "hash without value is undef in scalar context");
@@ -72,7 +72,7 @@ lives_ok {
 
     $obj->array;
     $obj->hash;
-} qr/auto_deref without default doesn't explode on get/;
+} "auto_deref without default doesn't explode on get";
 
 is_deeply($array, [1, 2, 3], "auto_deref in scalar context gives the reference");
 is_deeply($hash, {foo => 1, bar => 2}, "auto_deref in scalar context gives the reference");
