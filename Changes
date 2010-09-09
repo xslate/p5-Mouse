@@ -4,7 +4,7 @@ Revision history for Mouse
     [CHANGES]
     * An attribute in a subclass can now override the value of "is"
       (Moose 1.07 feature)
-    * Long deprecated methods:
+    * Remove long deprecated methods:
       _create_args(), compute_all_applicable_attributes(),
       and clone_instance()
 
