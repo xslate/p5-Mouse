@@ -91,11 +91,6 @@ sub new {
 sub has_read_method      { $_[0]->has_reader || $_[0]->has_accessor }
 sub has_write_method     { $_[0]->has_writer || $_[0]->has_accessor }
 
-sub _create_args { # DEPRECATED
-    $_[0]->{_create_args} = $_[1] if @_ > 1;
-    $_[0]->{_create_args}
-}
-
 sub interpolate_class{
     my($class, $args) = @_;
 

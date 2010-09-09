@@ -223,26 +223,10 @@ sub add_attribute {
     return $attr;
 }
 
-sub compute_all_applicable_attributes { # DEPRECATED
-    Carp::cluck('compute_all_applicable_attributes() has been deprecated. Use get_all_attributes() instead');
-
-    return shift->get_all_attributes(@_)
-}
-
 sub linearized_isa;
 
 sub new_object;
 sub clone_object;
-
-
-sub clone_instance { # DEPRECATED
-    my ($class, $instance, %params) = @_;
-
-    Carp::cluck('clone_instance() has been deprecated. Use clone_object() instead');
-
-    return $class->clone_object($instance, %params);
-}
-
 
 sub immutable_options {
     my ( $self, @args ) = @_;
@@ -254,7 +238,6 @@ sub immutable_options {
         @args,
     );
 }
-
 
 sub make_immutable {
     my $self = shift;
