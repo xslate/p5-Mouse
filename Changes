@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.67 Fri Sep 10 13:56:38 2010
+    [BUG FIXES]
+    * Oops! Fix a mistake of removing neccesary denepdencies
+
 0.66 Fri Sep 10 13:30:41 2010
     [BUG FIXES]
     * Workaround older perl's bug that caused segv in throwing errors
