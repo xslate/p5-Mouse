@@ -33,9 +33,9 @@ my %suggests = (
 );
 
 while(my($mod, $least) = each %suggests){
-    my $status = system $^X, '-e', sprintf <<'CHECK', $mod, $least;
-if(eval q{ use %1$s (); 1 }) {
-    if(eval q{ use %1$s %2$s (); 1 }) {
+    my $status = system $^X, '-e', <<"CHECK";
+if(eval q{ use $mod (); 1 }) {
+    if(eval q{ use $mod $least (); 1 }) {
         exit 0; # installd, and new enough
     }
     else {
