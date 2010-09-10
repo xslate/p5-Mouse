@@ -25,17 +25,9 @@ all_from 'lib/Mouse.pm';
 requires 'Scalar::Util' => 1.14;
 
 test_requires 'Test::More'      => 0.88;
-test_requires 'Test::Exception' => 0.29;
-if ( $ENV{RELEASE_TESTING} || (grep { $_ eq '--author' } @ARGV) ) {
-    test_requires 'Test::Requires'  => 0.03;
-}
-# test_requires 'Test::Output'    => 0.16; # too many dependencies!
-
-if($] < 5.010) {
-    recommends 'Class::C3';
-}
 
 my %suggests = (
+    'Any::Moose'                     => 0.10,
     'Data::Util'                     => 0.55,
     'MouseX::AttributeHelpers'       => 0.06,
 );
@@ -52,13 +44,6 @@ while(my($mod, $least) = each %suggests){
         }
     }
 }
-
-require 'lib/Mouse/Spec.pm'; # for the version
-
-#if(Mouse::Spec->MouseVersion =~ /_/){ # DEVEL RELEASE
-#    require Carp::Always; Carp::Always->import();
-#    include_deps 'Carp::Always';
-#}
 
 # cc_want deals with the '--pp' and '--xs' options
 my $use_xs = ($] >= 5.008_001 && want_xs());
@@ -79,13 +64,10 @@ else{
 tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
-
 repository 'git://git.moose.perl.org/Mouse.git';
 
-clean_files 'lib/Mouse/Tiny.pm $(O_FILES) test-mydeps-*.log';
-
-
-if (author_context()) {
+if ($Module::Install::AUTHOR) {
+    require 'lib/Mouse/Spec.pm'; # for the version
     my $require_version = Mouse::Spec->MooseVersion;
 
     if (eval { require Moose; Moose->VERSION($require_version) }) {
@@ -121,5 +103,10 @@ if (author_context()) {
     }
 }
 
+clean_files q{
+    lib/Mouse/Tiny.pm $(O_FILES) test-mydeps-*.log
+    *.out
+    cover_db xs-src/*.gc{v,no,da}
+};
 
 WriteAll check_nmake => 0;
