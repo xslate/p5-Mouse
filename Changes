@@ -1,6 +1,11 @@
 Revision history for Mouse
 
-0.65
+0.66 Fri Sep 10 13:30:41 2010
+    [BUG FIXES]
+    * Workaround older perl's bug that caused segv in throwing errors
+    * Fix looks_like_number portability
+
+0.65 Thu Sep 9 13:30:33 2010
     [CHANGES]
     * An attribute in a subclass can now override the value of "is"
       (Moose 1.07 feature)
