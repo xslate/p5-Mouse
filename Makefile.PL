@@ -33,15 +33,24 @@ my %suggests = (
 );
 
 while(my($mod, $least) = each %suggests){
-    if(can_use($mod)){
-        if(!eval { $mod->VERSION($least) }){
-            my $ver = $mod->VERSION;
-            warn("\n",
-                "WARNING: $mod is installed, but its version ($ver) is too old (< $least).\n",
-                "         Please update $mod after installation of Mouse.\n",
-                "\n"
-            );
-        }
+    my $status = system $^X, '-e', sprintf <<'CHECK', $mod, $least;
+if(eval q{ use %1$s (); 1 }) {
+    if(eval q{ use %1$s %2$s (); 1 }) {
+        exit 0; # installd, and new enough
+    }
+    else {
+        exit 1; # installed, but too old
+    }
+}
+CHECK
+
+    if($status != 0){
+        my $ver = `$^X -e "use $mod (); print $mod->VERSION"`;
+        warn("\n",
+            "WARNING: $mod is installed, but its version ($ver) is too old (< $least).\n",
+            "         Please update $mod after installation of Mouse.\n",
+            "\n"
+        );
     }
 }
 
