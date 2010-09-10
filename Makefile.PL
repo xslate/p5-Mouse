@@ -8,10 +8,10 @@ BEGIN{
 
 use strict;
 use warnings;
-use inc::Module::Install 0.99;
+use inc::Module::Install 1.00;
 
 # for co-developpers
-use Module::Install::XSUtil 0.24;
+use Module::Install::XSUtil 0.27;
 use Module::Install::AuthorTests;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
@@ -25,13 +25,13 @@ all_from 'lib/Mouse.pm';
 requires 'Scalar::Util' => 1.14;
 
 test_requires 'Test::More'      => 0.88;
+test_requires 'Test::Exception' => 0.29;
 
 my %suggests = (
     'Any::Moose'                     => 0.10,
     'Data::Util'                     => 0.55,
     'MouseX::AttributeHelpers'       => 0.06,
 );
-
 while(my($mod, $least) = each %suggests){
     my $status = system $^X, '-e', <<"CHECK";
 if(eval q{ use $mod (); 1 }) {
