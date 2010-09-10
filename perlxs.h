@@ -60,10 +60,10 @@ extern "C" {
 
 /* general utility */
 
-#if PERL_BCDVERSION < 0x5008005
-#define LooksLikeNumber(x) (SvOK(x) && looks_like_number(x))
-#else
+#if PERL_BCDVERSION >= 0x5008005
 #define LooksLikeNumber(x) looks_like_number(x)
+#else
+#define LooksLikeNumber(x) (SvPOKp(x) ? looks_like_number(x) : (I32)SvNIOKp(x))
 #endif
 
 #define newAV_mortal() (AV*)sv_2mortal((SV*)newAV())
