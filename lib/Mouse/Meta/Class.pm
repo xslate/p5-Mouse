@@ -377,6 +377,12 @@ sub _install_modifier {
         };
     }
 
+    # workaround older Perl's bug that caused segv :(
+    {
+        no warnings 'once';
+        our $__not_used = \&_install_modifier; # keep the CV not to be released
+    }
+
     # replace this method itself :)
     {
         no warnings 'redefine';
