@@ -271,7 +271,7 @@ sub make_mutable {
 sub is_immutable;
 sub is_mutable   { !$_[0]->is_immutable }
 
-sub _install_modifier_pp{
+sub _install_modifier {
     my( $self, $type, $name, $code ) = @_;
     my $into = $self->name;
 
@@ -335,61 +335,6 @@ sub _install_modifier_pp{
     }
 
     return;
-}
-
-sub _install_modifier {
-    my ( $self, $type, $name, $code ) = @_;
-
-    # load Data::Util first
-    my $no_cmm_fast = do{
-        local $@;
-        eval q{ use Data::Util 0.55 () };
-        $@;
-    };
-
-    my $impl;
-    if($no_cmm_fast){
-        $impl = \&_install_modifier_pp;
-    }
-    else{
-        $impl = sub {
-            my ( $self, $type, $name, $code ) = @_;
-            my $into = $self->name;
-
-            my $method = Mouse::Util::get_code_ref( $into, $name );
-
-            if ( !$method || !Data::Util::subroutine_modifier($method) ) {
-                unless ($method) {
-                    $method = $into->can($name)
-                        or $self->throw_error("The method '$name' was not found in the inheritance hierarchy for $into");
-                }
-                $method = Data::Util::modify_subroutine( $method,
-                    $type => [$code] );
-
-                $self->add_method($name => $method);
-            }
-            else {
-                Data::Util::subroutine_modifier( $method, $type => $code );
-                $self->add_method($name => Mouse::Util::get_code_ref($into, $name));
-            }
-
-            return;
-        };
-    }
-
-    # workaround older Perl's bug that caused segv :(
-    {
-        no warnings 'once';
-        our $__not_used = \&_install_modifier; # keep the CV not to be released
-    }
-
-    # replace this method itself :)
-    {
-        no warnings 'redefine';
-        *_install_modifier = $impl;
-    }
-
-    $self->$impl( $type, $name, $code );
 }
 
 sub add_before_method_modifier {
