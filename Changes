@@ -1,5 +1,13 @@
 Revision history for Mouse
 
+0.68 Sat Sep 11 16:24:42 2010
+    [CHANGES]
+    * Remove an optional depenency, Data::Util.
+      This is used to make method modifiers faster, but the effect
+      is limited to 'before' and 'after' modifiers. Rather,
+      D::U's modifiers are slightly different from the standalone version,
+      and sometimes the difference caused problems.
+
 0.67 Fri Sep 10 13:56:38 2010
     [BUG FIXES]
     * Oops! Fix a mistake of removing neccesary denepdencies
