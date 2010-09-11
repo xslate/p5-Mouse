@@ -52,7 +52,9 @@ lib/Mouse/Tiny\.pm$
 # Mouse distributions
 Mouse-
 
-ppport\.h
+ppport\.h$
+xshelper\.h$
+
 \.o(?:bj)?$
 \.c$
 \.bs$

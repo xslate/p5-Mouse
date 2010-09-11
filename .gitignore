@@ -18,6 +18,7 @@ nytprof*
 *.out
 author/externals/
 ppport.h
+xshelper.h
 *.bs
 *.o
 *.obj

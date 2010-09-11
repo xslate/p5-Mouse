@@ -1,7 +1,7 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#include "perlxs.h"
+#include "xshelper.h"
 
 #ifndef mro_get_linear_isa
 #define no_mro_get_linear_isa

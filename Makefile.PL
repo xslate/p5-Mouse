@@ -11,7 +11,7 @@ use warnings;
 use inc::Module::Install 1.00;
 
 # for co-developpers
-use Module::Install::XSUtil 0.27;
+use Module::Install::XSUtil 0.30;
 use Module::Install::AuthorTests;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
@@ -29,7 +29,7 @@ test_requires 'Test::Exception' => 0.29;
 
 my %suggests = (
     'Any::Moose'                     => 0.10,
-    'Data::Util'                     => 0.55,
+
     'MouseX::AttributeHelpers'       => 0.06,
 );
 while(my($mod, $least) = each %suggests){
@@ -63,6 +63,7 @@ if($use_xs){
 
     cc_warnings();
     use_ppport(3.19);
+    use_xshelper();
     cc_src_paths('xs-src');
 }
 else{
