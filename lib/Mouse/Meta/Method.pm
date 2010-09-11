@@ -56,6 +56,11 @@ Mouse::Meta::Method - A Mouse Method metaclass
 
 This document describes Mouse version 0.67
 
+=head1 DESCRIPTION
+
+This class is a meta object protocol for Mouse methods,
+which is a subset of Moose::Meta:::Method.
+
 =head1 SEE ALSO
 
 L<Moose::Meta::Method>

@@ -31,19 +31,24 @@ This document describes Mouse version 0.67
 =head1 DESCRIPTION
 
 Mouse is a subset of Moose. This document describes to what extend Mouse is
-compatible with Moose.
+compatible (and incompatible) with Moose.
 
 =head2 Compatibility with Moose
 
-The sugary API is highly compatible with Moose.
+The sugary API is highly compatible with Moose. Methods which have the
+same name as Moose's are expected to be compatible with Moose's.
 
 =head2 Incompatibility with Moose
 
 =head3 Meta object protocols
 
-Any MOP in Mouse has no attributes by default.
+Meta object protocols are a subset of the counterpart of Moose.
+Their methods which have the same name as Moose's are expected to be
+compatible with Moose's. Feel free to use these methods even if they
+are not documented.
 
-For this reason, C<< $metaclass->meta->make_immutable() >> does not yet work as you expect.
+However, meta object protocols in Mouse have no attributes by default,
+so C<< $metaclass->meta->make_immutable() >> will not work as you expect.
 B<Don not make metaclasses immutable>.
 
 =head3 Mouse::Meta::Instance

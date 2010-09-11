@@ -314,6 +314,11 @@ Mouse::Meta::Role - The Mouse Role metaclass
 
 This document describes Mouse version 0.67
 
+=head1 DESCRIPTION
+
+This class is a meta object protocol for Mouse roles,
+which is a subset of Moose::Meta:::Role.
+
 =head1 SEE ALSO
 
 L<Moose::Meta::Role>

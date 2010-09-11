@@ -358,6 +358,11 @@ Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 This document describes Mouse version 0.67
 
+=head1 DESCRIPTION
+
+This is a meta object protocol for Mouse attributes,
+which is a subset of Moose::Meta::Attribute.
+
 =head1 METHODS
 
 =head2 C<< new(%options) -> Mouse::Meta::Attribute >>

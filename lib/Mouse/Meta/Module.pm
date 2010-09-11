@@ -331,6 +331,11 @@ Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Rol
 
 This document describes Mouse version 0.67
 
+=head1 DESCRIPTION
+
+This class is a base class of Mouse classes and roles,
+which is a subset of Class::MOP::Class.
+
 =head1 SEE ALSO
 
 L<Class::MOP::Class>

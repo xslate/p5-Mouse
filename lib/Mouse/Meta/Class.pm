@@ -435,6 +435,11 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 This document describes Mouse version 0.67
 
+=head1 DESCRIPTION
+
+This class is a meta object protocol for Mouse classes,
+which is a subset of Moose::Meta:::Class.
+
 =head1 METHODS
 
 =head2 C<< initialize(ClassName) -> Mouse::Meta::Class >>
