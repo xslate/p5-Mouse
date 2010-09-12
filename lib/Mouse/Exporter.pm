@@ -2,7 +2,7 @@ package Mouse::Exporter;
 use strict;
 use warnings;
 
-use Carp qw(confess);
+use Carp ();
 
 my %SPEC;
 
@@ -120,7 +120,7 @@ sub build_import_methods{
         my %default;
         foreach my $keyword(@{$default_list}){
             $default{$keyword} = $exports{$keyword}
-                || confess(qq{The $exporting_package package does not export "$keyword"});
+                || Carp::confess(qq{The $exporting_package package does not export "$keyword"});
         }
         $args{DEFAULT} = \%default;
     }
@@ -142,7 +142,7 @@ sub do_import {
     my($package, @args) = @_;
 
     my $spec = $SPEC{$package}
-        || confess("The package $package package does not use Mouse::Exporter");
+        || Carp::confess("The package $package package does not use Mouse::Exporter");
 
     my $into = _get_caller_package(ref($args[0]) ? shift @args : undef);
 
@@ -161,7 +161,7 @@ sub do_import {
         }
         elsif($arg =~ s/^://){
             my $group = $spec->{groups}{$arg}
-                || confess(qq{The $package package does not export the group "$arg"});
+                || Carp::confess(qq{The $package package does not export the group "$arg"});
             push @exports, @{$group};
         }
         else{
@@ -206,7 +206,7 @@ sub do_import {
         foreach my $keyword(@exports){
             push @export_table,
                 $keyword => ($spec->{EXPORTS}{$keyword}
-                    || confess(qq{The $package package does not export "$keyword"})
+                    || Carp::confess(qq{The $package package does not export "$keyword"})
                 );
         }
         Mouse::Util::install_subroutines($into, @export_table);
@@ -222,7 +222,7 @@ sub do_unimport {
     my($package, $arg) = @_;
 
     my $spec = $SPEC{$package}
-        || confess("The package $package does not use Mouse::Exporter");
+        || Carp::confess("The package $package does not use Mouse::Exporter");
 
     my $from = _get_caller_package($arg);
 
