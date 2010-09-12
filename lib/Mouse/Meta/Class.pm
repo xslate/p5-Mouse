@@ -281,18 +281,15 @@ sub _install_modifier {
     my $modifier_table = $self->{modifiers}{$name};
 
     if(!$modifier_table){
-        my(@before, @after, $cache);
-
-        $cache = $original;
-
-        my $around_only = ($type eq 'around');
-
+        my(@before, @after, @around);
+        my $cache = $original;
         my $modified = sub {
-            if($around_only) {
+            if(@before) {
+                for my $c (@before) { $c->(@_) }
+            }
+            unless(@after) {
                 return $cache->(@_);
             }
-
-            for my $c (@before) { $c->(@_) }
 
             if(wantarray){ # list context
                 my @rval = $cache->(@_);
@@ -319,8 +316,7 @@ sub _install_modifier {
 
             before   => \@before,
             after    => \@after,
-            around   => \my @around,
-            around_only => \$around_only,
+            around   => \@around,
 
             cache    => \$cache, # cache for around modifiers
         };
@@ -329,11 +325,9 @@ sub _install_modifier {
     }
 
     if($type eq 'before'){
-        ${$modifier_table->{around_only}} = 0;
         unshift @{$modifier_table->{before}}, $code;
     }
     elsif($type eq 'after'){
-        ${$modifier_table->{around_only}} = 0;
         push @{$modifier_table->{after}}, $code;
     }
     else{ # around

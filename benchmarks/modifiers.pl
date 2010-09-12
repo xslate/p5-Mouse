@@ -11,10 +11,6 @@ use Class::Method::Modifiers ();
 printf "Perl %vd on $Config{archname}\n", $^V;
 my @mods = qw(Moose Mouse Class::Method::Modifiers);
 
-if(eval{ require  Class::Method::Modifiers::Fast }){
-    push @mods, 'Class::Method::Modifiers::Fast';
-}
-
 foreach my $class(@mods){
     print "$class ", $class->VERSION, "\n";
 }
