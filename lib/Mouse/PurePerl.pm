@@ -1,15 +1,13 @@
 package Mouse::PurePerl;
-
-require Mouse::Util;
-
+# The pure Perl backend for Mouse
 package Mouse::Util;
-
 use strict;
 use warnings;
-
-use warnings FATAL => 'redefine'; # to avoid to load Mouse::PurePerl
+use warnings FATAL => 'redefine'; # to avoid to load Mouse::PurePerl twice
 
 use B ();
+
+require Mouse::Util;
 
 
 # taken from Class/MOP.pm

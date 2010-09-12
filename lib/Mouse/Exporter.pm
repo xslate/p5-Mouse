@@ -169,7 +169,8 @@ sub do_import {
         }
     }
 
-    $^H              |= $strict_bits;                                 # strict->import;
+    # strict->import;
+    $^H              |= $strict_bits;
     # warnings->import('all', FATAL => 'recursion');
     ${^WARNING_BITS} |= $warnings::Bits{all};
     ${^WARNING_BITS} |= $warnings_extra_bits;
