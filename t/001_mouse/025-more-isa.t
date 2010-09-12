@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 34;
+use Test::More;
 use Test::Exception;
 
 do {
@@ -13,6 +13,11 @@ do {
         isa => 'Test::Builder',
     );
 
+    has obj => (
+        is  => 'rw',
+        isa => 'UNIVERSAL',
+    );
+
     package Test::Builder::Subclass;
     our @ISA = qw(Test::Builder);
 };
@@ -21,6 +26,10 @@ can_ok(Class => 'tb');
 
 lives_ok {
     Class->new(tb => Test::Builder->new);
+};
+
+lives_ok {
+    Class->new(obj => Test::Builder->new);
 };
 
 lives_ok {
@@ -48,6 +57,10 @@ throws_ok {
 throws_ok {
     Class->new(tb => Class->new);
 } qr/Attribute \(tb\) does not pass the type constraint because: Validation failed for 'Test::Builder' with value Class=HASH\(\w+\)/;
+
+throws_ok {
+    Class->new(obj => 42);
+} qr/Attribute \(obj\) does not pass the type constraint because: Validation failed for 'UNIVERSAL' with value 42/;
 
 do {
     package Other;
@@ -180,3 +193,4 @@ throws_ok {
     $hs->sausage(Class->new);   
 } qr/^Attribute \(sausage\) does not pass the type constraint because: Validation failed for 'SausageRole' with value Class=/;
 
+done_testing;

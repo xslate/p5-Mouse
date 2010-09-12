@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 use Test::More;
-use IO::Handle;
 use Test::Exception;
+use IO::Handle;
 
 my @types = qw/Any Item Bool Undef Defined Value Num Int Str ClassName
                Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
@@ -13,8 +13,13 @@ my @type_values = (
     undef              ,  [qw/Any Item Undef Bool/],
     0                  => [qw/Any Item Defined Bool Value Num Int Str/],
     1                  => [qw/Any Item Defined Bool Value Num Int Str/],
-    1.5                => [qw/Any Item Defined Value Num Str/],
-    ''                 => [qw/Any Item Defined Bool Value Str/],
+    42                 => [qw/Any Item Defined      Value Num Int Str/],
+    1.5                => [qw/Any Item Defined      Value Num     Str/],
+    ''                 => [qw/Any Item Defined Bool Value         Str/],
+    '0'                => [qw/Any Item Defined Bool Value Num Int Str/],
+    '1'                => [qw/Any Item Defined Bool Value Num Int Str/],
+    '42'               => [qw/Any Item Defined      Value Num Int Str/],
+    '1.5'              => [qw/Any Item Defined Value Num Str/],
     't'                => [qw/Any Item Defined Value Str/],
     'f'                => [qw/Any Item Defined Value Str/],
     'undef'            => [qw/Any Item Defined Value Str/],
@@ -47,13 +52,6 @@ for (my $i = 1; $i < @type_values; $i += 2) {
         for grep { !$is_invalid{$_} } @types;
 }
 
-my $plan = 0;
-$plan += 5 * @{ $values_for_type{$_}{valid} || [] }   for @types;
-$plan += 4 * @{ $values_for_type{$_}{invalid} || [] } for @types;
-$plan++; # can_ok
-
-plan tests => $plan;
-
 do {
     package Class;
     use Mouse;
@@ -69,18 +67,19 @@ do {
 can_ok(Class => @types);
 
 for my $type (@types) {
+    note "For $type";
     for my $value (@{ $values_for_type{$type}{valid} }) {
         lives_ok {
             my $via_new = Class->new($type => $value);
             is_deeply($via_new->$type, $value, "correctly set a $type in the constructor");
-        };
+        } or die;
 
         lives_ok {
             my $via_set = Class->new;
             is($via_set->$type, undef, "initially unset");
             $via_set->$type($value);
             is_deeply($via_set->$type, $value, "correctly set a $type in the setter");
-        };
+        } or die;
     }
 
     for my $value (@{ $values_for_type{$type}{invalid} }) {
@@ -89,14 +88,14 @@ for my $type (@types) {
         throws_ok {
             $via_new = Class->new($type => $value);
         } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' with value \Q$display\E/;
-        is($via_new, undef, "no object created");
+        is($via_new, undef, "no object created") or die;
 
         my $via_set = Class->new;
         throws_ok {
             $via_set->$type($value);
         } qr/Attribute \($type\) does not pass the type constraint because: Validation failed for '$type' with value \Q$display\E/;
-
-        is($via_set->$type, undef, "value for $type not set");
+        is($via_set->$type, undef, "value for $type not set") or die;
     }
 }
 
+done_testing;
