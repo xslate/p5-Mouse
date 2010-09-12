@@ -547,13 +547,15 @@ XS(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
     MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    SV* sv;
 
     if(items < 1){
         croak("Too few arguments for type constraint check functions");
     }
 
-    SvGETMAGIC( ST(0) );
-    ST(0) = boolSV( CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, ST(0)) );
+    sv = ST(0);
+    SvGETMAGIC(sv);
+    ST(0) = boolSV( CALL_FPTR((check_fptr_t)mg->mg_ptr)(aTHX_ mg->mg_obj, sv) );
     XSRETURN(1);
 }
 
