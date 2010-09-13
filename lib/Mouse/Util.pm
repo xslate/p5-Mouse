@@ -50,7 +50,7 @@ BEGIN{
 
     our $VERSION = '0.68';
 
-    my $xs = !(exists $INC{'Mouse/PurePerl.pm'} || $ENV{MOUSE_PUREPERL} || $ENV{PERL_ONLY});
+    my $xs = !(defined(&is_valid_class_name) || $ENV{MOUSE_PUREPERL} || $ENV{PERL_ONLY});
 
     # Because Mouse::Util is loaded first in all the Mouse sub-modules,
     # XSLoader must be placed here, not in Mouse.pm.

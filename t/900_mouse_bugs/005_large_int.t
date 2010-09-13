@@ -1,19 +1,21 @@
 # See also http://rt.cpan.org/Public/Bug/Display.html?id=55048
-package MyInteger;
-use Mouse;
-
-has a_int => (
-    is => 'rw',
-    isa => 'Int',
-);
-
-has a_num => (
-    is => 'rw',
-    isa => 'Num',
-);
-
-package main;
+use strict;
 use Test::More tests => 24;
+
+{
+    package MyInteger;
+    use Mouse;
+
+    has a_int => (
+        is => 'rw',
+        isa => 'Int',
+    );
+
+    has a_num => (
+        is => 'rw',
+        isa => 'Num',
+    );
+}
 
 foreach my $i(2**32, 2**40, 2**46) {
     for my $sig(1, -1) {

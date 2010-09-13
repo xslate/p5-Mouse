@@ -1,5 +1,8 @@
 use strict;
 use warnings;
+use Test::More tests => 1;
+use Test::Exception;
+
 {
     package ParentClass;
     use Mouse;
@@ -13,9 +16,6 @@ use warnings;
     use base qw/SomeClass/;
     use Mouse;
 }
-
-use Test::More tests => 1;
-use Test::Exception;
 
 lives_ok {
     Mouse->init_meta(for_class => 'SomeClass');

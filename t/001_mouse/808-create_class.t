@@ -1,8 +1,9 @@
 use strict;
 use warnings;
-use Mouse ();
 use Test::More tests => 25;
 use Test::Exception;
+
+use Mouse ();
 
 # error handling
 throws_ok {

@@ -1,3 +1,5 @@
+use Test::More tests => 4;
+
 package MyRole;
 
 use Mouse::Role;
@@ -10,8 +12,6 @@ package MyClass1; use Mouse; with 'MyRole'; no Mouse;
 package MyClass2; use Mouse; with 'MyRole'; no Mouse;
 
 package main;
-
-use Test::More tests => 4;
 
 {
   local $TODO = 'Role composition does not clone methods yet';
