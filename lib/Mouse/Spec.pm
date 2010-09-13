@@ -35,10 +35,10 @@ compatible (and incompatible) with Moose.
 
 =head2 Compatibility with Moose
 
-The sugary API is highly compatible with Moose. Methods which have the
-same name as Moose's are expected to be compatible with Moose's.
+=head3 Sugary APIs
 
-=head2 Incompatibility with Moose
+The sugary APIs are highly compatible with Moose. Methods which have the
+same name as Moose's are expected to be compatible with Moose's.
 
 =head3 Meta object protocols
 
@@ -47,7 +47,8 @@ Their methods which have the same name as Moose's are expected to be
 compatible with Moose's. Feel free to use these methods even if they
 are not documented.
 
-However, meta object protocols in Mouse have no attributes by default,
+However, there are differences between Moose's MOP and Mouse's,
+For example, meta object protocols in Mouse have no attributes by default,
 so C<< $metaclass->meta->make_immutable() >> will not work as you expect.
 B<Don not make metaclasses immutable>.
 
