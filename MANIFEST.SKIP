@@ -57,3 +57,6 @@ ppport\.h$
 \.o(?:bj)?$
 \.c$
 \.bs$
+
+MYMETA\.yml$
+
