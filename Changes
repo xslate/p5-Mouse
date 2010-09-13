@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.69 Mon Sep 13 14:04:41 2010
+    [BUG FIXES]
+    * Workaround a problem with Test::Builder 2.00_01, which could cause
+      SEGV (the HEAD in the repository of tb2 is okay)
+
 0.68 Sat Sep 11 16:24:42 2010
     [CHANGES]
     * Remove an optional depenency, Data::Util.
