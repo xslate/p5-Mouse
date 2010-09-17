@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.70 Fri Sep 17 19:07:02 2010
+    [BUG FIXES]
+    * Delegations ignored method modifiers
+
 0.69 Mon Sep 13 14:04:41 2010
     [BUG FIXES]
     * Workaround a problem with Test::Builder 2.00_01, which could cause

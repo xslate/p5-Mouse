@@ -182,7 +182,7 @@ Mouse::Meta::Method::Accessor - A Mouse method generator for accessors
 
 =head1 VERSION
 
-This document describes Mouse version 0.69
+This document describes Mouse version 0.70
 
 =head1 SEE ALSO
 
