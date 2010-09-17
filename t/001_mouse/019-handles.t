@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
+my $before = 0;
 do {
     package Person;
     use Mouse;
@@ -39,6 +40,7 @@ do {
         handles => [qw/name age/],
     );
 
+    before me => sub { $before++ };
 };
 
 can_ok(Class => qw(person has_person person_name person_age name age quid));
@@ -66,6 +68,7 @@ is($object2->person_hello, 'Hello, Philbert', 'currying');
 ok($object->quid, "we have a Shawn");
 is($object->name, "Shawn", "name handle");
 is($object->age, 21, "age handle");
+is $before, 2, 'delegations with method modifiers';
 is($object->me->name, "Shawn", "me->name");
 is($object->me->age, 21, "me->age");
 

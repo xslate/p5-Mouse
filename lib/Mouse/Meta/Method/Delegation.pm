@@ -10,12 +10,13 @@ sub _generate_delegation{
         ($method_to_call, @curried_args) = @{$method_to_call};
     }
 
-    my $reader = $attr->get_read_method_ref();
+    # If it has a reader, we must use it to make method modifiers work
+    my $reader = $attr->get_read_method() || $attr->get_read_method_ref();
 
     my $can_be_optimized = $attr->{_method_delegation_can_be_optimized};
 
     if(!defined $can_be_optimized){
-        my $tc     = $attr->type_constraint;
+        my $tc = $attr->type_constraint;
 
         $attr->{_method_delegation_can_be_optimized} =
             (defined($tc) && $tc->is_a_type_of('Object'))
