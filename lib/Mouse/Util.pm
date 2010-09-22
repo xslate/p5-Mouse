@@ -345,6 +345,7 @@ sub dump :method {
     my $dd = Data::Dumper->new([$self]);
     $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 3);
     $dd->Indent(1);
+    $dd->Sortkeys(1);
     return $dd->Dump();
 }
 
@@ -358,47 +359,63 @@ __END__
 
 =head1 NAME
 
-Mouse::Util - Features, with or without their dependencies
+Mouse::Util - Utilities for working with Mouse classes
 
 =head1 VERSION
 
 This document describes Mouse version 0.70
 
+=head1 SYNOPSIS
+
+    use Mouse::Util; # turns on strict and warnings
+
+=head1 DESCRIPTION
+
+This module provides a set of utility functions. Many of these
+functions are intended for use in Mouse itself or MouseX modules, but
+some of them may be useful for use in your own code.
+
 =head1 IMPLEMENTATIONS FOR
 
-=head2 Moose::Util
+=head2 Moose::Util functions
 
-=head3 C<find_meta>
+The following functions are exportable.
 
-=head3 C<does_role>
+=head3 C<find_meta($class_or_obj)>
 
-=head3 C<resolve_metaclass_alias>
+The same as C<Mouse::Util::class_of()>.
 
-=head3 C<apply_all_roles>
+=head3 C<does_role($class_or_obj, $role_or_obj)>
 
-=head3 C<english_list>
+=head3 C<resolve_metaclass_alias($category, $name, %options)>
 
-=head2 Class::MOP
+=head3 C<apply_all_roles($applicant, @roles)>
 
-=head3 C<< is_class_loaded(ClassName) -> Bool >>
+=head3 C<english_listi(@items)>
 
-Returns whether C<ClassName> is actually loaded or not. It uses a heuristic which
-involves checking for the existence of C<$VERSION>, C<@ISA>, and any
-locally-defined method.
+=head2 Class::MOP functions
 
-=head3 C<< load_class(ClassName) >>
+The followign functions are not exportable.
 
-This will load a given C<ClassName> (or die if it is not loadable).
+=head3 C<< Mouse::Util::is_class_loaded($classname) -> Bool >>
+
+Returns whether I<$classname> is actually loaded or not.
+It uses a heuristic which involves checking for the existence of
+C<$VERSION>, C<@ISA>, and any locally-defined method.
+
+=head3 C<< Mouse::Util::load_class($classname) -> ClassName >>
+
+This will load a given I<$classname> (or die if it is not loadable).
 This function can be used in place of tricks like
-C<eval "use $module"> or using C<require>.
+C<eval "use $module ()"> or using C<require>.
 
-=head3 C<< Mouse::Util::class_of(ClassName or Object) >>
+=head3 C<< Mouse::Util::class_of($classname_or_object) -> MetaClass >>
 
-=head3 C<< Mouse::Util::get_metaclass_by_name(ClassName) >>
+=head3 C<< Mouse::Util::get_metaclass_by_name($classname) -> MetaClass >>
 
-=head3 C<< Mouse::Util::get_all_metaclass_instances() >>
+=head3 C<< Mouse::Util::get_all_metaclass_instances() -> (MetaClasses) >>
 
-=head3 C<< Mouse::Util::get_all_metaclass_names() >>
+=head3 C<< Mouse::Util::get_all_metaclass_names() -> (ClassNames) >>
 
 =head2 MRO::Compat
 
