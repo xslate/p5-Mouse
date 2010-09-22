@@ -48,13 +48,8 @@ sub has {
     $meta->throw_error(q{Usage: has 'name' => ( key => value, ... )})
         if @_ % 2; # odd number of arguments
 
-    if(ref $name){ # has [qw(foo bar)] => (...)
-        for (@{$name}){
-            $meta->add_attribute($_ => @_);
-        }
-    }
-    else{ # has foo => (...)
-        $meta->add_attribute($name => @_);
+    for my $n(ref($name) ? @{$name} : $name){
+        $meta->add_attribute($n => @_);
     }
     return;
 }
