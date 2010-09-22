@@ -150,7 +150,8 @@ sub _collect_methods { # Mouse specific
                 my $subname = ( caller(1) )[3];
                 $meta->throw_error(
                     sprintf(
-                        'Methods passed to %s must be provided as a list, ArrayRef or regular expression, not %s',
+                        'Methods passed to %s must be provided as a list,'
+                        . ' ArrayRef or regular expression, not %s',
                         $subname,
                         $type,
                     )
@@ -279,18 +280,18 @@ sub DESTROY{
     return if $Mouse::Util::in_global_destruction;
 
     my $serial_id = $self->{anon_serial_id};
-
     return if !$serial_id;
-    # mortal anonymous class
 
-    # XXX: cleaning stash with threads causes panic/SEGV.
+    # XXX: cleaning stash with threads causes panic/SEGV on legacy perls.
     if(exists $INC{'threads.pm'}) {
         # (caller)[2] indicates the caller's line number,
-        # which is zero when the current thread is joining.
+        # which is zero when the current thread is joining (destroying).
         return if( (caller)[2] == 0);
     }
 
-    # @ISA is a magical variable, so we clear it manually.
+    # clean up mortal anonymous class stuff
+
+    # @ISA is a magical variable, so we must clear it manually.
     @{$self->{superclasses}} = () if exists $self->{superclasses};
 
     # Then, clear the symbol table hash
@@ -302,7 +303,6 @@ sub DESTROY{
     $name =~ s/ $serial_id \z//xms;
     no strict 'refs';
     delete ${$name}{ $serial_id . '::' };
-
     return;
 }
 
@@ -325,7 +325,7 @@ __END__
 
 =head1 NAME
 
-Mouse::Meta::Module - The base class for Mouse::Meta::Class and Mouse::Meta::Role
+Mouse::Meta::Module - The common base class of Mouse::Meta::Class and Mouse::Meta::Role
 
 =head1 VERSION
 
@@ -333,8 +333,7 @@ This document describes Mouse version 0.70
 
 =head1 DESCRIPTION
 
-This class is a base class of Mouse classes and roles,
-which is a subset of Class::MOP::Class.
+This class is an abstract base class of meta classes and meta roles.
 
 =head1 SEE ALSO
 
