@@ -628,6 +628,13 @@ sub _process_options{
 
 package Mouse::Meta::TypeConstraint;
 
+use overload
+    '""' => '_as_string',
+    '0=' => '_identity',
+    '|'  => '_unite',
+
+    fallback => 1;
+
 sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
 sub message { $_[0]->{message} }

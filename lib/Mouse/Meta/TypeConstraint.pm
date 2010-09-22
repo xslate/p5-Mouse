@@ -2,19 +2,6 @@ package Mouse::Meta::TypeConstraint;
 use Mouse::Util qw(:meta); # enables strict and warnings
 use Scalar::Util ();
 
-use overload
-    'bool'   => sub (){ 1 },           # always true
-    '""'     => sub { $_[0]->name },   # stringify to tc name
-    '0+'     => sub { Scalar::Util::refaddr($_[0]) },
-    '|'      => sub {                  # or-combination
-        require Mouse::Util::TypeConstraints;
-        return Mouse::Util::TypeConstraints::find_or_parse_type_constraint(
-            "$_[0] | $_[1]",
-        );
-    },
-
-    fallback => 1;
-
 sub new {
     my $class = shift;
     my %args  = @_ == 1 ? %{$_[0]} : @_;
@@ -166,7 +153,12 @@ sub get_message {
         return $msg->($value);
     }
     else {
-        $value = ( defined $value ? overload::StrVal($value) : 'undef' );
+        if(not defined $value) {
+            $value = 'undef';
+        }
+        elsif( ref($value) && defined(&overload::StrVal) ) {
+            $value = overload::StrVal($value);
+        }
         return "Validation failed for '$self' with value $value";
     }
 }
@@ -223,6 +215,17 @@ sub assert_valid {
         $self->throw_error($self->get_message($value));
     }
     return 1;
+}
+
+sub _as_string { $_[0]->name                  } # overload ""
+sub _identity  { Scalar::Util::refaddr($_[0]) } # overload 0+
+
+sub _unite { # overload infix:<|>
+    my($lhs, $rhs) = @_;
+    require Mouse::Util::TypeConstraints;
+    return Mouse::Util::TypeConstraints::find_or_parse_type_constraint(
+       " $lhs | $rhs",
+    );
 }
 
 sub throw_error {

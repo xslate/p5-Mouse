@@ -1,5 +1,7 @@
 /*
- *   full definition of built-in type constraints (ware in Moose::Util::TypeConstraints::OptimizedConstraints)
+ * TypeConstraint stuff
+ *  - Mouse::Util::TypeConstraints (including OptimizedConstraionts)
+ *  - Mouse::Meta::TypeConstraint
  */
 
 #include "mouse.h"
@@ -559,6 +561,14 @@ XS(XS_Mouse_constraint_check) {
     XSRETURN(1);
 }
 
+XS(XS_Mouse_TypeConstraint_fallback); /* -Wmissing-prototypes */
+XS(XS_Mouse_TypeConstraint_fallback) {
+    dXSARGS;
+    PERL_UNUSED_VAR(cv);
+    PERL_UNUSED_VAR(items);
+    XSRETURN_EMPTY;
+}
+
 static void
 setup_my_cxt(pTHX_ pMY_CXT){
     MY_CXT.universal_isa = gv_fetchpvs("UNIVERSAL::isa", GV_ADD, SVt_PVCV);
@@ -569,6 +579,8 @@ setup_my_cxt(pTHX_ pMY_CXT){
 }
 
 #define DEFINE_TC(name) mouse_tc_generate(aTHX_ "Mouse::Util::TypeConstraints::" STRINGIFY(name), CAT2(mouse_tc_, name), NULL)
+
+#define MTC_CLASS "Mouse::Meta::TypeConstraint"
 
 MODULE = Mouse::Util::TypeConstraints    PACKAGE = Mouse::Util::TypeConstraints
 
@@ -662,6 +674,45 @@ BOOT:
 
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, has_coercion, _compiled_type_coercion);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, __is_parameterized, type_parameter); /* Mouse specific */
+
+    /* overload stuff */
+    PL_amagic_generation++;
+    (void)newXS( MTC_CLASS "::()",
+        XS_Mouse_TypeConstraint_fallback, file);
+
+    /* fallback => 1 */
+    sv_setsv(
+        get_sv( MTC_CLASS "::()", GV_ADD ),
+        &PL_sv_yes
+    );
+
+    /* '""' => '_as_string' */
+    {
+        SV* const code_ref = sv_2mortal(newRV_inc(
+            (SV*)get_cv( MTC_CLASS "::_as_string", GV_ADD )));
+        sv_setsv_mg(
+            (SV*)gv_fetchpvs( MTC_CLASS "::(\"\"", GV_ADDMULTI, SVt_PVCV ),
+            code_ref );
+    }
+            
+    /* '0+' => '_identity' */
+    {
+        SV* const code_ref = sv_2mortal(newRV_inc(
+            (SV*)get_cv( MTC_CLASS "::_identity", GV_ADD )));
+        sv_setsv_mg(
+            (SV*)gv_fetchpvs( MTC_CLASS "::(0+", GV_ADDMULTI, SVt_PVCV ),
+            code_ref );
+    }
+
+    /* '|' => '_unite' */
+    {
+        SV* const code_ref = sv_2mortal(newRV_inc(
+            (SV*)get_cv( MTC_CLASS "::_unite", GV_ADD )));
+        sv_setsv_mg(
+            (SV*)gv_fetchpvs( MTC_CLASS "::(|", GV_ADDMULTI, SVt_PVCV ),
+            code_ref );
+    }
+
 
 void
 compile_type_constraint(SV* self)
