@@ -4,6 +4,10 @@ Revision history for Mouse
     [CHANGES]
     * Inheritance from non-Mouse classes now produces warnings.
       Use MouseX::Foreign if you want this type of inheritance.
+    * A new module Mouse::Meta::Role::Application has been added.
+      It doesn not affect public APIs, but internals are radically
+      changed. For users, using Mouse without roles should consume
+      less memory.
 
     [BUG FIXES]
     * Meta class reinitialization caused by Mouse::Util::MetaRole
