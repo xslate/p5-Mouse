@@ -116,26 +116,37 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 #define get_slots(self, key)        get_slot(self, sv_2mortal(newSVpvs_share(key)))
 #define set_slots(self, key, value) set_slot(self, sv_2mortal(newSVpvs_share(key)), value)
 
-/* mouse_simle_accessor.xs */
+/* mouse_simle_accessor.xs for meta object protocols */
 #define INSTALL_SIMPLE_READER(klass, name) \
     INSTALL_SIMPLE_READER_WITH_KEY(klass, name, name)
 #define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key) \
-    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_reader, NULL, 0)
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" \
+    #name, #key, sizeof(#key)-1, XS_Mouse_simple_reader, NULL, 0)
 
 #define INSTALL_CLASS_HOLDER_SV(klass, name, dsv) \
-    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #name, sizeof(#name)-1, XS_Mouse_simple_reader, (dsv), HEf_SVKEY)
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" \
+    #name, #name, sizeof(#name)-1, XS_Mouse_simple_reader, (dsv), HEf_SVKEY)
 #define INSTALL_CLASS_HOLDER(klass, name, ds) \
     INSTALL_CLASS_HOLDER_SV(klass, name, newSVpvs(ds))
 
 #define INSTALL_SIMPLE_WRITER(klass, name) \
     NSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, name)
 #define INSTALL_SIMPLE_WRITER_WITH_KEY(klass, name, key) \
-    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_writer, NULL, 0)
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" \
+    #name, #key, sizeof(#key)-1, XS_Mouse_simple_writer, NULL, 0)
 
 #define INSTALL_SIMPLE_PREDICATE(klass, name) \
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(klass, name, name)
 #define INSTALL_SIMPLE_PREDICATE_WITH_KEY(klass, name, key) \
-    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" #name, #key, sizeof(#key)-1, XS_Mouse_simple_predicate, NULL, 0)
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::" #klass "::" \
+    #name, #key, sizeof(#key)-1, XS_Mouse_simple_predicate, NULL, 0)
+
+/* generate inhertiable class accessors for Mouse::Meta::Class */
+#define INSTALL_INHERITABLE_CLASS_ACCESSOR(name) \
+    INSTALL_INHERITABLE_CLASS_ACCESSOR_WITH_KEY(name, name)
+#define INSTALL_INHERITABLE_CLASS_ACCESSOR_WITH_KEY(name, key) \
+    (void)mouse_simple_accessor_generate(aTHX_ "Mouse::Meta::Class::" #name,\
+    #key, sizeof(#key)-1, XS_Mouse_inheritable_class_accessor, NULL, 0)
 
 CV* mouse_simple_accessor_generate(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen);
 
@@ -149,6 +160,8 @@ CV* mouse_accessor_generate(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl
 XS(XS_Mouse_accessor);
 XS(XS_Mouse_reader);
 XS(XS_Mouse_writer);
+
+XS(XS_Mouse_inheritable_class_accessor);
 
 /* type constraints */
 

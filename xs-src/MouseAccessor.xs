@@ -183,7 +183,8 @@ XS(XS_Mouse_accessor)
     }
     else{
         mouse_throw_error(MOUSE_mg_attribute(mg), NULL,
-            "Expected exactly one or two argument for an accessor");
+            "Expected exactly one or two argument for an accessor of %"SVf,
+            MOUSE_mg_slot(mg));
     }
 }
 
@@ -196,7 +197,8 @@ XS(XS_Mouse_reader)
 
     if (items != 1) {
         mouse_throw_error(MOUSE_mg_attribute(mg), NULL,
-            "Cannot assign a value to a read-only accessor");
+            "Cannot assign a value to a read-only accessor of %"SVf,
+            MOUSE_mg_slot(mg));
     }
 
     SP -= items; /* PPCODE */
@@ -213,7 +215,8 @@ XS(XS_Mouse_writer)
 
     if (items != 2) {
         mouse_throw_error(MOUSE_mg_attribute(mg), NULL,
-            "Too few arguments for a write-only accessor");
+            "Too few arguments for a write-only accessor of %"SVf,
+            MOUSE_mg_slot(mg));
     }
 
     SP -= items; /* PPCODE */
@@ -232,7 +235,9 @@ mouse_accessor_get_mg(pTHX_ CV* const xsub){
 */
 
 CV*
-mouse_simple_accessor_generate(pTHX_ const char* const fq_name, const char* const key, I32 const keylen, XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen){
+mouse_simple_accessor_generate(pTHX_
+    const char* const fq_name, const char* const key, I32 const keylen,
+    XSUBADDR_t const accessor_impl, void* const dptr, I32 const dlen) {
     CV* const xsub = newXS((char*)fq_name, accessor_impl, __FILE__);
     SV* const slot = newSVpvn_share(key, keylen, 0U);
     MAGIC* mg;
@@ -264,7 +269,8 @@ XS(XS_Mouse_simple_reader)
     SV* value;
 
     if (items != 1) {
-        croak("Expected exactly one argument for a reader for '%"SVf"'", MOUSE_mg_slot(mg));
+        croak("Expected exactly one argument for a reader of %"SVf,
+            MOUSE_mg_slot(mg));
     }
 
     value = get_slot(self, MOUSE_mg_slot(mg));
@@ -291,7 +297,8 @@ XS(XS_Mouse_simple_writer)
     SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
 
     if (items != 2) {
-        croak("Expected exactly two argument for a writer for '%"SVf"'", slot);
+        croak("Expected exactly two argument for a writer of %"SVf,
+            slot);
     }
 
     ST(0) = set_slot(self, slot, ST(1));
@@ -306,7 +313,8 @@ XS(XS_Mouse_simple_clearer)
     SV* value;
 
     if (items != 1) {
-        croak("Expected exactly one argument for a clearer for '%"SVf"'", slot);
+        croak("Expected exactly one argument for a clearer of %"SVf,
+            slot);
     }
 
     value = delete_slot(self, slot);
@@ -321,10 +329,68 @@ XS(XS_Mouse_simple_predicate)
     SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
 
     if (items != 1) {
-        croak("Expected exactly one argument for a predicate for '%"SVf"'", slot);
+        croak("Expected exactly one argument for a predicate of %"SVf, slot);
     }
 
     ST(0) = boolSV( has_slot(self, slot) );
+    XSRETURN(1);
+}
+
+/* Class::Data::Inheritable-like class accessor */
+XS(XS_Mouse_inheritable_class_accessor) {
+    dVAR; dXSARGS;
+    dMOUSE_self;
+    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* value;
+    SV* stash_ref;
+    HV* stash;
+
+    if(items == 1){ /* reader */
+        value = NULL;
+    }
+    else if (items == 2){ /* writer */
+        value = ST(1);
+    }
+    else{
+        croak("Expected exactly one or two argument for a class data accessor"
+            "of %"SVf, slot);
+        value = NULL; /* -Wuninitialized */
+    }
+
+    stash_ref= mcall0(self, mouse_namespace);
+    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)) {
+        croak("namespace() didn't return a HASH reference");
+    }
+    stash = (HV*)SvRV(stash_ref);
+
+    if(!value) { /* reader */
+        value = get_slot(self, slot);
+        if(!value) {
+            AV* const isa   = mro_get_linear_isa(stash);
+            I32 const len   = av_len(isa) + 1;
+            I32 i;
+            for(i = 1; i < len; i++) {
+                SV* const klass = MOUSE_av_at(isa, i);
+                SV* const meta  = get_metaclass(klass);
+                if(!SvOK(meta)){
+                    continue; /* skip non-Mouse classes */
+                }
+                value = get_slot(meta, slot);
+                if(value) {
+                    break;
+                }
+            }
+            if(!value) {
+                value = &PL_sv_undef;
+            }
+        }
+    }
+    else { /* writer */
+        set_slot(self, slot, value);
+        mro_method_changed_in(stash);
+    }
+
+    ST(0) = value;
     XSRETURN(1);
 }
 
