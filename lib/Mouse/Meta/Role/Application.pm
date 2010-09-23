@@ -204,6 +204,10 @@ __END__
 
 Mouse::Meta::Role::Application - The Mouse role application class
 
+=head1 VERSION
+
+This document describes Mouse version 0.70
+
 =head1 SEE ALSO
 
 L<Moose::Role::Application>
@@ -213,4 +217,6 @@ L<Moose::Role::Application::ToClass>
 L<Moose::Role::Application::ToRole>
 
 L<Moose::Role::Application::ToInstance>
+
+=cut
 

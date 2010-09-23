@@ -20,7 +20,6 @@ sub _construct_meta {
     if($class ne __PACKAGE__){
         $self->meta->_initialize_object($self, \%args);
     }
-
     return $self;
 }
 
@@ -64,8 +63,6 @@ sub add_attribute {
     return;
 }
 
-
-# Moose uses Application::ToInstance, Application::ToClass, Application::ToRole
 sub apply {
     my $self     = shift;
     my $consumer = shift;
@@ -73,7 +70,6 @@ sub apply {
     require 'Mouse/Meta/Role/Application.pm';
     return Mouse::Meta::Role::Application->new(@_)->apply($self, $consumer);
 }
-
 
 sub combine {
     my($self, @role_specs) = @_;
