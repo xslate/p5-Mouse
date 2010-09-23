@@ -275,8 +275,8 @@ sub make_immutable {
                 ->_generate_destructor($self, \%args));
     }
 
-    # Moose's make_immutable returns true allowing calling code to skip setting an explicit true value
-    # at the end of a source file. 
+    # Moose's make_immutable returns true allowing calling code to skip
+    # setting an explicit true value at the end of a source file.
     return 1;
 }
 

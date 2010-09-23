@@ -1,5 +1,5 @@
 package Mouse::Util::TypeConstraints;
-use Mouse::Util qw(does_role not_supported); # enables strict and warnings
+use Mouse::Util; # enables strict and warnings
 
 use Carp         ();
 use Scalar::Util ();
@@ -223,7 +223,10 @@ sub role_type {
     # RoleType
     return _create_type 'subtype', $name => (
         as           => 'Object',
-        optimized_as => sub { Scalar::Util::blessed($_[0]) && does_role($_[0], $role) },
+        optimized_as => sub {
+            return Scalar::Util::blessed($_[0])
+                && Mouse::Util::does_role($_[0], $role);
+        },
     );
 }
 
@@ -250,12 +253,15 @@ sub enum {
         $name = shift;
     }
 
-    %valid = map{ $_ => undef } (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
+    %valid = map{ $_ => undef }
+        (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
 
     # EnumType
     return _create_type 'subtype', $name => (
         as            => 'Str',
-        optimized_as  => sub{ defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]} },
+        optimized_as  => sub{
+            return defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]};
+        },
     );
 }
 
