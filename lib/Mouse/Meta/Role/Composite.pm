@@ -96,32 +96,30 @@ sub apply_methods {
     if(exists $role->{conflicting_methods}){
         my $consumer_class_name = $consumer->name;
 
-        my @conflicting = grep{ !$consumer_class_name->can($_) } 
+        my @conflicting = grep{ !$consumer_class_name->can($_) }
             keys %{ $role->{conflicting_methods} };
 
-        if(@conflicting == 1){
-            my $method_name = $conflicting[0];
-            my $roles       = Mouse::Util::quoted_english_list( map{ $_->name }
-                @{ $role->{composed_roles_by_method}{$method_name} });
-            $self->throw_error(
-               sprintf q{Due to a method name conflict in roles %s, the method '%s' must be implemented or excluded by '%s'},
-                   $roles, $method_name, $consumer_class_name
-            );
-        }
-        elsif(@conflicting > 1){
+        if(@conflicting) {
+            my $method_name_conflict = (@conflicting == 1
+                ? 'a method name conflict'
+                : 'method name conflicts');
+
             my %seen;
             my $roles = Mouse::Util::quoted_english_list(
                 grep{ !$seen{$_}++ } # uniq
                 map { $_->name }
-                map { @{$_} } @{ $role->{composed_roles_by_method} }{@conflicting}
+                map { @{$_} }
+                @{ $role->{composed_roles_by_method} }{@conflicting}
             );
 
-            $self->throw_error(
-               sprintf q{Due to method name conflicts in roles %s, the methods %s must be implemented or excluded by '%s'},
-                   $roles,
-                   Mouse::Util::quoted_english_list(@conflicting),
-                   $consumer_class_name
-            );
+            $self->throw_error(sprintf
+                  q{Due to %s in roles %s,}
+                . q{ the method%s %s must be implemented or excluded by '%s'},
+                    $method_name_conflict,
+                    $roles,
+                    (@conflicting > 1 ? 's' : ''),
+                    Mouse::Util::quoted_english_list(@conflicting),
+                    $consumer_class_name);
         }
     }
 
