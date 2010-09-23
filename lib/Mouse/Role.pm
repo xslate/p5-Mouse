@@ -30,9 +30,8 @@ sub extends  {
     Carp::croak "Roles do not support 'extends'";
 }
 
-sub with     {
-    my $meta = Mouse::Meta::Role->initialize(scalar caller);
-    Mouse::Util::apply_all_roles($meta->name, @_);
+sub with {
+    Mouse::Util::apply_all_roles(scalar(caller), @_);
     return;
 }
 

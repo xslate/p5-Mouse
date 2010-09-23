@@ -125,7 +125,7 @@ sub init_meta {
     my %args = @_;
 
     my $class = $args{for_class}
-                    or confess("Cannot call init_meta without specifying a for_class");
+        or confess("Cannot call init_meta without specifying a for_class");
 
     my $base_class = $args{base_class} || 'Mouse::Object';
     my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Class';

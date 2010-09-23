@@ -1,5 +1,5 @@
 package Mouse::Meta::Role;
-use Mouse::Util qw(:meta not_supported); # enables strict and warnings
+use Mouse::Util qw(:meta); # enables strict and warnings
 
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
@@ -200,10 +200,11 @@ sub apply {
         $args{_to} = 'instance';
         $instance  = $consumer;
 
-        $consumer = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')->create_anon_class(
-            superclasses => [ref $instance],
-            cache        => 1,
-        );
+        $consumer = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')
+            ->create_anon_class(
+                superclasses => [ref $instance],
+                cache        => 1,
+            );
     }
 
     if($args{alias} && !exists $args{-alias}){
