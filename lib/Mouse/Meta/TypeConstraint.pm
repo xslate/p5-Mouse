@@ -254,7 +254,7 @@ constraints
 
 =head1 METHODS
 
-=over 
+=over
 
 =item C<< Mouse::Meta::TypeConstraint->new(%options) >>
 
