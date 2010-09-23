@@ -280,7 +280,7 @@ sub is_anon_class{
 
 sub roles { $_[0]->{roles} }
 
-sub linearized_isa { @{ get_linear_isa($_[0]->{package}) } }
+sub linearized_isa { @{ Mouse::Util::get_linear_isa($_[0]->{package}) } }
 
 sub get_all_attributes {
     my($self) = @_;

@@ -1,5 +1,5 @@
 package Mouse::Meta::Class;
-use Mouse::Util qw/:meta get_linear_isa not_supported/; # enables strict and warnings
+use Mouse::Util qw/:meta/; # enables strict and warnings
 
 use Scalar::Util qw/blessed weaken/;
 
