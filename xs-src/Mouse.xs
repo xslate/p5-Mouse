@@ -534,18 +534,6 @@ CODE:
     (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 }
 
-void
-add_class_accessor(SV* self, SV* name)
-CODE:
-{
-    SV* const klass = mouse_call0(self, mouse_name);
-    const char* fq_name = form("%"SVf"::%"SVf, klass, name);
-    STRLEN keylen;
-    const char* const key = SvPV_const(name, keylen);
-    mouse_simple_accessor_generate(aTHX_ fq_name, key, keylen,
-        XS_Mouse_inheritable_class_accessor, NULL, 0);
-}
-
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
 BOOT:
@@ -690,6 +678,18 @@ PPCODE:
     else{
         mPUSHi(len);
     }
+}
+
+void
+add_metaclass_accessor(SV* self, SV* name)
+CODE:
+{
+    SV* const klass = mouse_call0(self, mouse_name);
+    const char* fq_name = form("%"SVf"::%"SVf, klass, name);
+    STRLEN keylen;
+    const char* const key = SvPV_const(name, keylen);
+    mouse_simple_accessor_generate(aTHX_ fq_name, key, keylen,
+        XS_Mouse_inheritable_class_accessor, NULL, 0);
 }
 
 MODULE = Mouse  PACKAGE = Mouse::Object
