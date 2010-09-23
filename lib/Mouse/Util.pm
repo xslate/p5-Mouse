@@ -346,6 +346,7 @@ sub dump :method {
     $dd->Maxdepth(defined($maxdepth) ? $maxdepth : 3);
     $dd->Indent(1);
     $dd->Sortkeys(1);
+    $dd->Quotekeys(0);
     return $dd->Dump();
 }
 

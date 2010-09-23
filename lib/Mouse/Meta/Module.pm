@@ -38,6 +38,9 @@ sub reinitialize {
     ($package_name && !ref($package_name))
         || $class->throw_error("You must pass a package name and it cannot be blessed");
 
+    if(exists $METAS{$package_name}) {
+        unshift @args, %{ $METAS{$package_name} };
+    }
     delete $METAS{$package_name};
     return $class->initialize($package_name, @args);
 }

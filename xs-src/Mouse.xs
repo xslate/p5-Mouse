@@ -445,6 +445,16 @@ mouse_get_modifier_storage(pTHX_
     return (AV*)SvRV(storage_ref);
 }
 
+static void
+XS_Mouse_value_holder(pTHX_ CV* const cv PERL_UNUSED_DECL) {
+    dVAR; dXSARGS;
+    SV* const value = (SV*)XSANY.any_ptr;
+    assert(value);
+    PERL_UNUSED_VAR(items);
+    ST(0) = value;
+    XSRETURN(1);
+}
+
 DECL_BOOT(Mouse__Util);
 DECL_BOOT(Mouse__Util__TypeConstraints);
 DECL_BOOT(Mouse__Meta__Method__Accessor__XS);
@@ -455,6 +465,7 @@ MODULE = Mouse  PACKAGE = Mouse
 PROTOTYPES: DISABLE
 
 BOOT:
+{
     mouse_package   = newSVpvs_share("package");
     mouse_namespace = newSVpvs_share("namespace");
     mouse_methods   = newSVpvs_share("methods");
@@ -468,7 +479,7 @@ BOOT:
     CALL_BOOT(Mouse__Util__TypeConstraints);
     CALL_BOOT(Mouse__Meta__Method__Accessor__XS);
     CALL_BOOT(Mouse__Meta__Attribute);
-
+}
 
 MODULE = Mouse  PACKAGE = Mouse::Meta::Module
 
@@ -523,9 +534,24 @@ CODE:
     (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 }
 
+void
+add_class_accessor(SV* self, SV* name)
+CODE:
+{
+    SV* const klass = mouse_call0(self, mouse_name);
+    const char* fq_name = form("%"SVf"::%"SVf, klass, name);
+    STRLEN keylen;
+    const char* const key = SvPV_const(name, keylen);
+    mouse_simple_accessor_generate(aTHX_ fq_name, key, keylen,
+        XS_Mouse_inheritable_class_accessor, NULL, 0);
+}
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Class
 
 BOOT:
+{
+    CV* xsub;
+
     INSTALL_SIMPLE_READER(Class, roles);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(Class, is_anon_class, anon_serial_id);
     INSTALL_SIMPLE_READER(Class, is_immutable);
@@ -537,10 +563,17 @@ BOOT:
     INSTALL_CLASS_HOLDER(Class, constructor_class,    "Mouse::Meta::Method::Constructor::XS");
     INSTALL_CLASS_HOLDER(Class, destructor_class,     "Mouse::Meta::Method::Destructor::XS");
 
-    newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Constructor::XS", TRUE), "_generate_constructor",
-        newRV_inc((SV*)get_cvs("Mouse::Object::new", TRUE)));
-    newCONSTSUB(gv_stashpvs("Mouse::Meta::Method::Destructor::XS", TRUE), "_generate_destructor",
-        newRV_inc((SV*)get_cvs("Mouse::Object::DESTROY", TRUE)));
+    xsub = newXS("Mouse::Meta::Method::Constructor::XS::_generate_constructor",
+        XS_Mouse_value_holder, file);
+    CvXSUBANY(xsub).any_ptr
+        = newRV_inc((SV*)get_cvs("Mouse::Object::new", GV_ADD));
+
+    xsub = newXS("Mouse::Meta::Method::Destructor::XS::_generate_destructor",
+        XS_Mouse_value_holder, file);
+    CvXSUBANY(xsub).any_ptr
+        = newRV_inc((SV*)get_cvs("Mouse::Object::DESTROY", GV_ADD));
+}
+
 
 void
 linearized_isa(SV* self)
