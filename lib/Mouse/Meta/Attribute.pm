@@ -79,17 +79,29 @@ sub new {
     }
 
     my $self = bless $args, $class;
-
-    # extra attributes
     if($class ne __PACKAGE__){
         $class->meta->_initialize_object($self, $args);
     }
-
     return $self;
 }
 
-sub has_read_method      { $_[0]->has_reader || $_[0]->has_accessor }
-sub has_write_method     { $_[0]->has_writer || $_[0]->has_accessor }
+sub has_read_method   { $_[0]->has_reader || $_[0]->has_accessor }
+sub has_write_method  { $_[0]->has_writer || $_[0]->has_accessor }
+
+sub get_read_method   { $_[0]->reader || $_[0]->accessor }
+sub get_write_method  { $_[0]->writer || $_[0]->accessor }
+
+sub get_read_method_ref{
+    my($self) = @_;
+    return $self->{_read_method_ref}
+        ||= $self->_get_accessor_method_ref('get_read_method', '_generate_reader');
+}
+
+sub get_write_method_ref{
+    my($self) = @_;
+    return $self->{_write_method_ref}
+        ||= $self->_get_accessor_method_ref('get_write_method', '_generate_writer');
+}
 
 sub interpolate_class{
     my($class, $args) = @_;
@@ -199,12 +211,6 @@ sub clone_and_inherit_options{
     return $attribute_class->new($self->name, $args);
 }
 
-sub get_read_method {
-    return $_[0]->reader || $_[0]->accessor
-}
-sub get_write_method {
-    return $_[0]->writer || $_[0]->accessor
-}
 
 sub _get_accessor_method_ref {
     my($self, $type, $generator) = @_;
@@ -219,16 +225,6 @@ sub _get_accessor_method_ref {
     else{
         return $self->accessor_metaclass->$generator($self, $metaclass);
     }
-}
-
-sub get_read_method_ref{
-    my($self) = @_;
-    return $self->{_read_method_ref} ||= $self->_get_accessor_method_ref('get_read_method', '_generate_reader');
-}
-
-sub get_write_method_ref{
-    my($self) = @_;
-    return $self->{_write_method_ref} ||= $self->_get_accessor_method_ref('get_write_method', '_generate_writer');
 }
 
 sub set_value {
@@ -256,7 +252,6 @@ sub clear_value {
 
     return $accessor_ref->($object);
 }
-
 
 sub associate_method{
     #my($attribute, $method_name) = @_;
