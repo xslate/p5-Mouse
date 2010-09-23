@@ -38,13 +38,13 @@ BEGIN{
 
             not_supported
 
-            does meta dump
+            does meta throw_error dump
         )],
         groups => {
             default => [], # export no functions by default
 
             # The ':meta' group is 'use metaclass' for Mouse
-            meta    => [qw(does meta dump)],
+            meta    => [qw(does meta dump throw_error)],
         },
     );
 
@@ -67,7 +67,7 @@ BEGIN{
             Mouse::Util->import({ into => 'Mouse::Meta::Method::Accessor::XS'    }, ':meta');
             return 1;
         } || 0;
-        #warn $@ if $@;
+        warn $@ if $@ && $ENV{MOUSE_XS};
     }
 
     if(!$xs){
@@ -335,6 +335,22 @@ sub not_supported{
 # general meta() method
 sub meta :method{
     return Mouse::Meta::Class->initialize(ref($_[0]) || $_[0]);
+}
+
+# general throw_error() method
+# $o->throw_error($msg, depth => $leve, longmess => $croak_or_confess)
+sub throw_error :method {
+    my($self, $message, %args) = @_;
+
+    local $Carp::CarpLevel  = $Carp::CarpLevel + 1 + ($args{depth} || 0);
+    local $Carp::MaxArgNums = 20; # default is 8, usually we use named args which gets messier though
+
+    if(exists $args{longmess} && !$args{longmess}) {
+        Carp::croak($message);
+    }
+    else{
+        Carp::confess($message);
+    }
 }
 
 # general dump() method

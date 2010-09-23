@@ -384,9 +384,8 @@ sub _initialize_object{
 
 sub is_immutable {  $_[0]->{is_immutable} }
 
-Mouse::Util::install_subroutines(__PACKAGE__,
-    strict_constructor => $generate_class_accessor->('strict_constructor'),
-);
+sub strict_constructor;
+*strict_constructor = $generate_class_accessor->('strict_constructor');
 
 sub _report_unknown_args {
     my($metaclass, $attrs, $args) = @_;

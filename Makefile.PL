@@ -14,9 +14,6 @@ use inc::Module::Install 1.00;
 use Module::Install::XSUtil 0.30;
 use Module::Install::AuthorTests;
 
-system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
-    or warn "Cannot generate Mouse::Tiny: $!";
-
 name     'Mouse';
 all_from 'lib/Mouse.pm';
 
@@ -73,6 +70,12 @@ tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
 repository 'git://git.moose.perl.org/Mouse.git';
+
+system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
+    or warn "Cannot generate Mouse::Tiny: $!";
+makemaker_args PL_FILES => {
+    'tool/generate-mouse-tiny.pl' => 'lib/Mouse/Tiny.pm',
+};
 
 if ($Module::Install::AUTHOR) {
     require 'lib/Mouse/Spec.pm'; # for the version

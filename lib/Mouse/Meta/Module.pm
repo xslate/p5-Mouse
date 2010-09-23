@@ -309,19 +309,6 @@ sub DESTROY{
     return;
 }
 
-sub throw_error{
-    my($self, $message, %args) = @_;
-
-    local $Carp::CarpLevel  = $Carp::CarpLevel + 1 + ($args{depth} || 0);
-    local $Carp::MaxArgNums = 20; # default is 8, usually we use named args which gets messier though
-
-    if(exists $args{longmess} && !$args{longmess}){ # intentionaly longmess => 0
-        Carp::croak($message);
-    }
-    else{
-        Carp::confess($message);
-    }
-}
 
 1;
 __END__

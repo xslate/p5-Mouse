@@ -340,13 +340,6 @@ sub _make_delegation_method {
         ->_generate_delegation($self, $handle, $method_to_call);
 }
 
-sub throw_error{
-    my $self = shift;
-
-    my $metaclass = (ref $self && $self->associated_class) || 'Mouse::Meta::Class';
-    $metaclass->throw_error(@_, depth => 1);
-}
-
 1;
 __END__
 

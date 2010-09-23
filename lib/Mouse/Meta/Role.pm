@@ -64,193 +64,21 @@ sub add_attribute {
     return;
 }
 
-sub _check_required_methods{
-    my($role, $consumer, $args) = @_;
-
-    if($args->{_to} eq 'role'){
-        $consumer->add_required_methods($role->get_required_method_list);
-    }
-    else{ # to class or instance
-        my $consumer_class_name = $consumer->name;
-
-        my @missing;
-        foreach my $method_name(@{$role->{required_methods}}){
-            next if exists $args->{aliased_methods}{$method_name};
-            next if exists $role->{methods}{$method_name};
-            next if $consumer_class_name->can($method_name);
-
-            push @missing, $method_name;
-        }
-        if(@missing){
-            $role->throw_error(sprintf "'%s' requires the method%s %s to be implemented by '%s'",
-                $role->name,
-                (@missing == 1 ? '' : 's'), # method or methods
-                Mouse::Util::quoted_english_list(@missing),
-                $consumer_class_name);
-        }
-    }
-
-    return;
-}
-
-sub _apply_methods{
-    my($role, $consumer, $args) = @_;
-
-    my $alias    = $args->{-alias};
-    my $excludes = $args->{-excludes};
-
-    foreach my $method_name($role->get_method_list){
-        next if $method_name eq 'meta';
-
-        my $code = $role->get_method_body($method_name);
-
-        if(!exists $excludes->{$method_name}){
-            if(!$consumer->has_method($method_name)){
-                # The third argument $role is used in Role::Composite
-                $consumer->add_method($method_name => $code, $role);
-            }
-        }
-
-        if(exists $alias->{$method_name}){
-            my $dstname = $alias->{$method_name};
-
-            my $dstcode = $consumer->get_method_body($dstname);
-
-            if(defined($dstcode) && $dstcode != $code){
-                $role->throw_error("Cannot create a method alias if a local method of the same name exists");
-            }
-            else{
-                $consumer->add_method($dstname => $code, $role);
-            }
-        }
-    }
-
-    return;
-}
-
-sub _apply_attributes{
-    #my($role, $consumer, $args) = @_;
-    my($role, $consumer) = @_;
-
-    for my $attr_name ($role->get_attribute_list) {
-        next if $consumer->has_attribute($attr_name);
-
-        $consumer->add_attribute($attr_name => $role->get_attribute($attr_name));
-    }
-    return;
-}
-
-sub _apply_modifiers{
-    #my($role, $consumer, $args) = @_;
-    my($role, $consumer) = @_;
-
-
-    if(my $modifiers = $role->{override_method_modifiers}){
-        foreach my $method_name (keys %{$modifiers}){
-            $consumer->add_override_method_modifier($method_name => $modifiers->{$method_name});
-        }
-    }
-
-    for my $modifier_type (qw/before around after/) {
-        my $table = $role->{"${modifier_type}_method_modifiers"}
-            or next;
-
-        my $add_modifier = "add_${modifier_type}_method_modifier";
-
-        while(my($method_name, $modifiers) = each %{$table}){
-            foreach my $code(@{ $modifiers }){
-                next if $consumer->{"_applied_$modifier_type"}{$method_name, $code}++; # skip applied modifiers
-                $consumer->$add_modifier($method_name => $code);
-            }
-        }
-    }
-    return;
-}
-
-sub _append_roles{
-    #my($role, $consumer, $args) = @_;
-    my($role, $consumer) = @_;
-
-    my $roles = $consumer->{roles};
-
-    foreach my $r($role, @{$role->get_roles}){
-        if(!$consumer->does_role($r)){
-            push @{$roles}, $r;
-        }
-    }
-    return;
-}
 
 # Moose uses Application::ToInstance, Application::ToClass, Application::ToRole
 sub apply {
     my $self     = shift;
     my $consumer = shift;
 
-    my %args = (@_ == 1) ? %{ $_[0] } : @_;
-
-    my $instance;
-
-    if(Mouse::Util::is_a_metaclass($consumer)){  # Application::ToClass
-        $args{_to} = 'class';
-    }
-    elsif(Mouse::Util::is_a_metarole($consumer)){ # Application::ToRole
-        $args{_to} = 'role';
-    }
-    else{                                       # Appplication::ToInstance
-        $args{_to} = 'instance';
-        $instance  = $consumer;
-
-        $consumer = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')
-            ->create_anon_class(
-                superclasses => [ref $instance],
-                cache        => 1,
-            );
-    }
-
-    if($args{alias} && !exists $args{-alias}){
-        $args{-alias} = $args{alias};
-    }
-    if($args{excludes} && !exists $args{-excludes}){
-        $args{-excludes} = $args{excludes};
-    }
-
-    $args{aliased_methods} = {};
-    if(my $alias = $args{-alias}){
-        @{$args{aliased_methods}}{ values %{$alias} } = ();
-    }
-
-    if(my $excludes = $args{-excludes}){
-        $args{-excludes} = {}; # replace with a hash ref
-        if(ref $excludes){
-            %{$args{-excludes}} = (map{ $_ => undef } @{$excludes});
-        }
-        else{
-            $args{-excludes}{$excludes} = undef;
-        }
-    }
-
-    $self->_check_required_methods($consumer, \%args);
-    $self->_apply_attributes($consumer, \%args);
-    $self->_apply_methods($consumer, \%args);
-    $self->_apply_modifiers($consumer, \%args);
-    $self->_append_roles($consumer, \%args);
-
-
-    if(defined $instance){ # Application::ToInstance
-        # rebless instance
-        bless $instance, $consumer->name;
-        $consumer->_initialize_object($instance, $instance, 1);
-    }
-
-    return;
+    require 'Mouse/Meta/Role/Application.pm';
+    return Mouse::Meta::Role::Application->new(@_)->apply($self, $consumer);
 }
 
 
 sub combine {
     my($self, @role_specs) = @_;
 
-    require 'Mouse/Meta/Role/Composite.pm'; # we don't want to create its namespace
-
+    require 'Mouse/Meta/Role/Composite.pm';
     my $composite = Mouse::Meta::Role::Composite->create_anon_role();
 
     foreach my $role_spec (@role_specs) {

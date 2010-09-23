@@ -234,11 +234,6 @@ sub _unite { # overload infix:<|>
     );
 }
 
-sub throw_error {
-    require Mouse::Meta::Module;
-    goto &Mouse::Meta::Module::throw_error;
-}
-
 1;
 __END__
 
