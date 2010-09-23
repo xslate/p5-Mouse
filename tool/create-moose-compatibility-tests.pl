@@ -6,9 +6,9 @@ use File::Path ();
 use File::Spec ();
 use File::Basename ();
 
-print "Creating compatibility tests in xt/compatibility/* ...\n";
+print "Creating compatibility tests in xt/compat/* ...\n";
 
-File::Path::rmtree(File::Spec->catfile('xt', 'compatibility'));
+File::Path::rmtree(File::Spec->catfile('xt', 'compat'));
 
 # some test does not pass... currently skip it.
 my %SKIP_TEST = (
@@ -51,7 +51,7 @@ File::Find::find(
 
             my $dirname = File::Basename::dirname($_);
 
-            my $tmpdir = File::Spec->catfile('xt', 'compatibility', $dirname);
+            my $tmpdir = File::Spec->catfile('xt', 'compat', $dirname);
             File::Path::mkpath($tmpdir);
 
             my $tmpfile = File::Spec->catfile($tmpdir, $basename);

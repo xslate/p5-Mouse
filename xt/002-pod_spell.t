@@ -163,6 +163,7 @@ destructuring
 dev
 DWIM
 DUCKTYPE
+exportable
 GitHub
 hashrefs
 hotspots

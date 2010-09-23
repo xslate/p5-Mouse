@@ -395,7 +395,7 @@ The same as C<Mouse::Util::class_of()>.
 
 =head2 Class::MOP functions
 
-The followign functions are not exportable.
+The following functions are not exportable.
 
 =head3 C<< Mouse::Util::is_class_loaded($classname) -> Bool >>
 

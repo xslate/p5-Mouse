@@ -58,18 +58,16 @@ CHECK
 my $use_xs = ($] >= 5.008_001 && want_xs());
 
 if($use_xs){
-    print "Mouse configured with XS.\n",
-          "NOTE: You can try --pp option to configure Mouse with Pure Perl.\n";
+    print "Mouse configured with XS.\n";
 
-    cc_warnings();
     use_ppport(3.19);
     use_xshelper();
+    cc_warnings();
     cc_src_paths('xs-src');
 }
 else{
     print "Mouse configured with Pure Perl.\n";
 }
-
 
 tests 't/*.t t/*/*.t';
 author_tests 'xt';
@@ -82,20 +80,16 @@ if ($Module::Install::AUTHOR) {
 
     if (eval { require Moose; Moose->VERSION($require_version) }) {
         print "You have Moose ", Moose->VERSION, ".\n";
-        if (eval { require Module::Install::AuthorTests }) {
-            do 'tool/create-moose-compatibility-tests.pl';
-            # repeat testing
-            # see also ExtUtils::MM_Any::test_via_harness()
-            my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                          .q{ "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                          .q{ xt/compatibility/t/*/*.t } . "\n";
+        do 'tool/create-moose-compatibility-tests.pl';
+        # repeat testing
+        # see also ExtUtils::MM_Any::test_via_harness()
+        my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                      .q{ "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                      .q{ xt/compat/t/*/*.t } . "\n";
 
-            postamble qq{test_dynamic :: test_moose\n\n}
-                    . qq{test_moose :: pure_all\n}
-                    . qq{\t} . $t_moose;
-        } else {
-            print "You don't have a M::I::AuthorTests.\n";
-        }
+        postamble qq{test :: test_moose\n\n}
+                . qq{test_moose :: pure_all\n}
+                . qq{\t} . $t_moose;
     } else {
         print "You don't have Moose $require_version. skipping moose compatibility test\n";
     }
@@ -107,7 +101,7 @@ if ($Module::Install::AUTHOR) {
                    .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
                    .q{ $(TEST_FILES)} . "\n";
 
-        postamble qq{test_dynamic :: test_pp\n\n}
+        postamble qq{test :: test_pp\n\n}
                 . qq{test_pp :: pure_all\n}
                 . qq{\t} . $t_pp;
     }

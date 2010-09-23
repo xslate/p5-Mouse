@@ -13,7 +13,7 @@ Mouse-*
 *~
 *.bak
 *.old
-xt/compatibility/
+xt/compat/
 cover_db/*
 nytprof*
 *.out
