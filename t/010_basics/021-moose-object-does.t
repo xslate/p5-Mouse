@@ -5,6 +5,7 @@ use t::lib::MooseCompat;
 use warnings;
 
 use Test::More;
+$TODO = q{Mouse is not yet completed};
 use Test::Mouse;
 
 {

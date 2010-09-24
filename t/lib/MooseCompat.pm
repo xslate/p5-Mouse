@@ -9,10 +9,11 @@ $INC{'Mouse/Meta.pm'}          = __FILE__;
 $INC{'Mouse/Meta/Instance.pm'} = __FILE__;
 $INC{'Mouse/Deprecated.pm'}    = __FILE__;
 
-sub UNIVERSAL::DOES {
+
+*UNIVERSAL::DOES = sub {
     my($thing, $role) = @_;
-    $thing->isa($role) || Mouse::Util::does_role($thing, $role);
-}
+    $thing->isa($role);
+} unless UNIVERSAL->can('DOES');
 
 $Mouse::Deprecated::deprecated = $Mouse::Deprecated::deprecated = undef; # -w
 
