@@ -1,3 +1,4 @@
+# COMPAT_TEST=1 genrates Moose compatible tests
 # for developpers:
 BEGIN{
     if(grep{ $_ eq '--author' } @ARGV){
@@ -81,7 +82,8 @@ if ($Module::Install::AUTHOR) {
     require 'lib/Mouse/Spec.pm'; # for the version
     my $require_version = Mouse::Spec->MooseVersion;
 
-    if (eval { require Moose; Moose->VERSION($require_version) }) {
+    if ($ENV{COMPAT_TEST}
+            && eval { require Moose; Moose->VERSION($require_version) }) {
         print "You have Moose ", Moose->VERSION, ".\n";
         do 'tool/create-moose-compatibility-tests.pl';
         # repeat testing
