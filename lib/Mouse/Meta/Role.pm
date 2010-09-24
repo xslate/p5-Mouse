@@ -78,8 +78,8 @@ sub combine {
     my $composite = Mouse::Meta::Role::Composite->create_anon_role();
 
     foreach my $role_spec (@role_specs) {
-        my($role_name, $args) = @{$role_spec};
-        $role_name->meta->apply($composite, %{$args});
+        my($role, $args) = @{$role_spec};
+        $role->apply($composite, %{$args});
     }
     return $composite;
 }

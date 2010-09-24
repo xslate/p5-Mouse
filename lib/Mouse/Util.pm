@@ -274,29 +274,37 @@ sub is_class_loaded;
 
 sub apply_all_roles {
     my $consumer = Scalar::Util::blessed($_[0])
-        ?                                shift   # instance
-        : Mouse::Meta::Class->initialize(shift); # class or role name
+        ?                                $_[0]   # instance
+        : Mouse::Meta::Class->initialize($_[0]); # class or role name
 
     my @roles;
 
     # Basis of Data::OptList
     my $max = scalar(@_);
-    for (my $i = 0; $i < $max ; $i++) {
-        if ($i + 1 < $max && ref($_[$i + 1])) {
-            push @roles, [ $_[$i] => $_[++$i] ];
-        } else {
-            push @roles, [ $_[$i] => undef ];
+    for (my $i = 1; $i < $max ; $i++) {
+        my $role = $_[$i];
+        my $role_name;
+        if(ref $role) {
+            $role_name = $role->name;
         }
-        my $role_name = $roles[-1][0];
-        load_class($role_name);
+        else {
+            $role_name = $role;
+            load_class($role_name);
+            $role = get_metaclass_by_name($role_name);
+        }
 
-        is_a_metarole( get_metaclass_by_name($role_name) )
+        if ($i + 1 < $max && ref($_[$i + 1]) eq 'HASH') {
+            push @roles, [ $role => $_[++$i] ];
+        } else {
+            push @roles, [ $role => undef ];
+        }
+        is_a_metarole($role)
             || $consumer->meta->throw_error("You can only consume roles, $role_name is not a Mouse role");
     }
 
     if ( scalar @roles == 1 ) {
-        my ( $role_name, $params ) = @{ $roles[0] };
-        get_metaclass_by_name($role_name)->apply( $consumer, defined $params ? $params : () );
+        my ( $role, $params ) = @{ $roles[0] };
+        $role->apply( $consumer, defined $params ? $params : () );
     }
     else {
         Mouse::Meta::Role->combine(@roles)->apply($consumer);
