@@ -1,0 +1,1563 @@
+Testing ...
+t/050_metaclasses/004_moose_for_meta.t ... ok
+The metaclass (My::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'My::Meta::Class') called at t/050_metaclasses/016_metarole_w_metaclass_pm.t line 51
+	My::Class::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 51
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 51
+BEGIN failed--compilation aborted at t/050_metaclasses/016_metarole_w_metaclass_pm.t line 51.
+The metaclass (My::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'My::Meta::Class') called at t/050_metaclasses/016_metarole_w_metaclass_pm.t line 52
+	My::Class::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 52
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 52
+BEGIN failed--compilation aborted at t/050_metaclasses/016_metarole_w_metaclass_pm.t line 52.
+t/050_metaclasses/016_metarole_w_metaclass_pm.t ... not ok
+Cannot call init_meta without specifying a for_class at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 127
+	Mouse::init_meta('MyClass', 'MyFramework::Base', 'MyFramework::Meta::Base') called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 33
+	MyFramework::import('MyFramework') called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 42
+	MyClass::BEGIN() called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 42
+	eval {...} called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 42
+BEGIN failed--compilation aborted at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 42.
+Cannot call init_meta without specifying a for_class at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 127
+	Mouse::init_meta('MyClass', 'MyFramework::Base', 'MyFramework::Meta::Base') called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 34
+	MyFramework::import('MyFramework') called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 43
+	MyClass::BEGIN() called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 43
+	eval {...} called at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 43
+BEGIN failed--compilation aborted at t/050_metaclasses/010_extending_and_embedding_back_compat.t line 43.
+t/050_metaclasses/010_extending_and_embedding_back_compat.t ... not ok
+The method '_immutable_options' was not found in the inheritance hierarchy for Mouse::Meta::Class::__ANON__::9 at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 296
+	Mouse::Meta::Class::_install_modifier('Mouse::Meta::Class=HASH(0x99471a8)', 'around', '_immutable_options', 'CODE(0x994d8e0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 368
+	Mouse::Meta::Class::add_around_method_modifier('Mouse::Meta::Class=HASH(0x99471a8)', '_immutable_options', 'CODE(0x994d8e0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 182
+	Mouse::Meta::Role::Application::apply_modifiers('Mouse::Meta::Role::Application=HASH(0x994dd60)', 'Mouse::Meta::Role=HASH(0x9946bf8)', 'Mouse::Meta::Class=HASH(0x99471a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+	Mouse::Meta::Role::Application::apply('Mouse::Meta::Role::Application=HASH(0x994dd60)', 'Mouse::Meta::Role=HASH(0x9946bf8)', 'Mouse::Meta::Class=HASH(0x99471a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+	Mouse::Meta::Role::apply('Mouse::Meta::Role=HASH(0x9946bf8)', 'Mouse::Meta::Class=HASH(0x99471a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+	Mouse::Util::apply_all_roles('Mouse::Meta::Class::__ANON__::9', 'Bar7::Meta::Trait') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Module.pm line 269
+	Mouse::Meta::Module::create('Mouse::Meta::Class', undef, 'superclasses', 'ARRAY(0x994d7f0)', 'roles', 'ARRAY(0x974eac0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 39
+	Mouse::Meta::Class::create_anon_class('Mouse::Meta::Class', 'superclasses', 'ARRAY(0x994d7f0)', 'roles', 'ARRAY(0x974eac0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 138
+	Mouse::Util::MetaRole::_make_new_class('Mouse::Meta::Class', 'ARRAY(0x974eac0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 36
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x9947658)', 'HASH(0x994d720)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Bar7', 'class_metaroles', 'HASH(0x994d720)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 193
+	Mouse::Exporter::do_import('Mouse', '-traits', 'ARRAY(0x9947008)') called at t/050_metaclasses/052_metaclass_compat.t line 297
+	Bar7::BEGIN() called at t/050_metaclasses/052_metaclass_compat.t line 297
+	eval {...} called at t/050_metaclasses/052_metaclass_compat.t line 297
+BEGIN failed--compilation aborted at t/050_metaclasses/052_metaclass_compat.t line 297.
+The method '_immutable_options' was not found in the inheritance hierarchy for Mouse::Meta::Class::__ANON__::9 at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 296
+	Mouse::Meta::Class::_install_modifier('Mouse::Meta::Class=HASH(0x91c22d0)', 'around', '_immutable_options', 'CODE(0x91c89b8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 368
+	Mouse::Meta::Class::add_around_method_modifier('Mouse::Meta::Class=HASH(0x91c22d0)', '_immutable_options', 'CODE(0x91c89b8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 182
+	Mouse::Meta::Role::Application::apply_modifiers('Mouse::Meta::Role::Application=HASH(0x91c8e38)', 'Mouse::Meta::Role=HASH(0x91c1d20)', 'Mouse::Meta::Class=HASH(0x91c22d0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+	Mouse::Meta::Role::Application::apply('Mouse::Meta::Role::Application=HASH(0x91c8e38)', 'Mouse::Meta::Role=HASH(0x91c1d20)', 'Mouse::Meta::Class=HASH(0x91c22d0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+	Mouse::Meta::Role::apply('Mouse::Meta::Role=HASH(0x91c1d20)', 'Mouse::Meta::Class=HASH(0x91c22d0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+	Mouse::Util::apply_all_roles('Mouse::Meta::Class::__ANON__::9', 'Bar7::Meta::Trait') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Module.pm line 269
+	Mouse::Meta::Module::create('Mouse::Meta::Class', undef, 'superclasses', 'ARRAY(0x91c88c8)', 'roles', 'ARRAY(0x8fc9ac0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 39
+	Mouse::Meta::Class::create_anon_class('Mouse::Meta::Class', 'superclasses', 'ARRAY(0x91c88c8)', 'roles', 'ARRAY(0x8fc9ac0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 138
+	Mouse::Util::MetaRole::_make_new_class('Mouse::Meta::Class', 'ARRAY(0x8fc9ac0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 36
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x91c2780)', 'HASH(0x91c87f8)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Bar7', 'class_metaroles', 'HASH(0x91c87f8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 193
+	Mouse::Exporter::do_import('Mouse', '-traits', 'ARRAY(0x91c2130)') called at t/050_metaclasses/052_metaclass_compat.t line 298
+	Bar7::BEGIN() called at t/050_metaclasses/052_metaclass_compat.t line 298
+	eval {...} called at t/050_metaclasses/052_metaclass_compat.t line 298
+BEGIN failed--compilation aborted at t/050_metaclasses/052_metaclass_compat.t line 298.
+t/050_metaclasses/052_metaclass_compat.t ... not ok
+t/050_metaclasses/013_metaclass_traits.t ... ok
+#   Failed test 'use metaclass with required attr'
+#   at t/050_metaclasses/019_create_anon_with_required_attr.t line 67.
+# died: The metaclass (My::Metaclass) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+# 	metaclass::import(** Incomplete caller override detected; @DB::args were not set **) called at (eval 12) line 3
+# 	Class::Name3::BEGIN(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 5
+# 	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 5
+# 	eval '
+#         package Class::Name3;
+#         use metaclass \'My::Metaclass\' => (
+#             foo => \'another\',
+#         );
+#         use Mouse;
+#     
+# ;' called at t/050_metaclasses/019_create_anon_with_required_attr.t line 59
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/050_metaclasses/019_create_anon_with_required_attr.t line 67
+# BEGIN failed--compilation aborted at (eval 12) line 5.
+Can't locate object method "meta" via package "Class::Name3" at t/050_metaclasses/019_create_anon_with_required_attr.t line 68.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "meta" via package "Class::Name3" at t/050_metaclasses/019_create_anon_with_required_attr.t line 69.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/050_metaclasses/019_create_anon_with_required_attr.t ... not ok
+t/050_metaclasses/020_metaclass_parameterized_traits.t ... ok
+The metaclass (Mouse::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'metaclass', 'Mouse::Meta::Class', 'error_class', 'Mouse::Error::Croak') called at t/050_metaclasses/018_throw_error.t line 21
+	Bar::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 23
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 23
+BEGIN failed--compilation aborted at t/050_metaclasses/018_throw_error.t line 23.
+The metaclass (Mouse::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'metaclass', 'Mouse::Meta::Class', 'error_class', 'Mouse::Error::Croak') called at t/050_metaclasses/018_throw_error.t line 22
+	Bar::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 24
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 24
+BEGIN failed--compilation aborted at t/050_metaclasses/018_throw_error.t line 24.
+t/050_metaclasses/018_throw_error.t ... not ok
+t/050_metaclasses/054_metaclass_compat_no_fixing_bug.t ... ok
+Unknown metaclass 'wrapped_method' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class::__ANON__::1=HASH(0x8efd540)', 'HASH(0x8f0d798)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'My::Class', 'class_metaroles', 'HASH(0x8f0d798)') called at t/050_metaclasses/015_metarole.t line 87
+# Tests were run but no plan was declared and done_testing() was not seen.
+Unknown metaclass 'wrapped_method' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class::__ANON__::1=HASH(0x841efb0)', 'HASH(0x841eab0)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'My::Class', 'class_metaroles', 'HASH(0x841eab0)') called at t/050_metaclasses/015_metarole.t line 88
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/050_metaclasses/015_metarole.t ... not ok
+#   Failed test 'SubSubClass metaclass does role from grandparent metaclass'
+#   at t/050_metaclasses/040_moose_nonmoose_metatrait_init_order.t line 27.
+#   Failed test 'SubClass metaclass does role from parent metaclass'
+#   at t/050_metaclasses/040_moose_nonmoose_metatrait_init_order.t line 30.
+# Looks like you failed 2 tests of 2.
+t/050_metaclasses/040_moose_nonmoose_metatrait_init_order.t ... ok (TODO)
+t/050_metaclasses/052_new_object_BUILD.t ... ok
+The method 'composition_class_roles' was not found in the inheritance hierarchy for Mouse::Meta::Class::__ANON__::1 at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 296
+	Mouse::Meta::Class::_install_modifier('Mouse::Meta::Class=HASH(0x8645b98)', 'around', 'composition_class_roles', 'CODE(0x8632da0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 368
+	Mouse::Meta::Class::add_around_method_modifier('Mouse::Meta::Class=HASH(0x8645b98)', 'composition_class_roles', 'CODE(0x8632da0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 182
+	Mouse::Meta::Role::Application::apply_modifiers('Mouse::Meta::Role::Application=HASH(0x8645e98)', 'Mouse::Meta::Role=HASH(0x86329f0)', 'Mouse::Meta::Class=HASH(0x8645b98)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+	Mouse::Meta::Role::Application::apply('Mouse::Meta::Role::Application=HASH(0x8645e98)', 'Mouse::Meta::Role=HASH(0x86329f0)', 'Mouse::Meta::Class=HASH(0x8645b98)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+	Mouse::Meta::Role::apply('Mouse::Meta::Role=HASH(0x86329f0)', 'Mouse::Meta::Class=HASH(0x8645b98)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+	Mouse::Util::apply_all_roles('Mouse::Meta::Class::__ANON__::1', 'Role::WithCustomApplication') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Module.pm line 269
+	Mouse::Meta::Module::create('Mouse::Meta::Class', undef, 'superclasses', 'ARRAY(0x8645b58)', 'roles', 'ARRAY(0x86457d8)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 39
+	Mouse::Meta::Class::create_anon_class('Mouse::Meta::Class', 'superclasses', 'ARRAY(0x8645b58)', 'roles', 'ARRAY(0x86457d8)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 138
+	Mouse::Util::MetaRole::_make_new_class('Mouse::Meta::Role', 'ARRAY(0x86457d8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 36
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Role=HASH(0x863c6a8)', 'HASH(0x8645ba8)', 'role') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 23
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Mouse::Meta::Role=HASH(0x863c6a8)', 'role_metaroles', 'HASH(0x8645ba8)') called at t/050_metaclasses/030_metarole_combination.t line 119
+	CustomRole::init_meta('CustomRole', 'for_class', 'My::Role::Special') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 181
+	Mouse::Exporter::do_import('CustomRole') called at t/050_metaclasses/030_metarole_combination.t line 140
+The method 'composition_class_roles' was not found in the inheritance hierarchy for Mouse::Meta::Class::__ANON__::1 at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 296
+	Mouse::Meta::Class::_install_modifier('Mouse::Meta::Class=HASH(0x9200c70)', 'around', 'composition_class_roles', 'CODE(0x91ede68)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 368
+	Mouse::Meta::Class::add_around_method_modifier('Mouse::Meta::Class=HASH(0x9200c70)', 'composition_class_roles', 'CODE(0x91ede68)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 182
+	Mouse::Meta::Role::Application::apply_modifiers('Mouse::Meta::Role::Application=HASH(0x9200f70)', 'Mouse::Meta::Role=HASH(0x91edab8)', 'Mouse::Meta::Class=HASH(0x9200c70)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+	Mouse::Meta::Role::Application::apply('Mouse::Meta::Role::Application=HASH(0x9200f70)', 'Mouse::Meta::Role=HASH(0x91edab8)', 'Mouse::Meta::Class=HASH(0x9200c70)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+	Mouse::Meta::Role::apply('Mouse::Meta::Role=HASH(0x91edab8)', 'Mouse::Meta::Class=HASH(0x9200c70)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+	Mouse::Util::apply_all_roles('Mouse::Meta::Class::__ANON__::1', 'Role::WithCustomApplication') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Module.pm line 269
+	Mouse::Meta::Module::create('Mouse::Meta::Class', undef, 'superclasses', 'ARRAY(0x9200c30)', 'roles', 'ARRAY(0x92008b0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 39
+	Mouse::Meta::Class::create_anon_class('Mouse::Meta::Class', 'superclasses', 'ARRAY(0x9200c30)', 'roles', 'ARRAY(0x92008b0)', 'cache', 1) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 138
+	Mouse::Util::MetaRole::_make_new_class('Mouse::Meta::Role', 'ARRAY(0x92008b0)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 36
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Role=HASH(0x91f7778)', 'HASH(0x9200c80)', 'role') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 23
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Mouse::Meta::Role=HASH(0x91f7778)', 'role_metaroles', 'HASH(0x9200c80)') called at t/050_metaclasses/030_metarole_combination.t line 120
+	CustomRole::init_meta('CustomRole', 'for_class', 'My::Role::Special') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 181
+	Mouse::Exporter::do_import('CustomRole') called at t/050_metaclasses/030_metarole_combination.t line 141
+t/050_metaclasses/030_metarole_combination.t ... not ok
+t/050_metaclasses/002_custom_attr_meta_as_role.t ... ok
+t/050_metaclasses/012_moose_exporter.t ... ok
+The metaclass (Foo::Meta) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'Foo::Meta') called at t/050_metaclasses/003_moose_w_metaclass.t line 36
+	Foo::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 36
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 36
+BEGIN failed--compilation aborted at t/050_metaclasses/003_moose_w_metaclass.t line 36.
+The metaclass (Foo::Meta) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'Foo::Meta') called at t/050_metaclasses/003_moose_w_metaclass.t line 37
+	Foo::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 37
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 37
+BEGIN failed--compilation aborted at t/050_metaclasses/003_moose_w_metaclass.t line 37.
+t/050_metaclasses/003_moose_w_metaclass.t ... not ok
+#   Failed test 'With_caller prototype code gets called from MyMooseX'
+#   at t/050_metaclasses/021_export_with_prototype.t line 14.
+#          got: 'Test::Exception'
+#     expected: 'MyExporter'
+#   Failed test 'check function with prototype'
+#   at t/050_metaclasses/021_export_with_prototype.t line 16.
+# died: Can't call method "with_prototype" without a package or object reference at t/050_metaclasses/021_export_with_prototype.t line 12.
+# Looks like you failed 2 tests of 4.
+#          got: 'Test::Exception'
+#     expected: 'MyExporter'
+t/050_metaclasses/021_export_with_prototype.t ... ok (TODO)
+t/050_metaclasses/001_custom_attr_meta_with_roles.t ... ok
+t/050_metaclasses/041_moose_nonmoose_moose_chain_init_meta.t ... ok
+Can't call method "associated_role" on unblessed reference at t/030_roles/044_role_attrs.t line 20.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "associated_role" on unblessed reference at t/030_roles/044_role_attrs.t line 21.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/044_role_attrs.t ... not ok
+t/050_metaclasses/017_use_base_of_moose.t ... ok
+Can't locate object method "original_method" via package "Mouse::Meta::Method" at t/030_roles/032_roles_and_method_cloning.t line 30.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "original_method" via package "Mouse::Meta::Method" at t/030_roles/032_roles_and_method_cloning.t line 31.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/032_roles_and_method_cloning.t ... not ok
+#   Failed test '... and the &bar method is required'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 63.
+#   Failed test '... and the &role_bar method is not required'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 64.
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 110.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Bar::Role' and 'Foo::Role', the method 'foo_foo' must be implemented or excluded by 'My::Foo::Class::Broken'))
+# found: Cannot create a method alias if a local method of the same name exists at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 138
+# 	Mouse::Meta::Role::Application::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 82
+# 	Mouse::Meta::Role::combine(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 107
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 110
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 146.
+# died: Cannot create a method alias if a local method of the same name exists at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 138
+# 	Mouse::Meta::Role::Application::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 82
+# 	Mouse::Meta::Role::combine(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 143
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 146
+#   Failed test '... and the &foo method is required'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 150.
+# Looks like you failed 5 tests of 46.
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 111.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Bar::Role' and 'Foo::Role', the method 'foo_foo' must be implemented or excluded by 'My::Foo::Class::Broken'))
+# found: Cannot create a method alias if a local method of the same name exists at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 138
+# 	Mouse::Meta::Role::Application::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 82
+# 	Mouse::Meta::Role::combine(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 108
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 111
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/013_method_aliasing_in_composition.t line 147.
+# died: Cannot create a method alias if a local method of the same name exists at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 138
+# 	Mouse::Meta::Role::Application::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 82
+# 	Mouse::Meta::Role::combine(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 144
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/013_method_aliasing_in_composition.t line 147
+# Looks like you failed 2 tests of 46.
+t/030_roles/013_method_aliasing_in_composition.t ... not ok
+t/030_roles/045_role_compose_requires.t ... ok
+#   Failed test '... did not fufill the requirement of &bar method'
+#   at t/030_roles/011_overriding.t line 69.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Role::A' and 'Role::A::Conflict', the method 'bar' must be implemented or excluded by 'Class::A::Conflict'))
+# found: normal exit
+#   Failed test '... Role::A::Conflict created the bar requirement'
+#   at t/030_roles/011_overriding.t line 81.
+#   Failed test '... Role::D::And::E::Conflict adds the &xxy requirement'
+#   at t/030_roles/011_overriding.t line 153.
+#   Failed test '... Role::D::And::E::Conflict adds the &bar requirement'
+#   at t/030_roles/011_overriding.t line 154.
+#   Failed test 'define role Role::I'
+#   at t/030_roles/011_overriding.t line 176.
+# died: Due to a method name conflict in roles 'Role::H' and 'Role::J', the method 'foo' must be implemented or excluded by 'Role::I' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/011_overriding.t line 175
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/011_overriding.t line 176
+#   Failed test 'defining class Class::C fails'
+#   at t/030_roles/011_overriding.t line 186.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Role::H' and 'Role::J', the method 'foo' must be implemented or excluded by 'Class::C'))
+# found: normal exit
+#   Failed test 'Class::E->can(...)'
+#   at t/030_roles/011_overriding.t line 201.
+#     Class::E->can('bar') failed
+#     Class::E->can('xxy') failed
+Can't locate object method "bar" via package "Class::E" at t/030_roles/011_overriding.t line 205.
+# Tests were run but no plan was declared and done_testing() was not seen.
+#   Failed test '... did not fufill the requirement of &bar method'
+#   at t/030_roles/011_overriding.t line 70.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Role::A' and 'Role::A::Conflict', the method 'bar' must be implemented or excluded by 'Class::A::Conflict'))
+# found: normal exit
+#   Failed test 'define role Role::I'
+#   at t/030_roles/011_overriding.t line 177.
+# died: Due to a method name conflict in roles 'Role::H' and 'Role::J', the method 'foo' must be implemented or excluded by 'Role::I' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/011_overriding.t line 176
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/011_overriding.t line 177
+#   Failed test 'defining class Class::C fails'
+#   at t/030_roles/011_overriding.t line 187.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Role::H' and 'Role::J', the method 'foo' must be implemented or excluded by 'Class::C'))
+# found: normal exit
+Can't locate object method "bar" via package "Class::E" at t/030_roles/011_overriding.t line 206.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/011_overriding.t ... not ok
+t/030_roles/005_role_conflict_detection.t ... ok
+#   Failed test '... they DO NOT share the same anon-class/role thing'
+#   at t/030_roles/010_run_time_role_composition.t line 72.
+#          got: 'Mouse::Meta::Class::__ANON__::1'
+#     expected: anything else
+#   Failed test '... the original method responds as expected'
+#   at t/030_roles/010_run_time_role_composition.t line 76.
+#          got: 'snore'
+#     expected: 'nite-nite'
+#   Failed test '... we do not do the Sleeper role'
+#   at t/030_roles/010_run_time_role_composition.t line 78.
+#   Failed test '... we do not do Bark yet'
+#   at t/030_roles/010_run_time_role_composition.t line 98.
+#   Failed test '... they still don't share the same anon-class/role thing'
+#   at t/030_roles/010_run_time_role_composition.t line 103.
+#          got: 'Mouse::Meta::Class::__ANON__::2'
+#     expected: anything else
+# Looks like you failed 5 tests of 28.
+t/030_roles/010_run_time_role_composition.t ... ok (TODO)
+t/030_roles/036_free_anonymous_roles.t ... ok
+#   Failed test '... got the expect value'
+#   at t/030_roles/018_runtime_roles_w_params.t line 55.
+#          got: 'BAZ'
+#     expected: 'FOO-BAZ'
+#   Failed test '... got the expect value'
+#   at t/030_roles/018_runtime_roles_w_params.t line 70.
+#          got: 'BAR'
+#     expected: 'FOO-BAR'
+#   Failed test '... got the expect value'
+#   at t/030_roles/018_runtime_roles_w_params.t line 72.
+#          got: 'BAZ'
+#     expected: 'FOO-BAZ'
+# Looks like you failed 3 tests of 21.
+t/030_roles/018_runtime_roles_w_params.t ... ok (TODO)
+Mouse does not currently support Mouse::Role::excludes at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 107
+	Mouse::Role::excludes('Molecule::Inorganic') called at t/030_roles/006_role_exclusion.t line 34
+Mouse does not currently support Mouse::Role::excludes at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 107
+	Mouse::Role::excludes('Molecule::Inorganic') called at t/030_roles/006_role_exclusion.t line 35
+t/030_roles/006_role_exclusion.t ... not ok
+#   Failed test ''
+#   at t/030_roles/035_anonymous_roles.t line 33.
+#                   'Mouse::Meta::Role::__ANON__::1'
+#     doesn't match '(?-xism:^Mouse::Meta::Role::__ANON__::SERIAL::\d+$)'
+# Looks like you failed 1 test of 7.
+t/030_roles/035_anonymous_roles.t ... ok (TODO)
+Can't call method "original_options" on unblessed reference at t/030_roles/001_meta_role.t line 63.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "original_options" on unblessed reference at t/030_roles/001_meta_role.t line 64.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/001_meta_role.t ... not ok
+#   Failed test 'Test has '+attr' in roles explodes'
+#   at t/030_roles/017_extending_role_attrs.t line 186.
+# expecting: Regexp ((?-xism:has '\+attr' is not supported in roles))
+# found: normal exit
+# Looks like you failed 1 test of 28.
+#   Failed test 'Test has '+attr' in roles explodes'
+#   at t/030_roles/017_extending_role_attrs.t line 187.
+# expecting: Regexp ((?-xism:has '\+attr' is not supported in roles))
+# found: normal exit
+# Looks like you failed 1 test of 28.
+t/030_roles/017_extending_role_attrs.t ... not ok
+#   Failed test 'threw Regexp ((?-xism:Due to a method name conflict in roles 'Caninish' and 'Treeve', the method 'bark' must be implemented or excluded by 'PracticalJoke'))'
+#   at t/030_roles/043_conflict_many_methods.t line 48.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Caninish' and 'Treeve', the method 'bark' must be implemented or excluded by 'PracticalJoke'))
+# found: Due to method name conflicts in roles 'Bomb', 'Caninish', 'Spouse', and 'Treeve', the methods 'bark', 'explode', and 'fuse' must be implemented or excluded by 'PracticalJoke' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/043_conflict_many_methods.t line 44
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/043_conflict_many_methods.t line 48
+# Looks like you failed 1 test of 2.
+#   Failed test 'threw Regexp ((?-xism:Due to a method name conflict in roles 'Caninish' and 'Treeve', the method 'bark' must be implemented or excluded by 'PracticalJoke'))'
+#   at t/030_roles/043_conflict_many_methods.t line 49.
+# expecting: Regexp ((?-xism:Due to a method name conflict in roles 'Caninish' and 'Treeve', the method 'bark' must be implemented or excluded by 'PracticalJoke'))
+# found: Due to method name conflicts in roles 'Bomb', 'Caninish', 'Spouse', and 'Treeve', the methods 'bark', 'explode', and 'fuse' must be implemented or excluded by 'PracticalJoke' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/043_conflict_many_methods.t line 45
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/043_conflict_many_methods.t line 49
+# Looks like you failed 1 test of 2.
+t/030_roles/043_conflict_many_methods.t ... not ok
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse::Role', '-metaclass', 'My::Meta::Role') called at t/030_roles/038_new_meta_role.t line 17
+	My::Role::BEGIN() called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 17
+	eval {...} called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 17
+BEGIN failed--compilation aborted at t/030_roles/038_new_meta_role.t line 17.
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse::Role', '-metaclass', 'My::Meta::Role') called at t/030_roles/038_new_meta_role.t line 18
+	My::Role::BEGIN() called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 18
+	eval {...} called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 18
+BEGIN failed--compilation aborted at t/030_roles/038_new_meta_role.t line 18.
+t/030_roles/038_new_meta_role.t ... not ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/025_role_composition_override.t line 44.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/025_role_composition_override.t line 45.
+t/030_roles/025_role_composition_override.t ... not ok
+#   Failed test at t/030_roles/039_application_toclass.t line 44.
+#          got: '0'
+#     expected: '1'
+#   Failed test at t/030_roles/039_application_toclass.t line 45.
+#          got: '0'
+#     expected: '1'
+#   Failed test at t/030_roles/039_application_toclass.t line 46.
+#          got: '0'
+#     expected: '1'
+#   Failed test at t/030_roles/039_application_toclass.t line 47.
+#          got: '0'
+#     expected: '1'
+#   Failed test 'The thing isa Mouse::Meta::Role::Application'
+#   at t/030_roles/039_application_toclass.t line 54.
+#     The thing isn't defined
+#   Failed test 'The thing isa Mouse::Meta::Role::Application'
+#   at t/030_roles/039_application_toclass.t line 55.
+#     The thing isn't defined
+#   Failed test 'The thing isa Mouse::Meta::Role::Application'
+#   at t/030_roles/039_application_toclass.t line 56.
+#     The thing isn't defined
+#   Failed test 'The thing isa Mouse::Meta::Role::Application'
+#   at t/030_roles/039_application_toclass.t line 57.
+#     The thing isn't defined
+Can't call method "role" on an undefined value at t/030_roles/039_application_toclass.t line 59.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "role" on an undefined value at t/030_roles/039_application_toclass.t line 60.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/039_application_toclass.t ... not ok
+t/030_roles/041_empty_method_modifiers_meta_bug.t ... ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/022_role_composition_req_methods.t line 35.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/022_role_composition_req_methods.t line 36.
+t/030_roles/022_role_composition_req_methods.t ... not ok
+You inherit from non-Mouse class (Bar), but it is unlikely to work correctly. Please concider to use MouseX::Foreign at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Module.pm line 242
+t/030_roles/016_runtime_roles_and_nonmoose.t ... ok
+#   Failed test 'bar's definition context is a hash'
+#   at t/030_roles/002_role.t line 92.
+#          got: ''
+#     expected: 'HASH'
+#   Failed test 'bar was defined in FooRole'
+#   at t/030_roles/002_role.t line 94.
+#          got: undef
+#     expected: 'FooRole'
+#   Failed test 'bar's definition context is a hash'
+#   at t/030_roles/002_role.t line 102.
+#          got: ''
+#     expected: 'HASH'
+#   Failed test 'baz was defined in FooRole'
+#   at t/030_roles/002_role.t line 104.
+#          got: undef
+#     expected: 'FooRole'
+# Looks like you failed 4 tests of 41.
+t/030_roles/002_role.t ... ok (TODO)
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse::Role', '-metaclass', 'My::Role::Metaclass') called at t/030_roles/040_role_for_combination.t line 27
+	My::Special::Role::BEGIN() called at t/030_roles/040_role_for_combination.t line 27
+	eval {...} called at t/030_roles/040_role_for_combination.t line 27
+BEGIN failed--compilation aborted at t/030_roles/040_role_for_combination.t line 27.
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse::Role', '-metaclass', 'My::Role::Metaclass') called at t/030_roles/040_role_for_combination.t line 28
+	My::Special::Role::BEGIN() called at t/030_roles/040_role_for_combination.t line 28
+	eval {...} called at t/030_roles/040_role_for_combination.t line 28
+BEGIN failed--compilation aborted at t/030_roles/040_role_for_combination.t line 28.
+t/030_roles/040_role_for_combination.t ... not ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/026_role_composition_method_mods.t line 58.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/026_role_composition_method_mods.t line 59.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/030_roles/026_role_composition_method_mods.t ... not ok
+t/030_roles/019_build.t ... ok
+t/030_roles/008_role_conflict_edge_cases.t ... ok
+t/030_roles/009_more_role_edge_cases.t ... ok
+t/030_roles/014_more_alias_and_exclude.t ... ok
+t/030_roles/034_create_role.t ... ok
+#   Failed test 'equals to self'
+#   at t/040_type_constraints/018_custom_parameterized_types.t line 50.
+#   Failed test 'equals to self'
+#   at t/040_type_constraints/018_custom_parameterized_types.t line 61.
+#   Failed test 'equal to clone'
+#   at t/040_type_constraints/018_custom_parameterized_types.t line 64.
+#   Failed test 'non-containers cannot be parameterized'
+#   at t/040_type_constraints/018_custom_parameterized_types.t line 80.
+#   Failed test 'non-containers cannot be parameterized'
+#   at t/040_type_constraints/018_custom_parameterized_types.t line 88.
+# Looks like you failed 5 tests of 28.
+t/040_type_constraints/018_custom_parameterized_types.t ... ok (TODO)
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/013_advanced_type_creation.t line 17.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/013_advanced_type_creation.t line 18.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/013_advanced_type_creation.t ... not ok
+t/040_type_constraints/007_util_more_type_coercion.t ... ok
+#   Failed test 'Correct error when a builder method is not present'
+#   at t/020_attributes/012_misc_attribute_tests.t line 251.
+# expecting: Regexp ((?-xism:Test::LazyBuild::Attribute does not support builder method \'_build_fool\' for attribute \'fool\'))
+# found: Can't locate object method "_build_fool" via package "Test::LazyBuild::Attribute" at t/020_attributes/012_misc_attribute_tests.t line 250.
+#   Failed test 'attr created from sub call'
+#   at t/020_attributes/012_misc_attribute_tests.t line 265.
+#   Failed test 'attr created from can'
+#   at t/020_attributes/012_misc_attribute_tests.t line 266.
+# Looks like you failed 3 tests of 47.
+t/020_attributes/012_misc_attribute_tests.t ... ok (TODO)
+t/400_moose_util/001_moose_util.t ... ok
+t/020_attributes/034_numeric_defaults.t ... ok
+#   Failed test 'raw value'
+#   at t/020_attributes/001_attribute_reader_generation.t line 77.
+#          got: undef
+#     expected: '10'
+# Looks like you failed 1 test of 20.
+t/020_attributes/001_attribute_reader_generation.t ... ok (TODO)
+t/020_attributes/026_attribute_without_any_methods.t ... ok
+t/020_attributes/030_non_alpha_attr_names.t ... ok
+Attribute (bar) of class Bar has no associated methods (did you mean to provide an "is" argument?) at t/020_attributes/007_attribute_custom_metaclass.t line 60
+t/020_attributes/007_attribute_custom_metaclass.t ... ok
+t/020_attributes/025_chained_coercion.t ... ok
+t/020_attributes/006_attribute_required.t ... ok
+#   Failed test 'trigger called correctly on second set via meta-API'
+#   at t/020_attributes/004_attribute_triggers.t line 188.
+#     Structures begin differing at:
+#          $got->[0][2] = Does not exist
+#     $expected->[0][2] = '2'
+#   Failed test 'trigger called correctly on set (with old value)'
+#   at t/020_attributes/004_attribute_triggers.t line 215.
+#     Structures begin differing at:
+#          $got->[0][2] = Does not exist
+#     $expected->[0][2] = '2'
+#   Failed test 'trigger called correctly on set (with old value)'
+#   at t/020_attributes/004_attribute_triggers.t line 215.
+#     Structures begin differing at:
+#          $got->[0][2] = Does not exist
+#     $expected->[0][2] = '2'
+# Looks like you failed 3 tests of 43.
+t/020_attributes/004_attribute_triggers.t ... ok (TODO)
+t/020_attributes/013_attr_dereference_test.t ... ok
+Unknown metaclass 'instance' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x8fe6c80)', 'HASH(0x8f96800)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Foo', 'class_metaroles', 'HASH(0x8f96800)') called at t/020_attributes/033_accessor_inlining.t line 22
+Unknown metaclass 'instance' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x93b5cd0)', 'HASH(0x9365800)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Foo', 'class_metaroles', 'HASH(0x9365800)') called at t/020_attributes/033_accessor_inlining.t line 23
+t/020_attributes/033_accessor_inlining.t ... not ok
+t/020_attributes/027_accessor_override_method.t ... ok
+t/020_attributes/002_attribute_writer_generation.t ... ok
+t/020_attributes/035_default_undef.t ... ok
+t/020_attributes/008_attribute_type_unions.t ... ok
+Can't call method "name" on an undefined value at t/020_attributes/010_attribute_delegation.t line 50.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "name" on an undefined value at t/020_attributes/010_attribute_delegation.t line 51.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/020_attributes/010_attribute_delegation.t ... not ok
+t/020_attributes/032_delegation_arg_aliasing.t ... ok
+#   Failed test 'attr->does uses aliases'
+#   at t/020_attributes/016_attribute_traits_registered.t line 92.
+#   Failed test 'attr->does uses aliases'
+#   at t/020_attributes/016_attribute_traits_registered.t line 113.
+# Looks like you failed 2 tests of 23.
+t/020_attributes/016_attribute_traits_registered.t ... ok (TODO)
+Unknown metaclass 'instance' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x8cbe190)', 'HASH(0x8c58ec8)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Toy', 'class_metaroles', 'HASH(0x8c58ec8)') called at t/020_attributes/028_no_slot_access.t line 69
+Unknown metaclass 'instance' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class=HASH(0x8530178)', 'HASH(0x84caec8)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('for', 'Toy', 'class_metaroles', 'HASH(0x84caec8)') called at t/020_attributes/028_no_slot_access.t line 70
+t/020_attributes/028_no_slot_access.t ... not ok
+t/020_attributes/003_attribute_accessor_generation.t ... ok
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 28
+Found unknown argument(s) passed to 'lazy_foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 42
+Found unknown argument(s) passed to 'lazy_foo_w_type' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 57
+Found unknown argument(s) passed to 'lazy_foo_builder' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 70
+Found unknown argument(s) passed to 'lazy_foo_builder_w_type' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 84
+#   Failed test 'initial value set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 94.
+#          got: '10'
+#     expected: '20'
+#   Failed test 'initial lazy value set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 95.
+#          got: '10'
+#     expected: '20'
+#   Failed test 'initial lazy value with type set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 96.
+#          got: '20'
+#     expected: '40'
+#   Failed test 'initial lazy value with builder set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 97.
+#          got: '100'
+#     expected: '200'
+#   Failed test 'initial lazy value with builder and type set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 98.
+#          got: '1000'
+#     expected: '2000'
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 116
+#   Failed test 'initial value set to 2x given value'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 125.
+#          got: '10'
+#     expected: '20'
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 144
+#   Failed test '... this fails, because initializer returns a bad type'
+#   at t/020_attributes/019_attribute_lazy_initializer.t line 151.
+# Looks like you failed 7 tests of 9.
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 29
+Found unknown argument(s) passed to 'lazy_foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 43
+Found unknown argument(s) passed to 'lazy_foo_w_type' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 58
+Found unknown argument(s) passed to 'lazy_foo_builder' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 71
+Found unknown argument(s) passed to 'lazy_foo_builder_w_type' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 85
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 117
+Found unknown argument(s) passed to 'foo' attribute constructor in 'Mouse::Meta::Attribute': initializer at t/020_attributes/019_attribute_lazy_initializer.t line 145
+t/020_attributes/019_attribute_lazy_initializer.t ... ok (TODO)
+t/020_attributes/017_attribute_traits_n_meta.t ... ok
+t/020_attributes/031_delegation_and_modifiers.t ... ok
+t/020_attributes/020_trigger_and_coerce.t ... ok
+t/020_attributes/029_accessor_context.t ... ok
+Invalid object instance: 'Parent' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Method/Delegation.pm line 30.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Invalid object instance: 'Parent' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Method/Delegation.pm line 30.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/020_attributes/011_more_attr_delegation.t ... not ok
+t/020_attributes/022_illegal_options_for_inheritance.t ... ok
+The Mouse::Util package does not export "with_traits" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'with_traits') called at t/400_moose_util/009_with_traits.t line 11
+	main::BEGIN() called at t/400_moose_util/009_with_traits.t line 11
+	eval {...} called at t/400_moose_util/009_with_traits.t line 11
+BEGIN failed--compilation aborted at t/400_moose_util/009_with_traits.t line 11.
+The Mouse::Util package does not export "with_traits" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'with_traits') called at t/400_moose_util/009_with_traits.t line 12
+	main::BEGIN() called at t/400_moose_util/009_with_traits.t line 12
+	eval {...} called at t/400_moose_util/009_with_traits.t line 12
+BEGIN failed--compilation aborted at t/400_moose_util/009_with_traits.t line 12.
+t/400_moose_util/009_with_traits.t ... not ok
+t/000_recipes/basics-recipe10.t ... ok
+syntax error at t/400_moose_util/006_create_alias.t line 16, near "Mouse::Util::meta_class_alias
+        FooRole"
+BEGIN not safe after errors--compilation aborted at t/400_moose_util/006_create_alias.t line 19.
+syntax error at t/400_moose_util/006_create_alias.t line 17, near "Mouse::Util::meta_class_alias
+        FooRole"
+BEGIN not safe after errors--compilation aborted at t/400_moose_util/006_create_alias.t line 20.
+t/400_moose_util/006_create_alias.t ... not ok
+Use of uninitialized value $name in hash element at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 62.
+#   Failed test 'has; fails'
+#   at t/020_attributes/023_attribute_names.t line 18.
+# expecting: Regexp ((?-xism:You must provide a name for the attribute))
+# found: normal exit
+Use of uninitialized value $name in hash element at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 62.
+#   Failed test 'has undef; fails'
+#   at t/020_attributes/023_attribute_names.t line 22.
+# expecting: Regexp ((?-xism:You must provide a name for the attribute))
+# found: normal exit
+# Looks like you failed 2 tests of 8.
+Use of uninitialized value $name in hash element at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 62.
+#   Failed test 'has; fails'
+#   at t/020_attributes/023_attribute_names.t line 19.
+# expecting: Regexp ((?-xism:You must provide a name for the attribute))
+# found: normal exit
+Use of uninitialized value $name in hash element at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 62.
+#   Failed test 'has undef; fails'
+#   at t/020_attributes/023_attribute_names.t line 23.
+# expecting: Regexp ((?-xism:You must provide a name for the attribute))
+# found: normal exit
+# Looks like you failed 2 tests of 8.
+t/020_attributes/023_attribute_names.t ... not ok
+Too few arguments for a write-only accessor of foo at t/020_attributes/021_method_generation_rules.t line 42
+# Tests were run but no plan was declared and done_testing() was not seen.
+Too few arguments for a write-only accessor of foo at t/020_attributes/021_method_generation_rules.t line 43
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/020_attributes/021_method_generation_rules.t ... not ok
+t/020_attributes/014_misc_attribute_coerce_lazy.t ... ok
+t/020_attributes/009_attribute_inherited_slot_specs.t ... ok
+t/020_attributes/018_no_init_arg.t ... ok
+t/020_attributes/024_attribute_traits_parameterized.t ... ok
+t/020_attributes/034_bad_coerce.t ... ok
+t/100_bugs/003_Moose_Object_error.t ... ok
+The type constraint 'Bar::Role' has already been created in Mouse::Util::TypeConstraints and cannot be created again in Foo::Role ('Bar::Role' is an implicitly created type constraint) at t/020_attributes/005_attribute_does.t line 22
+The type constraint 'Bar::Role' has already been created in Mouse::Util::TypeConstraints and cannot be created again in Foo::Role ('Bar::Role' is an implicitly created type constraint) at t/020_attributes/005_attribute_does.t line 23
+t/020_attributes/005_attribute_does.t ... not ok
+t/100_bugs/025_universal_methods_wrappable.t ... ok
+#   Failed test 'instance does not have the wrong role'
+#   at t/100_bugs/028_apply_role_to_one_instance_only.t line 34.
+#   Failed test 'instance does not have methods from the wrong role'
+#   at t/100_bugs/028_apply_role_to_one_instance_only.t line 37.
+# Looks like you failed 2 tests of 4.
+t/100_bugs/028_apply_role_to_one_instance_only.t ... ok (TODO)
+t/100_bugs/007_reader_precedence_bug.t ... ok
+t/100_bugs/002_subtype_conflict_bug.t ... ok
+t/100_bugs/022_role_caller.t ... ok
+t/100_bugs/005_inline_reader_bug.t ... ok
+The metaclass (MyMetaclass) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'MyMetaclass') called at t/100_bugs/018_immutable_metaclass_does_role.t line 29
+	MyClass::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 29
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 29
+BEGIN failed--compilation aborted at t/100_bugs/018_immutable_metaclass_does_role.t line 29.
+The metaclass (MyMetaclass) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'MyMetaclass') called at t/100_bugs/018_immutable_metaclass_does_role.t line 30
+	MyClass::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+BEGIN failed--compilation aborted at t/100_bugs/018_immutable_metaclass_does_role.t line 30.
+t/100_bugs/018_immutable_metaclass_does_role.t ... not ok
+#   Failed test at t/100_bugs/014_DEMOLISHALL.t line 48.
+#     Structures begin differing at:
+#          $got->[0] = 'Class::DEMOLISH'
+#     $expected->[0] = 'Class::DEMOLISHALL'
+#   Failed test at t/100_bugs/014_DEMOLISHALL.t line 56.
+#     Structures begin differing at:
+#          $got->[0] = 'Child::DEMOLISH'
+#     $expected->[0] = 'Child::DEMOLISHALL'
+# Looks like you failed 2 tests of 5.
+t/100_bugs/014_DEMOLISHALL.t ... ok (TODO)
+t/100_bugs/001_subtype_quote_bug.t ... ok
+t/100_bugs/013_lazybuild_required_undef.t ... ok
+#   Failed test '... created the object ok'
+#   at t/100_bugs/006_handles_foreign_class_bug.t line 109.
+# died: Invalid object instance: 'Blart' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Method/Delegation.pm line 30.
+#   Failed test 'The thing isa Blart'
+#   at t/100_bugs/006_handles_foreign_class_bug.t line 110.
+#     The thing isn't defined
+Can't call method "a" on an undefined value at t/100_bugs/006_handles_foreign_class_bug.t line 112.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "a" on an undefined value at t/100_bugs/006_handles_foreign_class_bug.t line 113.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/100_bugs/006_handles_foreign_class_bug.t ... not ok
+t/100_bugs/012_DEMOLISH_eats_mini.t ... ok
+You must pass a CODE reference, not Mouse::Meta::Class::__ANON__::1=HASH(0x8307a88) at t/100_bugs/024_anon_method_metaclass.t line 35.
+You must pass a CODE reference, not Mouse::Meta::Class::__ANON__::1=HASH(0x9c47ae0) at t/100_bugs/024_anon_method_metaclass.t line 36.
+t/100_bugs/024_anon_method_metaclass.t ... not ok
+Undefined subroutine &Mouse::Util::remove_metaclass_by_name called at t/100_bugs/023_DEMOLISH_fails_without_metaclass.t line 22.
+Undefined subroutine &Mouse::Util::remove_metaclass_by_name called at t/100_bugs/023_DEMOLISH_fails_without_metaclass.t line 23.
+t/100_bugs/023_DEMOLISH_fails_without_metaclass.t ... not ok
+t/100_bugs/020_super_recursion.t ... ok
+t/100_bugs/029_instance_application_role_args.t ... ok
+t/100_bugs/016_inheriting_from_roles.t ... ok
+t/100_bugs/009_augment_recursion_bug.t ... ok
+t/100_bugs/026_create_anon_recursion.t ... ok
+t/100_bugs/019_moose_octal_defaults.t ... ok
+Undefined subroutine &main::search_class_by_role called at t/400_moose_util/003_moose_util_search_class_by_role.t line 22.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Undefined subroutine &main::search_class_by_role called at t/400_moose_util/003_moose_util_search_class_by_role.t line 23.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/400_moose_util/003_moose_util_search_class_by_role.t ... not ok
+t/040_type_constraints/031_subtype_auto_vivify_parent.t ... ok
+t/400_moose_util/002_moose_util_does_role.t ... ok
+t/030_roles/015_runtime_roles_and_attrs.t ... ok
+#   Failed test 'applying role with unsatisfied version requirement'
+#   at t/030_roles/003_apply_role.t line 53.
+# expecting: Regexp ((?-xism:FooRole version 42 required--this is only version 23))
+# found: normal exit
+#   Failed test 'applying role with satisfied version requirement'
+#   at t/030_roles/003_apply_role.t line 57.
+# died: Cannot add an override method if a local method is already present at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 379
+# 	Mouse::Meta::Class::add_override_method_modifier(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 167
+# 	Mouse::Meta::Role::Application::apply_modifiers(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/003_apply_role.t line 56
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/003_apply_role.t line 57
+# Looks like you failed 2 tests of 88.
+#   Failed test 'applying role with unsatisfied version requirement'
+#   at t/030_roles/003_apply_role.t line 54.
+# expecting: Regexp ((?-xism:FooRole version 42 required--this is only version 23))
+# found: normal exit
+#   Failed test 'applying role with satisfied version requirement'
+#   at t/030_roles/003_apply_role.t line 58.
+# died: Cannot add an override method if a local method is already present at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 379
+# 	Mouse::Meta::Class::add_override_method_modifier(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 167
+# 	Mouse::Meta::Role::Application::apply_modifiers(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 73
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role.pm line 71
+# 	Mouse::Meta::Role::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 307
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 40
+# 	Mouse::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/003_apply_role.t line 57
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/003_apply_role.t line 58
+# Looks like you failed 2 tests of 88.
+t/030_roles/003_apply_role.t ... not ok
+t/030_roles/031_roles_applied_in_create.t ... ok
+t/030_roles/033_role_exclusion_and_alias_bug.t ... ok
+t/050_metaclasses/053_immutable_metaclass_compat_bug.t ... ok
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse', '-metaclass', 'My::Meta::Class') called at t/050_metaclasses/022_new_metaclass.t line 20
+	My::Class::BEGIN() called at t/050_metaclasses/022_new_metaclass.t line 20
+	eval {...} called at t/050_metaclasses/022_new_metaclass.t line 20
+BEGIN failed--compilation aborted at t/050_metaclasses/022_new_metaclass.t line 20.
+Mouse does not currently support -metaclass at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 159
+	Mouse::Exporter::do_import('Mouse', '-metaclass', 'My::Meta::Class') called at t/050_metaclasses/022_new_metaclass.t line 21
+	My::Class::BEGIN() called at t/050_metaclasses/022_new_metaclass.t line 21
+	eval {...} called at t/050_metaclasses/022_new_metaclass.t line 21
+BEGIN failed--compilation aborted at t/050_metaclasses/022_new_metaclass.t line 21.
+t/050_metaclasses/022_new_metaclass.t ... not ok
+#   Failed test 'The object does Foo::Trait::Class'
+#   at t/050_metaclasses/023_easy_init_meta.t line 48.
+#   Failed test 'The object does Foo::Trait::Attribute'
+#   at t/050_metaclasses/023_easy_init_meta.t line 49.
+#   Failed test 'The object does Foo::Role::Base'
+#   at t/050_metaclasses/023_easy_init_meta.t line 50.
+Undefined subroutine &Foo2::has called at t/050_metaclasses/023_easy_init_meta.t line 82.
+# Tests were run but no plan was declared and done_testing() was not seen.
+#   Failed test 'The object does Foo::Trait::Class'
+#   at t/050_metaclasses/023_easy_init_meta.t line 49.
+#   Failed test 'The object does Foo::Trait::Attribute'
+#   at t/050_metaclasses/023_easy_init_meta.t line 50.
+#   Failed test 'The object does Foo::Role::Base'
+#   at t/050_metaclasses/023_easy_init_meta.t line 51.
+Undefined subroutine &Foo2::has called at t/050_metaclasses/023_easy_init_meta.t line 83.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/050_metaclasses/023_easy_init_meta.t ... not ok
+Unknown metaclass 'wrapped_method' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class::__ANON__::1=HASH(0x845bd50)', 'HASH(0x845be40)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('class_metaroles', 'HASH(0x845be40)', 'for', 'My::Class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 9
+	Mouse::Util::MetaRole::apply_metaclass_roles('for_class', 'My::Class', 'wrapped_method_metaclass_roles', 'ARRAY(0x845b960)') called at t/050_metaclasses/050_metarole_backcompat.t line 94
+# Tests were run but no plan was declared and done_testing() was not seen.
+Unknown metaclass 'wrapped_method' at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 44
+	Mouse::Util::MetaRole::_make_new_metaclass('Mouse::Meta::Class::__ANON__::1=HASH(0xa0b5e48)', 'HASH(0xa0c64a8)', 'class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 27
+	Mouse::Util::MetaRole::apply_metaroles('class_metaroles', 'HASH(0xa0c64a8)', 'for', 'My::Class') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/MetaRole.pm line 9
+	Mouse::Util::MetaRole::apply_metaclass_roles('for_class', 'My::Class', 'wrapped_method_metaclass_roles', 'ARRAY(0xa0b5a58)') called at t/050_metaclasses/050_metarole_backcompat.t line 95
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/050_metaclasses/050_metarole_backcompat.t ... not ok
+The package MooseAlike1 package does not use Mouse::Exporter at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 144
+	Mouse::Exporter::do_import('MooseAlike1') called at t/050_metaclasses/014_goto_moose_import.t line 35
+The package MooseAlike1 package does not use Mouse::Exporter at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 144
+	Mouse::Exporter::do_import('MooseAlike1') called at t/050_metaclasses/014_goto_moose_import.t line 36
+t/050_metaclasses/014_goto_moose_import.t ... not ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/024_role_composition_methods.t line 45.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/024_role_composition_methods.t line 46.
+t/030_roles/024_role_composition_methods.t ... not ok
+Mouse does not currently support Mouse::Role::excludes at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 107
+	Mouse::Role::excludes('Role::Foo') called at t/030_roles/021_role_composite_exclusion.t line 24
+Mouse does not currently support Mouse::Role::excludes at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 107
+	Mouse::Role::excludes('Role::Foo') called at t/030_roles/021_role_composite_exclusion.t line 25
+t/030_roles/021_role_composite_exclusion.t ... not ok
+t/030_roles/037_create_role_subclass.t ... ok
+t/030_roles/042_compose_overloading.t ... ok
+#   Failed test 'attribute conflict when composing one role into another'
+#   at t/030_roles/047_role_attribute_conflict.t line 28.
+# expecting: Regexp ((?-xism:attribute conflict.+My::Role2.+foo))
+# found: normal exit
+# Looks like you failed 1 test of 1.
+#   Failed test 'attribute conflict when composing one role into another'
+#   at t/030_roles/047_role_attribute_conflict.t line 29.
+# expecting: Regexp ((?-xism:attribute conflict.+My::Role2.+foo))
+# found: normal exit
+# Looks like you failed 1 test of 1.
+t/030_roles/047_role_attribute_conflict.t ... not ok
+t/030_roles/004_role_composition_errors.t ... ok
+Can't locate object method "consumers" via package "Mouse::Meta::Role" at t/030_roles/046_role_consumers.t line 50.
+Can't locate object method "consumers" via package "Mouse::Meta::Role" at t/030_roles/046_role_consumers.t line 51.
+t/030_roles/046_role_consumers.t ... not ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/023_role_composition_attributes.t line 39.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/023_role_composition_attributes.t line 40.
+t/030_roles/023_role_composition_attributes.t ... not ok
+#   Failed test '... and the &bar method is required'
+#   at t/030_roles/012_method_exclusion_in_composition.t line 43.
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/012_method_exclusion_in_composition.t line 110.
+# died: Due to a method name conflict in roles 'Baz::Role' and 'Foo::Role', the method 'foo' must be implemented or excluded by 'My::Foo::Role::Other' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/012_method_exclusion_in_composition.t line 107
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/012_method_exclusion_in_composition.t line 110
+#   Failed test '... and the &foo method is required'
+#   at t/030_roles/012_method_exclusion_in_composition.t line 114.
+# Looks like you failed 3 tests of 19.
+#   Failed test '... composed our roles correctly'
+#   at t/030_roles/012_method_exclusion_in_composition.t line 111.
+# died: Due to a method name conflict in roles 'Baz::Role' and 'Foo::Role', the method 'foo' must be implemented or excluded by 'My::Foo::Role::Other' at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 115
+# 	Mouse::Meta::Role::Application::RoleSummation::apply_methods(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Application.pm line 68
+# 	Mouse::Meta::Role::Application::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Role/Composite.pm line 86
+# 	Mouse::Meta::Role::Composite::apply(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 310
+# 	Mouse::Util::apply_all_roles(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Role.pm line 34
+# 	Mouse::Role::with(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/012_method_exclusion_in_composition.t line 108
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/030_roles/012_method_exclusion_in_composition.t line 111
+# Looks like you failed 1 test of 19.
+t/030_roles/012_method_exclusion_in_composition.t ... not ok
+t/010_basics/018_methods.t ... ok
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/020_role_composite.t line 30.
+Can't locate object method "new" via package "Mouse::Meta::Role::Composite" at t/030_roles/020_role_composite.t line 31.
+t/030_roles/020_role_composite.t ... not ok
+t/010_basics/007_always_strict_warnings.t ... ok
+t/010_basics/004_inner_and_augment.t ... ok
+You inherit from non-Mouse class (Foo), but it is unlikely to work correctly. Please concider to use MouseX::Foreign at t/010_basics/006_override_and_foreign_classes.t line 40
+t/010_basics/006_override_and_foreign_classes.t ... ok
+t/010_basics/011_moose_respects_type_constraints.t ... ok
+t/010_basics/008_wrapped_method_cxt_propagation.t ... ok
+t/010_basics/016_load_into_main.t ... ok
+#   Failed test '... this failed cause of type check'
+#   at t/010_basics/012_rebless.t line 68.
+# expecting: Regexp ((?-xism:^Attribute \(type_constrained\) does not pass the type constraint because\: Validation failed for 'Int' with value 10\.5))
+# found: Can't locate object method "rebless_instance" via package "Mouse::Meta::Class" at t/010_basics/012_rebless.t line 67.
+#   Failed test '... this failed cause of type check'
+#   at t/010_basics/012_rebless.t line 71.
+# expecting: Regexp ((?-xism:^Attribute \(type_constrained\) does not pass the type constraint because\: Validation failed for 'Int' with value 5\.5))
+# found: Can't locate object method "rebless_instance" via package "Mouse::Meta::Class" at t/010_basics/012_rebless.t line 70.
+Can't locate object method "rebless_instance" via package "Mouse::Meta::Class" at t/010_basics/012_rebless.t line 77.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "rebless_instance" via package "Mouse::Meta::Class" at t/010_basics/012_rebless.t line 78.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/010_basics/012_rebless.t ... not ok
+t/010_basics/003_super_and_override.t ... ok
+#   Failed test 'Bar class does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar object does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar::Child class does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar::Child object does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Baz class does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz class does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz object does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz object does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz::Child class does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz::Child class does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz::Child object does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz::Child object does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Bar class (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar object (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar::Child class (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Bar::Child object (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 116.
+#   Failed test 'Baz class (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz class (immutable) does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz object (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz object (immutable) does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz::Child class (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz::Child class (immutable) does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+#   Failed test 'Baz::Child object (immutable) does Role::A (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 148.
+#   Failed test 'Baz::Child object (immutable) does Role::B (using DOES)'
+#   at t/010_basics/021-moose-object-does.t line 152.
+# Looks like you failed 24 tests of 144.
+t/010_basics/021-moose-object-does.t ... ok (TODO)
+#   Failed test '... Foo can no longer do blessed'
+#   at t/010_basics/009_import_unimport.t line 38.
+#   Failed test '... Foo can no longer do confess'
+#   at t/010_basics/009_import_unimport.t line 38.
+# Looks like you failed 2 tests of 45.
+t/010_basics/009_import_unimport.t ... ok (TODO)
+t/010_basics/015_buildargs.t ... ok
+t/010_basics/001_basic_class_setup.t ... ok
+t/010_basics/010_method_modifier_with_regexp.t ... ok
+Undefined subroutine &Mouse::Util::TypeConstraints::_detect_parameterized_type_constraint called at t/040_type_constraints/026_normalize_type_name.t line 18.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Undefined subroutine &Mouse::Util::TypeConstraints::_detect_parameterized_type_constraint called at t/040_type_constraints/026_normalize_type_name.t line 19.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/026_normalize_type_name.t ... not ok
+#   Failed test 'extends with version requirement'
+#   at t/010_basics/002_require_superclasses.t line 60.
+# died: Invalid class name (HASH(0x97b19e0)) at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 249
+# 	Mouse::Util::_try_load_one_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 267
+# 	Mouse::Util::load_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 58
+# 	Mouse::Meta::Class::superclasses(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 35
+# 	Mouse::extends(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 59
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 60
+#   Failed test 'extends with unsatisfied version requirement'
+#   at t/010_basics/002_require_superclasses.t line 68.
+# expecting: Regexp ((?-xism:Affe version 42 required--this is only version 23))
+# found: Invalid class name (HASH(0x97b1b50)) at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 249
+# 	Mouse::Util::_try_load_one_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 267
+# 	Mouse::Util::load_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 58
+# 	Mouse::Meta::Class::superclasses(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 35
+# 	Mouse::extends(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 67
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 68
+# Looks like you failed 2 tests of 6.
+#   Failed test 'extends with version requirement'
+#   at t/010_basics/002_require_superclasses.t line 61.
+# died: Invalid class name (HASH(0x9389af0)) at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 249
+# 	Mouse::Util::_try_load_one_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 267
+# 	Mouse::Util::load_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 58
+# 	Mouse::Meta::Class::superclasses(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 35
+# 	Mouse::extends(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 60
+# 	Test::Exception::lives_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 61
+#   Failed test 'extends with unsatisfied version requirement'
+#   at t/010_basics/002_require_superclasses.t line 69.
+# expecting: Regexp ((?-xism:Affe version 42 required--this is only version 23))
+# found: Invalid class name (HASH(0x9389c60)) at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 249
+# 	Mouse::Util::_try_load_one_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 267
+# 	Mouse::Util::load_class(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 58
+# 	Mouse::Meta::Class::superclasses(** Incomplete caller override detected; @DB::args were not set **) called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 35
+# 	Mouse::extends(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 68
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/010_basics/002_require_superclasses.t line 69
+# Looks like you failed 2 tests of 6.
+t/010_basics/002_require_superclasses.t ... not ok
+Unable to canonicalize the 'handles' option with DuckType at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 328
+	Mouse::Meta::Attribute::_canonicalize_handles('Mouse::Meta::Attribute=HASH(0x968fec8)', 'Mouse::Meta::TypeConstraint=HASH(0x98993d8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Attribute=HASH(0x968fec8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x9898e38)', 'duck', 'isa', 'Mouse::Meta::TypeConstraint=HASH(0x98993d8)', 'handles', 'Mouse::Meta::TypeConstraint=HASH(0x98993d8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('duck', 'isa', 'Mouse::Meta::TypeConstraint=HASH(0x98993d8)', 'handles', 'Mouse::Meta::TypeConstraint=HASH(0x98993d8)') called at t/040_type_constraints/035_duck_type_handles.t line 37
+Unable to canonicalize the 'handles' option with DuckType at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 328
+	Mouse::Meta::Attribute::_canonicalize_handles('Mouse::Meta::Attribute=HASH(0x92e4ec8)', 'Mouse::Meta::TypeConstraint=HASH(0x94ee4e8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Attribute=HASH(0x92e4ec8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x94edf48)', 'duck', 'isa', 'Mouse::Meta::TypeConstraint=HASH(0x94ee4e8)', 'handles', 'Mouse::Meta::TypeConstraint=HASH(0x94ee4e8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('duck', 'isa', 'Mouse::Meta::TypeConstraint=HASH(0x94ee4e8)', 'handles', 'Mouse::Meta::TypeConstraint=HASH(0x94ee4e8)') called at t/040_type_constraints/035_duck_type_handles.t line 38
+t/040_type_constraints/035_duck_type_handles.t ... not ok
+t/040_type_constraints/009_union_types_and_coercions.t ... ok
+The type constraint 'Foo' has already been created in Mouse::Util::TypeConstraints and cannot be created again in main ('Foo' is an implicitly created type constraint) at t/040_type_constraints/030_class_subtypes.t line 79
+# Tests were run but no plan was declared and done_testing() was not seen.
+The type constraint 'Foo' has already been created in Mouse::Util::TypeConstraints and cannot be created again in main ('Foo' is an implicitly created type constraint) at t/040_type_constraints/030_class_subtypes.t line 80
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/030_class_subtypes.t ... not ok
+The MyList[Int] constraint cannot be used, because Int doesn't subtype from a parameterizable type at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/TypeConstraint.pm line 205
+	Mouse::Meta::TypeConstraint::parameterize('Mouse::Meta::TypeConstraint=HASH(0x99f1c90)', 'Mouse::Meta::TypeConstraint=HASH(0x99f1a50)', 'MyList[Int]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 292
+	Mouse::Util::TypeConstraints::_find_or_create_parameterized_type('Mouse::Meta::TypeConstraint=HASH(0x99f1c90)', 'Mouse::Meta::TypeConstraint=HASH(0x99f1a50)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 343
+	Mouse::Util::TypeConstraints::_parse_single_type('HASH(0x98ad158)', undef) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 363
+	Mouse::Util::TypeConstraints::_parse_type('HASH(0x98ad158)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 405
+	Mouse::Util::TypeConstraints::find_or_parse_type_constraint('MyList[Int]') called at t/040_type_constraints/019_coerced_parameterized_types.t line 38
+# Tests were run but no plan was declared and done_testing() was not seen.
+The MyList[Int] constraint cannot be used, because Int doesn't subtype from a parameterizable type at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/TypeConstraint.pm line 205
+	Mouse::Meta::TypeConstraint::parameterize('Mouse::Meta::TypeConstraint=HASH(0x9561cb8)', 'Mouse::Meta::TypeConstraint=HASH(0x9561a78)', 'MyList[Int]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 292
+	Mouse::Util::TypeConstraints::_find_or_create_parameterized_type('Mouse::Meta::TypeConstraint=HASH(0x9561cb8)', 'Mouse::Meta::TypeConstraint=HASH(0x9561a78)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 343
+	Mouse::Util::TypeConstraints::_parse_single_type('HASH(0x941d158)', undef) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 363
+	Mouse::Util::TypeConstraints::_parse_type('HASH(0x941d158)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 405
+	Mouse::Util::TypeConstraints::find_or_parse_type_constraint('MyList[Int]') called at t/040_type_constraints/019_coerced_parameterized_types.t line 39
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/019_coerced_parameterized_types.t ... not ok
+Can't locate object method "coercion" via package "Mouse::Meta::TypeConstraint" at t/040_type_constraints/005_util_type_coercion.t line 54.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "coercion" via package "Mouse::Meta::TypeConstraint" at t/040_type_constraints/005_util_type_coercion.t line 55.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/005_util_type_coercion.t ... not ok
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/012_container_type_coercion.t line 17.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/012_container_type_coercion.t line 18.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/012_container_type_coercion.t ... not ok
+t/040_type_constraints/027_parameterize_from.t ... ok
+#   Failed test 'equals itself'
+#   at t/040_type_constraints/015_enum.t line 59.
+#   Failed test 'equals duplicate'
+#   at t/040_type_constraints/015_enum.t line 60.
+#   Failed test 'threw Regexp ((?-xism:You must have at least two values to enumerate through))'
+#   at t/040_type_constraints/015_enum.t line 70.
+# expecting: Regexp ((?-xism:You must have at least two values to enumerate through))
+# found: normal exit
+#   Failed test 'threw Regexp ((?-xism:You must have at least two values to enumerate through))'
+#   at t/040_type_constraints/015_enum.t line 73.
+# expecting: Regexp ((?-xism:You must have at least two values to enumerate through))
+# found: normal exit
+#   Failed test 'threw Regexp ((?-xism:Enum values must be strings, not 'HASH\(0x\w+\)'))'
+#   at t/040_type_constraints/015_enum.t line 76.
+# expecting: Regexp ((?-xism:Enum values must be strings, not 'HASH\(0x\w+\)'))
+# found: normal exit
+#   Failed test 'threw Regexp ((?-xism:Enum values must be strings, not undef))'
+#   at t/040_type_constraints/015_enum.t line 79.
+# expecting: Regexp ((?-xism:Enum values must be strings, not undef))
+# found: normal exit
+#   Failed test 'threw Regexp ((?-xism:enum called with an array reference and additional arguments\. Did you mean to parenthesize the enum call's parameters\?))'
+#   at t/040_type_constraints/015_enum.t line 91.
+# expecting: Regexp ((?-xism:enum called with an array reference and additional arguments\. Did you mean to parenthesize the enum call's parameters\?))
+# found: normal exit
+# Looks like you failed 7 tests of 116.
+t/040_type_constraints/015_enum.t ... ok (TODO)
+#   Failed test 'Type names cannot contain a dash (via subtype sugar)'
+#   at t/040_type_constraints/033_type_names.t line 27.
+# expecting: Regexp ((?-xism:contains invalid characters))
+# found: normal exit
+Syntax error in type: missing right square bracket in 'ArrayRef[In-valid]' at t/040_type_constraints/033_type_names.t line 33
+# Tests were run but no plan was declared and done_testing() was not seen.
+Syntax error in type: missing right square bracket in 'ArrayRef[In-valid]' at t/040_type_constraints/033_type_names.t line 34
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/033_type_names.t ... not ok
+#   Failed test '... [qw/foo bar baz/] failed successfully'
+#   at t/040_type_constraints/011_container_type_constraint.t line 28.
+#   Failed test '... [ 1, 2, 3, qw/foo bar/] failed successfully'
+#   at t/040_type_constraints/011_container_type_constraint.t line 29.
+#   Failed test '... { 1 => one, 2 => two, 3 => three } failed successfully'
+#   at t/040_type_constraints/011_container_type_constraint.t line 46.
+#   Failed test '... { 1 => one, 2 => two, three => 3 } failed successfully'
+#   at t/040_type_constraints/011_container_type_constraint.t line 47.
+#   Failed test '... [[ 1, 2, 3 ], [ qw/foo bar/ ]] failed successfully'
+#   at t/040_type_constraints/011_container_type_constraint.t line 66.
+# Looks like you failed 5 tests of 24.
+t/040_type_constraints/011_container_type_constraint.t ... ok (TODO)
+t/040_type_constraints/002_util_type_constraints_export.t ... ok
+#   Failed test 'the Swan doesn't quack'
+#   at t/040_type_constraints/034_duck_types.t line 72.
+# expecting: Regexp ((?-xism:Swan is missing methods 'quack'))
+# found: Attribute (duck) does not pass the type constraint because: Validation failed for 'DuckType' with value Swan=HASH(0x9a3ac40) at /home/gfx/repo/Mouse/blib/lib/Mouse/Util.pm line 360
+# 	Mouse::Util::throw_error(** Incomplete caller override detected; @DB::args were not set **) called at t/040_type_constraints/034_duck_types.t line 71
+# 	Test::Exception::throws_ok(** Incomplete caller override detected; @DB::args were not set **) called at t/040_type_constraints/034_duck_types.t line 72
+# Looks like you failed 1 test of 5.
+t/040_type_constraints/034_duck_types.t ... ok (TODO)
+Can't locate object method "find_type_for" via package "Mouse::Meta::TypeConstraint" at t/040_type_constraints/008_union_types.t line 36.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "find_type_for" via package "Mouse::Meta::TypeConstraint" at t/040_type_constraints/008_union_types.t line 37.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/008_union_types.t ... not ok
+t/040_type_constraints/017_subtyping_union_types.t ... ok
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 21, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 27, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 33, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 39, at end of line
+	(Missing operator before ?)
+syntax error at t/040_type_constraints/036_match_type_operator.t line 21, near "match_on_type @_ "
+syntax error at t/040_type_constraints/036_match_type_operator.t line 58, near "match_on_type shift"
+syntax error at t/040_type_constraints/036_match_type_operator.t line 79, near "match_on_type shift"
+BEGIN not safe after errors--compilation aborted at t/040_type_constraints/036_match_type_operator.t line 101.
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 22, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 28, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 34, at end of line
+	(Missing operator before ?)
+Array found where operator expected at t/040_type_constraints/036_match_type_operator.t line 40, at end of line
+	(Missing operator before ?)
+syntax error at t/040_type_constraints/036_match_type_operator.t line 22, near "match_on_type @_ "
+syntax error at t/040_type_constraints/036_match_type_operator.t line 59, near "match_on_type shift"
+syntax error at t/040_type_constraints/036_match_type_operator.t line 80, near "match_on_type shift"
+BEGIN not safe after errors--compilation aborted at t/040_type_constraints/036_match_type_operator.t line 102.
+t/040_type_constraints/036_match_type_operator.t ... not ok
+t/040_type_constraints/022_custom_type_errors.t ... ok
+Can't call method "name" on an undefined value at t/040_type_constraints/004_util_find_type_constraint.t line 35.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "name" on an undefined value at t/040_type_constraints/004_util_find_type_constraint.t line 36.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/004_util_find_type_constraint.t ... not ok
+t/040_type_constraints/023_types_and_undef.t ... ok
+#   Failed test 'role_type keywork works with message'
+#   at t/040_type_constraints/024_role_type_constraint.t line 39.
+# died: Can't use string ("message") as a HASH ref while "strict refs" in use at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 221.
+#   Failed test 'role attribute'
+#   at t/040_type_constraints/024_role_type_constraint.t line 43.
+#          got: undef
+#     expected: 'Foo'
+#   Failed test 'subtype of gorch'
+#   at t/040_type_constraints/024_role_type_constraint.t line 45.
+#   Failed test 'subtype of bar'
+#   at t/040_type_constraints/024_role_type_constraint.t line 47.
+#   Failed test 'subtype of Object'
+#   at t/040_type_constraints/024_role_type_constraint.t line 49.
+Can't call method "has_message" on an undefined value at t/040_type_constraints/024_role_type_constraint.t line 59.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "has_message" on an undefined value at t/040_type_constraints/024_role_type_constraint.t line 60.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/024_role_type_constraint.t ... not ok
+#   Failed test 'equals to self'
+#   at t/040_type_constraints/016_subtyping_parameterized_types.t line 35.
+#   Failed test 'parent equals to self'
+#   at t/040_type_constraints/016_subtyping_parameterized_types.t line 37.
+The MyArrayRefInt[BiggerInt] constraint cannot be used, because BiggerInt doesn't subtype from a parameterizable type at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/TypeConstraint.pm line 205
+	Mouse::Meta::TypeConstraint::parameterize('Mouse::Meta::TypeConstraint=HASH(0x8d9e258)', 'Mouse::Meta::TypeConstraint=HASH(0x8d9e348)', 'MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 292
+	Mouse::Util::TypeConstraints::_find_or_create_parameterized_type('Mouse::Meta::TypeConstraint=HASH(0x8d9e258)', 'Mouse::Meta::TypeConstraint=HASH(0x8d9e348)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 343
+	Mouse::Util::TypeConstraints::_parse_single_type('HASH(0x8d9e018)', undef) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 363
+	Mouse::Util::TypeConstraints::_parse_type('HASH(0x8d9e018)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 405
+	Mouse::Util::TypeConstraints::find_or_parse_type_constraint('MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 421
+	Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint('MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 175
+	Mouse::Util::TypeConstraints::_create_type('subtype', 'SubOfMyArrayRef', 'as', 'MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 195
+	Mouse::Util::TypeConstraints::subtype('SubOfMyArrayRef', 'as', 'MyArrayRefInt[BiggerInt]') called at t/040_type_constraints/016_subtyping_parameterized_types.t line 110
+# Tests were run but no plan was declared and done_testing() was not seen.
+The MyArrayRefInt[BiggerInt] constraint cannot be used, because BiggerInt doesn't subtype from a parameterizable type at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/TypeConstraint.pm line 205
+	Mouse::Meta::TypeConstraint::parameterize('Mouse::Meta::TypeConstraint=HASH(0x89a9210)', 'Mouse::Meta::TypeConstraint=HASH(0x89a9480)', 'MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 292
+	Mouse::Util::TypeConstraints::_find_or_create_parameterized_type('Mouse::Meta::TypeConstraint=HASH(0x89a9210)', 'Mouse::Meta::TypeConstraint=HASH(0x89a9480)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 343
+	Mouse::Util::TypeConstraints::_parse_single_type('HASH(0x89a8820)', undef) called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 363
+	Mouse::Util::TypeConstraints::_parse_type('HASH(0x89a8820)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 405
+	Mouse::Util::TypeConstraints::find_or_parse_type_constraint('MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 421
+	Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint('MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 175
+	Mouse::Util::TypeConstraints::_create_type('subtype', 'SubOfMyArrayRef', 'as', 'MyArrayRefInt[BiggerInt]') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 195
+	Mouse::Util::TypeConstraints::subtype('SubOfMyArrayRef', 'as', 'MyArrayRefInt[BiggerInt]') called at t/040_type_constraints/016_subtyping_parameterized_types.t line 111
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/016_subtyping_parameterized_types.t ... not ok
+t/040_type_constraints/006_util_type_reloading.t ... ok
+#   Failed test 'class_type keywork works with message'
+#   at t/040_type_constraints/020_class_type_constraint.t line 32.
+# died: Can't use string ("message") as a HASH ref while "strict refs" in use at /home/gfx/repo/Mouse/blib/lib/Mouse/Util/TypeConstraints.pm line 210.
+#   Failed test 'class attribute'
+#   at t/040_type_constraints/020_class_type_constraint.t line 36.
+#          got: undef
+#     expected: 'Foo'
+#   Failed test 'subtype of gorch'
+#   at t/040_type_constraints/020_class_type_constraint.t line 41.
+#   Failed test 'subtype of bar'
+#   at t/040_type_constraints/020_class_type_constraint.t line 43.
+#   Failed test 'subtype of Object'
+#   at t/040_type_constraints/020_class_type_constraint.t line 45.
+Can't call method "has_message" on an undefined value at t/040_type_constraints/020_class_type_constraint.t line 56.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't call method "has_message" on an undefined value at t/040_type_constraints/020_class_type_constraint.t line 57.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/020_class_type_constraint.t ... not ok
+t/040_type_constraints/029_define_type_twice_throws.t ... ok
+#   Failed test '... this is not a negative number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 59.
+#   Failed test '... this is not a negative number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 60.
+#          got: ''
+#     expected: undef
+#   Failed test '... $negative is a subtype of Number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 62.
+#   Failed test '... this is not a negative number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 71.
+#   Failed test '... this is not a negative number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 72.
+#          got: ''
+#     expected: undef
+#   Failed test '... $negative2 is a subtype of Number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 74.
+#   Failed test '... NaturalLessThanTen is subtype of Natural'
+#   at t/040_type_constraints/001_util_type_constraints.t line 87.
+#   Failed test '... NaturalLessThanTen is subtype of Number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 88.
+#   Failed test '... Natural is a subtype of Number'
+#   at t/040_type_constraints/001_util_type_constraints.t line 102.
+#   Failed test 'is_a_type_of predicate returns undef for non existant constraint'
+#   at t/040_type_constraints/001_util_type_constraints.t line 130.
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/001_util_type_constraints.t line 135.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Can't locate object method "get_type_constraint_registry" via package "Mouse::Util::TypeConstraints" at t/040_type_constraints/001_util_type_constraints.t line 136.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/001_util_type_constraints.t ... not ok
+#   Failed test 'can throw a proper error without Mouse being loaded by the caller'
+#   at t/040_type_constraints/032_throw_error.t line 14.
+#                   'Undefined subroutine &Mouse::Util::TypeConstraints::create_type_constraint_union called at t/040_type_constraints/032_throw_error.t line 12.
+# '
+#     doesn't match '(?-xism:You\ must\ pass\ in\ at\ least\ 2\ type\ names\ to\ make\ a\ union)'
+# Looks like you failed 1 test of 1.
+t/040_type_constraints/032_throw_error.t ... ok (TODO)
+t/010_basics/017_error_handling.t ... ok
+t/010_basics/019-destruction.t ... ok
+#   Failed test '... got the right value from mixed augment/override bar'
+#   at t/010_basics/005_override_augment_inner_super.t line 70.
+#          got: 'Bar::bar -> Foo::bar()'
+#     expected: 'Bar::bar -> Foo::bar(Baz::bar)'
+# Looks like you failed 1 test of 5.
+t/010_basics/005_override_augment_inner_super.t ... ok (TODO)
+t/010_basics/013_create.t ... ok
+t/040_type_constraints/003_util_std_type_constraints.t ... ok
+Undefined subroutine &Mouse::Util::TypeConstraints::_detect_parameterized_type_constraint called at t/040_type_constraints/014_type_notation_parser.t line 26.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Undefined subroutine &Mouse::Util::TypeConstraints::_detect_parameterized_type_constraint called at t/040_type_constraints/014_type_notation_parser.t line 27.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/014_type_notation_parser.t ... not ok
+#   Failed test 'duplicated Foo'
+#   at t/400_moose_util/005_ensure_all_roles.t line 46.
+#     Structures begin differing at:
+#          $got->[1]{methods}{meta} = CODE(0x8fe1600)
+#     $expected->[1]{methods}{meta} = CODE(0x8fc9d38)
+Undefined subroutine &main::ensure_all_roles called at t/400_moose_util/005_ensure_all_roles.t line 54.
+# Tests were run but no plan was declared and done_testing() was not seen.
+Undefined subroutine &main::ensure_all_roles called at t/400_moose_util/005_ensure_all_roles.t line 55.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/400_moose_util/005_ensure_all_roles.t ... not ok
+The Mouse::Util package does not export "resolve_metatrait_alias" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'resolve_metaclass_alias', 'resolve_metatrait_alias') called at t/400_moose_util/004_resolve_alias.t line 11
+	main::BEGIN() called at t/400_moose_util/004_resolve_alias.t line 11
+	eval {...} called at t/400_moose_util/004_resolve_alias.t line 11
+BEGIN failed--compilation aborted at t/400_moose_util/004_resolve_alias.t line 11.
+The Mouse::Util package does not export "resolve_metatrait_alias" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'resolve_metaclass_alias', 'resolve_metatrait_alias') called at t/400_moose_util/004_resolve_alias.t line 12
+	main::BEGIN() called at t/400_moose_util/004_resolve_alias.t line 12
+	eval {...} called at t/400_moose_util/004_resolve_alias.t line 12
+BEGIN failed--compilation aborted at t/400_moose_util/004_resolve_alias.t line 12.
+t/400_moose_util/004_resolve_alias.t ... not ok
+t/100_bugs/011_DEMOLISH_eats_exceptions.t ... ok
+t/100_bugs/010_immutable_n_default_x2.t ... ok
+t/070_native_traits/100_collection_with_roles.t ... ok
+natatime is an unsupported method type at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/MouseX/NativeTraits.pm line 65
+	MouseX::NativeTraits::__ANON__('CODE(0xa17d108)', 'Mouse::Meta::Class::__ANON__::1=HASH(0xa26af10)', 'HASH(0xa263810)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 355
+	Mouse::Meta::Class::__ANON__('Mouse::Meta::Class::__ANON__::1=HASH(0xa26af10)', 'HASH(0xa263810)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 308
+	Mouse::Meta::Class::__ANON__::1::_canonicalize_handles('Mouse::Meta::Class::__ANON__::1=HASH(0xa26af10)', 'HASH(0xa263810)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Class::__ANON__::1=HASH(0xa26af10)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0xa0b9998)', '_options', 'traits', 'ARRAY(0xa053158)', 'is', 'ro', 'isa', 'ArrayRef[Int]', 'init_arg', 'options', 'default', 'CODE(0xa25e0f8)', 'handles', 'HASH(0xa263810)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('_options', 'traits', 'ARRAY(0xa053158)', 'is', 'ro', 'isa', 'ArrayRef[Int]', 'init_arg', 'options', 'default', 'CODE(0xa25e0f8)', 'handles', 'HASH(0xa263810)') called at t/070_native_traits/205_trait_list.t line 44
+natatime is an unsupported method type at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/MouseX/NativeTraits.pm line 65
+	MouseX::NativeTraits::__ANON__('CODE(0x8700108)', 'Mouse::Meta::Class::__ANON__::1=HASH(0x87edf88)', 'HASH(0x87e6930)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 355
+	Mouse::Meta::Class::__ANON__('Mouse::Meta::Class::__ANON__::1=HASH(0x87edf88)', 'HASH(0x87e6930)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 308
+	Mouse::Meta::Class::__ANON__::1::_canonicalize_handles('Mouse::Meta::Class::__ANON__::1=HASH(0x87edf88)', 'HASH(0x87e6930)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Class::__ANON__::1=HASH(0x87edf88)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x863c998)', '_options', 'traits', 'ARRAY(0x85d6158)', 'is', 'ro', 'isa', 'ArrayRef[Int]', 'init_arg', 'options', 'default', 'CODE(0x87e11e0)', 'handles', 'HASH(0x87e6930)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('_options', 'traits', 'ARRAY(0x85d6158)', 'is', 'ro', 'isa', 'ArrayRef[Int]', 'init_arg', 'options', 'default', 'CODE(0x87e11e0)', 'handles', 'HASH(0x87e6930)') called at t/070_native_traits/205_trait_list.t line 45
+t/070_native_traits/205_trait_list.t ... not ok
+t/100_bugs/017_type_constraint_messages.t ... ok
+#   Failed test 'error when sort_in_place receives a non-coderef argument'
+#   at t/070_native_traits/202_trait_array.t line 154.
+# expecting: Regexp ((?-xism:Argument must be a code reference))
+# found: Can't use string ("foo") as a subroutine ref while "strict refs" in use at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/MouseX/NativeTraits/MethodProvider/ArrayRef.pm line 104.
+#   Failed test 'The object does Mouse::Meta::Attribute::Native::Trait::Array'
+#   at t/070_native_traits/202_trait_array.t line 249.
+# Looks like you failed 2 tests of 68.
+t/070_native_traits/202_trait_array.t ... ok (TODO)
+The Mouse::Util package does not export "add_method_modifier" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'add_method_modifier') called at t/400_moose_util/008_method_mod_args.t line 9
+	main::BEGIN() called at t/400_moose_util/008_method_mod_args.t line 9
+	eval {...} called at t/400_moose_util/008_method_mod_args.t line 9
+BEGIN failed--compilation aborted at t/400_moose_util/008_method_mod_args.t line 9.
+The Mouse::Util package does not export "add_method_modifier" at /home/gfx/repo/Mouse/blib/lib/Mouse/Exporter.pm line 208
+	Mouse::Exporter::do_import('Mouse::Util', 'add_method_modifier') called at t/400_moose_util/008_method_mod_args.t line 10
+	main::BEGIN() called at t/400_moose_util/008_method_mod_args.t line 10
+	eval {...} called at t/400_moose_util/008_method_mod_args.t line 10
+BEGIN failed--compilation aborted at t/400_moose_util/008_method_mod_args.t line 10.
+t/400_moose_util/008_method_mod_args.t ... not ok
+#   Failed test 'The object does Mouse::Meta::Attribute::Native::Trait::Hash'
+#   at t/070_native_traits/203_trait_hash.t line 150.
+# Looks like you failed 1 test of 49.
+t/070_native_traits/203_trait_hash.t ... ok (TODO)
+t/070_native_traits/208_trait_bool.t ... ok
+t/070_native_traits/209_trait_code.t ... ok
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Bool;'
+#   at t/070_native_traits/000_load.t line 14.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Bool'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Bool.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 8) line 2.
+# BEGIN failed--compilation aborted at (eval 8) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Hash;'
+#   at t/070_native_traits/000_load.t line 15.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Hash'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Hash.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 9) line 2.
+# BEGIN failed--compilation aborted at (eval 9) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Array;'
+#   at t/070_native_traits/000_load.t line 16.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Array'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Array.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 10) line 2.
+# BEGIN failed--compilation aborted at (eval 10) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Counter;'
+#   at t/070_native_traits/000_load.t line 17.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Counter'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Counter.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 11) line 2.
+# BEGIN failed--compilation aborted at (eval 11) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Number;'
+#   at t/070_native_traits/000_load.t line 18.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Number'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Number.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 12) line 2.
+# BEGIN failed--compilation aborted at (eval 12) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::String;'
+#   at t/070_native_traits/000_load.t line 19.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::String'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/String.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 13) line 2.
+# BEGIN failed--compilation aborted at (eval 13) line 2.
+# Looks like you failed 6 tests of 7.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Bool;'
+#   at t/070_native_traits/000_load.t line 15.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Bool'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Bool.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 8) line 2.
+# BEGIN failed--compilation aborted at (eval 8) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Hash;'
+#   at t/070_native_traits/000_load.t line 16.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Hash'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Hash.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 9) line 2.
+# BEGIN failed--compilation aborted at (eval 9) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Array;'
+#   at t/070_native_traits/000_load.t line 17.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Array'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Array.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 10) line 2.
+# BEGIN failed--compilation aborted at (eval 10) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Counter;'
+#   at t/070_native_traits/000_load.t line 18.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Counter'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Counter.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 11) line 2.
+# BEGIN failed--compilation aborted at (eval 11) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::Number;'
+#   at t/070_native_traits/000_load.t line 19.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::Number'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/Number.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 12) line 2.
+# BEGIN failed--compilation aborted at (eval 12) line 2.
+#   Failed test 'use Mouse::Meta::Attribute::Native::Trait::String;'
+#   at t/070_native_traits/000_load.t line 20.
+#     Tried to use 'Mouse::Meta::Attribute::Native::Trait::String'.
+#     Error:  Can't locate Mouse/Meta/Attribute/Native/Trait/String.pm in @INC (@INC contains: t/lib /home/gfx/repo/Mouse/blib/arch /home/gfx/repo/Mouse/blib/lib /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 . /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2 /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2/i686-linux /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/5.12.2 .) at (eval 13) line 2.
+# BEGIN failed--compilation aborted at (eval 13) line 2.
+# Looks like you failed 6 tests of 7.
+t/070_native_traits/000_load.t ... not ok
+#   Failed test '... our class no longer has the counter method'
+#   at t/070_native_traits/020_remove_attribute.t line 47.
+#   Failed test '... our class no longer has the dec_counter method'
+#   at t/070_native_traits/020_remove_attribute.t line 47.
+#   Failed test '... our class no longer has the inc_counter method'
+#   at t/070_native_traits/020_remove_attribute.t line 47.
+#   Failed test '... our class no longer has the reset_counter method'
+#   at t/070_native_traits/020_remove_attribute.t line 47.
+# Looks like you failed 4 tests of 11.
+t/070_native_traits/020_remove_attribute.t ... ok (TODO)
+set is an unsupported method type at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/MouseX/NativeTraits.pm line 65
+	MouseX::NativeTraits::__ANON__('CODE(0x849f9d8)', 'Mouse::Meta::Class::__ANON__::1=HASH(0x856d840)', 'HASH(0x856d240)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 355
+	Mouse::Meta::Class::__ANON__('Mouse::Meta::Class::__ANON__::1=HASH(0x856d840)', 'HASH(0x856d240)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 308
+	Mouse::Meta::Class::__ANON__::1::_canonicalize_handles('Mouse::Meta::Class::__ANON__::1=HASH(0x856d840)', 'HASH(0x856d240)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Class::__ANON__::1=HASH(0x856d840)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x83dc248)', 'integer', 'traits', 'ARRAY(0x8376158)', 'is', 'ro', 'isa', 'Int', 'default', 5, 'handles', 'HASH(0x856d240)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('integer', 'traits', 'ARRAY(0x8376158)', 'is', 'ro', 'isa', 'Int', 'default', 5, 'handles', 'HASH(0x856d240)') called at t/070_native_traits/204_trait_number.t line 16
+set is an unsupported method type at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/MouseX/NativeTraits.pm line 65
+	MouseX::NativeTraits::__ANON__('CODE(0x98e3a38)', 'Mouse::Meta::Class::__ANON__::1=HASH(0x99b19a8)', 'HASH(0x99b13a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 355
+	Mouse::Meta::Class::__ANON__('Mouse::Meta::Class::__ANON__::1=HASH(0x99b19a8)', 'HASH(0x99b13a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 308
+	Mouse::Meta::Class::__ANON__::1::_canonicalize_handles('Mouse::Meta::Class::__ANON__::1=HASH(0x99b19a8)', 'HASH(0x99b13a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Class::__ANON__::1=HASH(0x99b19a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x9820270)', 'integer', 'traits', 'ARRAY(0x97ba158)', 'is', 'ro', 'isa', 'Int', 'default', 5, 'handles', 'HASH(0x99b13a8)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('integer', 'traits', 'ARRAY(0x97ba158)', 'is', 'ro', 'isa', 'Int', 'default', 5, 'handles', 'HASH(0x99b13a8)') called at t/070_native_traits/204_trait_number.t line 17
+t/070_native_traits/204_trait_number.t ... not ok
+#   Failed test 'The object does Mouse::Meta::Attribute::Native::Trait::String'
+#   at t/070_native_traits/207_trait_string.t line 94.
+# Looks like you failed 1 test of 22.
+t/070_native_traits/207_trait_string.t ... ok (TODO)
+t/100_bugs/004_subclass_use_base_bug.t ... ok
+t/100_bugs/030_coerce_without_coercion.t ... ok
+#   Failed test 'The object does Mouse::Meta::Attribute::Native::Trait::Counter'
+#   at t/070_native_traits/201_trait_counter.t line 66.
+# Looks like you failed 1 test of 16.
+t/070_native_traits/201_trait_counter.t ... ok (TODO)
+t/300_immutable/003_immutable_meta_class.t ... ok
+t/060_compat/001_module_refresh_compat.t ... ok
+t/300_immutable/012_default_values.t ... ok
+#   Failed test 'metaclass is immutable (immutable class)'
+#   at t/300_immutable/014_immutable_metaclass_with_traits.t line 34.
+# Looks like you failed 1 test of 14.
+t/300_immutable/014_immutable_metaclass_with_traits.t ... ok (TODO)
+t/300_immutable/013_immutable_roundtrip.t ... ok
+t/300_immutable/002_apply_roles_to_immutable.t ... ok
+t/300_immutable/011_constructor_is_wrapped.t ... ok
+#   Failed test 'Add Role is unlocked'
+#   at t/300_immutable/001_immutable_moose.t line 57.
+# died: Can't locate object method "add_role" via package "Mouse::Meta::Class" at t/300_immutable/001_immutable_moose.t line 57.
+# Looks like you failed 1 test of 15.
+t/300_immutable/001_immutable_moose.t ... ok (TODO)
+t/300_immutable/008_immutable_constructor_error.t ... ok
+t/300_immutable/004_inlined_constructors_n_types.t ... ok
+t/300_immutable/005_multiple_demolish_inline.t ... ok
+t/300_immutable/010_constructor_is_not_moose.t ... ok
+#   Failed test '... Bar is not Mouse::Object subclass'
+#   at t/060_compat/002_moose_respects_base.t line 45.
+# Looks like you failed 1 test of 6.
+t/060_compat/002_moose_respects_base.t ... ok (TODO)
+t/070_native_traits/010_array_from_role.t ... ok
+You inherit from non-Mouse class (SubClassUseBase), but it is unlikely to work correctly. Please concider to use MouseX::Foreign at t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t line 30
+#   Failed test 'SubSubClassUseBase meta metaclass does the My::Role role'
+#   at t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t line 36.
+Undefined subroutine &Mouse::Util::remove_metaclass_by_name called at t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t line 44.
+# Tests were run but no plan was declared and done_testing() was not seen.
+You inherit from non-Mouse class (SubClassUseBase), but it is unlikely to work correctly. Please concider to use MouseX::Foreign at t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t line 32
+Undefined subroutine &Mouse::Util::remove_metaclass_by_name called at t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t line 46.
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t ... not ok
+t/300_immutable/009_buildargs.t ... ok
+t/300_immutable/007_immutable_trigger_from_constructor.t ... ok
+t/500_test_moose/004_test_moose_meta_ok.t ... ok
+t/500_test_moose/002_test_moose_does_ok.t ... ok
+t/500_test_moose/001_test_moose.t ... ok
+Unable to canonicalize the 'handles' option with Gorch at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 328
+	Mouse::Meta::Attribute::_canonicalize_handles('Mouse::Meta::Attribute=HASH(0x83b6348)', 'Gorch') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Attribute=HASH(0x83b6348)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0x83a50f0)', 'oink', 'is', 'rw', 'handles', 'Gorch', 'default', 'CODE(0x83a5250)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('oink', 'is', 'rw', 'handles', 'Gorch', 'default', 'CODE(0x83a5250)') called at t/600_todo_tests/002_various_role_features.t line 111
+# Tests were run but no plan was declared and done_testing() was not seen.
+Unable to canonicalize the 'handles' option with Gorch at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 328
+	Mouse::Meta::Attribute::_canonicalize_handles('Mouse::Meta::Attribute=HASH(0xa31e440)', 'Gorch') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Attribute.pm line 280
+	Mouse::Meta::Attribute::install_accessors('Mouse::Meta::Attribute=HASH(0xa31e440)') called at /home/gfx/repo/Mouse/blib/lib/Mouse/Meta/Class.pm line 231
+	Mouse::Meta::Class::add_attribute('Mouse::Meta::Class=HASH(0xa30d200)', 'oink', 'is', 'rw', 'handles', 'Gorch', 'default', 'CODE(0xa30d360)') called at /home/gfx/repo/Mouse/blib/lib/Mouse.pm line 52
+	Mouse::has('oink', 'is', 'rw', 'handles', 'Gorch', 'default', 'CODE(0xa30d360)') called at t/600_todo_tests/002_various_role_features.t line 112
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/600_todo_tests/002_various_role_features.t ... not ok
+t/500_test_moose/005_with_immutable.t ... ok
+t/600_todo_tests/005_moose_and_threads.t ... ok
+#   Failed test 'around new called on Bar->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 47.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called on Gorch->new (mutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 48.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called Zoink->new (mutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 49.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called on Bar->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 47.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called on Gorch->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 48.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called Zoink->new (mutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 49.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called on Bar->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 47.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called on Gorch->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 48.
+#          got: undef
+#     expected: '42'
+#   Failed test 'around new called Zoink->new (immutable)'
+#   at t/600_todo_tests/003_immutable_n_around.t line 49.
+#          got: undef
+#     expected: '42'
+# Looks like you failed 9 tests of 20.
+t/600_todo_tests/003_immutable_n_around.t ... ok (TODO)
+Can't call method "name" on unblessed reference at t/600_todo_tests/004_role_insertion_order.t line 31.
+Can't call method "name" on unblessed reference at t/600_todo_tests/004_role_insertion_order.t line 32.
+t/600_todo_tests/004_role_insertion_order.t ... not ok
+t/200_examples/004_example_w_DCS.t ... ok
+t/600_todo_tests/001_exception_reflects_failed_constraint.t ... ok
+t/200_examples/001_example.t ... ok
+t/200_examples/003_example.t ... ok
+t/200_examples/002_example_Moose_POOP.t ... ok
+t/200_examples/005_example_w_TestDeep.t ... ok
+t/050_metaclasses/051_metarole_on_anon.t ... ok
+#   Failed test '... but the original method is from our package'
+#   at t/030_roles/007_roles_and_req_method_edge_cases.t line 143.
+#          got: undef
+#     expected: 'Class::ProvideFoo::Before4'
+# Looks like you failed 1 test of 15.
+#          got: undef
+#     expected: 'Class::ProvideFoo::Before4'
+# Looks like you failed 1 test of 15.
+t/030_roles/007_roles_and_req_method_edge_cases.t ... not ok
+t/010_basics/020-global-destruction.t ... ok
+t/010_basics/014_create_anon.t ... ok
+t/040_type_constraints/025_type_coersion_on_lazy_attributes.t ... ok
+t/400_moose_util/007_apply_roles.t ... ok
+#   Failed test 'Foo equals Foo'
+#   at t/040_type_constraints/010_misc_type_tests.t line 86.
+# Looks like you failed 1 test of 15.
+t/040_type_constraints/010_misc_type_tests.t ... ok (TODO)
+t/020_attributes/015_attribute_traits.t ... ok
+#   Failed test 'DemolishAll w/ explicit DEMOLISH sub'
+#   at t/100_bugs/021_DEMOLISHALL_shortcutted.t line 29.
+#          got: '0'
+#     expected: '1'
+#   Failed test 'DemolishAll wo/ explicit DEMOLISH sub'
+#   at t/100_bugs/021_DEMOLISHALL_shortcutted.t line 33.
+#          got: '0'
+#     expected: '1'
+# Looks like you failed 2 tests of 2.
+t/100_bugs/021_DEMOLISHALL_shortcutted.t ... ok (TODO)
+t/100_bugs/027_constructor_object_overload.t ... ok
+t/600_todo_tests/008_replacing_super_methods.t ... ok
+The metaclass (Mouse::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'Mouse::Meta::Class') called at t/060_compat/003_foreign_inheritence.t line 42
+	Bucket::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 42
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 42
+BEGIN failed--compilation aborted at t/060_compat/003_foreign_inheritence.t line 42.
+The metaclass (Mouse::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'Mouse::Meta::Class') called at t/060_compat/003_foreign_inheritence.t line 43
+	Bucket::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 43
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 43
+BEGIN failed--compilation aborted at t/060_compat/003_foreign_inheritence.t line 43.
+t/060_compat/003_foreign_inheritence.t ... not ok
+t/300_immutable/016_inline_fallbacks.t ... ok
+t/000_load.t ... ok
+#   Failed test 'equals self'
+#   at t/040_type_constraints/021_maybe_type_constraint.t line 18.
+#   Failed test 'parent is Maybe'
+#   at t/040_type_constraints/021_maybe_type_constraint.t line 21.
+#   Failed test 'equal to clone'
+#   at t/040_type_constraints/021_maybe_type_constraint.t line 22.
+The type constraint 'Bar' has already been created in Mouse::Util::TypeConstraints and cannot be created again in Foo ('Bar' is an implicitly created type constraint) at t/040_type_constraints/021_maybe_type_constraint.t line 40
+# Tests were run but no plan was declared and done_testing() was not seen.
+The type constraint 'Bar' has already been created in Mouse::Util::TypeConstraints and cannot be created again in Foo ('Bar' is an implicitly created type constraint) at t/040_type_constraints/021_maybe_type_constraint.t line 41
+# Tests were run but no plan was declared and done_testing() was not seen.
+t/040_type_constraints/021_maybe_type_constraint.t ... not ok
+The metaclass (ProtoMoose::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'ProtoMoose::Meta::Class') called at t/200_examples/006_example_Protomoose.t line 164
+	ProtoMoose::Object::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 164
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 164
+BEGIN failed--compilation aborted at t/200_examples/006_example_Protomoose.t line 164.
+The metaclass (ProtoMoose::Meta::Class) must be derived from Class::MOP::Class at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 30
+	metaclass::import('metaclass', 'ProtoMoose::Meta::Class') called at t/200_examples/006_example_Protomoose.t line 165
+	ProtoMoose::Object::BEGIN() called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 165
+	eval {...} called at /home/gfx/perl5/perlbrew/perls/perl-5.12.2/lib/site_perl/5.12.2/i686-linux/metaclass.pm line 165
+BEGIN failed--compilation aborted at t/200_examples/006_example_Protomoose.t line 165.
+t/200_examples/006_example_Protomoose.t ... not ok
+t/200_examples/008_record_set_iterator.t ... ok
+#   Failed test 'Did moose overload DESTROY?'
+#   at t/300_immutable/015_immutable_destroy.t line 22.
+#          got: undef
+#     expected: 'SUSAN'
+# Looks like you failed 1 test of 1.
+t/300_immutable/015_immutable_destroy.t ... ok (TODO)
+t/200_examples/007_Child_Parent_attr_inherit.t ... ok
+t/070_native_traits/300_array_subtypes.t ... ok
+t/500_test_moose/003_test_moose_has_attribute_ok.t ... ok
+t/600_todo_tests/006_required_role_accessors.t ... ok
+68 % (173/252) succeed.
