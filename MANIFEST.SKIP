@@ -38,7 +38,7 @@
 # Moose specific tests
 xt/compat
 xt/external
-t/.*/failing
+failing
 
 ^TODO$
 nytprof
