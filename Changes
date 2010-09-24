@@ -1,6 +1,6 @@
 Revision history for Mouse
 
-0.70_01
+0.71 Fri Sep 24 19:51:04 2010
     [CHANGES]
     * Inheritance from non-Mouse classes now produces warnings.
       Use MouseX::Foreign if you want this type of inheritance.
