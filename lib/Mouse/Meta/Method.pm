@@ -9,9 +9,9 @@ use overload
     fallback => 1,
 ;
 
-sub wrap{
+sub wrap {
     my $class = shift;
-
+    unshift @_, 'body' if @_ % 2 != 0;
     return $class->_new(@_);
 }
 
