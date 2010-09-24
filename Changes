@@ -8,10 +8,6 @@ Revision history for Mouse
       It doesn not affect public APIs, but internals are radically
       changed. For users, using Mouse without roles should consume
       less memory.
-    * Moose compatibility tests are now generated from the Moose
-      distribution. Currently 68% of these test files succeed,
-      although some tests (e.g. related to metaclass.pm) will never
-      passed.
 
     [BUG FIXES]
     * Meta class reinitialization caused by Mouse::Util::MetaRole

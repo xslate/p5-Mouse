@@ -10,7 +10,7 @@ my($moose_dir, $result) = @ARGV;
 unless(defined $moose_dir and -d "$moose_dir/t") {
     die "Usage: $0 Moose-dir [result-dir]\n";
 }
-$result //= 't';
+$result //= 'Moose-t';
 
 my @tests;
 sub wanted {

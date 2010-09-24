@@ -1,9 +1,0 @@
-Notes for tests
-
-Moose compatibility tests are automatically generated from the
-Moose distribution, so you must not edit these tests. Instead
-add new tests to t/001_mouse/ or tests about bug reports to
-900/mouse_bugs/.
-
-test_status.log indicates the failing test status, and
-these failing tests are in t-failing/.

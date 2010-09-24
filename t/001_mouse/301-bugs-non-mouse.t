@@ -1,11 +1,11 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More 'no_plan';
 use Test::Exception;
-my $warn = '';
-BEGIN { $SIG{__WARN__} = sub { $warn .= "@_" } }
+
 {
     package Foo;
     use Mouse;
@@ -29,9 +29,6 @@ BEGIN { $SIG{__WARN__} = sub { $warn .= "@_" } }
     my $g = Gorch->new;
 
     is( $g->foo, "the default", "inherited attribute" );
-    is( $g->oink, "oink",       "inherited method from a non-Mouse class");
 }
 
-is $warn, '', 'produces no warnings';
-done_testing;
 
