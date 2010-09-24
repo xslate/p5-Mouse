@@ -112,10 +112,13 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
             mPUSHs(newSVpvs("depth"));
             mPUSHi(-1);
         }
-
         PUTBACK;
-
-        call_method("throw_error", G_VOID);
+        if(SvOK(metaobject)) {
+            call_method("throw_error", G_VOID);
+        }
+        else {
+            call_pv("Mouse::Util::throw_error", G_VOID);
+        }
         croak("throw_error() did not throw the error (%"SVf")", message);
     }
 }
