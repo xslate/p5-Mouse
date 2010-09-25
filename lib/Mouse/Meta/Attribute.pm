@@ -137,22 +137,6 @@ sub interpolate_class{
     return( $class, @traits );
 }
 
-sub _coerce_and_verify {
-    #my($self, $value, $instance) = @_;
-    my($self, $value) = @_;
-
-    my $type_constraint = $self->{type_constraint};
-    return $value if !defined $type_constraint;
-
-    if ($self->should_coerce && $type_constraint->has_coercion) {
-        $value = $type_constraint->coerce($value);
-    }
-
-    $self->verify_against_type_constraint($value);
-
-    return $value;
-}
-
 sub verify_against_type_constraint {
     my ($self, $value) = @_;
 
