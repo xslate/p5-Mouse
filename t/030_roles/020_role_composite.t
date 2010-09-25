@@ -7,7 +7,6 @@ use strict;
 use warnings;
 
 use Test::More;
-$TODO = q{Mouse is not yet completed};
 use Test::Exception;
 
 use Mouse::Meta::Role::Application;
@@ -36,9 +35,9 @@ use Mouse::Meta::Role::Composite;
         ]
     );
     isa_ok($c, 'Mouse::Meta::Role::Composite');
-
+    { local $TODO = 'M::M::R::Compisite name';
     is($c->name, 'Role::Foo|Role::Bar|Role::Baz', '... got the composite role name');
-
+    }
     is_deeply($c->get_roles, [
         Role::Foo->meta,
         Role::Bar->meta,
@@ -51,10 +50,11 @@ use Mouse::Meta::Role::Composite;
             Role::Bar
             Role::Baz
         );
-
+    { local $TODO = 'cannot apply a composite role directly';
     lives_ok {
         Mouse::Meta::Role::Application->new->apply($c);
     } '... this composed okay';
+    }
 
     ##... now nest 'em
     {
@@ -65,9 +65,9 @@ use Mouse::Meta::Role::Composite;
             ]
         );
         isa_ok($c2, 'Mouse::Meta::Role::Composite');
-
+        { local $TODO = 'name';
         is($c2->name, 'Role::Foo|Role::Bar|Role::Baz|Role::Gorch', '... got the composite role name');
-
+        }
         is_deeply($c2->get_roles, [
             $c,
             Role::Gorch->meta,

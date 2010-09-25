@@ -4,6 +4,26 @@ use Mouse::Meta::Role;
 use Mouse::Meta::Role::Application;
 our @ISA = qw(Mouse::Meta::Role);
 
+sub new {
+    my $class = shift;
+    my $args  = $class->Mouse::Object::BUILDARGS(@_);
+    my $roles = delete $args->{roles};
+    my $self  = $class->create_anon_role(%{$args});
+    foreach my $role_spec(@{$roles}) {
+        my($role, $args) = ref($role_spec) eq 'ARRAY'
+            ? @{$role_spec}
+            : ($role_spec, {});
+        $role->apply($self, %{$args});
+    }
+    return $self;
+}
+
+sub apply_params {
+    #my($self, $role_params) = @_;
+    # TODO
+    return $_[0];
+}
+
 sub get_method_list {
     my($self) = @_;
     return keys %{ $self->{methods} };

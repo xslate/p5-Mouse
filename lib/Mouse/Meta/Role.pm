@@ -75,13 +75,7 @@ sub combine {
     my($self, @role_specs) = @_;
 
     require 'Mouse/Meta/Role/Composite.pm';
-    my $composite = Mouse::Meta::Role::Composite->create_anon_role();
-
-    foreach my $role_spec (@role_specs) {
-        my($role, $args) = @{$role_spec};
-        $role->apply($composite, %{$args});
-    }
-    return $composite;
+    return Mouse::Meta::Role::Composite->new(roles => \@role_specs);
 }
 
 sub add_before_method_modifier;
