@@ -80,7 +80,7 @@ dies_ok {
 
 
 {
-    package Test::MooseX::Types::Maybe;
+    package Test::MouseX::Types::Maybe;
     use Mouse;
 
     has 'Maybe_Int' => (is=>'rw', isa=>'Maybe[Int]');
@@ -90,7 +90,7 @@ dies_ok {
     has 'Maybe_HashRefInt' => (is=>'rw', isa=>'Maybe[HashRef[Int]]');
 }
 
-ok my $obj = Test::MooseX::Types::Maybe->new
+ok my $obj = Test::MouseX::Types::Maybe->new
  => 'Create good test object';
 
 ##  Maybe[Int]

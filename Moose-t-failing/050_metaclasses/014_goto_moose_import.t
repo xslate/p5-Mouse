@@ -14,7 +14,7 @@ use Test::Exception;
 # &Mouse::import. we want to make sure it still works.
 
 {
-    package MooseAlike1;
+    package MouseAlike1;
 
     use strict;
     use warnings;
@@ -33,23 +33,23 @@ use Test::Exception;
 {
     package Foo;
 
-    MooseAlike1->import();
+    MouseAlike1->import();
 
     ::lives_ok( sub { has( 'size', is => 'bare' ) },
-                'has was exported via MooseAlike1' );
+                'has was exported via MouseAlike1' );
 
-    MooseAlike1->unimport();
+    MouseAlike1->unimport();
 }
 
 ok( ! Foo->can('has'),
-    'No has sub in Foo after MooseAlike1 is unimported' );
+    'No has sub in Foo after MouseAlike1 is unimported' );
 ok( Foo->can('meta'),
     'Foo has a meta method' );
 isa_ok( Foo->meta(), 'Mouse::Meta::Class' );
 
 
 {
-    package MooseAlike2;
+    package MouseAlike2;
 
     use strict;
     use warnings;
@@ -70,17 +70,17 @@ isa_ok( Foo->meta(), 'Mouse::Meta::Class' );
 {
     package Bar;
 
-    MooseAlike2->import();
+    MouseAlike2->import();
 
     ::lives_ok( sub { has( 'size', is => 'bare' ) },
-                'has was exported via MooseAlike2' );
+                'has was exported via MouseAlike2' );
 
-    MooseAlike2->unimport();
+    MouseAlike2->unimport();
 }
 
 
 ok( ! Bar->can('has'),
-          'No has sub in Bar after MooseAlike2 is unimported' );
+          'No has sub in Bar after MouseAlike2 is unimported' );
 ok( Bar->can('meta'),
     'Bar has a meta method' );
 isa_ok( Bar->meta(), 'Mouse::Meta::Class' );

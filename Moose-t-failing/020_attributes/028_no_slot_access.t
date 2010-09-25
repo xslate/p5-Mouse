@@ -15,7 +15,7 @@ use warnings;
 }
 
 {
-    package MooseX::SomeAwesomeDBFields;
+    package MouseX::SomeAwesomeDBFields;
 
     # implementation of methods not called in the example deliberately
     # omitted
@@ -69,7 +69,7 @@ $TODO = q{Mouse is not yet completed};
 
     Mouse::Util::MetaRole::apply_metaroles(
         for             => __PACKAGE__,
-        class_metaroles => { instance => ['MooseX::SomeAwesomeDBFields'] },
+        class_metaroles => { instance => ['MouseX::SomeAwesomeDBFields'] },
     );
 
     lives_ok {

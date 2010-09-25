@@ -476,7 +476,7 @@ use Mouse::Util::MetaRole;
 # This tests applying meta roles to a metaclass's metaclass. This is
 # completely insane, but is exactly what happens with
 # Fey::Meta::Class::Table. It's a subclass of Mouse::Meta::Class
-# itself, and then it _uses_ MooseX::ClassAttribute, so the metaclass
+# itself, and then it _uses_ MouseX::ClassAttribute, so the metaclass
 # for Fey::Meta::Class::Table does a role.
 #
 # At one point this caused a metaclass incompatibility error down
@@ -565,7 +565,7 @@ use Mouse::Util::MetaRole;
 }
 
 {
-    package ExportsMoose;
+    package ExportsMouse;
 
     Mouse::Exporter->setup_import_methods(
         also => 'Mouse',
@@ -585,8 +585,8 @@ use Mouse::Util::MetaRole;
 }
 
 lives_ok {
-    package UsesExportedMoose;
-    ExportsMoose->import;
+    package UsesExportedMouse;
+    ExportsMouse->import;
 } 'import module which loads a role from disk during init_meta';
 
 {

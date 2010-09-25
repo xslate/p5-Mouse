@@ -24,7 +24,7 @@ Well cause merlyn asked if it could :)
 ## make some metaclasses
 
 {
-    package ProtoMoose::Meta::Instance;
+    package ProtoMouse::Meta::Instance;
     use Mouse;
 
     BEGIN { extends 'Mouse::Meta::Instance' };
@@ -36,7 +36,7 @@ Well cause merlyn asked if it could :)
 }
 
 {
-    package ProtoMoose::Meta::Method::Accessor;
+    package ProtoMouse::Meta::Method::Accessor;
     use Mouse;
 
     BEGIN { extends 'Mouse::Meta::Method' };
@@ -112,16 +112,16 @@ Well cause merlyn asked if it could :)
 }
 
 {
-    package ProtoMoose::Meta::Attribute;
+    package ProtoMouse::Meta::Attribute;
     use Mouse;
 
     BEGIN { extends 'Mouse::Meta::Attribute' };
 
-    sub accessor_metaclass { 'ProtoMoose::Meta::Method::Accessor' }
+    sub accessor_metaclass { 'ProtoMouse::Meta::Method::Accessor' }
 }
 
 {
-    package ProtoMoose::Meta::Class;
+    package ProtoMouse::Meta::Class;
     use Mouse;
 
     BEGIN { extends 'Mouse::Meta::Class' };
@@ -140,8 +140,8 @@ Well cause merlyn asked if it could :)
         # not work here, have to investigate
         # it later - SL
         (shift)->SUPER::initialize(@_,
-            instance_metaclass  => 'ProtoMoose::Meta::Instance',
-            attribute_metaclass => 'ProtoMoose::Meta::Attribute',
+            instance_metaclass  => 'ProtoMouse::Meta::Instance',
+            attribute_metaclass => 'ProtoMouse::Meta::Attribute',
         );
     }
 
@@ -161,8 +161,8 @@ Well cause merlyn asked if it could :)
 }
 
 {
-    package ProtoMoose::Object;
-    use metaclass 'ProtoMoose::Meta::Class';
+    package ProtoMouse::Object;
+    use metaclass 'ProtoMouse::Meta::Class';
     use Mouse;
 
     sub new {
@@ -183,7 +183,7 @@ Well cause merlyn asked if it could :)
     package Foo;
     use Mouse;
 
-    extends 'ProtoMoose::Object';
+    extends 'ProtoMouse::Object';
 
     has 'bar' => (is => 'rw');
 }
@@ -202,17 +202,17 @@ Well cause merlyn asked if it could :)
 ## ------------------------------------------------------------------
 ## Check that metaclasses are working/inheriting properly
 
-foreach my $class (qw/ProtoMoose::Object Foo Bar/) {
+foreach my $class (qw/ProtoMouse::Object Foo Bar/) {
     isa_ok($class->meta,
-    'ProtoMoose::Meta::Class',
+    'ProtoMouse::Meta::Class',
     '... got the right metaclass for ' . $class . ' ->');
 
     is($class->meta->instance_metaclass,
-    'ProtoMoose::Meta::Instance',
+    'ProtoMouse::Meta::Instance',
     '... got the right instance meta for ' . $class);
 
     is($class->meta->attribute_metaclass,
-    'ProtoMoose::Meta::Attribute',
+    'ProtoMouse::Meta::Attribute',
     '... got the right attribute meta for ' . $class);
 }
 

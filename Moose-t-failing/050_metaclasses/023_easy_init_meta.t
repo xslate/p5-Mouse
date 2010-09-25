@@ -52,7 +52,7 @@ use Test::Mouse qw(does_ok);
 }
 
 {
-    package Foo::Exporter::WithMoose;
+    package Foo::Exporter::WithMouse;
     use Mouse ();
     use Mouse::Exporter;
 
@@ -78,7 +78,7 @@ use Test::Mouse qw(does_ok);
 
 {
     package Foo2;
-    Foo::Exporter::WithMoose->import;
+    Foo::Exporter::WithMouse->import;
 
     has(foo => (is => 'ro'));
 
@@ -98,7 +98,7 @@ use Test::Mouse qw(does_ok);
 }
 
 {
-    package Foo::Exporter::WithMooseRole;
+    package Foo::Exporter::WithMouseRole;
     use Mouse::Role ();
     use Mouse::Exporter;
 
@@ -123,7 +123,7 @@ use Test::Mouse qw(does_ok);
 
 {
     package Foo2::Role;
-    Foo::Exporter::WithMooseRole->import;
+    Foo::Exporter::WithMouseRole->import;
 
     ::isa_ok(Foo2::Role->meta, 'Mouse::Meta::Role');
     ::does_ok(Foo2::Role->meta, 'Foo::Trait::Class');
