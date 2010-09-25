@@ -684,7 +684,7 @@ void
 add_metaclass_accessor(SV* self, SV* name)
 CODE:
 {
-    SV* const klass = mouse_call0(self, mouse_name);
+    SV* const klass = mcall0(self, mouse_name);
     const char* fq_name = form("%"SVf"::%"SVf, klass, name);
     STRLEN keylen;
     const char* const key = SvPV_const(name, keylen);
