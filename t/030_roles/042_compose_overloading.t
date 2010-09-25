@@ -22,7 +22,4 @@ use Test::More tests => 1;
 
 my $bar = Bar->new;
 
-TODO: {
-    local $TODO = "the special () method isn't properly composed into the class";
-    is("$bar", 42, 'overloading can be composed');
-}
+is("$bar", 42, 'overloading can be composed');

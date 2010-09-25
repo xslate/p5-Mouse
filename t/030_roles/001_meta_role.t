@@ -59,7 +59,6 @@ is_deeply(
 ok($foo_role->has_attribute('bar'), '... FooRole does have the bar attribute');
 
 {
-    local $TODO = 'Mouse does not support role attributes';
     is_deeply(
         join('|', %{$foo_role->get_attribute('bar')}),
         join('|', %{+{ is => 'rw', isa => 'Foo' }}),

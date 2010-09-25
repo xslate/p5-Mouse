@@ -23,8 +23,6 @@ use Test::More;
 
     use Test::More; # for $TODO
 
-    local $TODO = 'UNIVERSAL methods should be wrappable';
-
     ::lives_ok { with 'FakeBar' } 'applied role';
 
     my $foo = Foo->new;
