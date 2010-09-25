@@ -14,6 +14,7 @@ $result //= 'Moose-t';
 
 my @tests;
 sub wanted {
+    return if /native_traits/;
     (my $mouse_test         = $_) =~ s{\A $moose_dir/t }{$result}xmso;
     (my $mouse_failing_test = $_) =~ s{\A $moose_dir/t }{$result-failing}xmso;
     if( -d $_ ) {
