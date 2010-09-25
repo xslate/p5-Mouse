@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.72
+    [BUG FIXES]
+    * There were a number of incompatibilities in Mouse::PurePerl
+    * Error messages from duck types are now compatible with Moose
+
 0.71 Fri Sep 24 19:51:04 2010
     [CHANGES]
     * Inheritance from non-Mouse classes now produces warnings.
@@ -12,8 +17,6 @@ Revision history for Mouse
     [BUG FIXES]
     * Meta class reinitialization caused by Mouse::Util::MetaRole
       did not work correctly
-    * There were some incompatibilities in Mouse::PurePerl
-    * Error messages from duck types are now compatible with Moose
 
 0.70 Fri Sep 17 19:07:02 2010
     [BUG FIXES]
