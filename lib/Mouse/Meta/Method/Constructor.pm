@@ -13,7 +13,7 @@ sub _generate_constructor {
 
     my $buildall      = $class->_generate_BUILDALL($metaclass);
     my $buildargs     = $class->_generate_BUILDARGS($metaclass);
-
+    my $initializer   = $class->_generate_initialize_object($metaclass);
     my $source = sprintf(<<'EOT', __LINE__, __FILE__, $metaclass->name, $buildargs, $buildall);
 #line %d %s
         package %s;
@@ -24,7 +24,7 @@ sub _generate_constructor {
             # BUILDARGS
             %s;
             my $instance = bless {}, $class;
-            $metaclass->_initialize_object($instance, $args, 0);
+            $metaclass->$initializer($instance, $args, 0);
             # BUILDALL
             %s;
             return $instance;
