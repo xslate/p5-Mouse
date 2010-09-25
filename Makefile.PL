@@ -22,8 +22,11 @@ all_from 'lib/Mouse.pm';
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
-test_requires 'Test::More'      => 0.88;
-test_requires 'Test::Exception' => 0.29;
+test_requires 'Test::More'=> 0.88;
+
+# to keep zero-dependencies
+include 'Test::Exception::LessClever';
+include 'Test::Requires';
 
 my %suggests = (
     'Any::Moose'                     => 0.10,
@@ -89,7 +92,7 @@ if ($Module::Install::AUTHOR) {
         # repeat testing
         # see also ExtUtils::MM_Any::test_via_harness()
         my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                      .q{ "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                      .q{ "test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
                       .q{ xt/compat/t/*/*.t } . "\n";
 
         postamble qq{test :: test_moose\n\n}
@@ -103,13 +106,28 @@ if ($Module::Install::AUTHOR) {
         # repeat testing
         # see also ExtUtils::MM_Any::test_via_harness()
         my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
                    .q{ $(TEST_FILES)} . "\n";
 
         postamble qq{test :: test_pp\n\n}
                 . qq{test_pp :: pure_all\n}
                 . qq{\t} . $t_pp;
     }
+
+    # Hack to disable Test::Exception, which might pull a perl internal bug.
+    # See also Test::Exception::LessClever.
+    open my $out, '>', 'inc/Test/Exception.pm' or die $!;
+    print $out <<'EOT';
+package Test::Exception; # wapper to T::E::LessClever
+require Test::Exception::LessClever;
+$INC{'Test/Exception.pm'} = __FILE__;
+sub import {
+    shift;
+    Test::Exception::LessClever->export_to_level(1, @_);
+}
+1;
+EOT
+    close $out or die $!;
 }
 
 clean_files q{
