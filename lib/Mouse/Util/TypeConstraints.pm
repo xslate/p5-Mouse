@@ -104,23 +104,22 @@ sub list_all_builtin_type_constraints { @builtins }
 
 sub list_all_type_constraints         { keys %TYPE }
 
-sub _create_type{
-    my $mode = shift;
-
+sub _define_type {
+    my $is_subtype = shift;
     my $name;
     my %args;
 
-    if(@_ == 1 && ref $_[0]){   # @_ : { name => $name, where => ... }
+    if(@_ == 1 && ref $_[0] ){    # @_ : { name => $name, where => ... }
         %args = %{$_[0]};
     }
-    elsif(@_ == 2 && ref $_[1]){ # @_ : $name => { where => ... }
+    elsif(@_ == 2 && ref $_[1]) { # @_ : $name => { where => ... }
         $name = $_[0];
         %args = %{$_[1]};
     }
-    elsif(@_ % 2){               # @_ : $name => ( where => ... )
+    elsif(@_ % 2) {               # @_ : $name => ( where => ... )
         ($name, %args) = @_;
     }
-    else{                        # @_ : (name => $name, where => ...)
+    else{                         # @_ : (name => $name, where => ...)
         %args = @_;
     }
 
@@ -129,13 +128,15 @@ sub _create_type{
     }
 
     $args{name} = $name;
-    my $parent;
-    if($mode eq 'subtype'){
-        $parent = delete $args{as};
-        if(!$parent){
-            $parent = delete $args{name};
-            $name   = undef;
-        }
+
+    my $parent = delete $args{as};
+    if($is_subtype && !$parent){
+        $parent = delete $args{name};
+        $name   = undef;
+    }
+
+    if(defined $parent) {
+        $args{parent} = find_or_create_isa_type_constraint($parent);
     }
 
     if(defined $name){
@@ -164,20 +165,11 @@ sub _create_type{
             }
         }
     }
-    else{
-        $args{name} = '__ANON__';
-    }
 
     $args{constraint} = delete $args{where}        if exists $args{where};
     $args{optimized}  = delete $args{optimized_as} if exists $args{optimized_as};
 
-    my $constraint;
-    if($mode eq 'subtype'){
-        $constraint = find_or_create_isa_type_constraint($parent)->create_child_type(%args);
-    }
-    else{
-        $constraint = Mouse::Meta::TypeConstraint->new(%args);
-    }
+    my $constraint = Mouse::Meta::TypeConstraint->new(%args);
 
     if(defined $name){
         return $TYPE{$name} = $constraint;
@@ -188,11 +180,11 @@ sub _create_type{
 }
 
 sub type {
-    return _create_type('type', @_);
+    return _define_type 0, @_;
 }
 
 sub subtype {
-    return _create_type('subtype', @_);
+    return _define_type 1, @_;
 }
 
 sub coerce {
@@ -210,9 +202,10 @@ sub class_type {
     my $class = $options->{class} || $name;
 
     # ClassType
-    return _create_type 'subtype', $name => (
+    return _define_type 1, $name => (
         as           => 'Object',
         optimized_as => Mouse::Util::generate_isa_predicate_for($class),
+        class        => $class,
     );
 }
 
@@ -221,12 +214,13 @@ sub role_type {
     my $role = $options->{role} || $name;
 
     # RoleType
-    return _create_type 'subtype', $name => (
+    return _define_type 1, $name => (
         as           => 'Object',
         optimized_as => sub {
             return Scalar::Util::blessed($_[0])
                 && Mouse::Util::does_role($_[0], $role);
         },
+        role         => $role,
     );
 }
 
@@ -240,7 +234,7 @@ sub duck_type {
     @methods = (@_ == 1 && ref($_[0]) eq 'ARRAY') ? @{$_[0]} : @_;
 
     # DuckType
-    return _create_type 'subtype', $name => (
+    return _define_type 1, $name => (
         as           => 'Object',
         optimized_as => Mouse::Util::generate_can_predicate_for(\@methods),
         message      => sub {
@@ -250,6 +244,7 @@ sub duck_type {
                 . ' is missing methods '
                 . Mouse::Util::quoted_english_list(@missing);
         },
+        methods      => \@methods,
     );
 }
 
@@ -264,7 +259,7 @@ sub enum {
         (@_ == 1 && ref($_[0]) eq 'ARRAY' ? @{$_[0]} : @_);
 
     # EnumType
-    return _create_type 'subtype', $name => (
+    return _define_type 1, $name => (
         as            => 'Str',
         optimized_as  => sub{
             return defined($_[0]) && !ref($_[0]) && exists $valid{$_[0]};
@@ -394,7 +389,7 @@ sub register_type_constraint {
     Carp::croak("No type supplied / type is not a valid type constraint")
         unless Mouse::Util::is_a_type_constraint($constraint);
     my $name = $constraint->name;
-    Carp::croak("can't register an unnamed type constraint")
+    Carp::croak("Can't register an unnamed type constraint")
         unless defined $name;
     return $TYPE{$name} = $constraint;
 }
