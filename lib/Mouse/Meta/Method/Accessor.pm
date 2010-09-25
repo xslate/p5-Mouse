@@ -33,7 +33,7 @@ sub _generate_accessor_any{
         }
         else{ # writer
             $accessor .= 
-                'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of '.$name.'") }'.
+                'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of $name") }'.
                 '{' . "\n";
         }
                 
@@ -69,7 +69,7 @@ sub _generate_accessor_any{
         $accessor .= "}\n";
     }
     elsif($type eq 'ro') {
-        $accessor .= 'Carp::confess("Cannot assign a value to a read-only accessor") if scalar(@_) >= 2;' . "\n";
+        $accessor .= 'Carp::confess("Cannot assign a value to a read-only accessor of $name") if scalar(@_) >= 2;' . "\n";
     }
     else{
         $class->throw_error("Unknown accessor type '$type'");
