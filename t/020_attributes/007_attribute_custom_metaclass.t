@@ -57,7 +57,7 @@ use Test::Exception;
     use Mouse;
 
     ::lives_ok {
-        has 'bar' => (metaclass => 'Bar::Meta::Attribute');
+        has 'bar' => (metaclass => 'Bar::Meta::Attribute', is => 'bare');
     } '... the attribute metaclass need not be a Mouse::Meta::Attribute as long as it behaves';
 }
 
