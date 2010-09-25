@@ -277,7 +277,7 @@ sub install_accessors{
 
     # install delegation
     if(exists $attribute->{handles}){
-        my %handles = $attribute->_canonicalize_handles($attribute->{handles});
+        my %handles = $attribute->_canonicalize_handles();
 
         while(my($handle, $method_to_call) = each %handles){
             if($metaclass->has_method($handle)) {
@@ -300,34 +300,46 @@ sub delegation_metaclass() { ## no critic
 }
 
 sub _canonicalize_handles {
-    my($self, $handles) = @_;
+    my($self) = @_;
+    my $handles = $self->{handles};
 
-    if (ref($handles) eq 'HASH') {
+    my $handle_type = ref $handles;
+    if ($handle_type eq 'HASH') {
         return %$handles;
     }
-    elsif (ref($handles) eq 'ARRAY') {
+    elsif ($handle_type eq 'ARRAY') {
         return map { $_ => $_ } @$handles;
     }
-    elsif ( ref($handles) eq 'CODE' ) {
-        my $class_or_role = ( $self->{isa} || $self->{does} )
-            || $self->throw_error( "Cannot find delegate metaclass for attribute " . $self->name );
-        return $handles->( $self, Mouse::Meta::Class->initialize("$class_or_role"));
-    }
-    elsif (ref($handles) eq 'Regexp') {
-        my $class_or_role = ($self->{isa} || $self->{does})
-            || $self->throw_error("Cannot delegate methods based on a Regexp without a type constraint (isa)");
-
-        my $meta = Mouse::Meta::Class->initialize("$class_or_role"); # "" for stringify
+    elsif ($handle_type eq 'Regexp') {
+        my $meta = $self->_find_delegate_metaclass();
         return map  { $_ => $_ }
                grep { !Mouse::Object->can($_) && $_ =~ $handles }
                    Mouse::Util::is_a_metarole($meta)
                         ? $meta->get_method_list
                         : $meta->get_all_method_names;
     }
+    elsif ($handle_type eq 'CODE') {
+        return $handles->( $self, $self->_find_delegate_metaclass() );
+    }
     else {
         $self->throw_error("Unable to canonicalize the 'handles' option with $handles");
     }
 }
+
+sub _find_delegate_metaclass {
+    my($self) = @_;
+    my $meta;
+    if($self->{isa}) {
+        $meta = Mouse::Meta::Class->initialize("$self->{isa}");
+    }
+    elsif($self->{does}) {
+        $meta = Mouse::Util::get_metaclass_by_name("$self->{does}");
+    }
+    defined($meta) or $self->throw_error(
+        "Cannot find delegate metaclass for attribute " . $self->name);
+    return $meta;
+}
+
 
 sub _make_delegation_method {
     my($self, $handle, $method_to_call) = @_;
