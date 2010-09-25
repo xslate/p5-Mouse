@@ -8,14 +8,30 @@ sub new {
 
     $args{name} = '__ANON__' if !defined $args{name};
 
-    my $check = delete $args{optimized};
+    if($args{parent}) {
+        %args = (%{$args{parent}}, %args);
+        # a child type must not inherit 'compiled_type_constraint'
+        # and 'hand_optimized_type_constraint' from the parent
+        delete $args{compiled_type_constraint};
+        delete $args{hand_optimized_type_constraint};
+    }
 
-    if($check){
+    my $check;
+
+    if($check = delete $args{optimized}) {
         $args{hand_optimized_type_constraint} = $check;
         $args{compiled_type_constraint}       = $check;
     }
-
-    $check = $args{constraint};
+    elsif(my $param = $args{type_parameter}) {
+        my $generator = $args{constraint_generator}
+            || $class->throw_error("The $args{name} constraint cannot be used,"
+                . " because $param doesn't subtype from a parameterizable type");
+        # it must be 'constraint'
+        $check = $args{constraint} = $generator->($param);
+    }
+    else {
+        $check = $args{constraint};
+    }
 
     if(defined($check) && ref($check) ne 'CODE'){
         $class->throw_error(
@@ -24,27 +40,19 @@ sub new {
 
     my $self = bless \%args, $class;
     $self->compile_type_constraint()
-        if !$self->{hand_optimized_type_constraint};
+        if !$args{hand_optimized_type_constraint};
 
-    $self->_compile_union_type_coercion() if $self->{type_constraints};
+    if($args{type_constraints}) {
+        $self->_compile_union_type_coercion();
+    }
     return $self;
 }
 
 sub create_child_type{
     my $self = shift;
     return ref($self)->new(
-        # a child inherits its parent's attributes
-        %{$self},
-
-        # but does not inherit 'compiled_type_constraint'
-        # and 'hand_optimized_type_constraint'
-        compiled_type_constraint       => undef,
-        hand_optimized_type_constraint => undef,
-
-        # and is given child-specific args, of course.
         @_,
-
-        # and its parent
+        # and inherits other attributes from the parent
         parent => $self,
    );
 }
@@ -201,16 +209,10 @@ sub parameterize{
     }
 
     $name ||= sprintf '%s[%s]', $self->name, $param->name;
-
-    my $generator = $self->{constraint_generator}
-        || $self->throw_error("The $name constraint cannot be used,"
-            . " because $param doesn't subtype from a parameterizable type");
-
     return Mouse::Meta::TypeConstraint->new(
         name           => $name,
         parent         => $self,
         type_parameter => $param,
-        constraint     => $generator->($param), # must be 'constraint', not 'optimized'
     );
 }
 

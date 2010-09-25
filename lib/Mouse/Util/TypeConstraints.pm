@@ -233,7 +233,7 @@ sub role_type {
 sub duck_type {
     my($name, @methods);
 
-    if(!(@_ == 1 && ref($_[0]) eq 'ARRAY')){
+    if(ref($_[0]) ne 'ARRAY'){
         $name = shift;
     }
 
@@ -243,6 +243,13 @@ sub duck_type {
     return _create_type 'subtype', $name => (
         as           => 'Object',
         optimized_as => Mouse::Util::generate_can_predicate_for(\@methods),
+        message      => sub {
+            my($object) = @_;
+            my @missing = grep { !$object->can($_) } @methods;
+            return ref($object)
+                . ' is missing methods '
+                . Mouse::Util::quoted_english_list(@missing);
+        },
     );
 }
 
