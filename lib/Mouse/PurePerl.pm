@@ -317,12 +317,13 @@ sub clone_object {
 
     my $cloned = bless { %$object }, ref $object;
     $class->_initialize_object($cloned, $args, 1);
-
     return $cloned;
 }
 
 sub _initialize_object{
     my($self, $object, $args, $is_cloning) = @_;
+    # The initializer, which is used everywhere, must be clear
+    # when an attribute is added. See Mouse::Meta::Class::add_attribute.
     my $initializer = $self->{_initialize_object} ||= do {
         Mouse::Util::load_class($self->constructor_class)
             ->_generate_initialize_object($self);

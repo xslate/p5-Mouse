@@ -238,7 +238,10 @@ sub add_attribute {
         Carp::carp(qq{Attribute ($name) of class }.$self->name
             .qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
+
     if(!Mouse::Util::MOUSE_XS) {
+        # in Mouse::PurePerl, attribute initialization code is cached, so it
+        # must be clear here. See _initialize_object() in Mouse::PurePerl.
         delete $self->{_initialize_object};
     }
     return $attr;
