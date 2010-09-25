@@ -11,43 +11,43 @@ sub _generate_constructor {
 
     my $associated_metaclass_name = $metaclass->name;
 
-    my @attrs         = $metaclass->get_all_attributes;
-
     my $buildall      = $class->_generate_BUILDALL($metaclass);
     my $buildargs     = $class->_generate_BUILDARGS($metaclass);
-    my $processattrs  = $class->_generate_processattrs($metaclass, \@attrs);
+
+    my $source = sprintf(<<'EOT', __LINE__, __FILE__, $metaclass->name, $buildargs, $buildall);
+#line %d %s
+        package %s;
+        sub {
+            my $class = shift;
+            return $class->Mouse::Object::new(@_)
+                if $class ne __PACKAGE__;
+            # BUILDARGS
+            %s;
+            my $instance = bless {}, $class;
+            $metaclass->_initialize_object($instance, $args, 0);
+            # BUILDALL
+            %s;
+            return $instance;
+        }
+EOT
+    #warn $source;
+    my $body;
+    my $e = do{
+        local $@;
+        $body = eval $source;
+        $@;
+    };
+    die $e if $e;
+    return $body;
+}
+
+sub _generate_initialize_object {
+    my ($method_class, $metaclass) = @_;
+    my @attrs  = $metaclass->get_all_attributes;
 
     my @checks = map { $_ && $_->_compiled_type_constraint }
                  map { $_->type_constraint } @attrs;
 
-    my $source = sprintf("#line %d %s\n", __LINE__, __FILE__).<<"...";
-        sub \{
-            my \$class = shift;
-            return \$class->Mouse::Object::new(\@_)
-                if \$class ne q{$associated_metaclass_name};
-            # BUILDARGS
-            $buildargs;
-            my \$instance = bless {}, \$class;
-            # process attributes
-            $processattrs;
-            # BUILDALL
-            $buildall;
-            return \$instance;
-        }
-...
-    #warn $source;
-    my $code;
-    my $e = do{
-        local $@;
-        $code = eval $source;
-        $@;
-    };
-    die $e if $e;
-    return $code;
-}
-
-sub _generate_processattrs {
-    my ($method_class, $metaclass, $attrs) = @_;
     my @res;
 
     my $has_triggers;
@@ -57,10 +57,10 @@ sub _generate_processattrs {
         push @res, 'my $used = 0;';
     }
 
-    for my $index (0 .. @$attrs - 1) {
+    for my $index (0 .. @attrs - 1) {
         my $code = '';
 
-        my $attr = $attrs->[$index];
+        my $attr = $attrs[$index];
         my $key  = $attr->name;
 
         my $init_arg        = $attr->init_arg;
@@ -81,13 +81,15 @@ sub _generate_processattrs {
 
         my $post_process = '';
         if(defined $type_constraint){
-            $post_process .= "\$checks[$index]->($instance_slot)";
+            $post_process .= "\$checks[$index]->($instance_slot)\n";
             $post_process .= "  or $attr_var->_throw_type_constraint_error($instance_slot, $constraint_var);\n";
         }
         if($is_weak_ref){
-            $post_process .= "Scalar::Util::weaken($instance_slot) if ref $instance_slot;\n";
+            $post_process  = "Scalar::Util::weaken($instance_slot) "
+                             . "if ref $instance_slot;\n";
         }
 
+        # build cde for an attribute
         if (defined $init_arg) {
             my $value = "\$args->{q{$init_arg}}";
 
@@ -136,13 +138,12 @@ sub _generate_processattrs {
                 }
 
                 $code .= "$instance_slot = $value;\n";
-                if($is_weak_ref){
-                    $code .= "Scalar::Util::weaken($instance_slot);\n";
-                }
+                $code .= $post_process;
             }
         }
         elsif ($attr->is_required) {
-            $code .= "Carp::confess('Attribute ($key) is required');";
+            $code .= "\$meta->throw_error('Attribute ($key) is required')";
+            $code .= "    unless \$is_cloning;\n";
         }
 
         $code .= "}\n" if defined $init_arg;
@@ -152,11 +153,11 @@ sub _generate_processattrs {
 
     if($strict){
         push @res, q{if($used < keys %{$args})}
-            . q{{ $metaclass->_report_unknown_args(\@attrs, $args) }};
+            . q{{ $meta->_report_unknown_args(\@attrs, $args) }};
     }
 
     if($metaclass->is_anon_class){
-        push @res, q{$instance->{__METACLASS__} = $metaclass;};
+        push @res, q{$instance->{__METACLASS__} = $meta;};
     }
 
     if($has_triggers){
@@ -164,7 +165,24 @@ sub _generate_processattrs {
         push    @res, q{$_->[0]->($instance, $_->[1]) for @triggers;};
     }
 
-    return join "\n", @res;
+    my $source = sprintf <<'EOT', __LINE__, __FILE__, $metaclass->name, join "\n", @res;
+#line %d %s
+    package %s;
+    sub {
+        my($meta, $instance, $args, $is_cloning) = @_;
+        %s;
+        return $instance;
+    }
+EOT
+    warn $source if $ENV{MOUSE_DEBUG};
+    my $body;
+    my $e = do {
+        local $@;
+        $body = eval $source;
+        $@;
+    };
+    die $e if $e;
+    return $body;
 }
 
 sub _generate_BUILDARGS {

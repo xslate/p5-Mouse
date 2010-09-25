@@ -238,6 +238,9 @@ sub add_attribute {
         Carp::carp(qq{Attribute ($name) of class }.$self->name
             .qq{ has no associated methods (did you mean to provide an "is" argument?)});
     }
+    if(!Mouse::Util::MOUSE_XS) {
+        delete $self->{_initialize_object};
+    }
     return $attr;
 }
 
