@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.73 Sat Sep 25 21:49:30 2010
+    [BUG FIXES]
+    * Resolve RT #61613 (Brett)
+
 0.72 Sat Sep 25 20:47:51 2010
     [BUG FIXES]
     * Internal refatoring has removed a number of incompatibilities
