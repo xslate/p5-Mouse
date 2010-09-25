@@ -25,3 +25,4 @@ xshelper.h
 *.obj
 *.c
 test-mydeps-*.log
+Moose-t/
