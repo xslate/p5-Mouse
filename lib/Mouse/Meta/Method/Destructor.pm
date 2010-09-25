@@ -1,14 +1,8 @@
 package Mouse::Meta::Method::Destructor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
-sub _empty_DESTROY{ }
-
 sub _generate_destructor{
     my (undef, $metaclass) = @_;
-
-    if(!$metaclass->name->can('DEMOLISH')){
-        return \&_empty_DESTROY;
-    }
 
     my $demolishall = '';
     for my $class ($metaclass->linearized_isa) {
@@ -18,10 +12,14 @@ sub _generate_destructor{
         }
     }
 
-    my $source = sprintf(<<'END_DESTROY', __LINE__, __FILE__, $demolishall);
+    my $name   = $metaclass->name;
+    my $source = sprintf(<<'EOT', __LINE__, __FILE__, $name, $demolishall);
 #line %d %s
+    package %s;
     sub {
         my $self = shift;
+        return $self->Mouse::Object::DESTROY()
+            if ref($self) ne __PACKAGE__;
         my $e = do{
             local $?;
             local $@;
@@ -34,7 +32,7 @@ sub _generate_destructor{
         no warnings 'misc';
         die $e if $e; # rethrow
     }
-END_DESTROY
+EOT
 
     my $code;
     my $e = do{
