@@ -52,7 +52,7 @@ use Mouse::Meta::Role::Composite;
         );
     { local $TODO = 'cannot apply a composite role directly';
     lives_ok {
-        Mouse::Meta::Role::Application->new->apply($c);
+        Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
     } '... this composed okay';
     }
 
