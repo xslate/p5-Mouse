@@ -48,13 +48,9 @@ sub new {
     return $self;
 }
 
-sub create_child_type{
+sub create_child_type {
     my $self = shift;
-    return ref($self)->new(
-        @_,
-        # and inherits other attributes from the parent
-        parent => $self,
-   );
+    return ref($self)->new(@_, parent => $self);
 }
 
 sub name;
