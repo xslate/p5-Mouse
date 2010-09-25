@@ -44,10 +44,6 @@ sub identifier {
 
 sub role_applications { }
 
-package Mouse::Meta::Class;
-
-sub _immutable_options { }
-
 package Mouse::Meta::Role;
 
 for my $modifier_type (qw/before after around/) {
@@ -79,14 +75,6 @@ package Mouse::Meta::Method;
 sub get_original_method { Mouse::Meta::Method->wrap(sub { }) }
 
 sub associated_attribute { undef }
-
-package Mouse::Meta::Method::Constructor;
-
-sub _generate_BUILDALL { }
-
-package Mouse::Meta::Method::Constructor::XS;
-
-sub _generate_BUILDALL { }
 
 package Mouse::Util::TypeConstraints;
 
