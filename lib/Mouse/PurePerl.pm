@@ -156,7 +156,7 @@ sub Str        {
 sub Ref        { ref($_[0]) }
 sub ScalarRef  {
     my($value) = @_;
-    return ref($value) eq 'SCALAR'
+    return ref($value) eq 'SCALAR' || ref($value) eq 'REF';
 }
 sub ArrayRef   { ref($_[0]) eq 'ARRAY'  }
 sub HashRef    { ref($_[0]) eq 'HASH'   }
