@@ -1,7 +1,7 @@
 use strict;
 
 rename 't-failing/060_compat/004_extends_nonmoose_that_isa_moose_with_metarole.t',
-    't-failing/060_compat/004_entimwm' or warn $!;
+    't-failing/060_compat/004_entimwm.t' or warn $!;
 rename 't/050_metaclasses/041_moose_nonmoose_moose_chain_init_meta.t',
     't/050_metaclasses/041_mnmcim.t' or warn $!;
 
