@@ -9,7 +9,6 @@ $INC{'Mouse/Meta.pm'}          = __FILE__;
 $INC{'Mouse/Meta/Instance.pm'} = __FILE__;
 $INC{'Mouse/Deprecated.pm'}    = __FILE__;
 
-
 *UNIVERSAL::DOES = sub {
     my($thing, $role) = @_;
     $thing->isa($role);

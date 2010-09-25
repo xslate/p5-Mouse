@@ -1,9 +1,10 @@
 Revision history for Mouse
 
-0.72
+0.72 Sat Sep 25 20:47:51 2010
     [BUG FIXES]
-    * There were a number of incompatibilities in Mouse::PurePerl
-    * Error messages from duck types are now compatible with Moose
+    * Internal refatoring has removed a number of incompatibilities
+      in Mouse::PurePerl.
+    * Error messages from duck types are now compatible with Moose.
 
 0.71 Fri Sep 24 19:51:04 2010
     [CHANGES]
