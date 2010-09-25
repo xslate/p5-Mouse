@@ -10,7 +10,6 @@ use lib 't/lib', 'lib';
 
 use Test::More;
 
-use_ok('MyMouseA');
-use_ok('MyMouseB');
+use_ok('MyMouseObject');
 
 done_testing;
