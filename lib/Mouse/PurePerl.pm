@@ -729,13 +729,8 @@ sub BUILDARGS {
 
 sub new {
     my $class = shift;
-
-    $class->meta->throw_error('Cannot call new() on an instance') if ref $class;
-
-    my $args = $class->BUILDARGS(@_);
-
-    my $meta = Mouse::Meta::Class->initialize($class);
-    return $meta->new_object($args);
+    my $args  = $class->BUILDARGS(@_);
+    return $class->meta->new_object($args);
 }
 
 sub DESTROY {
