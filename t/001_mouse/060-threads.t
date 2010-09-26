@@ -2,9 +2,13 @@
 use strict;
 use warnings;
 use constant HAS_THREADS => eval{ require threads && require threads::shared };
-
-use if !HAS_THREADS, 'Test::More', (skip_all => "This is a test for threads ($@)");
 use Test::More;
+
+use if !HAS_THREADS, 'Test::More',
+    (skip_all => "This is a test for threads ($@)");
+use if $Test::More::VERSION == 2.00_01, 'Test::More',
+    (skip_all => "Test::Builder2 2.00_01 has bugs about threads");
+
 
 {
     package MyTraits;
@@ -54,5 +58,7 @@ $o = MyClass->new(foo => Foo->new(value => 43));
 is $o->foo->value, 43;
 
 ok !$o->meta->is_immutable;
+
+pass "done";
 
 done_testing;
