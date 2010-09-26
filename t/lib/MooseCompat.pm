@@ -1,5 +1,8 @@
 package MooseCompat;
 # Moose compatible methods/functions
+
+use Test::Builder (); # should load Test::Builder first
+
 use Mouse ();
 use Mouse::Util::MetaRole;
 use Mouse::Meta::Method;
