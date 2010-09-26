@@ -372,16 +372,14 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     }
 }
 
-static SV*
+STATIC_INLINE SV*
 mouse_initialize_metaclass(pTHX_ SV* const klass) {
-    SV* meta = get_metaclass(klass);
-
-    if(!SvOK(meta)){
-        meta = mcall1s(newSVpvs_flags("Mouse::Meta::Class", SVs_TEMP),
-            "initialize", klass);
+    SV* const meta = get_metaclass(klass);
+    if(LIKELY(SvOK(meta))){
+        return meta;
     }
-
-    return meta;
+    return mcall1s(newSVpvs_flags("Mouse::Meta::Class", SVs_TEMP),
+            "initialize", klass);
 }
 
 static void

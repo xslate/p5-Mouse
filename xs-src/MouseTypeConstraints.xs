@@ -713,6 +713,17 @@ BOOT:
             code_ref );
     }
 
+UV
+_identity(SV* self, ...)
+CODE:
+{
+    if(!SvROK(self)) {
+        croak("Invalid object instance: '%"SVf"'", self);
+    }
+    RETVAL = PTR2UV(SvRV(self));
+}
+OUTPUT:
+    RETVAL
 
 void
 compile_type_constraint(SV* self)

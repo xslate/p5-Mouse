@@ -1,6 +1,5 @@
 package Mouse::Meta::TypeConstraint;
 use Mouse::Util qw(:meta); # enables strict and warnings
-use Scalar::Util ();
 
 sub new {
     my $class = shift;
@@ -222,7 +221,7 @@ sub assert_valid {
 }
 
 sub _as_string { $_[0]->name                  } # overload ""
-sub _identity  { Scalar::Util::refaddr($_[0]) } # overload 0+
+sub _identity;                                  # overload 0+
 
 sub _unite { # overload infix:<|>
     my($lhs, $rhs) = @_;

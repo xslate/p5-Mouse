@@ -600,6 +600,8 @@ sub name    { $_[0]->{name}    }
 sub parent  { $_[0]->{parent}  }
 sub message { $_[0]->{message} }
 
+sub _identity  { Scalar::Util::refaddr($_[0]) } # overload 0+
+
 sub type_parameter           { $_[0]->{type_parameter} }
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
 sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }
