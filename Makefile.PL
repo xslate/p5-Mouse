@@ -22,7 +22,9 @@ all_from 'lib/Mouse.pm';
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
-test_requires 'Test::More'=> 0.88;
+test_requires 'Test::More'                  => 0.88;
+test_requires 'Test::Requires'              => 0.06; # works on 5.6.0
+test_requires 'Test::Exception::LessClever' => 0.005;
 
 # to keep zero-dependencies
 include 'Test::Exception::LessClever';
