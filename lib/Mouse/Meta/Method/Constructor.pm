@@ -1,6 +1,8 @@
 package Mouse::Meta::Method::Constructor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
+use constant _MOUSE_DEBUG => !!$ENV{MOUSE_DEBUG};
+
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
     return sprintf '%s->{q{%s}}', $self_var, $attr_name;
@@ -16,8 +18,8 @@ sub _generate_constructor {
     my $initializer   = $metaclass->{_initialize_object} ||= do {
        $class->_generate_initialize_object($metaclass);
     };
-    my $source = sprintf(<<'EOT', __LINE__, __FILE__, $metaclass->name, $buildargs, $buildall);
-#line %d %s
+    my $source = sprintf(<<'EOT', __FILE__, $metaclass->name, $buildargs, $buildall);
+#line 1 "%s"
         package %s;
         sub {
             my $class = shift;
@@ -32,7 +34,7 @@ sub _generate_constructor {
             return $instance;
         }
 EOT
-    #warn $source;
+    warn $source if _MOUSE_DEBUG;
     my $body;
     my $e = do{
         local $@;
@@ -167,8 +169,8 @@ sub _generate_initialize_object {
         push    @res, q{$_->[0]->($instance, $_->[1]) for @triggers;};
     }
 
-    my $source = sprintf <<'EOT', __LINE__, __FILE__, $metaclass->name, join "\n", @res;
-#line %d %s
+    my $source = sprintf <<'EOT', __FILE__, $metaclass->name, join "\n", @res;
+#line 1 "%s"
     package %s;
     sub {
         my($meta, $instance, $args, $is_cloning) = @_;
@@ -176,7 +178,7 @@ sub _generate_initialize_object {
         return $instance;
     }
 EOT
-    warn $source if $ENV{MOUSE_DEBUG};
+    warn $source if _MOUSE_DEBUG;
     my $body;
     my $e = do {
         local $@;
