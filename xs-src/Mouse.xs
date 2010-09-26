@@ -236,13 +236,12 @@ mouse_buildargs(pTHX_ SV* metaclass, SV* const klass, I32 ax, I32 items) {
     else{
         I32 i;
 
-        args = newHV_mortal();
-
         if( (items % 2) != 0 ){
             if(!metaclass){ metaclass = get_metaclass(klass); }
             mouse_throw_error(metaclass, NULL, "Odd number of parameters to new()");
         }
 
+        args = newHV_mortal();
         for(i = 0; i < items; i += 2){
             (void)hv_store_ent(args, ST(i), newSVsv(ST(i+1)), 0U);
         }
@@ -371,7 +370,6 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     if(MOUSE_xc_flags(xc) & MOUSEf_XC_IS_ANON){
         (void)set_slot(object, newSVpvs_flags("__METACLASS__", SVs_TEMP), meta);
     }
-
 }
 
 static SV*
@@ -379,7 +377,8 @@ mouse_initialize_metaclass(pTHX_ SV* const klass) {
     SV* meta = get_metaclass(klass);
 
     if(!SvOK(meta)){
-        meta = mcall1s(newSVpvs_flags("Mouse::Meta::Class", SVs_TEMP), "initialize", klass);
+        meta = mcall1s(newSVpvs_flags("Mouse::Meta::Class", SVs_TEMP),
+            "initialize", klass);
     }
 
     return meta;

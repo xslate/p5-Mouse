@@ -15,7 +15,7 @@ mouse_build_xa(pTHX_ SV* const attr) {
     ENTER;
     SAVETMPS;
 
-    xa    = newAV();
+    xa = newAV();
 
     mg = sv_magicext(SvRV(attr), (SV*)xa, PERL_MAGIC_ext, &mouse_xa_vtbl, NULL, 0);
     SvREFCNT_dec(xa); /* refcnt++ in sv_magicext */
@@ -319,7 +319,7 @@ CODE:
             "without a default, builder, or an init_arg", name);
     }
 
-     /* taken from Mouse::Meta::Attribute->new and ->_process_args */
+    /* taken from Mouse::Meta::Attribute->new and ->_process_args */
 
     svp = hv_fetchs(args, "is", FALSE);
     if(svp){
@@ -340,7 +340,7 @@ CODE:
             sv_setsv(*svp, name);
         }
         else if(strEQ(is, "bare")){
-            /* do nothing, but don't complain (later) about missing methods */
+            /* do nothing, but might complain later about missing methods */
         }
         else{
             mouse_throw_error(klass, NULL,
