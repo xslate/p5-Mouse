@@ -88,7 +88,7 @@ mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
 static void
 mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stash, AV* const xc) {
     AV* const linearized_isa = mro_get_linear_isa(stash);
-    I32 const len            = AvFILLp(linearized_isa);
+    I32 const len            = AvFILLp(linearized_isa) + 1;
     I32 i;
     U32 flags             = 0x00;
     AV* const attrall     = newAV();
