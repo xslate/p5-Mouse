@@ -297,7 +297,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
     I32 const len   = AvFILLp(attrs) + 1;
     I32 i;
     AV* triggers_queue = NULL;
-    U32 used = 0;
+    I32 used = 0;
 
     assert(meta || object);
     assert(args);
@@ -352,7 +352,8 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
         }
     } /* for each attribute */
 
-    if(MOUSE_xc_flags(xc) & MOUSEf_XC_CONSTRUCTOR_IS_STRICT && used < HvUSEDKEYS(args)){
+    if(MOUSE_xc_flags(xc) & MOUSEf_XC_CONSTRUCTOR_IS_STRICT
+            && used < (I32)HvUSEDKEYS(args)){
         mouse_report_unknown_args(aTHX_ meta, attrs, args);
     }
 
