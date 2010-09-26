@@ -87,7 +87,7 @@ sub inherit_from_foreign_class {
     my($class, $super) = @_;
     Carp::carp("You inherit from non-Mouse class ($super),"
         . " but it is unlikely to work correctly."
-        . " Please concider to use MouseX::Foreign");
+        . " Please consider using MouseX::Foreign");
     return;
 }
 
