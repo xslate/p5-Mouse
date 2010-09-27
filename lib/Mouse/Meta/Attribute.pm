@@ -263,8 +263,9 @@ sub install_accessors{
     # install delegation
     if(exists $attribute->{handles}){
         my %handles = $attribute->_canonicalize_handles();
-
         while(my($handle, $method_to_call) = each %handles){
+            next if Mouse::Object->can($handle);
+
             if($metaclass->has_method($handle)) {
                 $attribute->throw_error("You cannot overwrite a locally defined method ($handle) with a delegation");
             }
@@ -298,7 +299,7 @@ sub _canonicalize_handles {
     elsif ($handle_type eq 'Regexp') {
         my $meta = $self->_find_delegate_metaclass();
         return map  { $_ => $_ }
-               grep { !Mouse::Object->can($_) && $_ =~ $handles }
+               grep { /$handles/ }
                    Mouse::Util::is_a_metarole($meta)
                         ? $meta->get_method_list
                         : $meta->get_all_method_names;
