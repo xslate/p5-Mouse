@@ -154,7 +154,7 @@ sub _collect_roles {
 }
 
 
-sub find_method_by_name{
+sub find_method_by_name {
     my($self, $method_name) = @_;
     defined($method_name)
         or $self->throw_error('You must define a method name to find');
@@ -181,6 +181,8 @@ sub get_all_method_names {
 
 sub find_attribute_by_name {
     my($self, $name) = @_;
+    defined($name)
+        or $self->throw_error('You must define an attribute name to find');
     foreach my $attr($self->get_all_attributes) {
         return $attr if $attr->name eq $name;
     }
