@@ -7,10 +7,9 @@ use strict;
 use warnings;
 
 use Test::More;
-$TODO = q{Mouse is not yet completed};
 use Test::Exception;
 
-use Mouse::Meta::Role::Application;
+#use Mouse::Meta::Role::Application::RoleSummation;
 use Mouse::Meta::Role::Composite;
 
 {
@@ -54,7 +53,7 @@ use Mouse::Meta::Role::Composite;
     is($c->name, 'Role::Foo|Role::Bar', '... got the composite role name');
 
     lives_ok {
-        Mouse::Meta::Role::Application->new->apply($c);
+        Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
     } '... this succeeds as expected';
 
     is_deeply(
@@ -77,7 +76,7 @@ use Mouse::Meta::Role::Composite;
     is($c->name, 'Role::Foo|Role::FooConflict', '... got the composite role name');
 
     lives_ok {
-        Mouse::Meta::Role::Application->new->apply($c);
+        Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
     } '... this succeeds as expected';
 
     is_deeply(
@@ -108,7 +107,7 @@ use Mouse::Meta::Role::Composite;
     is($c->name, 'Role::Foo|Role::Bar|Role::FooConflict|Role::BarConflict', '... got the composite role name');
 
     lives_ok {
-        Mouse::Meta::Role::Application->new->apply($c);
+        Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
     } '... this succeeds as expected';
 
     is_deeply(
@@ -137,7 +136,7 @@ use Mouse::Meta::Role::Composite;
     is($c->name, 'Role::Foo|Role::AnotherFooConflict', '... got the composite role name');
 
     lives_ok {
-        Mouse::Meta::Role::Application->new->apply($c);
+        Mouse::Meta::Role::Application::RoleSummation->new->apply($c);
     } '... this succeeds as expected';
 
     is_deeply(
