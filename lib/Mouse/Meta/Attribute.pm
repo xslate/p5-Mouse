@@ -34,6 +34,7 @@ my %valid_options = map { $_ => undef } (
   # internally used
   'associated_class',
   'associated_methods',
+  '__METACLASS__',
 
   # Moose defines, but Mouse doesn't
   #'definition_context',
