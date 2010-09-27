@@ -149,7 +149,7 @@ sub _define_type {
             }
         }
 
-        if($TYPE{$name}){
+        if(defined $TYPE{$name}){
             my $that = $TYPE{$name}->{package_defined_in} || __PACKAGE__;
             if($this ne $that) {
                 my $note = '';
@@ -202,7 +202,7 @@ sub class_type {
     my $class = $options->{class} || $name;
 
     # ClassType
-    return _define_type 1, $name => (
+    return subtype $name => (
         as           => 'Object',
         optimized_as => Mouse::Util::generate_isa_predicate_for($class),
         class        => $class,
@@ -214,7 +214,7 @@ sub role_type {
     my $role = $options->{role} || $name;
 
     # RoleType
-    return _define_type 1, $name => (
+    return subtype $name => (
         as           => 'Object',
         optimized_as => sub {
             return Scalar::Util::blessed($_[0])
