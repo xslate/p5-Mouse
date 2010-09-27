@@ -13,9 +13,9 @@ sub _generate_constructor {
 
     my $buildall      = $class->_generate_BUILDALL($metaclass);
     my $buildargs     = $class->_generate_BUILDARGS($metaclass);
-    my $initializer   = $metaclass->{_initialize_object} ||= do {
+    my $initializer   = $metaclass->{_mouse_cache}{_initialize_object} ||=
        $class->_generate_initialize_object($metaclass);
-    };
+
     my $source = sprintf(<<'EOT', __LINE__, __FILE__, $metaclass->name, $buildargs, $buildall);
 #line %d %s
         package %s;

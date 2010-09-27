@@ -49,31 +49,13 @@ enum mouse_modifier_t {
 
 static MGVTBL mouse_xc_vtbl; /* for identity */
 
-static void
-mouse_class_push_attribute_list(pTHX_ SV* const metaclass, AV* const attrall, HV* const seen){
-    dSP;
-    I32 n;
-
-    /* $meta->get_attribute_list */
-    PUSHMARK(SP);
-    XPUSHs(metaclass);
-    PUTBACK;
-
-    n = call_sv(mouse_get_attribute_list, G_ARRAY | G_METHOD);
-    for(NOOP; n > 0; n--){
-        SV* name;
-
-        SPAGAIN;
-        name = POPs;
-        PUTBACK;
-
-        if(hv_exists_ent(seen, name, 0U)){
-            continue;
-        }
-        (void)hv_store_ent(seen, name, &PL_sv_undef, 0U);
-
-        av_push(attrall, newSVsv( mcall1(metaclass, mouse_get_attribute, name) ));
+static AV*
+mouse_calculate_all_attributes(pTHX_ SV* const metaclass) {
+    SV* const avref = mcall0s(metaclass, "_calculate_all_attributes");
+    if(!(SvROK(avref) && SvTYPE(SvRV(avref)) == SVt_PVAV)) {
+        croak("$meta->_calculate_all_attributes did not return an ARRAY reference");
     }
+    return (AV*)SvRV(avref);
 }
 
 XS(XS_Mouse__Object_BUILDARGS); /* prototype */
@@ -91,15 +73,12 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     I32 const len            = AvFILLp(linearized_isa) + 1;
     I32 i;
     U32 flags             = 0x00;
-    AV* const attrall     = newAV();
     AV* const buildall    = newAV();
     AV* const demolishall = newAV();
-    HV* const seen        = newHV(); /* for attributes */
+    AV* attrall;
 
     ENTER;
     SAVETMPS;
-
-    sv_2mortal((SV*)seen);
 
      /* old data will be delete at the end of the perl scope */
     av_delete(xc, MOUSE_XC_DEMOLISHALL, 0x00);
@@ -110,6 +89,13 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     sv_2mortal((SV*)linearized_isa);
 
     /* update */
+
+    av_store(xc, MOUSE_XC_BUILDALL,    (SV*)buildall);
+    av_store(xc, MOUSE_XC_DEMOLISHALL, (SV*)demolishall);
+
+    attrall = mouse_calculate_all_attributes(aTHX_ metaclass);
+    SvREFCNT_inc_simple_void_NN(attrall);
+    av_store(xc, MOUSE_XC_ATTRALL,     (SV*)attrall);
 
     if(predicate_calls(metaclass, "is_immutable")){
         flags |= MOUSEf_XC_IS_IMMUTABLE;
@@ -128,14 +114,10 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     }
 
     av_store(xc, MOUSE_XC_FLAGS,       newSVuv(flags));
-    av_store(xc, MOUSE_XC_ATTRALL,     (SV*)attrall);
-    av_store(xc, MOUSE_XC_BUILDALL,    (SV*)buildall);
-    av_store(xc, MOUSE_XC_DEMOLISHALL, (SV*)demolishall);
 
     for(i = 0; i < len; i++){
         SV* const klass = MOUSE_av_at(linearized_isa, i);
         HV* const st    = gv_stashsv(klass, TRUE);
-        SV* meta;
         GV* gv;
 
         gv = stash_fetchs(st, "BUILD", FALSE);
@@ -148,14 +130,6 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
         if(gv && GvCVu(gv)){
             av_push(demolishall, newRV_inc((SV*)GvCV(gv)));
         }
-
-        /* ATTRIBUTES */
-        meta = get_metaclass(klass);
-        if(!SvOK(meta)){
-            continue; /* skip non-Mouse classes */
-        }
-
-        mouse_class_push_attribute_list(aTHX_ meta, attrall, seen);
     }
 
     FREETMPS;

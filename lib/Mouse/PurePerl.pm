@@ -282,12 +282,6 @@ sub roles { $_[0]->{roles} }
 
 sub linearized_isa { @{ Mouse::Util::get_linear_isa($_[0]->{package}) } }
 
-sub get_all_attributes {
-    my($self) = @_;
-    my %attrs = map { %{ $self->initialize($_)->{attributes} } } reverse $self->linearized_isa;
-    return values %attrs;
-}
-
 sub new_object {
     my $meta = shift;
     my %args = (@_ == 1 ? %{$_[0]} : @_);
@@ -324,11 +318,16 @@ sub _initialize_object{
     my($self, $object, $args, $is_cloning) = @_;
     # The initializer, which is used everywhere, must be clear
     # when an attribute is added. See Mouse::Meta::Class::add_attribute.
-    my $initializer = $self->{_initialize_object} ||= do {
+    my $initializer = $self->{_mouse_cache}{_initialize_object} ||=
         Mouse::Util::load_class($self->constructor_class)
             ->_generate_initialize_object($self);
-    };
     goto &{$initializer};
+}
+
+sub get_all_attributes {
+    my($self) = @_;
+    return @{ $self->{_mouse_cache}{all_attributes}
+        ||= $self->_calculate_all_attributes };
 }
 
 sub is_immutable {  $_[0]->{is_immutable} }
