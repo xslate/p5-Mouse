@@ -95,7 +95,6 @@ sub _generate_accessor_any{
         }
         elsif(defined $constraint){
             $accessor .= "my \$tmp = $value;\n";
-
             $accessor .= "\$compiled_type_constraint->(\$tmp)";
             $accessor .= " || \$attribute->_throw_type_constraint_error(\$tmp, \$constraint);\n";
             $accessor .= "$slot = \$tmp;\n";

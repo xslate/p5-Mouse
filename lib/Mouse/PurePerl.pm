@@ -144,13 +144,16 @@ sub Undef      { !defined($_[0]) }
 sub Defined    {  defined($_[0])  }
 sub Value      {  defined($_[0]) && !ref($_[0]) }
 sub Num        {  looks_like_number($_[0]) }
-sub Int        {
-    my($value) = @_;
-    looks_like_number($value) && $value =~ /\A [+-]? [0-9]+  \z/xms;
-}
 sub Str        {
+    # We need to use a copy here to flatten MAGICs, for instance as in
+    # Str( substr($_, 0, 42) ).
     my($value) = @_;
     return defined($value) && ref(\$value) eq 'SCALAR';
+}
+sub Int        {
+    # We need to use a copy here to save the original internal SV flags.
+    my($value) = @_;
+    return defined($value) && $value =~ /\A -? [0-9]+  \z/xms;
 }
 
 sub Ref        { ref($_[0]) }
