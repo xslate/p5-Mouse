@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.75
+    [BUG FIXES]
+    * Diamond inheritanc without C3 mro cauld cause problems in Mouse::XS
+
 0.74 Sun Sep 26 11:46:29 2010
     [BUG FIXES]
     * Workaround Test::Builder2 problem again.
