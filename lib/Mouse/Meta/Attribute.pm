@@ -93,13 +93,13 @@ sub get_write_method  { $_[0]->writer || $_[0]->accessor }
 
 sub get_read_method_ref{
     my($self) = @_;
-    return $self->{_read_method_ref}
+    return $self->{_mouse_cache_read_method_ref}
         ||= $self->_get_accessor_method_ref('get_read_method', '_generate_reader');
 }
 
 sub get_write_method_ref{
     my($self) = @_;
-    return $self->{_write_method_ref}
+    return $self->{_mouse_cache_write_method_ref}
         ||= $self->_get_accessor_method_ref('get_write_method', '_generate_writer');
 }
 
@@ -182,7 +182,7 @@ sub clone_and_inherit_options{
 
     # remove temporary caches
     foreach my $attr(keys %{$args}){
-        if($attr =~ /\A _/xms){
+        if($attr =~ /\A _mouse_cache_/xms){
             delete $args->{$attr};
         }
     }
@@ -223,7 +223,7 @@ sub get_value {
 
 sub has_value {
     my($self, $object) = @_;
-    my $accessor_ref = $self->{_predicate_ref}
+    my $accessor_ref = $self->{_mouse_cache_predicate_ref}
         ||= $self->_get_accessor_method_ref('predicate', '_generate_predicate');
 
     return $accessor_ref->($object);
@@ -231,7 +231,7 @@ sub has_value {
 
 sub clear_value {
     my($self, $object) = @_;
-    my $accessor_ref = $self->{_crealer_ref}
+    my $accessor_ref = $self->{_mouse_cache_crealer_ref}
         ||= $self->_get_accessor_method_ref('clearer', '_generate_clearer');
 
     return $accessor_ref->($object);
