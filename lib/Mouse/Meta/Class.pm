@@ -1,7 +1,7 @@
 package Mouse::Meta::Class;
 use Mouse::Util qw/:meta/; # enables strict and warnings
 
-use Scalar::Util qw/blessed weaken/;
+use Scalar::Util ();
 
 use Mouse::Meta::Module;
 our @ISA = qw(Mouse::Meta::Module);
@@ -194,7 +194,7 @@ sub add_attribute {
 
     my($attr, $name);
 
-    if(blessed $_[0]){
+    if(Scalar::Util::blessed($_[0])){
         $attr = $_[0];
 
         $attr->isa('Mouse::Meta::Attribute')
@@ -225,7 +225,7 @@ sub add_attribute {
         }
     }
 
-    weaken( $attr->{associated_class} = $self );
+    Scalar::Util::weaken( $attr->{associated_class} = $self );
 
     # install accessors first
     $attr->install_accessors();

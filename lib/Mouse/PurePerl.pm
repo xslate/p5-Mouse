@@ -134,7 +134,7 @@ sub generate_can_predicate_for {
 
 package Mouse::Util::TypeConstraints;
 
-use Scalar::Util qw(blessed looks_like_number openhandle);
+use Scalar::Util ();
 
 sub Any        { 1 }
 sub Item       { 1 }
@@ -143,7 +143,7 @@ sub Bool       { $_[0] ? $_[0] eq '1' : 1 }
 sub Undef      { !defined($_[0]) }
 sub Defined    {  defined($_[0])  }
 sub Value      {  defined($_[0]) && !ref($_[0]) }
-sub Num        {  looks_like_number($_[0]) }
+sub Num        {  Scalar::Util::looks_like_number($_[0]) }
 sub Str        {
     # We need to use a copy here to flatten MAGICs, for instance as in
     # Str( substr($_, 0, 42) ).
@@ -168,10 +168,12 @@ sub RegexpRef  { ref($_[0]) eq 'Regexp' }
 sub GlobRef    { ref($_[0]) eq 'GLOB'   }
 
 sub FileHandle {
-    return openhandle($_[0])  || (blessed($_[0]) && $_[0]->isa("IO::Handle"))
+    my($value) = @_;
+    return Scalar::Util::openhandle($value)
+        || (Scalar::Util::blessed($value) && $value->isa("IO::Handle"))
 }
 
-sub Object     { blessed($_[0]) && blessed($_[0]) ne 'Regexp' }
+sub Object     { Scalar::Util::blessed($_[0]) && ref($_[0]) ne 'Regexp' }
 
 sub ClassName  { Mouse::Util::is_class_loaded($_[0]) }
 sub RoleName   { (Mouse::Util::class_of($_[0]) || return 0)->isa('Mouse::Meta::Role') }
@@ -309,7 +311,7 @@ sub clone_object {
     my $object = shift;
     my $args   = $object->Mouse::Object::BUILDARGS(@_);
 
-    (blessed($object) && $object->isa($class->name))
+    (Scalar::Util::blessed($object) && $object->isa($class->name))
         || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
 
     my $cloned = bless { %$object }, ref $object;

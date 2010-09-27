@@ -1,5 +1,5 @@
 package Mouse::Meta::Module;
-use Mouse::Util qw/:meta get_code_package get_code_ref not_supported/; # enables strict and warnings
+use Mouse::Util qw/:meta/; # enables strict and warnings
 
 use Carp         ();
 use Scalar::Util ();
@@ -87,7 +87,7 @@ my %foreign = map{ $_ => undef } qw(
 sub _code_is_mine{
 #    my($self, $code) = @_;
 
-    return !exists $foreign{ get_code_package($_[1]) };
+    return !exists $foreign{ Mouse::Util::get_code_package($_[1]) };
 }
 
 sub add_method;
@@ -99,7 +99,7 @@ sub has_method {
         or $self->throw_error('You must define a method name');
 
     return defined($self->{methods}{$method_name}) || do{
-        my $code = get_code_ref($self->{package}, $method_name);
+        my $code = Mouse::Util::get_code_ref($self->{package}, $method_name);
         $code && $self->_code_is_mine($code);
     };
 }
@@ -111,7 +111,7 @@ sub get_method_body {
         or $self->throw_error('You must define a method name');
 
     return $self->{methods}{$method_name} ||= do{
-        my $code = get_code_ref($self->{package}, $method_name);
+        my $code = Mouse::Util::get_code_ref($self->{package}, $method_name);
         $code && $self->_code_is_mine($code) ? $code : undef;
     };
 }

@@ -334,7 +334,7 @@ sub quoted_english_list {
 sub not_supported{
     my($feature) = @_;
 
-    $feature ||= ( caller(1) )[3]; # subroutine name
+    $feature ||= ( caller(1) )[3] . '()'; # subroutine name
 
     local $Carp::CarpLevel = $Carp::CarpLevel + 1;
     Carp::confess("Mouse does not currently support $feature");
