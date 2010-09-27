@@ -69,9 +69,9 @@ sub with_immutable (&@) { ## no critic
     $block->();
     $_->meta->make_immutable for @_;
     $block->();
+    return if not defined wantarray;
 
     my $num_tests = $Test->current_test - $before;
-
     return !grep{ !$_ } ($Test->summary)[-$num_tests .. -1];
 }
 
@@ -114,13 +114,10 @@ does for the C<isa> method.
 Tests if a class or object has a certain attribute, similar to what C<can_ok>
 does for the methods.
 
-=back
+=item B<with_immutable { CODE } @class_names>
 
-=head1 SEE ALSO
-
-=over 4
-
-=item L<Test::More>
+Runs I<CODE> *which should contain normal tests) twice, and make each
+class in I<@class_names> immutable between the two runs.
 
 =back
 
@@ -129,6 +126,8 @@ does for the methods.
 L<Mouse>
 
 L<Test::Moose>
+
+L<Test::More>
 
 =cut
 
