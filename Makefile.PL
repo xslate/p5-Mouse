@@ -34,6 +34,7 @@ my %suggests = (
     'Any::Moose'                     => 0.10,
 
     'MouseX::AttributeHelpers'       => 0.06,
+    'MouseX::NativeTraits'           => 1.00,
 );
 while(my($mod, $least) = each %suggests){
     my $status = system $^X, '-e', <<"CHECK";
