@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.74 Sun Sep 26 11:46:29 2010
+    [BUG FIXES]
+    * Workaround Test::Builder2 problem again.
+      Loading Mouse before loading Test::Builder 2.00_01 could causes SEGV,
+      so I ensure to load Test::Builder first.
+    * Fix some compatibility issues on perl 5.6.2
+
 0.73 Sat Sep 25 21:49:30 2010
     [BUG FIXES]
     * Resolve RT #61613 (Brett)

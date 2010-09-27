@@ -87,7 +87,7 @@ sub inherit_from_foreign_class {
     my($class, $super) = @_;
     Carp::carp("You inherit from non-Mouse class ($super),"
         . " but it is unlikely to work correctly."
-        . " Please concider to use MouseX::Foreign");
+        . " Please consider using MouseX::Foreign");
     return;
 }
 
@@ -461,7 +461,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.73
+This document describes Mouse version 0.74
 
 =head1 DESCRIPTION
 
