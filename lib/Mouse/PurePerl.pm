@@ -534,7 +534,7 @@ sub _process_options{
         if(defined $tc){ # both isa and does supplied
             my $does_ok = do{
                 local $@;
-                eval{ "$tc"->does($args) };
+                eval{ "$tc"->does($args->{does}) };
             };
             if(!$does_ok){
                 $class->throw_error("Cannot have both an isa option and a does option because '$tc' does not do '$args->{does}' on attribute ($name)");
