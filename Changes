@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.76 Tue Sep 28 16:10:31 2010
+    [BUG FIXES]
+    * Workaround 5.6.problems
+    * Fix edge cases of handles => sub { ... }
+    * Aoid warnigs on attribute cloning
+
 0.75 Mon Sep 27 15:07:03 2010
     [BUG FIXES]
     * Diamond inheritanc without C3 mro cauld cause problems in Mouse::XS
