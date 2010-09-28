@@ -232,7 +232,7 @@ sub create {
 
     my $meta = $self->initialize( $package_name, %options);
 
-    Scalar::Util::weaken $METAS{$package_name}
+    Scalar::Util::weaken($METAS{$package_name})
         if $mortal;
 
     $meta->add_method(meta => sub {
