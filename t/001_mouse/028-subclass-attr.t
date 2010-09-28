@@ -34,7 +34,7 @@ do {
     extends qw(CB CA);
     has cc => (is => 'rw');
 };
-with_immutable {
+with_immutable sub {
     my $obj = Child->new(class => 1, child => 1);
     ok($obj->child, "local attribute set in constructor");
     ok($obj->class, "inherited attribute set in constructor");
@@ -50,7 +50,7 @@ with_immutable {
         CA->meta->get_attribute('ca'),
         Class->meta->get_attribute('class'),
     )], "correct get_all_attributes");
-} qw(Class CA CB CC);
+}, qw(Class CA CB CC);
 
 do {
     package Foo;
