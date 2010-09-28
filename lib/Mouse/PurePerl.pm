@@ -5,10 +5,10 @@ use strict;
 use warnings;
 use warnings FATAL => 'redefine'; # to avoid to load Mouse::PurePerl twice
 
+use Scalar::Util ();
 use B ();
 
 require Mouse::Util;
-
 
 # taken from Class/MOP.pm
 sub is_valid_class_name {
@@ -134,12 +134,11 @@ sub generate_can_predicate_for {
 
 package Mouse::Util::TypeConstraints;
 
-use Scalar::Util ();
 
 sub Any        { 1 }
 sub Item       { 1 }
 
-sub Bool       { $_[0] ? $_[0] eq '1' : 1 }
+sub Bool       { !$_[0] || $_[0] eq '1' }
 sub Undef      { !defined($_[0]) }
 sub Defined    {  defined($_[0])  }
 sub Value      {  defined($_[0]) && !ref($_[0]) }
