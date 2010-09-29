@@ -413,8 +413,7 @@ sub add_override_method_modifier {
         local $Mouse::SUPER_PACKAGE = $package;
         local $Mouse::SUPER_BODY    = $super_body;
         local @Mouse::SUPER_ARGS    = @_;
-
-        $code->(@_);
+        &{$code};
     });
     return;
 }
@@ -431,10 +430,10 @@ sub add_augment_method_modifier {
     my $super_package = $super->package_name;
     my $super_body    = $super->body;
 
-    $self->add_method($name => sub{
+    $self->add_method($name => sub {
         local $Mouse::INNER_BODY{$super_package} = $code;
         local $Mouse::INNER_ARGS{$super_package} = [@_];
-        $super_body->(@_);
+        &{$super_body};
     });
     return;
 }
