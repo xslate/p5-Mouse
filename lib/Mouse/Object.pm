@@ -51,9 +51,9 @@ This is similar to C<isa> for object, but it checks the roles instead.
 =head2 C<< $object->dump($maxdepth) -> Str >>
 
 This is a handy utility for dumping an object with Data::Dumper.
-By default, the maximun depth is 3, to avoid making a mess.
+By default, the maximum depth is 3, to avoid making a mess.
 
-=head C<< $object->meta() -> MetaClass >>
+=head2 C<< $object->meta() -> MetaClass >>
 
 This is a method which provides access to the object's metaclass.
 
