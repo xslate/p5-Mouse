@@ -84,39 +84,35 @@ my %foreign = map{ $_ => undef } qw(
     Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
     Carp Scalar::Util List::Util
 );
-sub _code_is_mine{
-#    my($self, $code) = @_;
-
-    return !exists $foreign{ Mouse::Util::get_code_package($_[1]) };
+sub _get_method_body {
+    my($self, $method_name) = @_;
+    my $code = Mouse::Util::get_code_ref($self->{package}, $method_name);
+    return $code && !exists $foreign{ Mouse::Util::get_code_package($code) }
+        ? $code
+        : undef;
 }
 
 sub add_method;
 
 sub has_method {
     my($self, $method_name) = @_;
-
     defined($method_name)
         or $self->throw_error('You must define a method name');
 
-    return defined($self->{methods}{$method_name}) || do{
-        my $code = Mouse::Util::get_code_ref($self->{package}, $method_name);
-        $code && $self->_code_is_mine($code);
-    };
+    return defined( $self->{methods}{$method_name} )
+        || defined( $self->_get_method_body($method_name) );
 }
 
 sub get_method_body {
     my($self, $method_name) = @_;
-
     defined($method_name)
         or $self->throw_error('You must define a method name');
 
-    return $self->{methods}{$method_name} ||= do{
-        my $code = Mouse::Util::get_code_ref($self->{package}, $method_name);
-        $code && $self->_code_is_mine($code) ? $code : undef;
-    };
+    return $self->{methods}{$method_name}
+        ||= $self->_get_method_body($method_name);
 }
 
-sub get_method{
+sub get_method {
     my($self, $method_name) = @_;
 
     if(my $code = $self->get_method_body($method_name)){
