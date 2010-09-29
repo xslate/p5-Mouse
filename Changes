@@ -3,7 +3,8 @@ Revision history for Mouse
 0.77
     [BUG FIXES]
     * Combination of 'isa' and 'does' for has() sugar was incorrectly
-      proccessed in Mouse::PurePerl
+      proccessed in Mouse::PurePerl.
+    * Fix foreign class checking routines. Please update MouseX::Foreign.
 
 0.76 Tue Sep 28 16:10:31 2010
     [BUG FIXES]
