@@ -5,7 +5,7 @@ use warnings;
 our $VERSION = '0.76';
 
 our $MouseVersion = $VERSION;
-our $MooseVersion = '1.10';
+our $MooseVersion = '1.13';
 
 sub MouseVersion{ $MouseVersion }
 sub MooseVersion{ $MooseVersion }
@@ -47,14 +47,15 @@ Their methods which have the same name as Moose's are expected to be
 compatible with Moose's. Feel free to use these methods even if they
 are not documented.
 
-However, there are differences between Moose's MOP and Mouse's,
+However, there are differences between Moose's MOP and Mouse's.
 For example, meta object protocols in Mouse have no attributes by default,
 so C<< $metaclass->meta->make_immutable() >> will not work as you expect.
 B<Don not make metaclasses immutable>.
 
 =head3 Mouse::Meta::Instance
 
-Meta instance mechanism is not implemented.
+Meta instance mechanism is not implemented, so you cannot change the reftype
+of Mouse objects in the same way as Moose.
 
 =head3 Role exclusion
 
