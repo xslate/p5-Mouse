@@ -19,7 +19,6 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif /* mro_get_package_gen */
 
 extern SV* mouse_package;
-extern SV* mouse_namespace;
 extern SV* mouse_methods;
 extern SV* mouse_name;
 extern SV* mouse_coerce;
@@ -244,6 +243,7 @@ enum mouse_xa_flags_t{
     MOUSEf_MOUSE_MASK           = 0xFFFF /* not used */
 };
 
-
+/* Mouse::Meta::Class stuff */
+HV* mouse_get_namespace(pTHX_ SV* const meta); /* $meta->namespace */
 #endif /* !MOUSE_H */
 

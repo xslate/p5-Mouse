@@ -49,6 +49,15 @@ enum mouse_modifier_t {
 
 static MGVTBL mouse_xc_vtbl; /* for identity */
 
+HV*
+mouse_get_namespace(pTHX_ SV* const meta) {
+    SV* const package = get_slot(meta, mouse_package);
+    if(!(package && SvOK(package))){
+        croak("No package name defined for metaclass");
+    }
+    return gv_stashsv(package, GV_ADDMULTI);
+}
+
 static AV*
 mouse_calculate_all_attributes(pTHX_ SV* const metaclass) {
     SV* const avref = mcall0s(metaclass, "_calculate_all_attributes");
@@ -151,21 +160,18 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
 
     mg = mouse_mg_find(aTHX_ SvRV(metaclass), &mouse_xc_vtbl, 0x00);
     if(!mg){
-        SV* const package = get_slot(metaclass, mouse_package);
-        STRLEN len;
-        const char* const pv = SvPV_const(package, len);
-
-        stash = gv_stashpvn(pv, len, TRUE);
+        /* cache stash for performance */
+        stash = mouse_get_namespace(aTHX_ metaclass);
         xc    = newAV();
 
-        mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext, &mouse_xc_vtbl, pv, len);
+        mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext,
+            &mouse_xc_vtbl, NULL, 0);
         SvREFCNT_dec(xc); /* refcnt++ in sv_magicext */
 
         av_extend(xc, MOUSE_XC_last - 1);
 
         av_store(xc, MOUSE_XC_GEN, newSVuv(0U));
         av_store(xc, MOUSE_XC_STASH, (SV*)stash);
-
         SvREFCNT_inc_simple_void_NN(stash);
     }
     else{
@@ -464,11 +470,7 @@ HV*
 namespace(SV* self)
 CODE:
 {
-    SV* const package = get_slot(self, mouse_package);
-    if(!(package && SvOK(package))){
-        croak("No package name defined");
-    }
-    RETVAL = gv_stashsv(package, GV_ADDMULTI);
+    RETVAL = mouse_get_namespace(aTHX_ self);
 }
 OUTPUT:
     RETVAL
@@ -539,14 +541,12 @@ void
 linearized_isa(SV* self)
 PPCODE:
 {
-    SV* const stash_ref = mcall0(self, mouse_namespace); /* $self->namespace */
-    AV* linearized_isa;
+    /* MOUSE_xc_stash() is not available because the xc system depends on
+       linearized_isa() */
+    HV* const stash          = mouse_get_namespace(aTHX_ self);
+    AV* const linearized_isa = mro_get_linear_isa(stash);
     I32 len;
     I32 i;
-    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)){
-        croak("namespace() didn't return a HASH reference");
-    }
-    linearized_isa = mro_get_linear_isa((HV*)SvRV(stash_ref));
     len = AvFILLp(linearized_isa) + 1;
     EXTEND(SP, len);
     for(i = 0; i < len; i++){

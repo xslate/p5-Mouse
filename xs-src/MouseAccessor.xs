@@ -342,7 +342,6 @@ XS(XS_Mouse_inheritable_class_accessor) {
     dMOUSE_self;
     SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
     SV* value;
-    SV* stash_ref;
     HV* stash;
 
     if(items == 1){ /* reader */
@@ -357,11 +356,7 @@ XS(XS_Mouse_inheritable_class_accessor) {
         value = NULL; /* -Wuninitialized */
     }
 
-    stash_ref= mcall0(self, mouse_namespace);
-    if(!(SvROK(stash_ref) && SvTYPE(SvRV(stash_ref)) == SVt_PVHV)) {
-        croak("namespace() didn't return a HASH reference");
-    }
-    stash = (HV*)SvRV(stash_ref);
+    stash = mouse_get_namespace(aTHX_ self);
 
     if(!value) { /* reader */
         value = get_slot(self, slot);
