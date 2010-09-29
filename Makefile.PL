@@ -69,6 +69,19 @@ if($use_xs){
     cc_warnings();
     cc_src_paths('xs-src');
 }
+    if($use_xs){
+        # repeat testing
+        # see also ExtUtils::MM_Any::test_via_harness()
+        my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                   .q{ $(TEST_FILES)} . "\n";
+
+        postamble qq{test_pp :: pure_all\n}
+                . qq{\t} . $t_pp;
+        if($Module::Install::AUTHOR) {
+            postamble qq{test :: test_pp };
+        }
+    }
 else{
     print "Mouse configured with Pure Perl.\n";
 }
@@ -105,17 +118,6 @@ if ($Module::Install::AUTHOR) {
         print "You don't have Moose $require_version. skipping moose compatibility test\n";
     }
 
-    if($use_xs){
-        # repeat testing
-        # see also ExtUtils::MM_Any::test_via_harness()
-        my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                   .q{ $(TEST_FILES)} . "\n";
-
-        postamble qq{test :: test_pp\n\n}
-                . qq{test_pp :: pure_all\n}
-                . qq{\t} . $t_pp;
-    }
 
     # Hack to disable Test::Exception, which might pull a perl internal bug.
     # See also Test::Exception::LessClever.
