@@ -78,9 +78,7 @@ sub verify_superclass {
         # The metaclass of $super is not initialized.
         # i.e. it might be Mouse::Object, a mixin package (e.g. Exporter),
         # or a foreign class including Moose classes.
-
-        # checks if $super is a foreign class (i.e. non-Mouse class)
-        # see also Mouse::Foreign::Meta::Role::Class
+        # See also Mouse::Foreign::Meta::Role::Class.
         my $mm = $super->can('meta');
         if(!($mm && $mm == \&Mouse::Util::meta)) {
             if($super->can('new') or $super->can('DESTROY')) {
