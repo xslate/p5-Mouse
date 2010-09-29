@@ -1,11 +1,11 @@
 package Mouse::Util::TypeConstraints;
 use Mouse::Util; # enables strict and warnings
 
-use Carp         ();
-use Scalar::Util ();
-
 use Mouse::Meta::TypeConstraint;
 use Mouse::Exporter;
+
+use Carp         ();
+use Scalar::Util ();
 
 Mouse::Exporter->setup_import_methods(
     as_is => [qw(
@@ -66,7 +66,6 @@ my @builtins = (
     RoleName   => 'ClassName', \&RoleName,
 );
 
-
 while (my ($name, $parent, $code) = splice @builtins, 0, 3) {
     $TYPE{$name} = Mouse::Meta::TypeConstraint->new(
         name      => $name,
@@ -75,14 +74,12 @@ while (my ($name, $parent, $code) = splice @builtins, 0, 3) {
     );
 }
 
-# make it parametarizable
-
+# parametarizable types
 $TYPE{Maybe}   {constraint_generator} = \&_parameterize_Maybe_for;
 $TYPE{ArrayRef}{constraint_generator} = \&_parameterize_ArrayRef_for;
 $TYPE{HashRef} {constraint_generator} = \&_parameterize_HashRef_for;
 
 # sugars
-
 sub as          ($) { (as          => $_[0]) } ## no critic
 sub where       (&) { (where       => $_[0]) } ## no critic
 sub message     (&) { (message     => $_[0]) } ## no critic
@@ -101,7 +98,6 @@ sub optimized_constraints { # DEPRECATED
 undef @builtins;        # free the allocated memory
 @builtins = keys %TYPE; # reuse it
 sub list_all_builtin_type_constraints { @builtins }
-
 sub list_all_type_constraints         { keys %TYPE }
 
 sub _define_type {
@@ -187,9 +183,8 @@ sub subtype {
     return _define_type 1, @_;
 }
 
-sub coerce {
+sub coerce { # coerce $type, from $from, via { ... }, ...
     my $type_name = shift;
-
     my $type = find_type_constraint($type_name)
         or Carp::croak("Cannot find type '$type_name', perhaps you forgot to load it.");
 
