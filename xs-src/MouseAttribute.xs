@@ -184,6 +184,7 @@ mouse_xa_set_default(pTHX_ AV* const xa, SV* const object) {
     return value;
 }
 
+/* checks $isa->does($does) */
 static void
 mouse_check_isa_does_does(pTHX_ SV* const klass, SV* const name, SV* const isa, SV* const does){
     STRLEN len;
@@ -271,6 +272,7 @@ void
 _process_options(SV* klass, SV* name, HV* args)
 CODE:
 {
+    /* TODO: initialize 'xa' here */
     SV** svp;
     SV* tc = NULL;
 
