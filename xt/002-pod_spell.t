@@ -166,6 +166,7 @@ DUCKTYPE
 exportable
 GitHub
 hashrefs
+reftype
 hotspots
 immutabilize
 immutabilized
