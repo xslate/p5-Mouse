@@ -79,7 +79,7 @@ sub remove_attribute  { delete $_[0]->{attributes}->{$_[1]} }
 
 sub get_attribute_list{ keys   %{$_[0]->{attributes}} }
 
-# XXX: for backward compatibility
+# XXX: not completely compatible with Moose
 my %foreign = map{ $_ => undef } qw(
     Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
     Carp Scalar::Util List::Util
