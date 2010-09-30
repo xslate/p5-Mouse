@@ -141,8 +141,30 @@ This document describes Mouse version 0.77
 
 =head1 SYNOPSIS
 
-    package MyRole;
-    use Mouse::Role;
+    package Comparable;
+    use Mouse::Role; # the package is now a Mouse role
+
+    # Declare methods that are required by this role
+    requires qw(compare);
+
+    # Define methods this role provides
+    sub equals {
+        my($self, $other) = @_;
+        return $self->compare($other) == 0;
+    }
+
+    # and later
+    package MyObject;
+    use Mouse;
+    with qw(Comparable); # Now MyObject can equals()
+
+    sub compare {
+        # ...
+    }
+
+    my $foo = MyObject->new();
+    my $bar = MyObject->new();
+    $obj->equals($bar); # yes, it is comparable
 
 =head1 KEYWORDS
 
