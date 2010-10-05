@@ -13,6 +13,9 @@ sub new {
         # and 'hand_optimized_type_constraint' from the parent
         delete $args{compiled_type_constraint};
         delete $args{hand_optimized_type_constraint};
+        if(defined(my $parent_tp = $args{parent}{type_parameter})) {
+            delete $args{type_parameter} if $parent_tp == $args{type_parameter};
+        }
     }
 
     my $check;
@@ -189,7 +192,7 @@ sub is_a_type_of {
 }
 
 # See also Moose::Meta::TypeConstraint::Parameterizable
-sub parameterize{
+sub parameterize {
     my($self, $param, $name) = @_;
 
     if(!ref $param){
