@@ -193,7 +193,7 @@ mouse_xc_is_fresh(aTHX_ AV* const xc) {
     return SvUVX(gen) == mro_get_pkg_gen(stash);
 }
 
-static AV*
+STATIC_INLINE AV*
 mouse_get_xc(pTHX_ SV* const metaclass) {
     AV* const xc = mouse_get_xc_wo_check(aTHX_ metaclass);
     return mouse_xc_is_fresh(aTHX_ xc)
