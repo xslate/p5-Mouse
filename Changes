@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.79 Tue Oct  5 19:26:11 2010
+    [BUG FIXES]
+    * Fix a mis-use of aTHX_/pTHX_ in XS (Vincent Pit)
+
 0.78 Tue Oct  5 15:27:13 2010
     [BUG FIXES]
     * Resolve RT #61852 (Vincent Pit): Parametrized type constraints didn't
