@@ -29,6 +29,10 @@ do {
         reader   => 'read_attr',
         writer   => 'write_attr',
     );
+    has 'attr2' => (
+        is       => 'rw',
+        accessor => 'rw_attr2',
+    );
 };
 with_immutable {
     ok(!Class->can('x'), "No accessor is injected if 'is' has no value");
@@ -66,6 +70,9 @@ with_immutable {
     is $object->write_attr("piyo"), "piyo";
     is $object->rw_attr("yopi"),    "yopi";
 
+    can_ok $object, qw(rw_attr2);
+    ok !$object->can('attr2'), "doesn't have attr2";
+
     dies_ok {
         Class->rw_attr();
     };
@@ -78,6 +85,6 @@ with_immutable {
 
     my @attrs = map { $_->name }
         sort { $a->insertion_order <=> $b->insertion_order } $object->meta->get_all_attributes;
-    is join(' ', @attrs), 'x y z attr', 'insertion_order';
+    is join(' ', @attrs), 'x y z attr attr2', 'insertion_order';
 } qw(Class);
 done_testing;

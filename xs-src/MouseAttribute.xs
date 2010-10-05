@@ -339,7 +339,9 @@ CODE:
             else{
                 svp = hv_fetchs(args, "accessor", TRUE);
             }
-            sv_setsv(*svp, name);
+            if(!SvOK(*svp)) {
+                sv_setsv(*svp, name);
+            }
         }
         else if(strEQ(is, "bare")){
             /* do nothing, but might complain later about missing methods */
