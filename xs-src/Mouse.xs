@@ -184,7 +184,7 @@ mouse_get_xc_wo_check(pTHX_ SV* const metaclass) {
 }
 
 static int
-mouse_xc_is_fresh(aTHX_ AV* const xc) {
+mouse_xc_is_fresh(pTHX_ AV* const xc) {
     HV* const stash = MOUSE_xc_stash(xc);
     SV* const gen   = MOUSE_xc_gen(xc);
     if(SvUVX(gen) != 0U && MOUSE_xc_flags(xc) & MOUSEf_XC_IS_IMMUTABLE) {
