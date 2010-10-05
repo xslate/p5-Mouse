@@ -76,8 +76,9 @@ mouse_class_has_custom_buildargs(pTHX_ HV* const stash) {
     return buildargs && CvXSUB(GvCV(buildargs)) != XS_Mouse__Object_BUILDARGS;
 }
 
-static void
-mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stash, AV* const xc) {
+static AV*
+mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, AV* const xc) {
+    HV* const stash          = MOUSE_xc_stash(xc);
     AV* const linearized_isa = mro_get_linear_isa(stash);
     I32 const len            = AvFILLp(linearized_isa) + 1;
     I32 i;
@@ -145,13 +146,12 @@ mouse_class_update_xc(pTHX_ SV* const metaclass PERL_UNUSED_DECL, HV* const stas
     LEAVE;
 
     sv_setuv(MOUSE_xc_gen(xc), mro_get_pkg_gen(stash));
+    return xc;
 }
 
 static AV*
-mouse_get_xc(pTHX_ SV* const metaclass) {
+mouse_get_xc_wo_check(pTHX_ SV* const metaclass) {
     AV* xc;
-    SV* gen;
-    HV* stash;
     MAGIC* mg;
 
     if(!IsObject(metaclass)){
@@ -161,7 +161,7 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
     mg = mouse_mg_find(aTHX_ SvRV(metaclass), &mouse_xc_vtbl, 0x00);
     if(!mg){
         /* cache stash for performance */
-        stash = mouse_get_namespace(aTHX_ metaclass);
+        HV* const stash = mouse_get_namespace(aTHX_ metaclass);
         xc    = newAV();
 
         mg = sv_magicext(SvRV(metaclass), (SV*)xc, PERL_MAGIC_ext,
@@ -180,20 +180,33 @@ mouse_get_xc(pTHX_ SV* const metaclass) {
         assert(xc);
         assert(SvTYPE(xc) == SVt_PVAV);
     }
-
-    gen   = MOUSE_xc_gen(xc);
-
-    if(SvUVX(gen) != 0U && MOUSE_xc_flags(xc) & MOUSEf_XC_IS_IMMUTABLE){
-        return xc;
-    }
-
-    stash = MOUSE_xc_stash(xc);
-
-    if(SvUVX(gen) != mro_get_pkg_gen(stash)){
-        mouse_class_update_xc(aTHX_ metaclass, stash, xc);
-    }
-
     return xc;
+}
+
+static int
+mouse_xc_is_fresh(aTHX_ AV* const xc) {
+    HV* const stash = MOUSE_xc_stash(xc);
+    SV* const gen   = MOUSE_xc_gen(xc);
+    if(SvUVX(gen) != 0U && MOUSE_xc_flags(xc) & MOUSEf_XC_IS_IMMUTABLE) {
+        return TRUE;
+    }
+    return SvUVX(gen) == mro_get_pkg_gen(stash);
+}
+
+static AV*
+mouse_get_xc(pTHX_ SV* const metaclass) {
+    AV* const xc = mouse_get_xc_wo_check(aTHX_ metaclass);
+    return mouse_xc_is_fresh(aTHX_ xc)
+        ? xc
+        : mouse_class_update_xc(aTHX_ metaclass, xc);
+}
+
+static AV*
+mouse_get_xc_if_fresh(pTHX_ SV* const metaclass) {
+    AV* const xc = mouse_get_xc_wo_check(aTHX_ metaclass);
+    return mouse_xc_is_fresh(aTHX_ xc)
+        ? xc
+        : NULL;
 }
 
 static HV*
@@ -719,17 +732,17 @@ ALIAS:
 CODE:
 {
     SV* const meta = get_metaclass(object);
+    AV* xc;
     AV* demolishall;
-    I32 len, i;
+    I32 len;
+    I32 i;
 
     if(!IsObject(object)){
         croak("You must not call %s as a class method",
             ix == 0 ? "DESTROY" : "DEMOLISHALL");
     }
 
-    if(SvOK(meta)){
-        AV* const xc = mouse_get_xc(aTHX_ meta);
-
+    if(SvOK(meta) && (xc = mouse_get_xc_if_fresh(aTHX_ meta))) {
         demolishall = MOUSE_xc_demolishall(xc);
     }
     else { /* The metaclass is already destroyed */
@@ -748,7 +761,7 @@ CODE:
         }
     }
 
-    len      = AvFILLp(demolishall) + 1;
+    len  = AvFILLp(demolishall) + 1;
     if(len > 0){
         SV* const in_global_destruction = boolSV(PL_dirty);
         SAVEI32(PL_statusvalue); /* local $? */
