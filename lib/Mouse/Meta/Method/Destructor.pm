@@ -65,7 +65,7 @@ Mouse::Meta::Method::Destructor - A Mouse method generator for destructors
 
 =head1 VERSION
 
-This document describes Mouse version 0.77
+This document describes Mouse version 0.78
 
 =head1 SEE ALSO
 

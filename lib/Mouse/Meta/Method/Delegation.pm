@@ -61,7 +61,7 @@ Mouse::Meta::Method::Delegation - A Mouse method generator for delegation method
 
 =head1 VERSION
 
-This document describes Mouse version 0.77
+This document describes Mouse version 0.78
 
 =head1 SEE ALSO
 

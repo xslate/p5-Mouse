@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.78 Tue Oct  5 15:27:13 2010
+    [BUG FIXES]
+    * Resolve RT #61852 (Vincent Pit): Parametrized type constraints didn't
+      call their "where" clause anymore.
+    * Mouse::Object::DESTROY could fail to call DEMOLISHes in some cases
+      (reported by @typester).
+
 0.77 Wed Sep 29 21:35:11 2010
     [BUG FIXES]
     * Fix tests failed against 5.6.2
