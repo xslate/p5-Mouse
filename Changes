@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.80 Wed Oct  6 00:15:49 2010
+    [BUG FIXES]
+    * Resolve RT #61906 (Syohei Yoshida): A single 'accessor' did
+      not define the method for the attribute
+
 0.79 Tue Oct  5 19:26:11 2010
     [BUG FIXES]
     * Fix a mis-use of aTHX_/pTHX_ in XS (Vincent Pit)
