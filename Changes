@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.81 2010-10-28 21:49:40
+    [BUG FIXES]
+    * Roles which attributes has no methods could affect cache invalidation
+
 0.80 Wed Oct  6 00:15:49 2010
     [BUG FIXES]
     * Resolve RT #61906 (Syohei Yoshida): A single 'accessor' did
