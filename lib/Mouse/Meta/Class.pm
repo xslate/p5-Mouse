@@ -241,7 +241,7 @@ sub add_attribute {
     # then register the attribute to the metaclass
     $attr->{insertion_order}   = keys %{ $self->{attributes} };
     $self->{attributes}{$name} = $attr;
-    delete $self->{_mouse_cache}; # clears internal cache
+    $self->_invalidate_metaclass_cache();
 
     if(!$attr->{associated_methods} && ($attr->{is} || '') ne 'bare'){
         Carp::carp(qq{Attribute ($name) of class }.$self->name

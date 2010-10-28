@@ -624,6 +624,19 @@ CODE:
     mouse_class_initialize_object(aTHX_ meta, object, args, is_cloning);
 }
 
+void
+_invalidate_metaclass_cache(SV* meta)
+CODE:
+{
+    AV* const xc = mouse_get_xc_if_fresh(aTHX_ meta);
+    if(xc) {
+        SV* const gen = MOUSE_xc_gen(xc);
+        sv_setuv(gen, 0U);
+    }
+    delete_slot(meta, newSVpvs_flags("_mouse_cache_", SVs_TEMP));
+}
+
+
 MODULE = Mouse  PACKAGE = Mouse::Meta::Role
 
 BOOT:

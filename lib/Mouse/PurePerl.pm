@@ -339,6 +339,12 @@ sub is_immutable {  $_[0]->{is_immutable} }
 sub strict_constructor;
 *strict_constructor = $generate_class_accessor->('strict_constructor');
 
+sub _invalidate_metaclass_cache {
+    my($self) = @_;
+    delete $self->{_mouse_cache};
+    return;
+}
+
 sub _report_unknown_args {
     my($metaclass, $attrs, $args) = @_;
 
