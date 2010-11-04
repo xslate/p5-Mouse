@@ -262,7 +262,7 @@ constraints
 
 =item C<< $constraint->message >>
 
-=item C<< $constraint->is_a_subtype_of($name or $object) >>
+=item C<< $constraint->is_a_type_of($name or $object) >>
 
 =item C<< $constraint->coerce($value) >>
 
