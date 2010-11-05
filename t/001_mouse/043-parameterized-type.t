@@ -1,7 +1,7 @@
-#!/usr/bin/env perl
+#!perl
 use strict;
 use warnings;
-use Test::More tests => 54;
+use Test::More;
 use Test::Exception;
 
 use Tie::Hash;
@@ -222,3 +222,30 @@ else{ # under Moose
 }
 
 is_deeply \%th_clone, \%th, 'the hash iterator is initialized';
+
+{
+    my $myhashref = subtype 'MyHashRef',
+        as 'HashRef[Value]',
+        where { keys %$_ > 1 };
+
+    ok  $myhashref->is_a_type_of('HashRef'), "$myhashref";
+    ok  $myhashref->check({ a => 43, b => 100 });
+    ok  $myhashref->check({ a => 43, b => 3.14 });
+    ok !$myhashref->check({});
+    ok !$myhashref->check({ a => 42, b => [] });
+
+    is $myhashref->type_parameter, 'Value';
+
+    $myhashref = subtype 'H', as 'MyHashRef[Int]';
+
+    ok  $myhashref->is_a_type_of('HashRef'), "$myhashref";
+    ok  $myhashref->check({ a => 43, b => 100 });
+    ok !$myhashref->check({ a => 43, b => 3.14 });
+    ok !$myhashref->check({});
+    ok !$myhashref->check({ a => 42, b => [] });
+
+    is $myhashref->type_parameter, 'Int';
+}
+
+done_testing;
+
