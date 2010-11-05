@@ -24,6 +24,9 @@ sub new {
                         "$type_parameter is not a subtype of $parent_tp",
                     );
             }
+            else {
+                $type_parameter = undef;
+            }
         }
     }
 
