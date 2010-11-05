@@ -54,7 +54,7 @@ Mouse::Meta::Method - A Mouse Method metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 0.81
+This document describes Mouse version 0.82
 
 =head1 DESCRIPTION
 

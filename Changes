@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+0.82 2010-11-05 18:12:28
+    [BUG FIXES]
+    * Wrong name for a method in Mouse::Meta::TypeConstraint:
+      s/is_a_subtype_of/is_a_type_of/
+    * $type_constraint->type_parameter didn't return the correct value
+      if it's a subtype of paramterized type constraints
+
 0.81 2010-10-28 21:49:40
     [BUG FIXES]
     * Roles which attributes has no methods could affect cache invalidation
