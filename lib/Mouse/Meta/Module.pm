@@ -14,12 +14,6 @@ if(Mouse::Util::MOUSE_XS){
     *CLONE = sub { Mouse::Util::__register_metaclass_storage(\%METAS, 1) };
 }
 
-sub _metaclass_cache { # DEPRECATED
-    my($self, $name) = @_;
-    Carp::cluck('_metaclass_cache() has been deprecated. Use Mouse::Util::get_metaclass_by_name() instead');
-    return $METAS{$name};
-}
-
 sub initialize {
     my($class, $package_name, @args) = @_;
 
@@ -52,7 +46,8 @@ sub _class_of{
 }
 
 # Means of accessing all the metaclasses that have
-# been initialized thus far
+# been initialized thus far.
+# The public versions are aliased into Mouse::Util::*.
 #sub _get_all_metaclasses         {        %METAS         }
 sub _get_all_metaclass_instances { values %METAS         }
 sub _get_all_metaclass_names     { keys   %METAS         }
@@ -133,7 +128,7 @@ sub get_method_list {
     return grep { $self->has_method($_) } keys %{ $self->namespace };
 }
 
-sub _collect_methods { # Mouse specific
+sub _collect_methods { # Mouse specific, used for method modifiers
     my($meta, @args) = @_;
 
     my @methods;
