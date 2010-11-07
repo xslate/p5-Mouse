@@ -1,7 +1,7 @@
 package Mouse::Meta::Method::Destructor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
-use constant _MOUSE_DEBUG => !!$ENV{MOUSE_DEBUG};
+use constant _MOUSE_DEBUG => $ENV{MOUSE_DEBUG} ? 1 : 0;
 
 sub _generate_destructor{
     my (undef, $metaclass) = @_;

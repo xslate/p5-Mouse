@@ -1,7 +1,5 @@
 package ouse;
-
 use Mouse::Util; # enables strict and warnings
-
 
 my $package = 'Class';
 sub import {
@@ -28,16 +26,16 @@ ouse - syntactic sugar to make Mouse one-liners easier
   # loads an existing class (Mouse or non-Mouse)
   # and re-"opens" the package definition to make
   # debugging/introspection easier
-  perl -Mouse=+My::Class -e 'print join ", " => __PACKAGE__->meta->get_method_list' 
+  perl -Mouse=+My::Class -e 'print join ", " => __PACKAGE__->meta->get_method_list'
 
 =head1 DESCRIPTION
 
-F<ouse.pm> is a simple source filter that adds C<package $name; use Mouse;> 
-to the beginning of your script and was entirely created because typing 
+F<ouse.pm> is a simple source filter that adds C<package $name; use Mouse;>
+to the beginning of your script and was entirely created because typing
 perl C<< -e'package Foo; use Mouse; ...' >> was annoying me... especially after
 getting used to having C<-Moose> for Moose.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 C<ouse> provides exactly one method and it is automatically called by perl:
 

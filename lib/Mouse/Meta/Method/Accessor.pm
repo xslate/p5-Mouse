@@ -1,7 +1,7 @@
 package Mouse::Meta::Method::Accessor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
-use constant _MOUSE_DEBUG => !!$ENV{MOUSE_DEBUG};
+use constant _MOUSE_DEBUG => $ENV{MOUSE_DEBUG} ? 1 : 0;
 
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
@@ -18,9 +18,13 @@ sub _generate_accessor_any{
     my $trigger       = $attribute->trigger;
     my $is_weak       = $attribute->is_weak_ref;
     my $should_deref  = $attribute->should_auto_deref;
-    my $should_coerce = (defined($constraint) && $constraint->has_coercion && $attribute->should_coerce);
+    my $should_coerce = (defined($constraint)
+                            && $constraint->has_coercion
+                            && $attribute->should_coerce);
 
-    my $compiled_type_constraint = defined($constraint) ? $constraint->_compiled_type_constraint : undef;
+    my $compiled_type_constraint = defined($constraint)
+        ? $constraint->_compiled_type_constraint
+        : undef;
 
     my $self  = '$_[0]';
     my $slot  = $method_class->_inline_slot($self, $name);;
@@ -30,15 +34,15 @@ sub _generate_accessor_any{
 
     if ($type eq 'rw' || $type eq 'wo') {
         if($type eq 'rw'){
-            $accessor .= 
+            $accessor .=
                 'if (scalar(@_) >= 2) {' . "\n";
         }
         else{ # writer
-            $accessor .= 
+            $accessor .=
                 'if(@_ < 2){ Carp::confess("Not enough arguments for the writer of $name") }'.
                 '{' . "\n";
         }
-                
+
         my $value = '$_[1]';
 
         if (defined $constraint) {
@@ -48,7 +52,7 @@ sub _generate_accessor_any{
                     'my $val = $constraint->coerce('.$value.');';
                 $value = '$val';
             }
-            $accessor .= 
+            $accessor .=
                 "\n".
                 '$compiled_type_constraint->('.$value.') or
                     $attribute->_throw_type_constraint_error('.$value.', $constraint);' . "\n";

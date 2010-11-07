@@ -1,7 +1,7 @@
 package Mouse::Meta::Method::Constructor;
 use Mouse::Util qw(:meta); # enables strict and warnings
 
-use constant _MOUSE_DEBUG => !!$ENV{MOUSE_DEBUG};
+use constant _MOUSE_DEBUG => $ENV{MOUSE_DEBUG} ? 1 : 0;
 
 sub _inline_slot{
     my(undef, $self_var, $attr_name) = @_;
