@@ -186,7 +186,7 @@ sub subtype {
 sub coerce { # coerce $type, from $from, via { ... }, ...
     my $type_name = shift;
     my $type = find_type_constraint($type_name)
-        or Carp::croak("Cannot find type '$type_name', perhaps you forgot to load it.");
+        or Carp::croak("Cannot find type '$type_name', perhaps you forgot to load it");
 
     $type->_add_type_coercions(@_);
     return;
@@ -383,10 +383,7 @@ sub register_type_constraint {
     my($constraint) = @_;
     Carp::croak("No type supplied / type is not a valid type constraint")
         unless Mouse::Util::is_a_type_constraint($constraint);
-    my $name = $constraint->name;
-    Carp::croak("Can't register an unnamed type constraint")
-        unless defined $name;
-    return $TYPE{$name} = $constraint;
+    return $TYPE{$constraint->name} = $constraint;
 }
 
 sub find_or_parse_type_constraint {
