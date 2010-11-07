@@ -240,8 +240,10 @@ sub assert_valid {
     return 1;
 }
 
-sub _as_string { $_[0]->name                  } # overload ""
-sub _identity;                                  # overload 0+
+# overloading stuff
+
+sub _as_string { $_[0]->name } # overload ""
+sub _identity;                 # overload 0+
 
 sub _unite { # overload infix:<|>
     my($lhs, $rhs) = @_;
