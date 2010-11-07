@@ -114,7 +114,7 @@ sub build_import_methods{
     $args{EXPORTS}    = \%exports;
     $args{REMOVABLES} = \@removables;
 
-    $args{groups}{all}     ||= \@all;
+    $args{groups}{all} ||= \@all;
 
     if(my $default_list = $args{groups}{default}){
         my %default;
@@ -135,7 +135,6 @@ sub build_import_methods{
 
     return (\&do_import, \&do_unimport);
 }
-
 
 # the entity of general import()
 sub do_import {
@@ -183,11 +182,11 @@ sub do_import {
 
         if(@traits){
             my $type = (split /::/, ref $meta)[-1]; # e.g. "Class" for "My::Meta::Class"
-            @traits =
-                map{
-                    ref($_) ? $_
-                            : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1)
-                } @traits;
+            @traits = map{
+              ref($_)
+                ? $_
+                : Mouse::Util::resolve_metaclass_alias($type => $_, trait => 1)
+            } @traits;
 
             require Mouse::Util::MetaRole;
             Mouse::Util::MetaRole::apply_metaroles(
@@ -278,8 +277,8 @@ This document describes Mouse version 0.82
     use Mouse::Exporter;
 
     Mouse::Exporter->setup_import_methods(
-      as_is     => [ 'has_rw', 'other_sugar', \&Some::Random::thing ],
-      also      => 'Mouse',
+      as_is => [ 'has_rw', 'other_sugar', \&Some::Random::thing ],
+      also  => 'Mouse',
     );
 
     sub has_rw {
