@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.83 2010-11-08 11:40:25
+    [BUG FIXES]
+    * 'Int' type constraint passed dualvars (e.g. $!) while Moose's doesn't
+
 0.82 2010-11-05 18:12:28
     [BUG FIXES]
     * Wrong name for a method in Mouse::Meta::TypeConstraint:
