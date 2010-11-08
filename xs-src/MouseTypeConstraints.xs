@@ -70,21 +70,21 @@ mouse_tc_Bool(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
 
     if(sv_true(sv)){
-        if(SvIOKp(sv)){
+        if(SvPOKp(sv)){ /* "1" */
+            return SvCUR(sv) == 1 && SvPVX(sv)[0] == '1';
+        }
+        else if(SvIOKp(sv)){
             return SvIVX(sv) == 1;
         }
         else if(SvNOKp(sv)){
             return SvNVX(sv) == 1.0;
-        }
-        else if(SvPOKp(sv)){ /* "1" */
-            return SvCUR(sv) == 1 && SvPVX(sv)[0] == '1';
         }
         else{
             return FALSE;
         }
     }
     else{
-        /* any false value must be boolean */
+        /* any false value is a boolean */
         return TRUE;
     }
 }
@@ -140,17 +140,15 @@ S_nv_is_integer(pTHX_ NV const nv) {
 int
 mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    if(SvIOKp(sv)){
+    if(SvPOKp(sv)){
+        int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);
+        return num_type && !(num_type & IS_NUMBER_NOT_INT);
+    }
+    else if(SvIOKp(sv)){
         return TRUE;
     }
     else if(SvNOKp(sv)) {
         return S_nv_is_integer(aTHX_ SvNVX(sv));
-    }
-    else if(SvPOKp(sv)){
-        int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);
-        if(num_type){
-            return !(num_type & IS_NUMBER_NOT_INT);
-        }
     }
     return FALSE;
 }
@@ -162,7 +160,7 @@ mouse_tc_Str(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
 }
 
 int
-mouse_tc_ClassName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv){ 
+mouse_tc_ClassName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv){
     assert(sv);
     return is_class_loaded(sv);
 }
@@ -694,7 +692,7 @@ BOOT:
             (SV*)gv_fetchpvs( MTC_CLASS "::(\"\"", GV_ADDMULTI, SVt_PVCV ),
             code_ref );
     }
-            
+
     /* '0+' => '_identity' */
     {
         SV* const code_ref = sv_2mortal(newRV_inc(
