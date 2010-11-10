@@ -9,22 +9,36 @@ BEGIN{
 
 use strict;
 use warnings;
-use inc::Module::Install 1.00;
+BEGIN {
+	# author requires, or bundled modules
+    my @devmods = qw(
+        inc::Module::Install             1.00
+        Module::Install::TestTarget      0.13
+        Module::Install::AuthorTests     0.002
+        Module::Install::XSUtil          0.36
+		Test::Exception::LessClever      0.005
+		Test::Requires                   0.06
+    );
+    my @not_available;
+	while(my($mod, $ver) = splice @devmods, 0, 2) {
+        eval qq{use $mod $ver (); 1} or push @not_available, $mod;
+    }
+    if(@not_available) {
+        print qq{# The following modules are not available.\n};
+        print qq{# `perl $0 | cpanm` will install them:\n};
+        print $_, "\n" for @not_available;
+		exit 1;
+     }
+}
+use inc::Module::Install;
 
-# for co-developpers
-use Module::Install::XSUtil 0.30;
-use Module::Install::AuthorTests;
-
-name     'Mouse';
 all_from 'lib/Mouse.pm';
 
 # Scalar::Util < 1.14 has a bug.
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util' => 1.14;
 
-test_requires 'Test::More'                  => 0.88;
-test_requires 'Test::Requires'              => 0.06; # works on 5.6.0
-test_requires 'Test::Exception::LessClever' => 0.005;
+test_requires 'Test::More' => 0.88;
 
 # to keep zero-dependencies
 include 'Test::Exception::LessClever';
