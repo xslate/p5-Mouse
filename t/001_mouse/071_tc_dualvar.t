@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 use Test::More;
-use Errno qw(ENOENT EPERM);
+use Scalar::Util qw(dualvar);
 {
     package Foo;
     use Mouse;
@@ -17,14 +17,15 @@ use Errno qw(ENOENT EPERM);
 
 my $foo = Foo->new();
 
-for my $e(ENOENT, EPERM) {
-    $! = $e;
-    eval { $foo->intval($!) };
-    like $@, qr/Validation failed for 'Int'/, 'Int for dualvar';
+my $dv = dualvar(42, 'foo');
+eval { $foo->intval($dv) };
+like $@, qr/Validation failed for 'Int'/, 'Int for dualvar';
 
-    $! = $e;
-    eval { $foo->numval($!) };
-    like $@, qr/Validation failed for 'Num'/, 'Num for dualvar';
-}
+eval { $foo->numval($dv) };
+like $@, qr/Validation failed for 'Num'/, 'Num for dualvar';
+
+cmp_ok $dv, 'eq', 'foo';
+cmp_ok $dv, '==', 42, 'keeps dualvar-ness';
+
 done_testing;
 
