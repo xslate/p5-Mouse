@@ -476,7 +476,7 @@ CODE:
     if(svp && sv_true(*svp)){
         if(!(has_default || has_builder)){
             mouse_throw_error(klass, NULL,
-                "You cannot have lazy attribute (%"SVf") without specifying "
+                "You cannot have a lazy attribute (%"SVf") without specifying "
                 "a default value for it", name);
         }
     }

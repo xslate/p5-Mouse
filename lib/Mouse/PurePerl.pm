@@ -589,7 +589,7 @@ sub _process_options{
 
     if ($args->{lazy}) {
         (exists $args->{default} || defined $args->{builder})
-            || $class->throw_error("You cannot have lazy attribute ($name) without specifying a default value for it");
+            || $class->throw_error("You cannot have a lazy attribute ($name) without specifying a default value for it");
     }
 
     return;

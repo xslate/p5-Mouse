@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Exception;
 
 my $lazy_run = 0;
 
@@ -22,12 +21,13 @@ do {
         default => "welp",
     );
 
-    ::throws_ok {
+    eval {
         has lazy_no_default => (
             is   => 'rw',
             lazy => 1,
         );
-    } qr/You cannot have lazy attribute \(lazy_no_default\) without specifying a default value for it/;
+    };
+    ::like $@, qr/You cannot have a lazy attribute \(lazy_no_default\) without specifying a default value for it/;
 };
 
 my $object = Class->new;
