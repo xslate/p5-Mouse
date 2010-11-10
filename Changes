@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.84 2010-11-10 14:31:20
+    * No feature changes
+    * Fix tests not to depend on platforms
+
 0.83 2010-11-08 11:40:25
     [BUG FIXES]
     * 'Int' type constraint passed dualvars (e.g. $!) while Moose's doesn't
