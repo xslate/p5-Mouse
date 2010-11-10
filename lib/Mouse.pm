@@ -196,21 +196,21 @@ Unfortunately, Moose has a compile-time penalty. Though significant progress
 has been made over the years, the compile time penalty is a non-starter for
 some very specific applications. If you are writing a command-line application
 or CGI script where startup time is essential, you may not be able to use
-Moose. We recommend that you instead use persistent Perl executing environments
-like C<FastCGI> for the latter, if possible.
+Moose (we recommend that you instead use persistent Perl executing environments
+like C<FastCGI> for the latter, if possible).
 
-Mouse is a Moose compatible object system, which aims to alleviate this by
-providing a subset of Moose's functionality.
+Mouse is a Moose compatible object system, which aims to alleviate this penalty
+by providing a subset of Moose's functionality.
 
 We're also going as light on dependencies as possible. Mouse currently has
-B<no dependencies> except for testing modules. Mouse also works without XS,
-although it has an XS backend to make it much faster.
+B<no dependencies> except for building/testing modules. Mouse also works
+without XS, although it has an XS backend to make it much faster.
 
-=head2 MOOSE COMPATIBILITY
+=head2 Moose Compatibility
 
 Compatibility with Moose has been the utmost concern. The sugary interface is
 highly compatible with Moose. Even the error messages are taken from Moose.
-The Mouse code just runs the test suite 4x faster.
+The Mouse code just runs its test suite 4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
 C<s/Mouse/Moose/g> on your codebase and have nothing break. To that end,
@@ -225,7 +225,7 @@ also better.
 
 See also L<Mouse::Spec> for compatibility and incompatibility with Moose.
 
-=head2 MouseX
+=head2 Mouse Extentions
 
 Please don't copy MooseX code to MouseX. If you need extensions, you really
 should upgrade to Moose. We don't need two parallel sets of extensions!

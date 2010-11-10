@@ -166,65 +166,75 @@ This document describes Mouse version 0.84
     my $bar = MyObject->new();
     $obj->equals($bar); # yes, it is comparable
 
-=head1 KEYWORDS
+=head1 DESCRIPTION
 
-=head2 C<< meta -> Mouse::Meta::Role >>
+This module declares the caller class to be a Mouse role.
 
-Returns this role's metaclass instance.
+The concept of roles is documented in L<Moose::Manual::Roles>.
+This document serves as API documentation.
 
-=head2 C<< before (method|methods|regexp) -> CodeRef >>
+=head1 EXPORTED FUNCTIONS
 
-Sets up a B<before> method modifier. See L<Moose/before>.
+Mouse::Role supports all of the functions that Mouse exports, but
+differs slightly in how some items are handled (see L</CAVEATS> below
+for details).
 
-=head2 C<< after (method|methods|regexp) => CodeRef >>
+Mouse::Role also offers two role-specific keywords:
 
-Sets up an B<after> method modifier. See L<Moose/after>.
+=head2 C<< requires(@method_names) >>
 
-=head2 C<< around (method|methods|regexp) => CodeRef >>
+Roles can require that certain methods are implemented by any class which
+C<does> the role.
 
-Sets up an B<around> method modifier. See L<Moose/around>.
+Note that attribute accessors also count as methods for the purposes of
+satisfying the requirements of a role.
 
-=head2 C<super>
+=head2 C<< excludes(@role_names) >>
 
-Sets up the B<super> keyword. See L<Moose/super>.
+This is exported but not implemented in Mouse.
 
-=head2  C<< override method => CodeRef >>
-
-Sets up an B<override> method modifier. See L<Moose/Role/override>.
-
-=head2 C<inner>
-
-This is not supported in roles and emits an error. See L<Moose/Role>.
-
-=head2 C<< augment method => CodeRef >>
-
-This is not supported in roles and emits an error. See L<Moose/Role>.
-
-=head2 C<< has (name|names) => parameters >>
-
-Sets up an attribute (or if passed an arrayref of names, multiple attributes) to
-this role. See L<Mouse/has>.
-
-=head2 C<< confess(error) -> BOOM >>
-
-L<Carp/confess> for your convenience.
-
-=head2 C<< blessed(value) -> ClassName | undef >>
-
-L<Scalar::Util/blessed> for your convenience.
-
-=head1 MISC
+=head1 IMPORT AND UNIMPORT
 
 =head2 import
 
-Importing Mouse::Role will give you sugar.
+Importing Mouse::Role will give you sugar. C<-traits> are also supported.
 
 =head2 unimport
 
 Please unimport (C<< no Mouse::Role >>) so that if someone calls one of the
 keywords (such as L</has>) it will break loudly instead breaking subtly.
 
+=head1 CAVEATS
+
+Role support has only a few caveats:
+
+=over
+
+=item *
+
+Roles cannot use the C<extends> keyword; it will throw an exception for now.
+The same is true of the C<augment> and C<inner> keywords (not sure those
+really make sense for roles). All other Mouse keywords will be I<deferred>
+so that they can be applied to the consuming class.
+
+=item *
+
+Role composition does its best to B<not> be order-sensitive when it comes to
+conflict resolution and requirements detection. However, it is order-sensitive
+when it comes to method modifiers. All before/around/after modifiers are
+included whenever a role is composed into a class, and then applied in the order
+in which the roles are used. This also means that there is no conflict for
+before/around/after modifiers.
+
+In most cases, this will be a non-issue; however, it is something to keep in
+mind when using method modifiers in a role. You should never assume any
+ordering.
+
+=back
+
 =head1 SEE ALSO
+
+L<Mouse>
 
 L<Moose::Role>
 

@@ -278,6 +278,8 @@ reimplements
 reinitializes
 specializer
 backend
+extention
+extentions
 
 ## misspelt on purpose
 emali
