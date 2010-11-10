@@ -1,3 +1,0 @@
-
-$ENV{MOUSE_PUREPERL} = 1;
-

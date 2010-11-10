@@ -82,20 +82,13 @@ if($use_xs){
     use_xshelper();
     cc_warnings();
     cc_src_paths('xs-src');
-}
     if($use_xs){
-        # repeat testing
-        # see also ExtUtils::MM_Any::test_via_harness()
-        my $t_pp =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                   .q{ "do 'tool/force-pp.pl'; test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                   .q{ $(TEST_FILES)} . "\n";
-
-        postamble qq{test_pp :: pure_all\n}
-                . qq{\t} . $t_pp;
-        if($Module::Install::AUTHOR) {
-            postamble qq{test :: test_pp };
-        }
+		test_target test_pp => (
+			env => { PERL_ONLY => 1 },
+			($Module::Install::AUTHOR ? (alias => 'test') : ()),
+		);
     }
+}
 else{
     print "Mouse configured with Pure Perl.\n";
 }
@@ -119,15 +112,10 @@ if ($Module::Install::AUTHOR) {
             && eval { require Moose; Moose->VERSION($require_version) }) {
         print "You have Moose ", Moose->VERSION, ".\n";
         do 'tool/create-moose-compatibility-tests.pl';
-        # repeat testing
-        # see also ExtUtils::MM_Any::test_via_harness()
-        my $t_moose =  q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                      .q{ "test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                      .q{ xt/compat/t/*/*.t } . "\n";
-
-        postamble qq{test :: test_moose\n\n}
-                . qq{test_moose :: pure_all\n}
-                . qq{\t} . $t_moose;
+        test_target test_moose => (
+            tests => ['xt/compat/t/*/*.t'],
+            alias => 'test',
+        );
     } else {
         print "You don't have Moose $require_version. skipping moose compatibility test\n";
     }
