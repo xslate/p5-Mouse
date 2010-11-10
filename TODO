@@ -1,0 +1,7 @@
+TODO:
+
+Makng subclasses of Mouse::Meta::* immutable breaks the classes.
+
+If one want match_on_type(), it should be supported.
+
+The 'handles' option for has() is not completely compatible with Moose.
