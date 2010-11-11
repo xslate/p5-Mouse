@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.85 2010-11-11 10:51:45
+    [BUG FIXES]
+    * Fix an error message to be compatible with Moose's
+    * Fix build problems
+
 0.84 2010-11-10 14:31:20
     * No feature changes
     * Fix tests not to depend on platforms
