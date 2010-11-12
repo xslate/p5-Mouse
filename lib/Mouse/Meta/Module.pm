@@ -214,6 +214,7 @@ sub create {
         $package_name = $class . '::__ANON__::' . $ANON_SERIAL;
     }
 
+
     # instantiate a module
     {
         no strict 'refs';
@@ -257,7 +258,7 @@ sub create {
             $meta->add_method($method_name, $method_body);
         }
     }
-    if (defined $roles){
+    if (defined $roles and !$options{in_application_to_instance}){
         Mouse::Util::apply_all_roles($package_name, @{$roles});
     }
 

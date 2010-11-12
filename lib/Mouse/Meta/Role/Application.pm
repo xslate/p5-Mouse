@@ -56,7 +56,10 @@ sub apply {
         $consumer = (Mouse::Util::class_of($instance) || 'Mouse::Meta::Class')
             ->create_anon_class(
                 superclasses => [ref $instance],
+                roles        => [$role],
                 cache        => 1,
+
+                in_application_to_instance => 1, # suppress to apply roles
             );
     }
 
