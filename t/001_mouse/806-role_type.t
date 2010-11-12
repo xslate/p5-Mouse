@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More;
 
 {
     package Request::Headers::Role;
@@ -40,7 +40,7 @@ use Test::More tests => 5;
 
     has headers => (
         is     => 'rw',
-        isa    => 'Headers',
+        does   => 'Headers',
         coerce => 1,
     );
 }
@@ -55,4 +55,12 @@ is($res->headers->foo, 'yay');
 eval {
     $res->headers( Request::Headers->new( foo => 'baz' ) );
 };
-ok $@;
+like $@, qr/Validation failed/;
+
+eval {
+    $res->headers( Request::Headers->new( foo => undef ) );
+};
+like $@, qr/Validation failed/;
+
+done_testing;
+
