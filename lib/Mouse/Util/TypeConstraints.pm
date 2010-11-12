@@ -4,8 +4,7 @@ use Mouse::Util; # enables strict and warnings
 use Mouse::Meta::TypeConstraint;
 use Mouse::Exporter;
 
-use Carp         ();
-use Scalar::Util ();
+use Carp ();
 
 Mouse::Exporter->setup_import_methods(
     as_is => [qw(
@@ -212,8 +211,7 @@ sub role_type {
     return subtype $name => (
         as           => 'Object',
         optimized_as => sub {
-            return Scalar::Util::blessed($_[0])
-                && Mouse::Util::does_role($_[0], $role);
+            return Mouse::Util::does_role($_[0], $role);
         },
         role         => $role,
     );
