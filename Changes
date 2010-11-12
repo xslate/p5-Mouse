@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.86 2010-11-12 20:12:53
+    [BUG FIXES]
+    * Role application to instances cached anonymous classes in wrong way
+
 0.85 2010-11-11 10:51:45
     [BUG FIXES]
     * Fix an error message to be compatible with Moose's
