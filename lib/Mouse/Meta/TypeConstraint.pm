@@ -102,8 +102,8 @@ sub _add_type_coercions { # ($self, @pairs)
             "Cannot add additional type coercions to Union types '$self'");
     }
 
-    my $coercions = ($self->{coercion_map} ||= []);
-    my %has       = map{ $_->[0] => undef } @{$coercions};
+    my $coercion_map = ($self->{coercion_map} ||= []);
+    my %has          = map{ $_->[0]->name => undef } @{$coercion_map};
 
     for(my $i = 0; $i < @_; $i++){
         my $from   = $_[  $i];
@@ -117,7 +117,7 @@ sub _add_type_coercions { # ($self, @pairs)
             or $self->throw_error(
                 "Could not find the type constraint ($from) to coerce from");
 
-        push @{$coercions}, [ $type => $action ];
+        push @{$coercion_map}, [ $type => $action ];
     }
 
     $self->_compile_type_coercion();
@@ -127,13 +127,17 @@ sub _add_type_coercions { # ($self, @pairs)
 sub _compile_type_coercion {
     my($self) = @_;
 
-    my @coercions = @{$self->{coercion_map}};
+    my @coercions;
+
+    foreach my $pair(@{$self->{coercion_map}}) {
+        push @coercions, [ $pair->[0]->_compiled_type_constraint, $pair->[1] ];
+    }
 
     $self->{_compiled_type_coercion} = sub {
        my($thing) = @_;
        foreach my $pair (@coercions) {
             #my ($constraint, $converter) = @$pair;
-            if ($pair->[0]->check($thing)) {
+            if ($pair->[0]->($thing)) {
               local $_ = $thing;
               return $pair->[1]->($thing);
             }
