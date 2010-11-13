@@ -1,5 +1,16 @@
 Revision history for Mouse
 
+0.87 2010-11-13 23:44:20
+    [BUG FIXES]
+    * Fix packaging issues
+        - META.yml was not updated (reported by @shohex)
+        - `make realclean` should remove xshelper.h
+          (patched by Ingy dot Net, and modified by gfx)
+
+    [OTHERS]
+    * Type coercion routines have been refactored; coercions are compiled
+      on demand.
+
 0.86 2010-11-12 20:12:53
     [BUG FIXES]
     * Role application to instances cached anonymous classes in wrong way
