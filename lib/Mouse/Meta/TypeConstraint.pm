@@ -261,8 +261,9 @@ sub _identity;                 # overload 0+
 sub _unite { # overload infix:<|>
     my($lhs, $rhs) = @_;
     require Mouse::Util::TypeConstraints;
-    return Mouse::Util::TypeConstraints::find_or_parse_type_constraint(
-       " $lhs | $rhs",
+    return Mouse::Util::TypeConstraints::_find_or_create_union_type(
+        $lhs,
+        Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint($rhs),
     );
 }
 

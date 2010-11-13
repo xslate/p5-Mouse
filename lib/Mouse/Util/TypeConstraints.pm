@@ -290,8 +290,9 @@ sub _find_or_create_parameterized_type{
 }
 
 sub _find_or_create_union_type{
-    return if grep{ not defined } @_;
-    my @types = sort map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
+    return if grep{ not defined } @_; # all things must be defined
+    my @types = sort
+        map{ $_->{type_constraints} ? @{$_->{type_constraints}} : $_ } @_;
 
     my $name = join '|', @types;
 
