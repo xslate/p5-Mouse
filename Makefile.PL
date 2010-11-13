@@ -141,6 +141,7 @@ EOT
 
 clean_files q{
     lib/Mouse/Tiny.pm $(O_FILES) test-mydeps-*.log
+    xshelper.h
     *.out
     cover_db xs-src/*.gc{v,no,da}
 };
