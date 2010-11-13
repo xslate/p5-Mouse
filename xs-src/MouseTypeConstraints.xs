@@ -55,8 +55,10 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
 }
 
 /*
-    The following type check functions return an integer, not a bool, to keep them simple,
-    so if you assign these return value to bool variable, you must use "expr ? TRUE : FALSE".
+    The following type check functions return an integer, not a bool, to keep
+    the code simple,
+    so if you assign these return value to a bool variable, you must use
+    "expr ? TRUE : FALSE".
 */
 
 int
@@ -120,7 +122,7 @@ S_nv_is_integer(pTHX_ NV const nv) {
     }
     else {
         char buf[64];  /* Must fit sprintf/Gconvert of longest NV */
-        char* p;
+        const char* p;
         (void)Gconvert(nv, NV_DIG, 0, buf);
         p = &buf[0];
 
@@ -174,7 +176,7 @@ mouse_tc_RoleName(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
         ENTER;
         SAVETMPS;
 
-        ok =  is_an_instance_of("Mouse::Meta::Role", get_metaclass(sv));
+        ok = is_an_instance_of("Mouse::Meta::Role", get_metaclass(sv));
 
         FREETMPS;
         LEAVE;
@@ -276,7 +278,7 @@ mouse_parameterized_ArrayRef(pTHX_ SV* const param, SV* const sv) {
 
 static int
 mouse_parameterized_HashRef(pTHX_ SV* const param, SV* const sv) {
-    if(mouse_tc_HashRef(aTHX_ NULL, sv)){
+    if(IsHashRef(sv)){
         HV* const hv  = (HV*)SvRV(sv);
         HE* he;
 
@@ -735,7 +737,7 @@ CODE:
     for(parent = get_slots(self, "parent"); parent; parent = get_slots(parent, "parent")){
         check = get_slots(parent, "hand_optimized_type_constraint");
         if(check && SvOK(check)){
-            if(!mouse_tc_CodeRef(aTHX_ NULL, check)){
+            if(!IsCodeRef(check)){
                 croak("Not a CODE reference");
             }
             av_unshift(checks, 1);
@@ -804,8 +806,9 @@ check(SV* self, SV* sv)
 CODE:
 {
     SV* const check = get_slots(self, "compiled_type_constraint");
-    if(!(check && mouse_tc_CodeRef(aTHX_ NULL, check))){
-        mouse_throw_error(self, check, "'%"SVf"' has no compiled type constraint", self);
+    if(!(check && IsCodeRef(check))){
+        mouse_throw_error(self, check,
+            "'%"SVf"' has no compiled type constraint", self);
     }
     RETVAL = mouse_tc_check(aTHX_ check, sv) ? TRUE : FALSE;
 }
