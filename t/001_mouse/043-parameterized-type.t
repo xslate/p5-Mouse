@@ -122,7 +122,8 @@ use Tie::Array;
         my $bar = Bar->new(list => [ qw(a b c) ]);
 
         is_deeply( $bar->list, \@list, "list is as expected");
-    } "coercion works";
+    } "coercion works"
+        or diag( Mouse::Util::TypeConstraints::find_type_constraint("Bar::List")->dump );
 
     throws_ok {
         Bar->new(list => [ { 1 => 2 }, 2, 3 ]);

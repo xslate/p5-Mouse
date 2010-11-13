@@ -613,7 +613,6 @@ sub _identity  { Scalar::Util::refaddr($_[0]) } # overload 0+
 
 sub type_parameter           { $_[0]->{type_parameter} }
 sub _compiled_type_constraint{ $_[0]->{compiled_type_constraint} }
-sub _compiled_type_coercion  { $_[0]->{_compiled_type_coercion}  }
 
 sub __is_parameterized { exists $_[0]->{type_parameter} }
 sub has_coercion {       exists $_[0]->{_compiled_type_coercion} }

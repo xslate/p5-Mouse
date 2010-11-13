@@ -670,7 +670,6 @@ BOOT:
     INSTALL_SIMPLE_READER(TypeConstraint, type_parameter);
 
     INSTALL_SIMPLE_READER_WITH_KEY(TypeConstraint, _compiled_type_constraint, compiled_type_constraint);
-    INSTALL_SIMPLE_READER(TypeConstraint, _compiled_type_coercion); /* Mouse specific */
 
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, has_coercion, _compiled_type_coercion);
     INSTALL_SIMPLE_PREDICATE_WITH_KEY(TypeConstraint, __is_parameterized, type_parameter); /* Mouse specific */

@@ -67,9 +67,16 @@ sub new {
     $self->compile_type_constraint()
         if !$args{hand_optimized_type_constraint};
 
-    if($args{type_constraints}) {
-        $self->_compile_union_type_coercion();
+    if($args{type_constraints}) { # union types
+        foreach my $type(@{$self->{type_constraints}}){
+            if($type->has_coercion){
+                # set undef for has_coercion()
+                $self->{_compiled_type_coercion} = undef;
+                last;
+            }
+        }
     }
+
     return $self;
 }
 
@@ -120,60 +127,62 @@ sub _add_type_coercions { # ($self, @pairs)
         push @{$coercion_map}, [ $type => $action ];
     }
 
-    $self->_compile_type_coercion();
+    $self->{_compiled_type_coercion} = undef;
     return;
 }
 
-sub _compile_type_coercion {
+sub _compiled_type_coercion {
     my($self) = @_;
 
-    my @coercions;
+    my $coercion = $self->{_compiled_type_coercion};
+    return $coercion if defined $coercion;
 
-    foreach my $pair(@{$self->{coercion_map}}) {
-        push @coercions, [ $pair->[0]->_compiled_type_constraint, $pair->[1] ];
-    }
-
-    $self->{_compiled_type_coercion} = sub {
-       my($thing) = @_;
-       foreach my $pair (@coercions) {
-            #my ($constraint, $converter) = @$pair;
-            if ($pair->[0]->($thing)) {
-              local $_ = $thing;
-              return $pair->[1]->($thing);
-            }
-       }
-       return $thing;
-    };
-    return;
-}
-
-sub _compile_union_type_coercion {
-    my($self) = @_;
-
-    my @coercions;
-    foreach my $type(@{$self->{type_constraints}}){
-        if($type->has_coercion){
-            push @coercions, $type;
+    if(!$self->{type_constraints}) {
+        my @coercions;
+        foreach my $pair(@{$self->{coercion_map}}) {
+            push @coercions,
+                [ $pair->[0]->_compiled_type_constraint, $pair->[1] ];
         }
-    }
-    if(@coercions){
-        $self->{_compiled_type_coercion} = sub {
-            my($thing) = @_;
-            foreach my $type(@coercions){
-                my $value = $type->coerce($thing);
-                return $value if $self->check($value);
-            }
-            return $thing;
+
+        $coercion = sub {
+           my($thing) = @_;
+           foreach my $pair (@coercions) {
+                #my ($constraint, $converter) = @$pair;
+                if ($pair->[0]->($thing)) {
+                  local $_ = $thing;
+                  return $pair->[1]->($thing);
+                }
+           }
+           return $thing;
         };
     }
-    return;
+    else { # for union type
+        my @coercions;
+        foreach my $type(@{$self->{type_constraints}}){
+            if($type->has_coercion){
+                push @coercions, $type;
+            }
+        }
+        if(@coercions){
+            $coercion = sub {
+                my($thing) = @_;
+                foreach my $type(@coercions){
+                    my $value = $type->coerce($thing);
+                    return $value if $self->check($value);
+                }
+                return $thing;
+            };
+        }
+    }
+
+    return( $self->{_compiled_type_coercion} = $coercion );
 }
 
 sub coerce {
     my $self = shift;
     return $_[0] if $self->check(@_);
 
-    my $coercion = $self->{_compiled_type_coercion}
+    my $coercion = $self->_compiled_type_coercion
         or $self->throw_error("Cannot coerce without a type coercion");
     return  $coercion->(@_);
 }
