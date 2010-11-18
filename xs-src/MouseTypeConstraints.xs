@@ -12,6 +12,9 @@
 
 typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
+static
+XSPROTO(XS_Mouse_constraint_check);
+
 /*
     NOTE: mouse_tc_check() handles GETMAGIC
 */
@@ -544,8 +547,8 @@ mouse_generate_can_predicate_for(pTHX_ SV* const methods, const char* const pred
     return mouse_tc_generate(aTHX_ predicate_name, (check_fptr_t)mouse_can_methods, (SV*)param);
 }
 
-
-XS(XS_Mouse_constraint_check) {
+static
+XSPROTO(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
     MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
@@ -561,8 +564,8 @@ XS(XS_Mouse_constraint_check) {
     XSRETURN(1);
 }
 
-XS(XS_Mouse_TypeConstraint_fallback); /* -Wmissing-prototypes */
-XS(XS_Mouse_TypeConstraint_fallback) {
+static
+XSPROTO(XS_Mouse_TypeConstraint_fallback) {
     dXSARGS;
     PERL_UNUSED_VAR(cv);
     PERL_UNUSED_VAR(items);

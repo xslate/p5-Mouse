@@ -191,8 +191,6 @@ CV* mouse_generate_can_predicate_for(pTHX_ SV* const klass, const char* const pr
 
 int mouse_is_an_instance_of(pTHX_ HV* const stash, SV* const instance);
 
-XS(XS_Mouse_constraint_check);
-
 /* Mouse XS Attribute object */
 
 AV* mouse_get_xa(pTHX_ SV* const attr);

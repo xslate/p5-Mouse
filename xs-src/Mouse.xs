@@ -436,8 +436,8 @@ mouse_get_modifier_storage(pTHX_
     return (AV*)SvRV(storage_ref);
 }
 
-static void
-XS_Mouse_value_holder(pTHX_ CV* const cv PERL_UNUSED_DECL) {
+static
+XSPROTO(XS_Mouse_value_holder) {
     dVAR; dXSARGS;
     SV* const value = (SV*)XSANY.any_ptr;
     assert(value);
