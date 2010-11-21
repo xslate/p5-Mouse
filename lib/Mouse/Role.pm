@@ -238,5 +238,9 @@ L<Mouse>
 
 L<Moose::Role>
 
+L<Moose::Manual::Roles>
+
+L<Moose::Spec::Role>
+
 =cut
 

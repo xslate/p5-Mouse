@@ -408,6 +408,8 @@ Perl 5.6.2 or later.
 
 =head1 SEE ALSO
 
+L<Mouse::Role>
+
 L<Mouse::Spec>
 
 L<Moose>
