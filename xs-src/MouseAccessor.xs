@@ -37,12 +37,14 @@ mouse_accessor_generate(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
     xsub = newXS(NULL, accessor_impl, __FILE__);
     sv_2mortal((SV*)xsub);
 
-    mg = sv_magicext((SV*)xsub, MOUSE_xa_slot(xa), PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)xa, HEf_SVKEY);
+    mg = sv_magicext((SV*)xsub, MOUSE_xa_slot(xa),
+        PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)xa, HEf_SVKEY);
 
     MOUSE_mg_flags(mg) = (U16)MOUSE_xa_flags(xa);
 
     /* NOTE:
-     * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
+     * although we use MAGIC for gc, we also store mg to
+     * CvXSUBANY for efficiency (gfx)
      */
     CvXSUBANY(xsub).any_ptr = (void*)mg;
 
@@ -243,18 +245,21 @@ mouse_simple_accessor_generate(pTHX_
     MAGIC* mg;
 
     if(!fq_name){
-        /* anonymous xsubs need sv_2mortal */
+        /* anonymous xsubs need sv_2mortal() */
         sv_2mortal((SV*)xsub);
     }
 
-    mg = sv_magicext((SV*)xsub, slot, PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)dptr, dlen);
+    mg = sv_magicext((SV*)xsub, slot,
+        PERL_MAGIC_ext, &mouse_accessor_vtbl, (char*)dptr, dlen);
+
     SvREFCNT_dec(slot); /* sv_magicext() increases refcnt in mg_obj */
     if(dlen == HEf_SVKEY){
         SvREFCNT_dec(dptr);
     }
 
     /* NOTE:
-     * although we use MAGIC for gc, we also store mg to CvXSUBANY for efficiency (gfx)
+     * although we use MAGIC for gc, we also store mg to CvXSUBANY
+     * for efficiency (gfx)
      */
     CvXSUBANY(xsub).any_ptr = (void*)mg;
 
