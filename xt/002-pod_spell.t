@@ -188,6 +188,7 @@ namespacing
 transformability
 redispatch
 MISC
+mro
 
 # as in required-ness
 ness
