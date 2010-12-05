@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.88 2010-12-05 14:24:14
+    [BUG FIX]
+    * Workaround SL4A where mro.pm doesn't exist even if Perl >= 5.10.0
+      (reported by @hide_o_55)
+
 0.87 2010-11-13 23:44:20
     [BUG FIXES]
     * Fix packaging issues
