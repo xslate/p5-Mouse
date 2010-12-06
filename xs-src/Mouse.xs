@@ -558,9 +558,8 @@ PPCODE:
        linearized_isa() */
     HV* const stash          = mouse_get_namespace(aTHX_ self);
     AV* const linearized_isa = mro_get_linear_isa(stash);
-    I32 len;
+    I32 const            len = AvFILLp(linearized_isa) + 1;
     I32 i;
-    len = AvFILLp(linearized_isa) + 1;
     EXTEND(SP, len);
     for(i = 0; i < len; i++){
         PUSHs(AvARRAY(linearized_isa)[i]);
@@ -592,7 +591,7 @@ CODE:
 
     object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, object, args, FALSE);
-    mouse_buildall(aTHX_ xc, object, sv_2mortal(newRV_inc((SV*)args))); /* BUILDALL */
+    mouse_buildall(aTHX_ xc, object, sv_2mortal(newRV_inc((SV*)args)));
     ST(0) = object; /* because object is mortal, we should return it as is */
     XSRETURN(1);
 }
@@ -664,7 +663,8 @@ ALIAS:
     get_after_method_modifiers  = MOUSE_M_AFTER
 PPCODE:
 {
-    AV* const storage = mouse_get_modifier_storage(aTHX_ self, (enum mouse_modifier_t)ix, name);
+    AV* const storage = mouse_get_modifier_storage(aTHX_ self,
+                            (enum mouse_modifier_t)ix, name);
     I32 const len     = av_len(storage) + 1;
     if(GIMME_V == G_ARRAY) {
         I32 i;
@@ -732,7 +732,8 @@ CODE:
     /* new_object */
     object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
     mouse_class_initialize_object(aTHX_ meta, object, (HV*)SvRV(args), FALSE);
-    mouse_buildall(aTHX_ xc, object, args); /* BUILDALL */
+    /* BUILDALL */
+    mouse_buildall(aTHX_ xc, object, args);
     ST(0) = object; /* because object is mortal, we should return it as is */
     XSRETURN(1);
 }
