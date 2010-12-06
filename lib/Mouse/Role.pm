@@ -3,8 +3,8 @@ use Mouse::Exporter; # enables strict and warnings
 
 our $VERSION = '0.88';
 
-use Carp         qw(confess);
-use Scalar::Util qw(blessed);
+use Carp         ();
+use Scalar::Util ();
 
 use Mouse ();
 
