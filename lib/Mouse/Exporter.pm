@@ -1,16 +1,16 @@
 package Mouse::Exporter;
 use strict;
 use warnings;
-
 use Carp ();
 
 my %SPEC;
 
 my $strict_bits;
-BEGIN{ $strict_bits = strict::bits(qw(subs refs vars)); }
-
 my $warnings_extra_bits;
-BEGIN{ $warnings_extra_bits = warnings::bits(FATAL => 'recursion') }
+BEGIN{
+    $strict_bits         = strict::bits(qw(subs refs vars));
+    $warnings_extra_bits = warnings::bits(FATAL => 'recursion');
+}
 
 # it must be "require", because Mouse::Util depends on Mouse::Exporter,
 # which depends on Mouse::Util::import()
@@ -190,7 +190,7 @@ sub do_import {
 
             require Mouse::Util::MetaRole;
             Mouse::Util::MetaRole::apply_metaroles(
-                for       => $into,
+                for => $into,
                 Mouse::Util::is_a_metarole($into->meta)
                     ? (role_metaroles  => { role  => \@traits })
                     : (class_metaroles => { class => \@traits }),
@@ -234,7 +234,9 @@ sub do_unimport {
     for my $keyword (@{ $spec->{REMOVABLES} }) {
         next if !exists $stash->{$keyword};
         my $gv = \$stash->{$keyword};
-        if(ref($gv) eq 'GLOB' && *{$gv}{CODE} == $spec->{EXPORTS}{$keyword}){ # make sure it is from us
+
+        # remove what is from us
+        if(ref($gv) eq 'GLOB' && *{$gv}{CODE} == $spec->{EXPORTS}{$keyword}){
             delete $stash->{$keyword};
         }
     }
@@ -255,8 +257,6 @@ sub _get_caller_package {
         return scalar caller(1);
     }
 }
-
-#sub _spec{ %SPEC }
 
 1;
 __END__
