@@ -19,11 +19,9 @@ mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
     if(items < 1){
         croak("Too few arguments for %s", GvNAME(CvGV(cv)));
     }
-
     /* NOTE: If self has GETMAGIC, $self->accessor will invoke GETMAGIC
-     *       before calling methods, so SvGETMAGIC(self) is not necessarily needed here.
+     *       before calling methods, so SvGETMAGIC(self) is not required here.
      */
-
     return ST(0);
 }
 
@@ -51,17 +49,6 @@ mouse_accessor_generate(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
     return xsub;
 }
 
-
-#define PUSH_VALUE(value, flags) STMT_START { \
-        if((flags) & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){ \
-            mouse_push_values(aTHX_ value, (flags));                       \
-        }                                                                  \
-        else{                                                              \
-            dSP;                                                           \
-            XPUSHs(value ? value : &PL_sv_undef);                          \
-            PUTBACK;                                                       \
-        }                                                                  \
-    } STMT_END                                                             \
 
 /* pushes return values, does auto-deref if needed */
 static void
@@ -113,6 +100,18 @@ mouse_push_values(pTHX_ SV* const value, U16 const flags){
     PUTBACK;
 }
 
+STATIC_INLINE void
+mouse_push_value(pTHX_ SV* const value, U16 const flags) {
+    if(flags & MOUSEf_ATTR_SHOULD_AUTO_DEREF && GIMME_V == G_ARRAY){
+        mouse_push_values(aTHX_ value, flags);
+    }
+    else{
+        dSP;
+        XPUSHs(value ? value : &PL_sv_undef);
+        PUTBACK;
+    }
+}
+
 static void
 mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
     U16 const flags = MOUSE_mg_flags(mg);
@@ -125,7 +124,7 @@ mouse_attr_get(pTHX_ SV* const self, MAGIC* const mg){
         value = mouse_xa_set_default(aTHX_ MOUSE_mg_xa(mg), self);
     }
 
-    PUSH_VALUE(value, flags);
+    mouse_push_value(aTHX_ value, flags);
 }
 
 static void
@@ -165,7 +164,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         assert(SvTYPE(value) != SVTYPEMASK);
     }
 
-    PUSH_VALUE(value, flags);
+    mouse_push_value(aTHX_ value, flags);
 }
 
 XS(XS_Mouse_accessor)
