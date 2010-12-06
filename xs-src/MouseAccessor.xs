@@ -2,7 +2,9 @@
 
 #define CHECK_INSTANCE(instance) STMT_START{                           \
         assert(instance);                                              \
-        if(!(SvROK(instance) && SvTYPE(SvRV(instance)) == SVt_PVHV)){  \
+        if(UNLIKELY(                                                   \
+                !(SvROK(instance)                                      \
+                && SvTYPE(SvRV(instance)) == SVt_PVHV) )){             \
             croak("Invalid object instance: '%"SVf"'", instance);      \
         }                                                              \
     } STMT_END
@@ -89,7 +91,7 @@ mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot) {
 
 STATIC_INLINE SV*
 mouse_accessor_get_self(pTHX_ I32 const ax, I32 const items, CV* const cv) {
-    if(items < 1){
+    if(UNLIKELY( items < 1 )){
         croak("Too few arguments for %s", GvNAME(CvGV(cv)));
     }
     /* NOTE: If self has GETMAGIC, $self->accessor will invoke GETMAGIC
