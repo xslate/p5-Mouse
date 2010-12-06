@@ -1,6 +1,8 @@
 package Mouse::Util;
 use Mouse::Exporter; # enables strict and warnings
 
+# Note that those which don't exist here are defined in XS or Mouse::PurePerl
+
 # must be here because it will be refered by other modules loaded
 sub get_linear_isa($;$); ## no critic
 
@@ -75,57 +77,8 @@ BEGIN{
     }
 
     *MOUSE_XS = sub(){ $xs };
-}
 
-use Carp         ();
-use Scalar::Util ();
-
-# aliases as public APIs
-# it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
-require Mouse::Meta::Module; # for the entities of metaclass cache utilities
-
-# aliases
-{
-    *class_of                    = \&Mouse::Meta::Module::_class_of;
-    *get_metaclass_by_name       = \&Mouse::Meta::Module::_get_metaclass_by_name;
-    *get_all_metaclass_instances = \&Mouse::Meta::Module::_get_all_metaclass_instances;
-    *get_all_metaclass_names     = \&Mouse::Meta::Module::_get_all_metaclass_names;
-
-    *Mouse::load_class           = \&load_class;
-    *Mouse::is_class_loaded      = \&is_class_loaded;
-
-    # is-a predicates
-    #generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
-    #generate_isa_predicate_for('Mouse::Meta::Class'          => 'is_a_metaclass');
-    #generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
-
-    # duck type predicates
-    generate_can_predicate_for(['_compiled_type_constraint']  => 'is_a_type_constraint');
-    generate_can_predicate_for(['create_anon_class']          => 'is_a_metaclass');
-    generate_can_predicate_for(['create_anon_role']           => 'is_a_metarole');
-}
-
-our $in_global_destruction = 0;
-END{ $in_global_destruction = 1 }
-
-# Moose::Util compatible utilities
-
-sub find_meta{
-    return class_of( $_[0] );
-}
-
-sub does_role{
-    my ($class_or_obj, $role_name) = @_;
-
-    my $meta = class_of($class_or_obj);
-
-    (defined $role_name)
-        || ($meta || 'Mouse::Meta::Class')->throw_error("You must supply a role name to does()");
-
-    return defined($meta) && $meta->does_role($role_name);
-}
-
-BEGIN {
+    # definition of mro::get_linear_isa()
     my $get_linear_isa;
     if (eval { require mro }) {
         $get_linear_isa = \&mro::get_linear_isa;
@@ -178,6 +131,53 @@ BEGIN {
     *get_linear_isa = $get_linear_isa;
 }
 
+use Carp         ();
+use Scalar::Util ();
+
+# aliases as public APIs
+# it must be 'require', not 'use', because Mouse::Meta::Module depends on Mouse::Util
+require Mouse::Meta::Module; # for the entities of metaclass cache utilities
+
+# aliases
+{
+    *class_of                    = \&Mouse::Meta::Module::_class_of;
+    *get_metaclass_by_name       = \&Mouse::Meta::Module::_get_metaclass_by_name;
+    *get_all_metaclass_instances = \&Mouse::Meta::Module::_get_all_metaclass_instances;
+    *get_all_metaclass_names     = \&Mouse::Meta::Module::_get_all_metaclass_names;
+
+    *Mouse::load_class           = \&load_class;
+    *Mouse::is_class_loaded      = \&is_class_loaded;
+
+    # is-a predicates
+    #generate_isa_predicate_for('Mouse::Meta::TypeConstraint' => 'is_a_type_constraint');
+    #generate_isa_predicate_for('Mouse::Meta::Class'          => 'is_a_metaclass');
+    #generate_isa_predicate_for('Mouse::Meta::Role'           => 'is_a_metarole');
+
+    # duck type predicates
+    generate_can_predicate_for(['_compiled_type_constraint']  => 'is_a_type_constraint');
+    generate_can_predicate_for(['create_anon_class']          => 'is_a_metaclass');
+    generate_can_predicate_for(['create_anon_role']           => 'is_a_metarole');
+}
+
+our $in_global_destruction = 0;
+END{ $in_global_destruction = 1 }
+
+# Moose::Util compatible utilities
+
+sub find_meta{
+    return class_of( $_[0] );
+}
+
+sub does_role{
+    my ($class_or_obj, $role_name) = @_;
+
+    my $meta = class_of($class_or_obj);
+
+    (defined $role_name)
+        || ($meta || 'Mouse::Meta::Class')->throw_error("You must supply a role name to does()");
+
+    return defined($meta) && $meta->does_role($role_name);
+}
 
 # taken from Mouse::Util (0.90)
 {
@@ -212,6 +212,7 @@ sub get_code_info;
 sub get_code_package;
 
 sub is_valid_class_name;
+sub is_class_loaded;
 
 # taken from Class/MOP.pm
 sub load_first_existing_class {
@@ -270,7 +271,6 @@ sub load_class {
     return $class;
 }
 
-sub is_class_loaded;
 
 sub apply_all_roles {
     my $consumer = Scalar::Util::blessed($_[0])
