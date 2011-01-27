@@ -1,7 +1,13 @@
 Revision history for Mouse
 
+0.89 2011-01-27 09:18:39
+    [BUG FIXES]
+    *  Disable foreign class warnings introduced at 0.71, which affects
+       compatibility with Moose (and will re-introduce in more compatible
+       way in the future)
+
 0.88 2010-12-05 14:24:14
-    [BUG FIX]
+    [BUG FIXES]
     * Workaround SL4A where mro.pm doesn't exist even if Perl >= 5.10.0
       (reported by @hide_o_55)
 
