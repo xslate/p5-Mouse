@@ -93,9 +93,11 @@ sub verify_superclass {
 
 sub inherit_from_foreign_class {
     my($class, $super) = @_;
-    Carp::carp("You inherit from non-Mouse class ($super),"
-        . " but it is unlikely to work correctly."
-        . " Please consider using MouseX::Foreign");
+    if($ENV{PERL_MOUSE_STRICT}) {
+        Carp::carp("You inherit from non-Mouse class ($super),"
+            . " but it is unlikely to work correctly."
+            . " Please consider using MouseX::Foreign");
+    }
     return;
 }
 
