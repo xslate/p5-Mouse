@@ -323,7 +323,7 @@ mouse_install_sub(pTHX_ GV* const gv, SV* const code_ref) {
 
     if(GvCVu(gv)){ /* delete *slot{gv} to work around "redefine" warning */
         SvREFCNT_dec(GvCV(gv));
-        GvCV(gv) = NULL;
+        GvCV_set(gv, NULL);
     }
 
     sv_setsv_mg((SV*)gv, code_ref); /* *gv = $code_ref */

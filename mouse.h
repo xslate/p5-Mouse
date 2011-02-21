@@ -18,6 +18,10 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif /* !no_mro_get_linear_isa */
 #endif /* mro_get_package_gen */
 
+#ifndef GvCV_set
+#define GvCV_set(gv, cv) (GvCV(gv) = (cv))
+#endif
+
 extern SV* mouse_package;
 extern SV* mouse_methods;
 extern SV* mouse_name;
