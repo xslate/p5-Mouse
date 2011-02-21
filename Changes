@@ -1,5 +1,13 @@
 Revision history for Mouse
 
+0.90 2011-02-21 10:48:58
+    [BUG FIXES]
+    * Fix an abuse of a private Perl API, which changed at Perl 5.13.10
+      (Thanks to avar)
+
+    [NEW FEATURES]
+    * Support the DOES() method for Mouse::Object
+
 0.89 2011-01-27 09:18:39
     [BUG FIXES]
     *  Disable foreign class warnings introduced at 0.71, which affects
