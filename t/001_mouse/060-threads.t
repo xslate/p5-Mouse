@@ -9,6 +9,7 @@ use if !HAS_THREADS, 'Test::More',
 use if $Test::More::VERSION == 2.00_01, 'Test::More',
     (skip_all => "Test::Builder2 2.00_01 has bugs about threads");
 
+pass 'dummy test for Test::Builder 2.00_06';
 
 {
     package MyTraits;
@@ -32,6 +33,7 @@ use if $Test::More::VERSION == 2.00_01, 'Test::More',
         traits => [qw(MyTraits)],
     );
 }
+pass;
 
 my $o = MyClass->new(foo => Foo->new(value => 42));
 threads->create(sub{
