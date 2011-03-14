@@ -804,7 +804,7 @@ CODE:
 }
 
 bool
-check(SV* self, SV* sv)
+check(SV* self, SV* sv, ...)
 CODE:
 {
     SV* const check = get_slots(self, "compiled_type_constraint");
