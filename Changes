@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+(next)
+    [CHANGES]
+    * $type_constraint->check() accepts extra arguments for extensibility
+      (requested by @lestrrat)
+
 0.90 2011-02-21 10:48:58
     [BUG FIXES]
     * Fix an abuse of a private Perl API, which changed at Perl 5.13.10

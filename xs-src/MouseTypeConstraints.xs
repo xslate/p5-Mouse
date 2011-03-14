@@ -10,6 +10,14 @@
 #define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))
 #endif
 
+#define MY_CXT_KEY "Mouse::Util::TypeConstraints::_guts" XS_VERSION
+typedef struct sui_cxt{
+    GV* universal_isa;
+    GV* universal_can;
+    AV* tc_extra_args;
+} my_cxt_t;
+START_MY_CXT
+
 typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 
 static
@@ -36,12 +44,21 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     else { /* custom */
         int ok;
         dSP;
+        dMY_CXT;
 
         ENTER;
         SAVETMPS;
 
         PUSHMARK(SP);
         XPUSHs(sv);
+        if( MY_CXT.tc_extra_args ) {
+            AV* const av  = MY_CXT.tc_extra_args;
+            I32 const len = AvFILLp(av) + 1;
+            int i;
+            for(i = 0; i < len; i++) {
+                XPUSHs( AvARRAY(av)[i] );
+            }
+        }
         PUTBACK;
 
         call_sv(tc_code, G_SCALAR);
@@ -345,12 +362,6 @@ mouse_types_check(pTHX_ AV* const types, SV* const sv) {
  *  This class_type generator is taken from Scalar::Util::Instance
  */
 
-#define MY_CXT_KEY "Mouse::Util::TypeConstraints::_guts" XS_VERSION
-typedef struct sui_cxt{
-    GV* universal_isa;
-    GV* universal_can;
-} my_cxt_t;
-START_MY_CXT
 
 #define MG_klass_stash(mg) ((HV*)(mg)->mg_obj)
 #define MG_klass_pv(mg)    ((mg)->mg_ptr)
@@ -579,6 +590,8 @@ setup_my_cxt(pTHX_ pMY_CXT){
 
     MY_CXT.universal_can = gv_fetchpvs("UNIVERSAL::can", GV_ADD, SVt_PVCV);
     SvREFCNT_inc_simple_void_NN(MY_CXT.universal_can);
+
+    MY_CXT.tc_extra_args = NULL;
 }
 
 #define DEFINE_TC(name) mouse_tc_generate(aTHX_ "Mouse::Util::TypeConstraints::" STRINGIFY(name), CAT2(mouse_tc_, name), NULL)
@@ -811,6 +824,17 @@ CODE:
     if(!(check && IsCodeRef(check))){
         mouse_throw_error(self, check,
             "'%"SVf"' has no compiled type constraint", self);
+    }
+    if( items > 2 ) {
+        int i;
+        AV* av;
+        dMY_CXT;
+        SAVESPTR(MY_CXT.tc_extra_args);
+        av = MY_CXT.tc_extra_args = newAV_mortal();
+        av_extend(av, items - 3);
+        for(i = 2; i < items; i++) {
+            av_push(av, SvREFCNT_inc_NN( ST(i) ) );
+        }
     }
     RETVAL = mouse_tc_check(aTHX_ check, sv) ? TRUE : FALSE;
 }
