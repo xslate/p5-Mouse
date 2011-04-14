@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+0.92
+    [BUG FIXES]
+    * Replace C++-style comments (//) with C89-style comments(/* */)
+      (RT #67412)
+
 0.91 2011-03-14 13:12:35
     [CHANGES]
     * $type_constraint->check() accepts extra arguments for extensibility

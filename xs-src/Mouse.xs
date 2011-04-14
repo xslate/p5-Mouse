@@ -517,7 +517,7 @@ CODE:
     /*  *{$package . '::' . $name} -> *gv */
     gv = gv_fetchpv(form("%"SVf"::%"SVf, package, name), GV_ADDMULTI, SVt_PVCV);
     mouse_install_sub(aTHX_ gv, code_ref);
-    //CvMETHOD_on((CV*)SvRV(code_ref));
+    /* CvMETHOD_on((CV*)SvRV(code_ref)); */
     (void)set_slot(methods, name, code); /* $self->{methods}{$name} = $code */
 }
 
