@@ -1,6 +1,7 @@
 #!perl
 package Point;
 use Mouse;
+use MouseX::StrictConstructor;
 
 # extra 'unknown_attr' is supplied (WARN)
 has 'x' => (isa => 'Int', is => 'rw', required => 1, unknown_attr => 1);
@@ -14,7 +15,7 @@ sub clear {
   $self->y(0);
 }
 
-__PACKAGE__->meta->make_immutable(strict_constructor => 1);
+__PACKAGE__->meta->make_immutable();
 
 package main;
 
