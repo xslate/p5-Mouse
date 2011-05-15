@@ -24,9 +24,9 @@ Test::DependentModules
 Regexp::Common
 Locale::US
 HTTP::Headers
-use Params::Coerce
+Params::Coerce
 URI
-Teclare::Constraints::Simple
+Declare::Constraints::Simple
 Test::Deep
 IO::String
 
