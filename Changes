@@ -1,6 +1,10 @@
 Revision history for Mouse
 
-0.92
+0.93 2011-05-17 00:22:12
+    [BUG FIXES]
+    * Make sure weak attributes remain weak when cloning (Moose 2.0007)
+
+0.92 2011-4-14 23:37
     [BUG FIXES]
     * Replace C++-style comments (//) with C89-style comments(/* */)
       (RT #67412)
