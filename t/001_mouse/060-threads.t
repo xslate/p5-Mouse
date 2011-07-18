@@ -20,6 +20,12 @@ use if $Test::More::VERSION >= 2.00, 'Test::More',
         is => 'rw',
         isa => 'Foo',
     );
+    has bar => (
+        is => 'rw',
+
+        lazy    => 1,
+        default => sub { 42 },
+    );
 
     package Foo;
     use Mouse;
@@ -50,6 +56,8 @@ threads->create(sub{
     $x->foo(Foo->new(value => 20));
 
     is $x->foo->value, 20;
+
+    is $x->bar, 42, 'callback for default';
 })->join();
 
 is $o->foo->value, 42;
