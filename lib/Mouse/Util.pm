@@ -80,7 +80,8 @@ BEGIN{
 
     # definition of mro::get_linear_isa()
     my $get_linear_isa;
-    if (eval { require mro }) {
+    if ($] >= 5.010_000) {
+        require mro;
         $get_linear_isa = \&mro::get_linear_isa;
     }
     else {
