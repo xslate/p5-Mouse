@@ -1,5 +1,6 @@
 META.yml
 MYMETA.yml
+MYMETA.json
 Makefile
 blib/*
 inc/*
