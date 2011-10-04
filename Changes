@@ -1,5 +1,11 @@
 Revision history for Mouse
 
+0.94 2011-10-03 17:07:57
+    [BUG FIXES]
+    * Resolve #68351, tests produced deprecation warnings in 5.14
+    * Resolve #70518, a build problem in 5.15
+    * Resolve #70569, prototype mismatch warnings might happen in 5.8
+
 0.93 2011-05-17 00:22:12
     [BUG FIXES]
     * Make sure weak attributes remain weak when cloning (Moose 2.0007)
