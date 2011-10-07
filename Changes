@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.95 2011-10-07 13:41:31
+    [TEST FIXES]
+    - Workaround for RT #71211 (maybe)
+
 0.94 2011-10-03 17:07:57
     [BUG FIXES]
     * Resolve #68351, tests produced deprecation warnings in 5.14
