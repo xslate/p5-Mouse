@@ -1,6 +1,8 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
+#define PERL_EUPXS_ALWAYS_EXPORT
+
 #include "xshelper.h"
 
 #ifndef mro_get_linear_isa

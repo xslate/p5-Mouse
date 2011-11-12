@@ -58,7 +58,7 @@ ppport\.h$
 \.c$
 \.bs$
 
-MYMETA\.yml$
+MYMETA\.(?:yml|json)$
 Moose-t/
 xshelper\.h$
 \.swp$

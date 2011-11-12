@@ -6,6 +6,7 @@ use Test::Exception;
 
 use Tie::Hash;
 use Tie::Array;
+
 {
     {
         package My::Role;
@@ -224,7 +225,10 @@ else{ # under Moose
 
 is_deeply \%th_clone, \%th, 'the hash iterator is initialized';
 
-{
+
+for my $i(1 .. 2) {
+    diag "derived from parameterized types #$i";
+
     my $myhashref = subtype 'MyHashRef',
         as 'HashRef[Value]',
         where { keys %$_ > 1 };
@@ -241,9 +245,14 @@ is_deeply \%th_clone, \%th, 'the hash iterator is initialized';
 
     ok  $myhashref->is_a_type_of('HashRef'), "$myhashref";
     ok  $myhashref->check({ a => 43, b => 100 });
-    ok !$myhashref->check({ a => 43, b => 3.14 });
-    ok !$myhashref->check({});
+    ok  $myhashref->check({ a => 43, b => 100, c => 0 });
+    ok !$myhashref->check({}), 'empty hash';
+    ok !$myhashref->check({ foo => 42 });
+    ok !$myhashref->check({ a => 43, b => "foo" });
     ok !$myhashref->check({ a => 42, b => [] });
+    ok !$myhashref->check({ a => 42, b => undef });
+    ok !$myhashref->check([42]);
+    ok !$myhashref->check("foo");
 
     is $myhashref->type_parameter, 'Int';
 }
