@@ -12,29 +12,31 @@ use warnings;
 BEGIN {
     unshift @INC, 'inc';
 
-	# author requires, or bundled modules
+    # author requires, or bundled modules
     my @devmods = qw(
         inc::Module::Install             1.00
         Module::Install::TestTarget      0.13
         Module::Install::AuthorTests     0.002
         Module::Install::XSUtil          0.36
-		Test::Exception::LessClever      0.005
-		Test::Requires                   0.06
+        Module::Install::Repository      0.06
+        Test::Exception::LessClever      0.005
+        Test::Requires                   0.06
     );
     my @not_available;
-	while(my($mod, $ver) = splice @devmods, 0, 2) {
+    while(my($mod, $ver) = splice @devmods, 0, 2) {
         eval qq{use $mod $ver (); 1} or push @not_available, $mod;
     }
     if(@not_available) {
         print qq{# The following modules are not available.\n};
         print qq{# `perl $0 | cpanm` will install them:\n};
         print $_, "\n" for @not_available;
-		exit 1;
+        exit 1;
      }
 }
 use inc::Module::Install;
 
-all_from 'lib/Mouse.pm';
+all_from('lib/Mouse.pm');
+auto_set_repository();
 
 # Scalar::Util < 1.14 has a bug.
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
@@ -98,10 +100,7 @@ else{
 tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
-homepage   'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=gitmo/Mouse.git';
-repository 'git://git.moose.perl.org/Mouse.git';
-# or web interface:
-# http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=gitmo/Mouse.git;a=summary
+auto_set_repository;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";

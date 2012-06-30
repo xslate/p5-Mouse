@@ -398,9 +398,9 @@ keywords (such as L</extends>) it will break loudly instead breaking subtly.
 
 =head1 SOURCE CODE ACCESS
 
-We have a public git repository:
+We have a public git repository L<https://github.com/gfx/p5-Mouse>:.
 
- git clone git://git.moose.perl.org/Mouse.git
+    git clone git://github.com/gfx/p5-Mouse.git
 
 =head1 DEPENDENCIES
 
