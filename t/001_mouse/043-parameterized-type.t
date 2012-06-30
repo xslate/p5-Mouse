@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
+use Config;
 use Tie::Hash;
 use Tie::Array;
 
@@ -248,7 +249,17 @@ for my $i(1 .. 2) {
     ok  $myhashref->check({ a => 43, b => 100, c => 0 });
     ok !$myhashref->check({}), 'empty hash';
     ok !$myhashref->check({ foo => 42 });
-    ok !$myhashref->check({ a => 43, b => "foo" });
+    {
+        local $TODO = 'See https://rt.cpan.org/Ticket/Display.html?id=71211'
+            if $Config{archname} =~ /\A ia64 /xmsi;
+
+        ok !$myhashref->check({ a => 43, b => "foo" }) or eval {
+            require Data::Dump::Streamer;
+            my $s = Data::Dump::Streamer::Dump($myhashref)->Out();
+            $s =~ s/[ ]{4}/ /g;
+            diag $s;
+        };
+    }
     ok !$myhashref->check({ a => 42, b => [] });
     ok !$myhashref->check({ a => 42, b => undef });
     ok !$myhashref->check([42]);

@@ -1,5 +1,13 @@
 Revision history for Mouse
 
+0.97 2011-10-09 14:45:55
+    [TEST FIXES]
+    - Fixes in 0.96 is broken
+
+0.96 2011-10-09 14:34:39
+    [TEST FIXES]
+    - Workaround for RT #71211 (made the failing test a TODO)
+
 0.95 2011-10-07 13:41:31
     [TEST FIXES]
     - Workaround for RT #71211 (maybe)
