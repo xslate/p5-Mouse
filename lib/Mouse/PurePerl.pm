@@ -653,12 +653,13 @@ sub compile_type_constraint{
     }
     else{
         $self->{compiled_type_constraint} =  sub{
-            my(@args) = @_;
-            local $_ = $args[0];
-            foreach my $c(@checks){
-                return undef if !$c->(@args);
-            }
-            return 1;
+          my(@args) = @_;
+          for ($args[0]) { # local $_ will cancel tie-ness due to perl's bug
+              foreach my $c(@checks){
+                  return undef if !$c->(@args);
+              }
+          }
+          return 1;
         };
     }
     return;

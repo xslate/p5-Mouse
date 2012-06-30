@@ -149,8 +149,7 @@ sub _compiled_type_coercion {
            foreach my $pair (@coercions) {
                 #my ($constraint, $converter) = @$pair;
                 if ($pair->[0]->($thing)) {
-                  local $_ = $thing;
-                  return $pair->[1]->($thing);
+                    return $pair->[1]->($thing) for $thing; # local $_ will cancel tie-ness due to perl's bug
                 }
            }
            return $thing;
@@ -190,8 +189,7 @@ sub coerce {
 sub get_message {
     my ($self, $value) = @_;
     if ( my $msg = $self->message ) {
-        local $_ = $value;
-        return $msg->($value);
+        return $msg->($value) for $value; # local $_ will cancel tie-ness due to perl's bug
     }
     else {
         if(not defined $value) {

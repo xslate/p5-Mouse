@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+0.99
+    [BUG FIXES]
+    - Resolve RT#73592 use of local $_ was buggy in older perls
+
 0.98 2012-06-30 14:02:26
     [ANNOUNCE]
     - The repository has been moved to github
