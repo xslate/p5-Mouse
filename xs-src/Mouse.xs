@@ -315,7 +315,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
                 value = mouse_xa_apply_type_constraint(aTHX_ xa, value, flags);
             }
             value = set_slot(object, slot, value);
-            if(flags & MOUSEf_ATTR_IS_WEAK_REF && SvROK(value)){
+            if(flags & MOUSEf_ATTR_IS_WEAK_REF){
                 weaken_slot(object, slot);
             }
             if(flags & MOUSEf_ATTR_HAS_TRIGGER){
@@ -339,10 +339,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
             }
             else if(is_cloning) {
                 if(flags & MOUSEf_ATTR_IS_WEAK_REF){
-                    SV* const value = get_slot(object, slot);
-                    if(SvROK(value)) {
-                        weaken_slot(object, slot);
-                    }
+                    weaken_slot(object, slot);
                 }
             }
             /* don't check "required" while cloning (or reblesseing) */

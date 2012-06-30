@@ -174,7 +174,8 @@ mouse_xa_set_default(pTHX_ AV* const xa, SV* const object) {
 
     /* store value to slot */
     value = set_slot(object, MOUSE_xa_slot(xa), value);
-    if(flags & MOUSEf_ATTR_IS_WEAK_REF && SvROK(value)){
+
+    if(flags & MOUSEf_ATTR_IS_WEAK_REF){
         weaken_slot(object, MOUSE_xa_slot(xa));
     }
 

@@ -149,7 +149,7 @@ sub _generate_initialize_object {
 
         if($is_weak_ref){
             $code .= "Scalar::Util::weaken($instance_slot) "
-                   . "if ref $instance_slot;\n";
+                   . "if ref $instance_slot and not Scalar::Util::isweak($instance_slot);\n";
         }
 
         push @res, $code;

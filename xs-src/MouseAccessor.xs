@@ -83,7 +83,10 @@ mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot) {
     CHECK_INSTANCE(instance);
     he = hv_fetch_ent((HV*)SvRV(instance), slot, FALSE, 0U);
     if(he){
-        sv_rvweaken(HeVAL(he));
+        SV* const value = HeVAL(he);
+        if (SvROK(value) && !SvWEAKREF(value)) {
+            sv_rvweaken(value);
+        }
     }
 }
 
