@@ -1,5 +1,14 @@
 Revision history for Mouse
 
+0.98 2012-06-30 14:02:26
+    [ANNOUNCE]
+    - The repository has been moved to github
+      https://github.com/gfx/p5-Mouse
+      in order toto accept pull-requests easily!
+
+    [BUG FIXES]
+    - Resolve RT#75313 and RT#77227 ($@ issues)
+
 0.97 2011-10-09 14:45:55
     [TEST FIXES]
     - Fixes in 0.96 is broken
