@@ -6,6 +6,7 @@
 Module::Install
 Module::Install::AuthorTests
 Module::Install::XSUtil
+Module::Install::TestTarget
 
 # Test stuff
 Test::More
@@ -13,6 +14,7 @@ Test::Exception
 Test::LeakTrace
 Test::Output
 Test::Requires
+Test::Exception::LessClever
 
 # author's tests
 Test::Pod

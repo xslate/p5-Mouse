@@ -189,6 +189,12 @@ transformability
 redispatch
 MISC
 mro
+subtype
+subtypes
+subclass
+subclasses
+coercion
+coercions
 
 # as in required-ness
 ness
