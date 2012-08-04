@@ -713,7 +713,7 @@ sub DESTROY {
                 my $demolish = Mouse::Util::get_code_ref($class, 'DEMOLISH')
                     || next;
 
-                $self->$demolish($Mouse::Util::in_global_destruction);
+                $self->$demolish(Mouse::Util::in_global_destruction());
             }
         };
         $@;

@@ -160,8 +160,20 @@ require Mouse::Meta::Module; # for the entities of metaclass cache utilities
     generate_can_predicate_for(['create_anon_role']           => 'is_a_metarole');
 }
 
-our $in_global_destruction = 0;
-END{ $in_global_destruction = 1 }
+sub in_global_destruction;
+
+if (defined ${^GLOBAL_PHASE}) {
+    *in_global_destruction = sub {
+        return ${^GLOBAL_PHASE} eq 'DESTRUCT';
+    };
+}
+else {
+    my $in_global_destruction = 0;
+    END { $in_global_destruction = 1 }
+    *in_global_destruction = sub {
+        return $in_global_destruction;
+    };
+}
 
 # Moose::Util compatible utilities
 

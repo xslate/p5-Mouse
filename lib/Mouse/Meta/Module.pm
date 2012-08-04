@@ -272,7 +272,7 @@ sub create {
 sub DESTROY{
     my($self) = @_;
 
-    return if $Mouse::Util::in_global_destruction;
+    return if Mouse::Util::in_global_destruction();
 
     my $serial_id = $self->{anon_serial_id};
     return if !$serial_id;
