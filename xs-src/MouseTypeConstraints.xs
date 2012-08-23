@@ -409,7 +409,7 @@ mouse_stash_find_method(pTHX_ HV* const stash, const char* const name, I32 const
         return *gvp;
     }
 
-    return gv_fetchmeth_autoload(stash, name, namelen, 0);
+    return gv_fetchmeth(stash, name, namelen, 0);
 }
 
 int
