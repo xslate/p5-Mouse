@@ -1,5 +1,12 @@
 Revision history for Mouse
 
+1.00 2012-08-23 20:50:46
+    This is 1.00 but has no significant change!
+
+    [BUG FIXES]
+    - Fix a problem which occured in a case where a role applied
+      to an instance with AUTOLOAD.
+
 0.99 2012-06-30 14:47:03
     [BUG FIXES]
     - Resolve RT#73592 use of local $_ was buggy in older perls
