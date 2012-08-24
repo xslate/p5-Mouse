@@ -6,34 +6,18 @@ use warnings;
 use Test::More;
 
 {
-    package Base;
-    use base qw/Class::Accessor::Fast/;
-    __PACKAGE__->mk_accessors( qw/name/ );
-    sub new {
-        my ( $class, %opts ) = @_;
-        bless { %opts }, $class;
-    }
-}
-
-{
     package AutoloadedBase;
-    use base qw/Class::Accessor::Fast/;
-    __PACKAGE__->mk_accessors( qw/name/ );
-    sub new {
-        my ( $class, %opts ) = @_;
-        bless { %opts }, $class;
-    }
+    use Mouse;
+
+    has name => (
+        is => 'rw',
+    );
 
     our $AUTOLOAD;
     sub AUTOLOAD {
         my $self = shift;
         ::note "called $AUTOLOAD";
         0;
-    }
-
-    sub can {
-        my($self, $method)  = @_;
-        return $self->SUPER::can($method);
     }
 }
 
@@ -48,7 +32,7 @@ use Test::More;
 {
     package AutoloadedSuper;
     use Mouse;
-    use MouseX::Foreign qw/AutoloadedBase/;
+    extends qw/AutoloadedBase/;
 }
 
 my $b = AutoloadedSuper->new( name => 'b' );
