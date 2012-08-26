@@ -123,6 +123,7 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
+#if (PERL_BCDVERSION < 0x5014000)
 /* workaround Perl-RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
@@ -146,6 +147,7 @@ mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
 
     return count;
 }
+#endif
 
 void
 mouse_must_defined(pTHX_ SV* const value, const char* const name) {

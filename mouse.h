@@ -33,9 +33,13 @@ void
 mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)
     __attribute__format__(__printf__, 3, 4);
 
+#if (PERL_BCDVERSION < 0x5014000)
 /* workaround RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV*, I32);
+#else
+#define mouse_call_sv_safe Perl_call_sv
+#endif
 
 #define call_sv_safe(sv, flags)     mouse_call_sv_safe(aTHX_ sv, flags)
 #define call_method_safe(m, flags)  mouse_call_sv_safe(aTHX_ newSVpvn_flags(m, strlen(m), SVs_TEMP), flags | G_METHOD)

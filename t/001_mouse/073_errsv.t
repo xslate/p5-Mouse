@@ -1,6 +1,5 @@
 #!perl
 # https://rt.cpan.org/Ticket/Display.html?id=75313
-# https://rt.cpan.org/Ticket/Display.html?id=77227
 use strict;
 use Test::More tests => 1;
 
