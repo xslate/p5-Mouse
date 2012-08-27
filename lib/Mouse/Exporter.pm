@@ -267,7 +267,7 @@ Mouse::Exporter - make an import() and unimport() just like Mouse.pm
 
 =head1 VERSION
 
-This document describes Mouse version 1.01
+This document describes Mouse version 1.02
 
 =head1 SYNOPSIS
 
