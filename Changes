@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.04 2013-01-11 01:46:18
+    [FEATURES]
+    - Implement $attr->default($instance) for compatibility with Moose
+
 1.03 2013-01-11 01:10:38
     [FEATURES]
     - Add maybe_type() from Moose::Util::TypeConstraints (schwern)
