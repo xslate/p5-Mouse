@@ -8,7 +8,7 @@ plan skip_all => 'Test::Spelling is required for this test' if $@;
 my @stopwords;
 for (<DATA>) {
     chomp;
-    push @stopwords, $_
+    push @stopwords, $_, ucfirst($_)
         unless /\A (?: \# | \s* \z)/msx;    # skip comments, whitespace
 }
 
