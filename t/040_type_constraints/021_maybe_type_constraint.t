@@ -7,7 +7,6 @@ use strict;
 use warnings;
 
 use Test::More;
-$TODO = q{Mouse is not yet completed};
 use Test::Exception;
 
 use Mouse::Util::TypeConstraints;
@@ -16,11 +15,14 @@ my $type = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('Maybe[In
 isa_ok($type, 'Mouse::Meta::TypeConstraint');
 isa_ok($type, 'Mouse::Meta::TypeConstraint');
 
-ok( $type->equals($type), "equals self" );
+{ local $TODO = "not yet"; ok( $type->equals($type), "equals self" );
+}
 ok( !$type->equals($type->parent), "not equal to parent" );
 ok( !$type->equals(find_type_constraint("Maybe")), "not equal to Maybe" );
-ok( $type->parent->equals(find_type_constraint("Maybe")), "parent is Maybe" );
-ok( $type->equals( Mouse::Meta::TypeConstraint->new( name => "__ANON__", parent => find_type_constraint("Maybe"), type_parameter => find_type_constraint("Int") ) ), "equal to clone" );
+{ local $TODO = "not yet"; ok( $type->parent->equals(find_type_constraint("Maybe")), "parent is Maybe" );
+}
+{ local $TODO = "not yet"; ok( $type->equals( Mouse::Meta::TypeConstraint->new( name => "__ANON__", parent => find_type_constraint("Maybe"), type_parameter => find_type_constraint("Int") ) ), "equal to clone" );
+}
 ok( !$type->equals( Mouse::Meta::TypeConstraint->new( name => "__ANON__", parent => find_type_constraint("Maybe"), type_parameter => find_type_constraint("Str") ) ), "not equal to clone with diff param" );
 ok( !$type->equals( Mouse::Util::TypeConstraints::find_or_parse_type_constraint('Maybe[Str]') ), "not equal to declarative version of diff param" );
 
@@ -103,10 +105,11 @@ ok $Maybe_Int->check(1)
 
 ok $obj->Maybe_Int(1)
  => 'assigned (1)';
-
-ok $Maybe_Int->check()
+{
+local $TODO = "considered miss design";
+ok eval { $Maybe_Int->check() }
  => 'passed ()';
-
+}
 ok $obj->Maybe_Int()
  => 'assigned ()';
 
