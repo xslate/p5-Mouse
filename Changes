@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.03 2013-01-11 01:10:38
+    [FEATURES]
+    - Add maybe_type() from Moose::Util::TypeConstraints (schwern)
+
 1.02 2012-08-27 10:27:21
     [IMPROVEMENT]
     - performance improvement for v5.14.0 or grater (dex4er)

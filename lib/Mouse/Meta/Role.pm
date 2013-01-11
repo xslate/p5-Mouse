@@ -131,7 +131,7 @@ Mouse::Meta::Role - The Mouse Role metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 1.02
+This document describes Mouse version 1.03
 
 =head1 DESCRIPTION
 
