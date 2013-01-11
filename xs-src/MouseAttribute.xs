@@ -240,7 +240,6 @@ BOOT:
 
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, _is_metadata, is);
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_required, required);
-    INSTALL_SIMPLE_READER(Attribute, default);
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_lazy, lazy);
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_lazy_build, lazy_build);
     INSTALL_SIMPLE_READER_WITH_KEY(Attribute, is_weak_ref, weak_ref);
@@ -482,3 +481,25 @@ CODE:
         }
     }
 }
+
+void
+default(SV* self, SV* instance = NULL)
+PPCODE:
+{
+    SV* value = get_slot(self, newSVpvs_share("default"));
+    if(! value) {
+        value = &PL_sv_undef;
+    }
+    else if (instance != NULL && IsCodeRef(value)) {
+        PUSHMARK(SP);
+        XPUSHs(instance);
+        PUTBACK;
+        call_sv_safe(value, G_SCALAR);
+        SPAGAIN;
+        value = POPs;
+        PUTBACK;
+    }
+    ST(0) = value;
+    XSRETURN(1);
+}
+
