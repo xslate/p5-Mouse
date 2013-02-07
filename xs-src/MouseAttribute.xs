@@ -486,7 +486,7 @@ void
 default(SV* self, SV* instance = NULL)
 PPCODE:
 {
-    SV* value = get_slot(self, newSVpvs_share("default"));
+    SV* value = get_slot(self, sv_2mortal(newSVpvs_share("default")));
     if(! value) {
         value = &PL_sv_undef;
     }
