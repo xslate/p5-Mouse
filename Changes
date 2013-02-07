@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.05 2013-02-08 00:32:33
+    [BUG FIXES]
+    - Fix a memory leak introduced by v1.04 (creaktive & aiyumi, pull-req #4)
+
 1.04 2013-01-11 01:46:18
     [FEATURES]
     - Implement $attr->default($instance) for compatibility with Moose
