@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.06 2013-04-09 23:40:02
+    [TEST FIXES]
+    - Resolve RT#84518 caused by hash randomization
+
 1.05 2013-02-08 00:32:33
     [BUG FIXES]
     - Fix a memory leak introduced by v1.04 (creaktive & aiyumi, pull-req #4)
