@@ -60,8 +60,8 @@ ok($foo_role->has_attribute('bar'), '... FooRole does have the bar attribute');
 
 {
     is_deeply(
-        join('|', %{$foo_role->get_attribute('bar')}),
-        join('|', %{+{ is => 'rw', isa => 'Foo' }}),
+        $foo_role->get_attribute('bar'),
+        { is => 'rw', isa => 'Foo' },
         '... got the correct description of the bar attribute');
 }
 lives_ok {
