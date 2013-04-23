@@ -62,6 +62,7 @@ sub _generate_accessor_any{
         # this setter
         $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
+        $accessor .= "my \@old_value = exists $slot ? $slot : ();\n" if $trigger;
         $accessor .= "$slot = $value;\n";
 
         if ($is_weak) {
@@ -69,7 +70,7 @@ sub _generate_accessor_any{
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->('.$self.', '.$value.');' . "\n";
+            $accessor .= '$trigger->('.$self.', '.$value.', @old_value);' . "\n";
         }
 
         $accessor .= "}\n";
