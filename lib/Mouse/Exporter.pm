@@ -17,6 +17,8 @@ BEGIN{
 require Mouse::Util;
 
 sub import{
+    ## no critic ProhibitBitwiseOperators
+
     # strict->import;
     $^H              |= $strict_bits;
     # warnings->import('all', FATAL => 'recursion');
@@ -169,10 +171,10 @@ sub do_import {
     }
 
     # strict->import;
-    $^H              |= $strict_bits;
+    $^H              |= $strict_bits;                   ## no critic ProhibitBitwiseOperators
     # warnings->import('all', FATAL => 'recursion');
-    ${^WARNING_BITS} |= $warnings::Bits{all};
-    ${^WARNING_BITS} |= $warnings_extra_bits;
+    ${^WARNING_BITS} |= $warnings::Bits{all};           ## no critic ProhibitBitwiseOperators
+    ${^WARNING_BITS} |= $warnings_extra_bits;           ## no critic ProhibitBitwiseOperators
 
     if($spec->{INIT_META}){
         my $meta;
