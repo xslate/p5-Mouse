@@ -209,6 +209,15 @@ static void
 mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
     U16 const flags = MOUSE_mg_flags(mg);
     SV* const slot  = MOUSE_mg_slot(mg);
+    SV* old_value;
+    int has_old_value = 0;
+
+    /* Store the original value before we change it so it can be
+       passed to the trigger */
+    if(flags & MOUSEf_ATTR_HAS_TRIGGER && has_slot(self, slot)){
+        has_old_value = 1;
+        old_value = newSVsv( get_slot(self, slot) );
+    }
 
     if(flags & MOUSEf_ATTR_HAS_TC){
         value = mouse_xa_apply_type_constraint(aTHX_ MOUSE_mg_xa(mg), value, flags);
@@ -234,6 +243,10 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         EXTEND(SP, 2);
         PUSHs(self);
         PUSHs(value);
+        if( has_old_value ) {
+            EXTEND(SP, 1);
+            PUSHs(old_value);
+        }
 
         PUTBACK;
         call_sv_safe(trigger, G_VOID | G_DISCARD);

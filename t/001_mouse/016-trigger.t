@@ -14,8 +14,7 @@ do {
         is => 'rw',
         default => 10,
         trigger => sub {
-            my ($self, $value) = @_;
-            push @trigger, [$self, $value];
+            push @trigger, [@_];
         },
     );
 
@@ -60,7 +59,7 @@ is(@trigger, 0, "trigger not called on read");
 
 is($object->attr(50), 50, "setting the value");
 is(@trigger, 1, "trigger was called on read");
-is_deeply([splice @trigger], [[$object, 50]], "correct arguments to trigger in the accessor");
+is_deeply([splice @trigger], [[$object, 50, 10]], "correct arguments to trigger in the accessor");
 
 is($object->foobar,        'piyo');
 lives_ok { $object->foobar('baz') } "triggers that clear the attr";
