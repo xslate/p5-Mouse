@@ -2,8 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
-eval q{use Test::Spelling};
-plan skip_all => 'Test::Spelling is required for this test' if $@;
+use Test::Spellunker;
 
 my @stopwords;
 for (<DATA>) {
@@ -13,8 +12,6 @@ for (<DATA>) {
 }
 
 add_stopwords(@stopwords);
-#set_spell_cmd('aspell list -l en');
-$ENV{LC_ALL} = 'C';
 all_pod_files_spelling_ok();
 
 __DATA__
@@ -94,7 +91,6 @@ XS
 ## Moose
 AttributeHelpers
 BankAccount
-BankAccount's
 BinaryTree
 BUILDALL
 BUILDARGS
@@ -119,7 +115,6 @@ introspectable
 metaclass
 Metaclass
 METACLASS
-metaclass's
 metadata
 MetaObject
 metaprogrammer
@@ -142,8 +137,6 @@ TypeContraints
 metaroles
 
 ## computerese
-API
-APIs
 arity
 Baz
 canonicalizes
@@ -173,7 +166,6 @@ immutabilized
 inline
 inlines
 invocant
-invocant's
 irc
 IRC
 isa
@@ -181,10 +173,6 @@ JSON
 kv
 login
 mul
-namespace
-namespaced
-namespaces
-namespacing
 transformability
 redispatch
 MISC
@@ -195,10 +183,16 @@ subclass
 subclasses
 coercion
 coercions
+accessors
+metaclasses
+unimport
+builtin
+4x
+coderef
+aliasing
 
 # as in required-ness
 ness
-O'Caml
 OO
 OOP
 ORM
@@ -234,61 +228,16 @@ UNIMPORTING
 Unported
 unsets
 unsettable
-utils
-whitelist
-Whitelist
-workflow
 
-## other jargon
-bey
-gey
-
-## neologisms
-breakability
-delegatee
-featureful
-hackery
-hacktern
-wrappee
 
 ## compound
 # half-assed
-assed
-# role-ish, Ruby-ish, medium-to-large-ish
-ish
-# kool-aid
-kool
-# pre-5.10
-pre
-# vice versa
-versa
-lookup
-# co-maint
-maint
-
-## slang
-C'mon
-might've
-Nuff
-steenkin
 
 ## things that should be in the dictionary, but are not
-attribute's
-declaratively
-everybody's
-everyone's
-human's
-indices
-initializers
-newfound
-reimplements
 reinitializes
-specializer
-backend
-extention
-extentions
 
 ## misspelt on purpose
 emali
-uniq
 
+## spellunker's bug?
+<gfuji

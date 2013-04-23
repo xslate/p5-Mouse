@@ -17,8 +17,8 @@ Test::Requires
 Test::Exception::LessClever
 
 # author's tests
+Test::Spellunker
 Test::Pod
-Test::Spelling
 Test::Pod::Coverage
 Test::DependentModules
 
