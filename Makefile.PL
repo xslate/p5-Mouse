@@ -45,6 +45,7 @@ requires 'Scalar::Util' => 1.14;
 test_requires 'Test::More' => 0.88;
 
 # to keep zero-dependencies
+include 'Test::Fatal';
 include 'Test::Exception::LessClever';
 include 'Test::Requires';
 
