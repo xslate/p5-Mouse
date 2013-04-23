@@ -11,8 +11,7 @@ plan skip_all => "Test::Perl::Critic is not installed." if $@;
 all_critic_ok('lib');
 
 __END__
-
-exclude=ProhibitStringyEval ProhibitExplicitReturnUndef RequireBarewordIncludes
+exclude=ProhibitStringyEval ProhibitExplicitReturnUndef RequireBarewordIncludes ProhibitAccessOfPrivateData 
 
 [TestingAndDebugging::ProhibitNoStrict]
 allow=refs
@@ -22,4 +21,3 @@ equivalent_modules = Mouse Mouse::Exporter Mouse::Util Mouse::Util::TypeConstrai
 
 [TestingAndDebugging::RequireUseWarnings]
 equivalent_modules = Mouse Mouse::Exporter Mouse::Util Mouse::Util::TypeConstraints
-
