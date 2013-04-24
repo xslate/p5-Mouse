@@ -17,7 +17,7 @@ BEGIN {
         inc::Module::Install             1.00
         Module::Install::TestTarget      0.13
         Module::Install::AuthorTests     0.002
-        Module::Install::XSUtil          0.36
+        Module::Install::XSUtil          0.44
         Module::Install::Repository      0.06
         Test::Exception::LessClever      0.005
         Test::Requires                   0.06
