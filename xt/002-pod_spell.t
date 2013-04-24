@@ -2,16 +2,9 @@ use strict;
 use warnings;
 use Test::More;
 
-use Test::Spellunker;
+use Test::Spellunker v0.2.1;
 
-my @stopwords;
-for (<DATA>) {
-    chomp;
-    push @stopwords, $_, ucfirst($_)
-        unless /\A (?: \# | \s* \z)/msx;    # skip comments, whitespace
-}
-
-add_stopwords(@stopwords);
+load_dictionary(\*DATA);
 all_pod_files_spelling_ok();
 
 __DATA__
