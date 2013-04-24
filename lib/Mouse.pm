@@ -432,7 +432,7 @@ Yappo
 
 wu-lee
 
-Goro Fuji (gfx) E<lt>gfuji at cpan.orgE<gt>
+Goro Fuji (gfx) E<lt>gfuji@cpan.orgE<gt>
 
 with plenty of code borrowed from L<Class::MOP> and L<Moose>
 

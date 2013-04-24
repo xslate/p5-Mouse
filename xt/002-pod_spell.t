@@ -239,5 +239,3 @@ reinitializes
 ## misspelt on purpose
 emali
 
-## spellunker's bug?
-<gfuji
