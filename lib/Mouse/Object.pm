@@ -16,7 +16,7 @@ Mouse::Object - The base object for Mouse classes
 
 =head1 VERSION
 
-This document describes Mouse version 1.06
+This document describes Mouse version 1.07
 
 =head1 METHODS
 
