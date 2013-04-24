@@ -50,7 +50,7 @@ BEGIN{
         },
     );
 
-    our $VERSION = '1.07';
+    our $VERSION = '1.08';
 
     my $xs = !(defined(&is_valid_class_name) || $ENV{MOUSE_PUREPERL} || $ENV{PERL_ONLY});
 
@@ -411,7 +411,7 @@ Mouse::Util - Utilities for working with Mouse classes
 
 =head1 VERSION
 
-This document describes Mouse version 1.07
+This document describes Mouse version 1.08
 
 =head1 SYNOPSIS
 
