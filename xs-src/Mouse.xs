@@ -786,8 +786,8 @@ CODE:
         SAVEI32(PL_statusvalue); /* local $? */
         PL_statusvalue = 0;
 
-        SAVESPTR(ERRSV); /* local $@ */
-        ERRSV = sv_newmortal();
+        SAVEGENERICSV(ERRSV); /* local $@ */
+        ERRSV = newSV(0);
 
         EXTEND(SP, 2);
 
@@ -807,13 +807,9 @@ CODE:
             PUTBACK;
 
             if(sv_true(ERRSV)){
-                SV* const e = newSVsv(ERRSV);
-
-                FREETMPS;
+                SV* const e = sv_mortalcopy(ERRSV);
                 LEAVE;
-
                 sv_setsv(ERRSV, e);
-                SvREFCNT_dec(e);
                 croak(NULL); /* rethrow */
             }
         }

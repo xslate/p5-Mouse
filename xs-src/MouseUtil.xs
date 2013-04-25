@@ -131,7 +131,7 @@ mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
     ENTER;
     /* Don't do SAVETMPS */
 
-    SAVEGENERICSV(ERRSV);
+    SAVEGENERICSV(ERRSV); /* local $@ */
     ERRSV = newSV(0);
 
     count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
