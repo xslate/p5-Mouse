@@ -25,10 +25,26 @@ option to F<Makefile.PL>.
 
     perl Makefile.PL --pp
 
+Or if you use C<cpanm> (>= 1.7), you can give C<--pp> option to C<cpanm>.
+
+    cpanm --pp Mouse
+
 =head2 The MOUSE_PUREPERL (or PERL_ONLY) environment variable
 
 It can be used to enable the use of Mouse::PurePerl in order to test
 and debug programs that use Mouse.
+
+=head1 CAVEAT
+
+There are some Mouse::XS specific features.
+
+=item Mutationg references to the return values of getters
+
+When you take a reference from Mouse getters, like C<< $ref = \$obj->foo >>,
+the C<$ref> refers C<< \$obj->{foo} >>. That is, mutating C<$$ref> also
+alters C<< $obj->{foo} >>. The behavior may confuse you so you'd better avoid to take a reference directly from getters.
+
+See L<https://rt.cpan.org/Ticket/Display.html?id=82945> for details.
 
 =head1 DEPENDENCIES
 
