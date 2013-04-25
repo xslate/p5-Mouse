@@ -38,6 +38,8 @@ and debug programs that use Mouse.
 
 There are some Mouse::XS specific features.
 
+=over
+
 =item Mutationg references to the return values of getters
 
 When you take a reference from Mouse getters, like C<< $ref = \$obj->foo >>,
@@ -45,6 +47,8 @@ the C<$ref> refers C<< \$obj->{foo} >>. That is, mutating C<$$ref> also
 alters C<< $obj->{foo} >>. The behavior may confuse you so you'd better avoid to take a reference directly from getters.
 
 See L<https://rt.cpan.org/Ticket/Display.html?id=82945> for details.
+
+=back
 
 =head1 DEPENDENCIES
 
