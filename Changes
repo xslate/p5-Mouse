@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.09 2013-04-25 14:03:13
+    [TEST FIXES]
+    - Bundle Test::Fatal for tests
+
 1.08 2013-04-24 16:20:53
     [FEATURES]
     - Support PUREPERL_ONLY
