@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.10 2013-04-26 10:53:40
+    [TEST FIXES]
+    - Bundle Try::Tiny for tests
+
 1.09 2013-04-25 14:03:13
     [TEST FIXES]
     - Bundle Test::Fatal for tests
