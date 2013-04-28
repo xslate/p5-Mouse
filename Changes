@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.11 2013-04-28 22:00:38
+    [TEST FIXES]
+    - Ensure Try::Tiny is bundled
+
 1.10 2013-04-26 10:53:40
     [TEST FIXES]
     - Bundle Try::Tiny for tests
