@@ -30,6 +30,7 @@ inc/Test/Exception.pm
 inc/Test/Exception/LessClever.pm
 inc/Test/Fatal.pm
 inc/Test/Requires.pm
+inc/Try/Tiny.pm
 lib/Mouse.pm
 lib/Mouse/Exporter.pm
 lib/Mouse/Meta/Attribute.pm
