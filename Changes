@@ -1,5 +1,10 @@
 Revision history for Mouse
 
+1.12 2013-09-29 09:52:47+0900
+    [BUG FIXES]
+    - Fix a memory leak related to triggers,
+      which was introduced in 1.07 (issue#7)
+
 1.11 2013-04-28 22:00:38
     [TEST FIXES]
     - Ensure Try::Tiny is bundled

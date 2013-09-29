@@ -349,7 +349,7 @@ Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 1.11
+This document describes Mouse version 1.12
 
 =head1 DESCRIPTION
 

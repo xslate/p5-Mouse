@@ -355,6 +355,7 @@ t/900_mouse_bugs/011_RT61852.t
 t/900_mouse_bugs/012_RT61906.t
 t/900_mouse_bugs/013_RT73592_tied_.t
 t/900_mouse_bugs/014_autoload.t
+t/900_mouse_bugs/015_issue7_memleak.t
 t/900_mouse_bugs/RT75093.t
 t/990_deprecated/001-export_to_level.t
 t/lib/Bar.pm
