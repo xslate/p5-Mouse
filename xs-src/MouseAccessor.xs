@@ -216,7 +216,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
        passed to the trigger */
     if(flags & MOUSEf_ATTR_HAS_TRIGGER && has_slot(self, slot)){
         has_old_value = 1;
-        old_value = newSVsv( get_slot(self, slot) );
+        old_value = sv_mortalcopy( get_slot(self, slot) );
     }
 
     if(flags & MOUSEf_ATTR_HAS_TC){
