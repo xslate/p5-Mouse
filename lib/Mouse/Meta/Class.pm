@@ -470,7 +470,7 @@ Mouse::Meta::Class - The Mouse class metaclass
 
 =head1 VERSION
 
-This document describes Mouse version 1.12
+This document describes Mouse version 1.13
 
 =head1 DESCRIPTION
 

@@ -1,5 +1,9 @@
 Revision history for Mouse
 
+1.13 2013-10-10 00:09:35+0900
+    [BUG FIXES]
+    - Fix for perl 5.19.4 (RT 88295)
+
 1.12 2013-09-29 09:52:47+0900
     [BUG FIXES]
     - Fix a memory leak related to triggers,
