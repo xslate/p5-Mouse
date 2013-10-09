@@ -89,10 +89,10 @@ if($use_xs){
     cc_warnings();
     cc_src_paths('xs-src');
     if($use_xs){
-		test_target test_pp => (
-			env => { PERL_ONLY => 1 },
-			($Module::Install::AUTHOR ? (alias => 'test') : ()),
-		);
+        test_target test_pp => (
+            env => { PERL_ONLY => 1 },
+            ($Module::Install::AUTHOR ? (alias => 'test') : ()),
+        );
     }
 }
 else{
@@ -102,7 +102,10 @@ else{
 tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
-auto_set_repository;
+resources
+    bugtracker  => 'https://github.com/gfx/p5-Mouse/issues',
+    repository  => 'https://github.com/gfx/p5-Mouse',
+;
 
 system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
     or warn "Cannot generate Mouse::Tiny: $!";
