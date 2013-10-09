@@ -76,12 +76,12 @@ mouse_mro_get_linear_isa(pTHX_ HV* const stash){
 #endif /* !no_mor_get_linear_isa */
 
 #ifdef DEBUGGING
-SV**
+SV*
 mouse_av_at_safe(pTHX_ AV* const av, I32 const ix){
     assert(av);
     assert(SvTYPE(av) == SVt_PVAV);
     assert(AvMAX(av) >= ix);
-    return &AvARRAY(av)[ix];
+    return AvARRAY(av)[ix] ? AvARRAY(av)[ix] : &PL_sv_undef;
 }
 #endif
 

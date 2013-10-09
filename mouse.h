@@ -90,10 +90,11 @@ MAGIC* mouse_mg_find(pTHX_ SV* const sv, const MGVTBL* const vtbl, I32 const fla
 
 /* MOUSE_av_at(av, ix) is the safer version of AvARRAY(av)[ix] if perl is compiled with -DDEBUGGING */
 #ifdef DEBUGGING
-#define MOUSE_av_at(av, ix)  *mouse_av_at_safe(aTHX_ (av) , (ix))
-SV** mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
+#define MOUSE_av_at(av, ix)  mouse_av_at_safe(aTHX_ (av) , (ix))
+SV* mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 #else
-#define MOUSE_av_at(av, ix)  AvARRAY(av)[ix]
+#define MOUSE_av_at(av, ix) \
+    (AvARRAY(av)[ix] ? AvARRAY(av)[ix] : &PL_sv_undef)
 #endif
 
 #define MOUSE_mg_obj(mg)     ((mg)->mg_obj)
