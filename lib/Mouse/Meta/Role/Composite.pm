@@ -6,7 +6,7 @@ our @ISA = qw(Mouse::Meta::Role);
 
 # FIXME: Mouse::Meta::Role::Composite does things in different way from Moose's
 # Moose: creates a new class for the consumer, and applies roles to it.
-# Mouse: creates a coposite role and apply roles to the role,
+# Mouse: creates a composite role and apply roles to the role,
 #        and then applies it to the consumer.
 
 sub new {

@@ -485,7 +485,7 @@ sub _process_options{
         $args->{init_arg} = $name;
     }
 
-    # 'required' requires eigher 'init_arg', 'builder', or 'default'
+    # 'required' requires either 'init_arg', 'builder', or 'default'
     my $can_be_required = defined( $args->{init_arg} );
 
     if(exists $args->{builder}){
