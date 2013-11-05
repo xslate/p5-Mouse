@@ -25,7 +25,8 @@ sub new {
 
 sub get_method_list {
     my($self) = @_;
-    return keys %{ $self->{methods} };
+    return grep { ! $self->{conflicting_methods}{$_} }
+                                                    keys %{ $self->{methods} };
 }
 
 sub add_method {
