@@ -143,11 +143,11 @@ sub apply_methods {
                     $consumer_class_name);
         }
 
-        my @changed_in_v114 = grep {
+        my @changed_in_v2_0_0 = grep {
             $consumer_class_name->can($_) && ! $consumer->has_method($_)
         } keys %{ $role->{conflicting_methods} };
-        if (@changed_in_v114) {
-            my $method_name_conflict = (@changed_in_v114 == 1
+        if (@changed_in_v2_0_0) {
+            my $method_name_conflict = (@changed_in_v2_0_0 == 1
                 ? 'a method name conflict'
                 : 'method name conflicts');
 
@@ -156,17 +156,17 @@ sub apply_methods {
                 grep{ !$seen{$_}++ } # uniq
                 map { $_->name }
                 map { @{$_} }
-                @{ $role->{composed_roles_by_method} }{@changed_in_v114}
+                @{ $role->{composed_roles_by_method} }{@changed_in_v2_0_0}
             );
 
             Carp::cluck(sprintf
                   q{Due to %s in roles %s,}
                 . q{ the behavior of method%s %s might be changed}
-                . q{ in Mouse-1.14, check it out},
+                . q{ in Mouse-2.00, check it out},
                     $method_name_conflict,
                     $roles,
-                    (@changed_in_v114 > 1 ? 's' : ''),
-                    Mouse::Util::quoted_english_list(@changed_in_v114),
+                    (@changed_in_v2_0_0 > 1 ? 's' : ''),
+                    Mouse::Util::quoted_english_list(@changed_in_v2_0_0),
                     $consumer_class_name);
         }
     }
@@ -185,7 +185,7 @@ Mouse::Meta::Role::Composite - An object to represent the set of roles
 
 =head1 VERSION
 
-This document describes Mouse version 1.13
+This document describes Mouse version 2.0.0
 
 =head1 SEE ALSO
 

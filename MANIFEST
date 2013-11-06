@@ -248,6 +248,7 @@ t/030_roles/036_free_anonymous_roles.t
 t/030_roles/037_create_role_subclass.t
 t/030_roles/041_empty_method_modifiers_meta_bug.t
 t/030_roles/042_compose_overloading.t
+t/030_roles/role_conflict_and_inheritance.t
 t/040_type_constraints/002_util_type_constraints_export.t
 t/040_type_constraints/003_util_std_type_constraints.t
 t/040_type_constraints/004_util_find_type_constraint.t

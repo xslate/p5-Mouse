@@ -1,5 +1,13 @@
 Revision history for Mouse
 
+2.0.0 2013-11-06 09:15:00+0900
+    [BUG FIXES]
+    - Merged the pull-request #13, which fixed an issue where
+      the behavior of role method confliction was different
+      from Moose. This change might affect your existing code
+      so the major version has incremented.
+      See t/030_roles/role_conflict_and_inheritance.t for details.
+
 1.13 2013-10-10 00:09:35+0900
     [BUG FIXES]
     - Fix for perl 5.19.4 (RT 88295)
