@@ -1,4 +1,5 @@
 package Mouse::Meta::Role::Composite;
+use Carp ();
 use Mouse::Util; # enables strict and warnings
 use Mouse::Meta::Role;
 use Mouse::Meta::Role::Application;
@@ -25,7 +26,8 @@ sub new {
 
 sub get_method_list {
     my($self) = @_;
-    return keys %{ $self->{methods} };
+    return grep { ! $self->{conflicting_methods}{$_} }
+                                                    keys %{ $self->{methods} };
 }
 
 sub add_method {
@@ -138,6 +140,33 @@ sub apply_methods {
                     $roles,
                     (@conflicting > 1 ? 's' : ''),
                     Mouse::Util::quoted_english_list(@conflicting),
+                    $consumer_class_name);
+        }
+
+        my @changed_in_v114 = grep {
+            $consumer_class_name->can($_) && ! $consumer->has_method($_)
+        } keys %{ $role->{conflicting_methods} };
+        if (@changed_in_v114) {
+            my $method_name_conflict = (@changed_in_v114 == 1
+                ? 'a method name conflict'
+                : 'method name conflicts');
+
+            my %seen;
+            my $roles = Mouse::Util::quoted_english_list(
+                grep{ !$seen{$_}++ } # uniq
+                map { $_->name }
+                map { @{$_} }
+                @{ $role->{composed_roles_by_method} }{@changed_in_v114}
+            );
+
+            Carp::cluck(sprintf
+                  q{Due to %s in roles %s,}
+                . q{ the behavior of method%s %s might be changed}
+                . q{ in Mouse-1.14, check it out},
+                    $method_name_conflict,
+                    $roles,
+                    (@changed_in_v114 > 1 ? 's' : ''),
+                    Mouse::Util::quoted_english_list(@changed_in_v114),
                     $consumer_class_name);
         }
     }
