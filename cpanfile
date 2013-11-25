@@ -9,7 +9,7 @@ requires 'XSLoader', '0.02';
 on configure => sub {
     requires 'Module::Build', '0.4202';
     requires 'Devel::PPPort', '3.19';
-    requires 'ExtUtils::ParseXS', '2.21';
+    requires 'ExtUtils::ParseXS', '3.22';
     requires 'Module::Build::XSUtil';
 };
 
