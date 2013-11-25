@@ -1,0 +1,130 @@
+{
+   "abstract" : "Moose minus the antlers",
+   "author" : [
+      "Shawn M Moore <sartak at gmail.com>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v0.9.0, CPAN::Meta::Converter version 2.132830",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Mouse",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "CPAN::Meta" : "0",
+            "CPAN::Meta::Prereqs" : "0",
+            "Devel::PPPort" : "3.19",
+            "ExtUtils::ParseXS" : "2.21",
+            "Module::Build" : "0.38"
+         }
+      },
+      "develop" : {
+         "recommends" : {
+            "Test::DependentModules" : "0",
+            "Test::Pod::Coverage" : "0"
+         },
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion" : "0.10108",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
+         },
+         "suggests" : {
+            "Declare::Constraints::Simple" : "0",
+            "HTTP::Headers" : "0",
+            "IO::String" : "0",
+            "Locale::US" : "0",
+            "Params::Coerce" : "0",
+            "Regexp::Common" : "0",
+            "Test::Deep" : "0",
+            "URI" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Scalar::Util" : "1.14",
+            "XSLoader" : "0.02",
+            "perl" : "5.006002"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::Exception" : "0",
+            "Test::Exception::LessClever" : "0",
+            "Test::Fatal" : "0",
+            "Test::LeakTrace" : "0",
+            "Test::More" : "0.88",
+            "Test::Output" : "0",
+            "Test::Requires" : "0",
+            "Try::Tiny" : "0"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/gfx/p5-Mouse/issues"
+      },
+      "homepage" : "https://github.com/gfx/p5-Mouse",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/gfx/p5-Mouse.git",
+         "web" : "https://github.com/gfx/p5-Mouse"
+      }
+   },
+   "version" : "2.0.0",
+   "x_contributors" : [
+      "Ricardo SIGNES <rjbs@cpan.org>",
+      "å¤§æ²¢ åå® <yappo@shibuya.pl>",
+      "Dann <techmemo@gmail.com>",
+      "Jesse Vincent <jesse@bestpractical.com>",
+      "Chris Prather <chris@prather.org>",
+      "Tokuhiro Matsuno <tokuhirom@gp.ath.cx>",
+      "Daisuke Maki <dmaki@cpan.org>",
+      "Nick Woolley <nick@noodlefactory.co.uk>",
+      "Daisuke Maki (lestrrat) <daisuke@endeworks.jp>",
+      "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
+      "wu-lee <mouse.git.wu-lee@noodlefactory.co.uk>",
+      "Yuval Kogman <nothingmuch@woobling.org>",
+      "Joel Bernstein <joel.bernstein@vidicom.co.uk>",
+      "markstos <mark@stosberg.com>",
+      "Chris Prather <cprather@hdpublishing.com>",
+      "Tomas Doran (t0m) <t0m@state51.co.uk>",
+      "Matt S Trout <matthewt@hercule.scsys.co.uk>",
+      "sunnavy <sunnavy@bestpractical.com>",
+      "Shawn M Moore <sartak@gmail.com>",
+      "Ãvar ArnfjÃ¶rÃ° Bjarmason <avarab@gmail.com>",
+      "tokuhirom <tokuhirom@gmail.com>",
+      "Vincent Pit <perl@profvince.com>",
+      "Brett <orderthruchaos@gmail.com>",
+      "Shawn M Moore <sartak@bestpractical.com>",
+      "Ingy dot Net <ingy@ingy.net>",
+      "Todd Rinaldo <toddr@cpanel.net>",
+      "Fuji, Goro <fuji.goro@dena.jp>",
+      "Piotr Roszatycki <piotr.roszatycki@gmail.com>",
+      "Stanislaw Pusep <creaktive@gmail.com>",
+      "Michael G. Schwern <schwern@pobox.com>",
+      "Fuji, Goro <g.psy.va@gmail.com>",
+      "David Steinbrunner <dsteinbrunner@pobox.com>",
+      "Masahiro Honma <hiratara@cpan.org>",
+      "Fuji, Goro <gfuji@cpan.org>",
+      "Fuji, Goro <goro-fuji@cookpad.com>"
+   ]
+}
