@@ -8,7 +8,7 @@ requires 'XSLoader', '0.02';
 
 on configure => sub {
     requires 'Devel::PPPort', '3.19';
-    requires 'ExtUtils::ParseXS', '2.21';
+    requires 'ExtUtils::ParseXS', '3.23';
     requires 'Module::Build::XSUtil';
 };
 
