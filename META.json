@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.9.0, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "Minilla/v0.9.1, CPAN::Meta::Converter version 2.132830",
    "license" : [
       "perl_5"
    ],
@@ -36,14 +36,12 @@
          }
       },
       "develop" : {
-         "recommends" : {
-            "Test::DependentModules" : "0",
-            "Test::Pod::Coverage" : "0"
-         },
          "requires" : {
             "Test::CPAN::Meta" : "0",
+            "Test::DependentModules" : "0",
             "Test::MinimumVersion" : "0.10108",
             "Test::Pod" : "1.41",
+            "Test::Pod::Coverage" : "0",
             "Test::Spellunker" : "v0.2.7"
          },
          "suggests" : {
@@ -61,7 +59,7 @@
          "requires" : {
             "Scalar::Util" : "1.14",
             "XSLoader" : "0.02",
-            "perl" : "5.006002"
+            "perl" : "v5.8.1"
          }
       },
       "test" : {
@@ -124,7 +122,7 @@
       "David Steinbrunner <dsteinbrunner@pobox.com>",
       "Masahiro Honma <hiratara@cpan.org>",
       "Fuji, Goro <goro-fuji@cookpad.com>",
-      "Fuji, Goro <gfuji@cpan.org>",
-      "tokuhirom <tokuhirom@gmail.com>"
+      "tokuhirom <tokuhirom@gmail.com>",
+      "Fuji, Goro (gfx) <gfuji@cpan.org>"
    ]
 }

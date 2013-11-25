@@ -1,4 +1,4 @@
-requires 'perl', '5.006002';
+requires 'perl', '5.8.1';
 
 # Scalar::Util < 1.14 has a bug.
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
@@ -25,10 +25,10 @@ on 'test' => sub {
     requires 'Try::Tiny';
 };
 
-on develop => sub {
+on 'develop' => sub {
     # author's tests
-    recommends 'Test::Pod::Coverage';
-    recommends 'Test::DependentModules';
+    requires 'Test::Pod::Coverage';
+    requires 'Test::DependentModules';
 
     # required by recipes and examples
     suggests 'Regexp::Common';
