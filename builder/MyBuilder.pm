@@ -21,12 +21,7 @@ sub new {
             'xs-src/Mouse.xs' => 'lib/Mouse.xs',
         },
         c_source => [
-            qw(
-                xs-src/MouseAccessor.c
-                xs-src/MouseAttribute.c
-                xs-src/MouseTypeConstraints.c
-                xs-src/MouseUtil.c
-            )
+            'xs-src'
         ],
         include_dirs => ['.'],
     );
