@@ -35,3 +35,4 @@ Moose-t/
 !META.json
 !LICENSE
 /lib/Mouse.xs
+/MANIFEST

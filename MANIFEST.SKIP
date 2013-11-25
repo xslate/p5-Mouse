@@ -1,0 +1,17 @@
+# Moose specific tests
+xt/compat
+xt/external
+failing
+
+^TODO$
+
+# author's tools
+author/
+
+lib/Mouse/Tiny\.pm$
+
+ppport\.h$
+
+MYMETA\.(?:yml|json)$
+Moose-t/
+xshelper\.h$

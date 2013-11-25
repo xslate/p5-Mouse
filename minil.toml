@@ -4,3 +4,7 @@ allow_pureperl=1
 
 [build]
 build_class = "builder::MyBuilder"
+
+[no_index]
+directory = ["t", "xt", "tool", "author", "example", "benchmarks", "builder"]
+
