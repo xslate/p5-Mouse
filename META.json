@@ -31,7 +31,7 @@
             "CPAN::Meta::Prereqs" : "0",
             "Devel::PPPort" : "3.19",
             "ExtUtils::ParseXS" : "2.21",
-            "Module::Build" : "0.38",
+            "Module::Build" : "0.4202",
             "Module::Build::XSUtil" : "0"
          }
       },
