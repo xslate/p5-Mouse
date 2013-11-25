@@ -9,9 +9,13 @@ require_ok 'Mouse::Role';
 
 no warnings 'uninitialized';
 
-my $xs = !exists( $INC{'Mouse/PuprePerl.pm'} );
+my $xs = !exists( $INC{'Mouse/PurePerl.pm'} );
 
 diag "Testing Mouse/$Mouse::VERSION (", $xs ? 'XS' : 'Pure Perl', ")";
+eval { diag "XS state: " . ( Mouse::Util::MOUSE_XS() ? 'true' : 'false' ); };
+diag $@ if $@;
+diag "ENV<PERL_ONLY>: " . ( $ENV{PERL_ONLY} ? 'true' : 'false' );
+diag "";
 
 diag "Soft dependency versions:";
 

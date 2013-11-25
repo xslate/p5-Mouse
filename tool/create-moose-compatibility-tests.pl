@@ -5,6 +5,7 @@ use warnings;
 use File::Path ();
 use File::Spec ();
 use File::Basename ();
+use File::Find ();
 
 print "Creating compatibility tests in xt/compat/* ...\n";
 
@@ -78,6 +79,6 @@ File::Find::find(
 );
 print "Compatibility tests created.\n";
 
-clean_files("@compat_tests"); # defined in main
+# clean_files("@compat_tests"); # defined in main
 
 
