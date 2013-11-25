@@ -9,7 +9,7 @@ require_ok 'Mouse::Role';
 
 no warnings 'uninitialized';
 
-my $xs = !exists( $INC{'Mouse/PuprePerl.pm'} );
+my $xs = !exists( $INC{'Mouse/PurePerl.pm'} );
 
 diag "Testing Mouse/$Mouse::VERSION (", $xs ? 'XS' : 'Pure Perl', ")";
 
