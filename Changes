@@ -1,6 +1,10 @@
 Revision history for Mouse
 
-{{NEXT}}
+{{$NEXT}}
+
+2.1.0 2013-11-26T13:15:54Z
+    - Dropped 5.6.2 support
+    - Migrated to Minilla
 
 2.0.0 2013-11-06 09:15:00+0900
     [BUG FIXES]

@@ -28,6 +28,7 @@ test-mydeps-*.log
 Moose-t/
 /Mouse-*
 /.build
+/_build
 /_build_params
 /Build
 /Build.bat

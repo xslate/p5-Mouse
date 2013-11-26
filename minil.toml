@@ -8,3 +8,6 @@ build_class = "builder::MyBuilder"
 [no_index]
 directory = ["t", "xt", "tool", "author", "example", "benchmarks", "builder"]
 
+[ReleaseTest]
+MinimumVersion = false
+

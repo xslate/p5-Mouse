@@ -24,8 +24,6 @@ my @modules = qw(
     MouseX::AttributeHelpers
     MouseX::Getopt
     MouseX::ConfigFromFile
-
-    Any::Moose
 );
 
 test_module($_) for @modules;
