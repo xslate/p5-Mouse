@@ -26,12 +26,6 @@ my @modules = qw(
     MouseX::ConfigFromFile
 
     Any::Moose
-
-    HTTP::Engine
-    HTTP::Engine::Middleware
-
-    HTML::Shakan
-    Net::Google::DataAPI
 );
 
 test_module($_) for @modules;
