@@ -1,4 +1,5 @@
 #include "mouse.h"
+#include "xs_version.h"
 
 #define MY_CXT_KEY "Mouse::Util::_guts" XS_VERSION
 typedef struct {
