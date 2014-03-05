@@ -28,12 +28,18 @@ sub new {
 }
 
 sub ACTION_code {
-    my ($class) = @_;
+    my ($self) = @_;
 
     system($^X, 'tool/generate-mouse-tiny.pl', 'lib/Mouse/Tiny.pm') == 0
         or warn "Cannot generate Mouse::Tiny: $!";
 
-    unless ($class->pureperl_only) {
+    open my $fh, '>', 'xs-src/xs_version.h';
+    print {$fh} "#ifndef XS_VERSION\n";
+    printf {$fh} "#define XS_VERSION \"%s\"\n", $self->dist_version;
+    print {$fh} "#endif\n";
+    close($fh);
+
+    unless ($self->pureperl_only) {
         require ExtUtils::ParseXS;
         for my $xs (qw(
             xs-src/MouseAccessor.xs
@@ -50,7 +56,7 @@ sub ACTION_code {
         }
     }
 
-    $class->SUPER::ACTION_code();
+    $self->SUPER::ACTION_code();
 }
 
 sub ACTION_test {

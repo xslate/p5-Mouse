@@ -5,6 +5,7 @@
  */
 
 #include "mouse.h"
+#include "xs_version.h"
 
 #ifndef SvRXOK
 #define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))

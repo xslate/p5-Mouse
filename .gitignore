@@ -37,3 +37,4 @@ Moose-t/
 !LICENSE
 /lib/Mouse.xs
 /MANIFEST
+/xs-src/xs_version.h
