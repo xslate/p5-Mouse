@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+2.1.1 2014-03-26T13:23:48Z
+    - Fixed #18 (tokuhirom)
+
 2.1.0 2013-11-26T13:15:54Z
     - Dropped 5.6.2 support
     - Migrated to Minilla

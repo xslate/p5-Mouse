@@ -3,8 +3,8 @@ use strict;
 use warnings;
 
 BEGIN{
-    eval{ require MRO::Compat };
-    eval{ require mro };
+    eval  { require MRO::Compat };
+    eval q{ require mro }; # avoid xt/minimum_version.t violation
 }
 
 use Test::More defined(&mro::get_linear_isa)

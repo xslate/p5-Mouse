@@ -20,7 +20,7 @@ my %args = (
     dynamic_config       => 0,
 
     configure_requires => {
-        'Module::Build' => 0.38,
+        'Module::Build' => 0.4005,
     },
 
     name            => 'Mouse',
