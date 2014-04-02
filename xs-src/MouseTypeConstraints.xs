@@ -103,7 +103,13 @@ mouse_tc_Bool(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
             return SvNVX(sv) == 1.0;
         }
         else{
-            return FALSE;
+            STRLEN len;
+            char * ptr = SvPV(sv, len);
+            if(len == 1 && ptr[0] == '1'){
+                return TRUE;
+            } else {
+                return FALSE;
+            }
         }
     }
     else{
