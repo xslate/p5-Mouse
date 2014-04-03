@@ -209,7 +209,7 @@ Mouse::Meta::Role::Application - The Mouse role application class
 
 =head1 VERSION
 
-This document describes Mouse version 2.1.1
+This document describes Mouse version 2.2.0
 
 =head1 SEE ALSO
 
