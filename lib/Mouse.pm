@@ -1,5 +1,5 @@
 package Mouse;
-use 5.006_002;
+use 5.008_005;
 
 use Mouse::Exporter; # enables strict and warnings
 
@@ -401,10 +401,6 @@ keywords (such as L</extends>) it will break loudly instead breaking subtly.
 We have a public git repository L<https://github.com/gfx/p5-Mouse>:.
 
     git clone git://github.com/gfx/p5-Mouse.git
-
-=head1 DEPENDENCIES
-
-Perl 5.6.2 or later.
 
 =head1 SEE ALSO
 

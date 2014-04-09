@@ -2,7 +2,7 @@ package builder::MyBuilder;
 use strict;
 use warnings;
 use utf8;
-use 5.008_001;
+use 5.008_005;
 use base qw(Module::Build::XSUtil);
 
 sub new {
