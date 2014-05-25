@@ -311,7 +311,7 @@ Mouse::Meta::Module - The common base class of Mouse::Meta::Class and Mouse::Met
 
 =head1 VERSION
 
-This document describes Mouse version 2.2.0
+This document describes Mouse version 2.3.0
 
 =head1 DESCRIPTION
 

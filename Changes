@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+2.3.0 2014-05-25T23:07:19Z
+    - Fixed #17; memory leak in applying roles to instances
+
 2.2.0 2014-04-03T22:34:42Z
     - Fixed #16 - inconsistent coercion/validation of Bool type (tokuhirom)
 

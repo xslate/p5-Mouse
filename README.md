@@ -5,7 +5,7 @@ Mouse - Moose minus the antlers
 
 # VERSION
 
-This document describes Mouse version 2.2.0
+This document describes Mouse version 2.3.0
 
 # SYNOPSIS
 
@@ -248,10 +248,6 @@ keywords (such as ["extends"](#extends)) it will break loudly instead breaking s
 We have a public git repository [https://github.com/gfx/p5-Mouse](https://github.com/gfx/p5-Mouse):.
 
     git clone git://github.com/gfx/p5-Mouse.git
-
-# DEPENDENCIES
-
-Perl 5.6.2 or later.
 
 # SEE ALSO
 

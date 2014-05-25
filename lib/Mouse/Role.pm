@@ -1,7 +1,7 @@
 package Mouse::Role;
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = '2.2.0';
+our $VERSION = '2.3.0';
 
 use Carp         ();
 use Scalar::Util ();
@@ -137,7 +137,7 @@ Mouse::Role - The Mouse Role
 
 =head1 VERSION
 
-This document describes Mouse version 2.2.0
+This document describes Mouse version 2.3.0
 
 =head1 SYNOPSIS
 
