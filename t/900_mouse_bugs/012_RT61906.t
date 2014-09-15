@@ -5,7 +5,7 @@ use warnings;
 use Test::More;
 
 package MouseObj;
-use Mouse 0.78;
+use Mouse;
 
 has 'only_accessor' => (
    is  => 'rw',

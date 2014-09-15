@@ -1,7 +1,7 @@
 package Mouse::Role;
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = '2.3.0';
+our $VERSION = 'v2.3.0';
 
 use Carp         ();
 use Scalar::Util ();
