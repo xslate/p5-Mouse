@@ -2,8 +2,11 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+2.4.1 2014-09-21T12:57:11Z
+    - Fix build issues (#34)
+
 v2.4.0 2014-09-21T02:04:01Z
-    - Fix build issues (#32, #34)
+    - Fix build issues (#32)
 
 2.3.0 2014-05-25T23:07:19Z
     - Fixed #17; memory leak in applying roles to instances

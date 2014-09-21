@@ -86,7 +86,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.4.0",
+   "version" : "2.4.1",
    "x_contributors" : [
       "Ricardo SIGNES <rjbs@cpan.org>",
       "大沢 和宏 <yappo@shibuya.pl>",
@@ -123,7 +123,7 @@
       "Fuji, Goro <goro-fuji@cookpad.com>",
       "Sergiy Zuban <s.zuban@trackingsoft.com>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>",
-      "FUJI Goro (gfx) <gfuji@cpan.org>",
-      "Syohei YOSHIDA <syohex@gmail.com>"
+      "Syohei YOSHIDA <syohex@gmail.com>",
+      "FUJI Goro (gfx) <gfuji@cpan.org>"
    ]
 }
