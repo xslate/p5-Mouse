@@ -1,6 +1,7 @@
 Revision history for Mouse
 
 {{$NEXT}}
+    - Fixed #36; Excess dependency on Test::Exception::LessClever (kentnl, #37)
 
 2.4.1 2014-09-21T12:57:11Z
     - Fix build issues (#34)

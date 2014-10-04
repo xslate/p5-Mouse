@@ -17,7 +17,6 @@ on 'test' => sub {
 
     # Comes from author/cpanm.requires
     requires 'Test::Exception';
-    requires 'Test::Exception::LessClever';
     requires 'Test::Fatal';
     requires 'Test::LeakTrace';
     requires 'Test::Output';
