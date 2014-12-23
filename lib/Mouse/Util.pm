@@ -76,7 +76,10 @@ BEGIN{
         require 'Mouse/PurePerl.pm'; # we don't want to create its namespace
     }
 
-    *MOUSE_XS = sub(){ $xs };
+    {
+        my $value = $xs; # avoid "Constants from lexical variables potentially modified elsewhere are deprecated"
+        *MOUSE_XS = sub(){ $value };
+    }
 
     # definition of mro::get_linear_isa()
     my $get_linear_isa;
