@@ -3,7 +3,7 @@
 package main;
 use strict;
 use warnings;
-use threads; # XXX: ithreads is discuraged!
+use Test::Requires qw(threads); # XXX: ithreads is discuraged!
 
 use Test::More;
 
