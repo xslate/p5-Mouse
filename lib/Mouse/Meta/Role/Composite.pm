@@ -161,8 +161,8 @@ sub apply_methods {
 
             Carp::cluck(sprintf
                   q{Due to %s in roles %s,}
-                . q{ the behavior of method%s %s might be changed}
-                . q{ in Mouse-2.00, check it out},
+                . q{ the behavior of method%s %s mihgt be incompatible with Moose}
+                . q{, check out %s},
                     $method_name_conflict,
                     $roles,
                     (@changed_in_v2_0_0 > 1 ? 's' : ''),
