@@ -10,7 +10,7 @@ use Test::More;
 
     eval 'sub bar { $x = 1 ; return $x }';
     ::ok($@, '... got an error because strict is on');
-    ::like($@, qr/Global symbol \"\$foo\" requires explicit package name/, '... got the right error');
+    ::like($@, qr/Global symbol \"\$x\" requires explicit package name/, '... got the right error');
 
 }
 

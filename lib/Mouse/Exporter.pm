@@ -5,25 +5,13 @@ use Carp ();
 
 my %SPEC;
 
-my $strict_bits;
-my $warnings_extra_bits;
-BEGIN{
-    $strict_bits         = strict::bits(qw(subs refs vars));
-    $warnings_extra_bits = warnings::bits(FATAL => 'recursion');
-}
-
 # it must be "require", because Mouse::Util depends on Mouse::Exporter,
 # which depends on Mouse::Util::import()
 require Mouse::Util;
 
 sub import{
-    ## no critic ProhibitBitwiseOperators
-
-    # strict->import;
-    $^H              |= $strict_bits;
-    # warnings->import('all', FATAL => 'recursion');
-    ${^WARNING_BITS} |= $warnings::Bits{all};
-    ${^WARNING_BITS} |= $warnings_extra_bits;
+    strict->import;
+    warnings->import('all', FATAL => 'recursion');
     return;
 }
 
@@ -170,11 +158,8 @@ sub do_import {
         }
     }
 
-    # strict->import;
-    $^H              |= $strict_bits;                   ## no critic ProhibitBitwiseOperators
-    # warnings->import('all', FATAL => 'recursion');
-    ${^WARNING_BITS} |= $warnings::Bits{all};           ## no critic ProhibitBitwiseOperators
-    ${^WARNING_BITS} |= $warnings_extra_bits;           ## no critic ProhibitBitwiseOperators
+    strict->import;
+    warnings->import('all', FATAL => 'recursion');
 
     if($spec->{INIT_META}){
         my $meta;

@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 {{$NEXT}}
+    - Fixed #40; 'use strict' not enabled when 'use 5.010' follows 'use Mouse'
+    - Fixed #39; New warnings in Perl 5.21.x: redundant arguments for sprintf
     - Fixed #38; Avoid warnings introduced in Perl 5.21.x
     - Fixed #36; Excess dependency on Test::Exception::LessClever (kentnl, #37)
 
