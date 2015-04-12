@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/gfx/p5-Mouse.png?branch=master)](https://travis-ci.org/gfx/p5-Mouse)
+[![Build Status](https://travis-ci.org/gfx/p5-Mouse.svg?branch=master)](https://travis-ci.org/gfx/p5-Mouse)
 # NAME
 
 Mouse - Moose minus the antlers
