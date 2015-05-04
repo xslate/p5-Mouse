@@ -323,7 +323,7 @@ sub _parse_param {
         Carp::croak("Syntax error in type: missing right square bracket in '$c->{orig}'");
     }
 
-    return undef;
+    return;
 }
 
 # name : [\w.:]+
@@ -355,7 +355,7 @@ sub _parse_single_type {
         Carp::croak("Undefined type with parameter [$param] in '$c->{orig}'");
     }
     else{
-        return undef;
+        return;
     }
 }
 
