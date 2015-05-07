@@ -173,7 +173,7 @@ sub find_method_by_name {
         my $method = $self->initialize($class)->get_method($method_name);
         return $method if defined $method;
     }
-    return undef;
+    return;
 }
 
 sub get_all_methods {
@@ -196,7 +196,7 @@ sub find_attribute_by_name {
     foreach my $attr($self->get_all_attributes) {
         return $attr if $attr->name eq $name;
     }
-    return undef;
+    return;
 }
 
 sub add_attribute {

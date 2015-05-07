@@ -161,7 +161,7 @@ sub apply_methods {
 
             Carp::cluck(sprintf
                   q{Due to %s in roles %s,}
-                . q{ the behavior of method%s %s mihgt be incompatible with Moose}
+                . q{ the behavior of method%s %s might be incompatible with Moose}
                 . q{, check out %s},
                     $method_name_conflict,
                     $roles,

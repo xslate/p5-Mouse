@@ -182,8 +182,8 @@ sub _parameterize_ArrayRef_for {
     my $check = $type_parameter->_compiled_type_constraint;
 
     return sub {
-        foreach my $value (@{$_}) {
-            return undef unless $check->($value);
+        foreach my $value (@{$_}) { 
+           return unless $check->($value);
         }
         return 1;
     }
@@ -195,7 +195,7 @@ sub _parameterize_HashRef_for {
 
     return sub {
         foreach my $value(values %{$_}){
-            return undef unless $check->($value);
+            return unless $check->($value);
         }
         return 1;
     };
@@ -262,7 +262,7 @@ my $generate_class_accessor = sub {
                 return $meta->{$name};
             }
         }
-        return undef;
+        return;
     };
 };
 
@@ -661,7 +661,7 @@ sub compile_type_constraint{
           my(@args) = @_;
           for ($args[0]) { # local $_ will cancel tie-ness due to perl's bug
               foreach my $c(@checks){
-                  return undef if !$c->(@args);
+                  return if !$c->(@args);
               }
           }
           return 1;

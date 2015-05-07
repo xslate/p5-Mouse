@@ -41,7 +41,7 @@ sub reinitialize {
 
 sub _class_of{
     my($class_or_instance) = @_;
-    return undef unless defined $class_or_instance;
+    return unless defined $class_or_instance;
     return $METAS{ ref($class_or_instance) || $class_or_instance };
 }
 
@@ -119,7 +119,7 @@ sub get_method {
         );
     }
 
-    return undef;
+    return;
 }
 
 sub get_method_list {
