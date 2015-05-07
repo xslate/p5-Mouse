@@ -2,6 +2,12 @@
 
 use Test::More;
 
+BEGIN {
+    plan skip_all
+           => 'perl 5.10 required to test Mouse/strict.pm/use 5.10 interaction'
+             unless "$]" >= 5.010;
+}
+
 # without explicit 'strict'
 {
     package Foo;
