@@ -122,7 +122,9 @@ mouse_accessor_generate(pTHX_ SV* const attr, XSUBADDR_t const accessor_impl){
      * although we use MAGIC for gc, we also store mg to
      * CvXSUBANY for efficiency (gfx)
      */
+#ifndef MULTIPLICITY
     CvXSUBANY(xsub).any_ptr = (void*)mg;
+#endif
 
     return xsub;
 }
@@ -262,7 +264,7 @@ XS(XS_Mouse_accessor)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_accessor_vtbl);
 
     SP -= items; /* PPCODE */
     PUTBACK;
@@ -285,7 +287,7 @@ XS(XS_Mouse_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_accessor_vtbl);
 
     if (items != 1) {
         mouse_throw_error(MOUSE_mg_attribute(mg), NULL,
@@ -303,7 +305,7 @@ XS(XS_Mouse_writer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_accessor_vtbl);
 
     if (items != 2) {
         mouse_throw_error(MOUSE_mg_attribute(mg), NULL,
@@ -351,7 +353,9 @@ mouse_simple_accessor_generate(pTHX_
      * although we use MAGIC for gc, we also store mg to CvXSUBANY
      * for efficiency (gfx)
      */
+#ifndef MULTIPLICITY
     CvXSUBANY(xsub).any_ptr = (void*)mg;
+#endif
 
     return xsub;
 }
@@ -360,7 +364,7 @@ XS(XS_Mouse_simple_reader)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_accessor_vtbl);
     SV* value;
 
     if (items != 1) {
@@ -389,7 +393,7 @@ XS(XS_Mouse_simple_writer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* const slot = MOUSE_mg_slot(MOUSE_get_magic(cv, &mouse_accessor_vtbl));
 
     if (items != 2) {
         croak("Expected exactly two argument for a writer of %"SVf,
@@ -404,7 +408,7 @@ XS(XS_Mouse_simple_clearer)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* const slot = MOUSE_mg_slot(MOUSE_get_magic(cv, &mouse_accessor_vtbl));
     SV* value;
 
     if (items != 1) {
@@ -421,7 +425,7 @@ XS(XS_Mouse_simple_predicate)
 {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* const slot = MOUSE_mg_slot(MOUSE_get_magic(cv, &mouse_accessor_vtbl));
 
     if (items != 1) {
         croak("Expected exactly one argument for a predicate of %"SVf, slot);
@@ -435,7 +439,7 @@ XS(XS_Mouse_simple_predicate)
 XS(XS_Mouse_inheritable_class_accessor) {
     dVAR; dXSARGS;
     dMOUSE_self;
-    SV* const slot = MOUSE_mg_slot((MAGIC*)XSANY.any_ptr);
+    SV* const slot = MOUSE_mg_slot(MOUSE_get_magic(cv, &mouse_accessor_vtbl));
     SV* value;
     HV* stash;
 
