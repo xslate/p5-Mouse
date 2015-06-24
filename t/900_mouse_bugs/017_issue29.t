@@ -3,10 +3,13 @@
 package main;
 use strict;
 use warnings;
-use Test::More skip_all => 'See https://github.com/gfx/p5-Mouse/issues/29';
+use constant HAS_THREADS => eval{ require threads && require threads::shared };
+use Test::More;
 
-use Test::Requires qw(threads); # XXX: ithreads is discuraged!
-
+use if !HAS_THREADS, 'Test::More',
+    (skip_all => "This is a test for threads ($@)");
+use if $Test::More::VERSION >= 2.00, 'Test::More',
+    (skip_all => "Test::Builder2 has bugs about threads");
 
 {
     package Foo;
