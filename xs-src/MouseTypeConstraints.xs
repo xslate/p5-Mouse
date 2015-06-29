@@ -24,6 +24,8 @@ typedef int (*check_fptr_t)(pTHX_ SV* const data, SV* const sv);
 static
 XSPROTO(XS_Mouse_constraint_check);
 
+static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
+
 /*
     NOTE: mouse_tc_check() handles GETMAGIC
 */
@@ -33,9 +35,10 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     assert(SvTYPE(cv) == SVt_PVCV);
 
     if(CvXSUB(cv) == XS_Mouse_constraint_check){ /* built-in type constraints */
-        MAGIC* const mg = (MAGIC*)CvXSUBANY(cv).any_ptr;
-
+        MAGIC* const mg = MOUSE_get_magic(cv, &mouse_util_type_constraints_vtbl);
+#ifndef MULTIPLICITY
         assert(CvXSUBANY(cv).any_ptr != NULL);
+#endif
         assert(mg->mg_ptr            != NULL);
 
         SvGETMAGIC(sv);
@@ -498,14 +501,13 @@ mouse_can_methods(pTHX_ AV* const methods, SV* const instance){
     return FALSE;
 }
 
-static MGVTBL mouse_util_type_constraints_vtbl; /* not used, only for identity */
-
 static CV*
 mouse_tc_generate(pTHX_ const char* const name, check_fptr_t const fptr, SV* const param) {
     CV* xsub;
+    MAGIC* mg;
 
     xsub = newXS(name, XS_Mouse_constraint_check, __FILE__);
-    CvXSUBANY(xsub).any_ptr = sv_magicext(
+    mg = sv_magicext(
         (SV*)xsub,
         param,       /* mg_obj: refcnt will be increased */
         PERL_MAGIC_ext,
@@ -513,6 +515,9 @@ mouse_tc_generate(pTHX_ const char* const name, check_fptr_t const fptr, SV* con
         (char*)fptr, /* mg_ptr */
         0            /* mg_len: 0 for static data */
     );
+#ifndef MULTIPLICITY
+    CvXSUBANY(xsub).any_ptr = (void*)mg;
+#endif
 
     if(!name){
         sv_2mortal((SV*)xsub);
@@ -569,7 +574,7 @@ static
 XSPROTO(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
-    MAGIC* const mg = (MAGIC*)XSANY.any_ptr;
+    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_util_type_constraints_vtbl);
     SV* sv;
 
     if(items < 1){
