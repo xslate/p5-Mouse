@@ -131,6 +131,9 @@ sub init_meta {
     my $metaclass  = $args{metaclass}  || 'Mouse::Meta::Class';
 
     my $meta = $metaclass->initialize($class);
+    my $filename = Mouse::Util::module_notional_filename($meta->name);
+    $INC{$filename} = '(set by Mouse)'
+        unless exists $INC{$filename};
 
     $meta->add_method(meta => sub{
         return $metaclass->initialize(ref($_[0]) || $_[0]);

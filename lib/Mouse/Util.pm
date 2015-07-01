@@ -232,6 +232,15 @@ sub does_role {
     }
 }
 
+# Taken from Module::Runtime
+sub module_notional_filename {
+    my $class = shift;
+
+    $class =~ s{::}{/}g;
+
+    return $class.'.pm';
+}
+
 # Utilities from Class::MOP
 
 sub get_code_info;
@@ -278,12 +287,11 @@ sub _try_load_one_class {
 
     return '' if is_class_loaded($class);
 
-    $class  =~ s{::}{/}g;
-    $class .= '.pm';
+    my $filename = module_notional_filename($class);
 
     return do {
         local $@;
-        eval { require $class };
+        eval { require $filename };
         $@;
     };
 }
