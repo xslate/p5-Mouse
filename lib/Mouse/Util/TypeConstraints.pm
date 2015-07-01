@@ -344,12 +344,9 @@ sub _parse_single_type {
     my $param = _parse_param($c);
 
     if(defined $type){
-        if(defined $param){
-            return _find_or_create_parameterized_type($type, $param);
-        }
-        else {
-            return $type;
-        }
+	return ( defined $param
+		 ? _find_or_create_parameterized_type($type, $param)
+		 : $type );
     }
     elsif(defined $param){
         Carp::croak("Undefined type with parameter [$param] in '$c->{orig}'");
