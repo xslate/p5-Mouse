@@ -106,7 +106,7 @@ SV* mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 #define MOUSE_mg_slot(mg)   MOUSE_mg_obj(mg)
 #define MOUSE_mg_xa(mg)    ((AV*)MOUSE_mg_ptr(mg))
 
-static inline MAGIC *MOUSE_get_magic(CV *cv, MGVTBL *vtbl)
+static inline MAGIC *MOUSE_get_magic(pTHX_ CV *cv, MGVTBL *vtbl)
 {
 #ifndef MULTIPLICITY
     return (MAGIC*)(CvXSUBANY(cv).any_ptr);
