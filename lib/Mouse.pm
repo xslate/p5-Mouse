@@ -3,7 +3,7 @@ use 5.008_005;
 
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = 'v2.4.3';
+our $VERSION = 'v2.4.4';
 
 use Carp         ();
 use Scalar::Util ();
@@ -155,7 +155,7 @@ Mouse - Moose minus the antlers
 
 =head1 VERSION
 
-This document describes Mouse version v2.4.3
+This document describes Mouse version v2.4.4
 
 =head1 SYNOPSIS
 
