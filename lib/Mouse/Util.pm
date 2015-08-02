@@ -50,7 +50,7 @@ BEGIN{
         },
     );
 
-    our $VERSION = 'v2.4.2';
+    our $VERSION = 'v2.4.3';
 
     my $xs = !(defined(&is_valid_class_name) || $ENV{MOUSE_PUREPERL} || $ENV{PERL_ONLY});
 
