@@ -22,7 +22,6 @@ This document describes Mouse version 2.4.2
     }
 
 
-
     __PACKAGE__->meta->make_immutable();
 
     package Point3D;
@@ -54,7 +53,7 @@ Mouse is a Moose compatible object system, which aims to alleviate this penalty
 by providing a subset of Moose's functionality.
 
 We're also going as light on dependencies as possible. Mouse currently has
-__no dependencies__ except for building/testing modules. Mouse also works
+**no dependencies** except for building/testing modules. Mouse also works
 without XS, although it has an XS backend to make it much faster.
 
 ## Moose Compatibility
@@ -82,7 +81,7 @@ Please don't copy MooseX code to MouseX. If you need extensions, you really
 should upgrade to Moose. We don't need two parallel sets of extensions!
 
 If you really must write a Mouse extension, please contact the Moose mailing
-list or \#moose on IRC beforehand.
+list or #moose on IRC beforehand.
 
 # KEYWORDS
 
@@ -142,7 +141,7 @@ this class. Options:
 - `coerce => Bool`
 
     This will attempt to use coercion with the supplied type constraint to change
-    the value passed into any accessors or constructors. You __must__ have supplied
+    the value passed into any accessors or constructors. You **must** have supplied
     a type constraint in order for this to work. See [Moose::Cookbook::Basics::Recipe5](https://metacpan.org/pod/Moose::Cookbook::Basics::Recipe5)
     for an example.
 

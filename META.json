@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v2.5.0, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "perl_5"
    ],
@@ -107,7 +107,6 @@
       "sunnavy <sunnavy@bestpractical.com>",
       "Shawn M Moore <sartak@gmail.com>",
       "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
-      "Vincent Pit <perl@profvince.com>",
       "Brett <orderthruchaos@gmail.com>",
       "Shawn M Moore <sartak@bestpractical.com>",
       "Ingy dot Net <ingy@ingy.net>",
@@ -123,8 +122,9 @@
       "Sergiy Zuban <s.zuban@trackingsoft.com>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>",
       "Kent Fredric <kentfredric@gmail.com>",
-      "Syohei YOSHIDA <syohex@gmail.com>",
       "John SJ Anderson <genehack@genehack.org>",
+      "Vincent Pit <perl@profvince.com>",
+      "Syohei YOSHIDA <syohex@gmail.com>",
       "FUJI Goro (gfx) <gfuji@cpan.org>"
    ]
 }
