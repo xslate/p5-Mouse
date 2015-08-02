@@ -35,7 +35,7 @@ mouse_tc_check(pTHX_ SV* const tc_code, SV* const sv) {
     assert(SvTYPE(cv) == SVt_PVCV);
 
     if(CvXSUB(cv) == XS_Mouse_constraint_check){ /* built-in type constraints */
-        MAGIC* const mg = MOUSE_get_magic(cv, &mouse_util_type_constraints_vtbl);
+        MAGIC* const mg = MOUSE_get_magic(aTHX_ cv, &mouse_util_type_constraints_vtbl);
 #ifndef MULTIPLICITY
         assert(CvXSUBANY(cv).any_ptr != NULL);
 #endif
@@ -574,7 +574,7 @@ static
 XSPROTO(XS_Mouse_constraint_check) {
     dVAR;
     dXSARGS;
-    MAGIC* const mg = MOUSE_get_magic(cv, &mouse_util_type_constraints_vtbl);
+    MAGIC* const mg = MOUSE_get_magic(aTHX_ cv, &mouse_util_type_constraints_vtbl);
     SV* sv;
 
     if(items < 1){
