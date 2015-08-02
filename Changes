@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.4.3 2015-08-02T07:10:09Z
+    - Fix for Perl 5.22.0 or higher(#50)
+
 2.4.2 2015-04-12T01:22:02Z
     - Fixed #40; 'use strict' not enabled when 'use 5.010' follows 'use Mouse'
     - Fixed #39; New warnings in Perl 5.21.x: redundant arguments for sprintf

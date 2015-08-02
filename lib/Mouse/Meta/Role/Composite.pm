@@ -185,7 +185,7 @@ Mouse::Meta::Role::Composite - An object to represent the set of roles
 
 =head1 VERSION
 
-This document describes Mouse version 2.4.2
+This document describes Mouse version v2.4.3
 
 =head1 SEE ALSO
 

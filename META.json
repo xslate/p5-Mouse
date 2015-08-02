@@ -85,7 +85,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.4.2",
+   "version" : "v2.4.3",
    "x_contributors" : [
       "Ricardo SIGNES <rjbs@cpan.org>",
       "大沢 和宏 <yappo@shibuya.pl>",
@@ -125,7 +125,7 @@
       "John SJ Anderson <genehack@genehack.org>",
       "Vincent Pit <perl@profvince.com>",
       "FUJI Goro (gfx) <gfuji@cpan.org>",
-      "Syohei YOSHIDA <syohex@gmail.com>",
-      "Luca Ferrari <fluca1978@gmail.com>"
+      "Luca Ferrari <fluca1978@gmail.com>",
+      "Syohei YOSHIDA <syohex@gmail.com>"
    ]
 }
