@@ -7,7 +7,7 @@ requires 'Scalar::Util', '1.14';
 requires 'XSLoader', '0.02';
 
 on configure => sub {
-    requires 'Devel::PPPort', '3.19';
+    requires 'Devel::PPPort', '3.22';
     requires 'ExtUtils::ParseXS', '3.22';
     requires 'Module::Build::XSUtil';
 };
