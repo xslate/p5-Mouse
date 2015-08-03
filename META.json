@@ -27,7 +27,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Devel::PPPort" : "3.19",
+            "Devel::PPPort" : "3.22",
             "ExtUtils::ParseXS" : "3.22",
             "Module::Build" : "0.4005",
             "Module::Build::XSUtil" : "0"

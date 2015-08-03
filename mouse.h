@@ -1,6 +1,7 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
+#define NEED_mg_findext
 #define PERL_EUPXS_ALWAYS_EXPORT
 
 #include "xshelper.h"
