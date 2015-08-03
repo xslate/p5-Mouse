@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.4.5 2015-08-03T15:57:50Z
+    - Fix for older Perl(< 5.14.0) (#54)
+
 v2.4.4 2015-08-02T09:49:34Z
     - Fix for older Perl(< 5.22.0) (#53)
 
