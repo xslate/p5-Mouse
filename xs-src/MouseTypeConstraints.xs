@@ -1,6 +1,6 @@
 /*
  * TypeConstraint stuff
- *  - Mouse::Util::TypeConstraints (including OptimizedConstraionts)
+ *  - Mouse::Util::TypeConstraints (including OptimizedConstraints)
  *  - Mouse::Meta::TypeConstraint
  */
 
@@ -506,7 +506,7 @@ mouse_tc_generate(pTHX_ const char* const name, check_fptr_t const fptr, SV* con
     CV* xsub;
     MAGIC* mg;
 
-    xsub = newXS(name, XS_Mouse_constraint_check, __FILE__);
+    xsub = newXS((const char*)name, XS_Mouse_constraint_check, __FILE__);
     mg = sv_magicext(
         (SV*)xsub,
         param,       /* mg_obj: refcnt will be increased */

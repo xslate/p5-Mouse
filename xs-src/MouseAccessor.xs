@@ -254,7 +254,7 @@ mouse_attr_set(pTHX_ SV* const self, MAGIC* const mg, SV* value){
         call_sv_safe(trigger, G_VOID | G_DISCARD);
         /* need not SPAGAIN */
 
-        assert(SvTYPE(value) != SVTYPEMASK);
+        /* wrong assert(SvFLAGS(value) > SVTYPEMASK); can be undef/SVt_NULL */
     }
 
     mouse_push_value(aTHX_ value, flags);
