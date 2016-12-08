@@ -25,6 +25,16 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #define GvCV_set(gv, cv) (GvCV(gv) = (cv))
 #endif
 
+#ifndef PERL_STATIC_INLINE
+#ifdef NOINLINE
+#define PERL_STATIC_INLINE STATIC
+#elif defined(_MSC_VER)
+#define PERL_STATIC_INLINE STATIC __inline
+#else
+#define PERL_STATIC_INLINE STATIC inline
+#endif
+#endif
+
 extern SV* mouse_package;
 extern SV* mouse_methods;
 extern SV* mouse_name;
@@ -107,7 +117,7 @@ SV* mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 #define MOUSE_mg_slot(mg)   MOUSE_mg_obj(mg)
 #define MOUSE_mg_xa(mg)    ((AV*)MOUSE_mg_ptr(mg))
 
-static inline MAGIC *MOUSE_get_magic(pTHX_ CV *cv, MGVTBL *vtbl)
+PERL_STATIC_INLINE MAGIC *MOUSE_get_magic(pTHX_ CV *cv, MGVTBL *vtbl)
 {
 #ifndef MULTIPLICITY
     return (MAGIC*)(CvXSUBANY(cv).any_ptr);
@@ -264,4 +274,3 @@ enum mouse_xa_flags_t{
 /* Mouse::Meta::Class stuff */
 HV* mouse_get_namespace(pTHX_ SV* const meta); /* $meta->namespace */
 #endif /* !MOUSE_H */
-
