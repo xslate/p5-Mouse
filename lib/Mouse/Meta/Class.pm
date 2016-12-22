@@ -222,8 +222,17 @@ sub add_attribute {
             or $self->throw_error('You must provide a name for the attribute');
 
         if ($name =~ s/^\+//) { # inherited attributes
-            my $inherited_attr = $self->find_attribute_by_name($name)
-                or $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name);
+            # do not use find_attribute_by_name to avoid problems with cached attributes list
+            # because we're about to change it anyway
+            my $inherited_attr;
+            foreach my $i ( @{ $self->_calculate_all_attributes } ) {
+                if ( $i->name eq $name ) {
+                    $inherited_attr = $i;
+                    last;
+                }
+            }
+            $self->throw_error("Could not find an attribute by the name of '$name' to inherit from in ".$self->name)
+                unless $inherited_attr;
 
             $attr = $inherited_attr->clone_and_inherit_options(%args);
         }
