@@ -22,13 +22,13 @@ BEGIN {
 }
 
 subtype Header =>
-    => as Object
+    => as 'Object'
     => where { $_->isa('HTTPHeader') };
 
 coerce Header
-    => from ArrayRef
+    => from 'ArrayRef'
         => via { HTTPHeader->new(array => $_[0]) }
-    => from HashRef
+    => from 'HashRef'
         => via { HTTPHeader->new(hash => $_[0]) };
 
 
