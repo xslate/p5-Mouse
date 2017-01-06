@@ -1,6 +1,8 @@
 Revision history for Mouse
 
 {{$NEXT}}
+    - Fix test for older Perls (#68)
+    - Define macros for older Visual Studio compiler(#66)
 
 v2.4.5 2015-08-03T15:57:50Z
     - Fix for older Perl(< 5.14.0) (#54)
