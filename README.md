@@ -5,7 +5,7 @@ Mouse - Moose minus the antlers
 
 # VERSION
 
-This document describes Mouse version v2.4.5
+This document describes Mouse version v2.4.6
 
 # SYNOPSIS
 
@@ -266,9 +266,9 @@ We have a public git repository [https://github.com/gfx/p5-Mouse](https://github
 
 # AUTHORS
 
-Shawn M Moore <sartak at gmail.com>
+Shawn M Moore &lt;sartak at gmail.com>
 
-Yuval Kogman <nothingmuch at woobling.org>
+Yuval Kogman &lt;nothingmuch at woobling.org>
 
 tokuhirom
 
