@@ -222,7 +222,8 @@ sub add_attribute {
             or $self->throw_error('You must provide a name for the attribute');
 
         if ($name =~ s/^\+//) { # inherited attributes
-            # do not use find_attribute_by_name to avoid problems with cached attributes list
+            # Workaround for https://github.com/gfx/p5-Mouse/issues/64
+            # Do not use find_attribute_by_name to avoid problems with cached attributes list
             # because we're about to change it anyway
             my $inherited_attr;
             foreach my $i ( @{ $self->_calculate_all_attributes } ) {
