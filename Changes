@@ -2,6 +2,11 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.4.7 2017-01-14T13:46:04Z
+    - Workaround for issue #64(#67)
+      In some case stack is corrupted at more than 23 attributes.
+      This change may makes a bit slow in that case.
+
 v2.4.6 2017-01-06T06:51:15Z
     - Fix test for older Perls (#68)
     - Define macros for older Visual Studio compiler(#66)

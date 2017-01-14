@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.8, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.9, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -85,7 +85,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.4.6",
+   "version" : "v2.4.7",
    "x_contributors" : [
       "Ricardo SIGNES <rjbs@cpan.org>",
       "大沢 和宏 <yappo@shibuya.pl>",
@@ -126,6 +126,7 @@
       "Vincent Pit <perl@profvince.com>",
       "FUJI Goro (gfx) <gfuji@cpan.org>",
       "Luca Ferrari <fluca1978@gmail.com>",
+      "Alex Solovey <a.solovey@gmail.com>",
       "Boutros Lab User <blabuser@oicr.on.ca>",
       "Syohei YOSHIDA <syohex@gmail.com>"
    ],
