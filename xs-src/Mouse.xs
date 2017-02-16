@@ -394,12 +394,7 @@ mouse_buildall(pTHX_ AV* const xc, SV* const object, SV* const args) {
         PUSHs(args);
         PUTBACK;
 
-        call_sv_safe(AvARRAY(buildall)[i], G_VOID);
-
-        /* discard a scalar which G_VOID returns */
-        SPAGAIN;
-        (void)POPs;
-        PUTBACK;
+        call_sv_safe(AvARRAY(buildall)[i], G_VOID | G_DISCARD);
     }
 }
 
@@ -799,12 +794,7 @@ CODE:
             PUSHs(in_global_destruction);
             PUTBACK;
 
-            call_sv(AvARRAY(demolishall)[i], G_VOID | G_EVAL);
-
-            /* discard a scalar which G_VOID returns */
-            SPAGAIN;
-            (void)POPs;
-            PUTBACK;
+            call_sv(AvARRAY(demolishall)[i], G_VOID | G_EVAL | G_DISCARD);
 
             if(sv_true(ERRSV)){
                 SV* const e = sv_mortalcopy(ERRSV);
