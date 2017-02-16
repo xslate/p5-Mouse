@@ -1,6 +1,7 @@
 Revision history for Mouse
 
 {{$NEXT}}
+    - Fix stack collapse(#71)
 
 v2.4.7 2017-01-14T13:46:04Z
     - Workaround for issue #64(#67)
