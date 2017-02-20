@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.9, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.10, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -129,6 +129,7 @@
       "Alex Solovey <a.solovey@gmail.com>",
       "Boutros Lab User <blabuser@oicr.on.ca>",
       "Eiichi Tsukata <devel@etsukata.com>",
+      "Todd Rinaldo <toddr@cpan.org>",
       "Syohei YOSHIDA <syohex@gmail.com>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27400"
