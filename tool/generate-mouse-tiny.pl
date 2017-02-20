@@ -19,7 +19,7 @@ sub uniq{
     return grep{ !$seen{$_}++ } @_;
 }
 
-require 'lib/Mouse/Spec.pm';
+require './lib/Mouse/Spec.pm';
 
 my $MouseTinyFile = shift || 'lib/Mouse/Tiny.pm';
 
