@@ -1,6 +1,7 @@
 Revision history for Mouse
 
 {{$NEXT}}
+    - Fix build issue on newer Perl
 
 v2.4.8 2017-02-16T08:45:28Z
     - Fix stack collapse(#71)
