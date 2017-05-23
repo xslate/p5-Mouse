@@ -4,6 +4,10 @@
 use strict;
 use warnings;
 use Test::More;
+BEGIN {
+    eval "require MouseX::Foreign;";
+    plan skip_all => "MouseX::Foreign is required for this test" if $@;
+}
 
 {
     package AutoloadedBase;
