@@ -85,7 +85,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.4.9",
+   "version" : "v2.4.10",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
@@ -98,7 +98,7 @@
       "Dann <techmemo@gmail.com>",
       "David Steinbrunner <dsteinbrunner@pobox.com>",
       "Eiichi Tsukata <devel@etsukata.com>",
-      "FUJI Goro <gfuji@cpan.org>",
+      "FUJI Goro (gfx) <gfuji@cpan.org>",
       "Fuji, Goro <fuji.goro@dena.jp>",
       "Fuji, Goro <g.psy.va@gmail.com>",
       "Fuji, Goro <goro-fuji@cookpad.com>",

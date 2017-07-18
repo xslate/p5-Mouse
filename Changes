@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.4.10 2017-07-18T04:12:23Z
+    - https://github.com/gfx/p5-Mouse/compare/v2.4.9...v2.4.10
+
 v2.4.9 2017-02-22T01:23:31Z
     - Fix build issue on newer Perl
 
