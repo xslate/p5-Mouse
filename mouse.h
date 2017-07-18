@@ -120,6 +120,7 @@ SV* mouse_av_at_safe(pTHX_ AV* const mi, I32 const ix);
 PERL_STATIC_INLINE MAGIC *MOUSE_get_magic(pTHX_ CV *cv, MGVTBL *vtbl)
 {
 #ifndef MULTIPLICITY
+    PERL_UNUSED_ARG(vtbl);
     return (MAGIC*)(CvXSUBANY(cv).any_ptr);
 #else
     return mg_findext((SV*)cv, PERL_MAGIC_ext, vtbl);
@@ -145,7 +146,7 @@ void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
 #define get_slots(self, key)        get_slot(self, sv_2mortal(newSVpvs_share(key)))
 #define set_slots(self, key, value) set_slot(self, sv_2mortal(newSVpvs_share(key)), value)
 
-/* mouse_simle_accessor.xs for meta object protocols */
+/* mouse_simple_accessor.xs for meta object protocols */
 #define INSTALL_SIMPLE_READER(klass, name) \
     INSTALL_SIMPLE_READER_WITH_KEY(klass, name, name)
 #define INSTALL_SIMPLE_READER_WITH_KEY(klass, name, key) \

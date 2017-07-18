@@ -8,6 +8,7 @@ use 5.008_001;
 use strict;
 use warnings;
 use utf8;
+use lib '.';
 
 BEGIN { push @INC, '.' }
 use builder::MyBuilder;

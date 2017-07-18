@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use File::Find;
 use Fatal qw(open close);
+use lib ('.', 'lib');
 #use File::Slurp 'slurp';
 #use List::MoreUtils 'uniq';
 #use autodie;
@@ -19,7 +20,7 @@ sub uniq{
     return grep{ !$seen{$_}++ } @_;
 }
 
-require './lib/Mouse/Spec.pm';
+require Mouse::Spec;
 
 my $MouseTinyFile = shift || 'lib/Mouse/Tiny.pm';
 
