@@ -7,10 +7,6 @@
 #include "mouse.h"
 #include "xs_version.h"
 
-#ifndef SvRXOK
-#define SvRXOK(sv) (SvROK(sv) && SvMAGICAL(SvRV(sv)) && mg_find(SvRV(sv), PERL_MAGIC_qr))
-#endif
-
 #define MY_CXT_KEY "Mouse::Util::TypeConstraints::_guts" XS_VERSION
 typedef struct sui_cxt{
     GV* universal_isa;
