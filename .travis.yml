@@ -1,5 +1,7 @@
 sudo: false
 language: perl
+install:
+  - cpanm --quiet --installdeps --notest --with-configure .
 perl:
   - "5.8"
   - "5.10"
