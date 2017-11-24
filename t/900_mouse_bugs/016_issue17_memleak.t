@@ -4,6 +4,8 @@ use warnings;
 use Test::More;
 use Test::LeakTrace;
 
+plan skip_all => 'known to fail under perl 5.8' if $] < 5.010;
+
 {
     package Iyan;
     use Mouse;
