@@ -102,7 +102,7 @@ EOF
 print { $handle } << "EOF";
 package Mouse::Tiny;
 
-our \$VERSION = '$Mouse::Spec::VERSION';
+use version; our \$VERSION = version->declare('$Mouse::Spec::VERSION');
 
 Mouse::Exporter->setup_import_methods(also => 'Mouse');
 

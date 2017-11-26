@@ -228,7 +228,7 @@ is_deeply \%th_clone, \%th, 'the hash iterator is initialized';
 
 
 for my $i(1 .. 2) {
-    diag "derived from parameterized types #$i";
+    note "derived from parameterized types #$i";
 
     my $myhashref = subtype 'MyHashRef',
         as 'HashRef[Value]',
@@ -257,7 +257,7 @@ for my $i(1 .. 2) {
             require Data::Dump::Streamer;
             my $s = Data::Dump::Streamer::Dump($myhashref)->Out();
             $s =~ s/[ ]{4}/ /g;
-            diag $s;
+            note $s;
         };
     }
     ok !$myhashref->check({ a => 42, b => [] });

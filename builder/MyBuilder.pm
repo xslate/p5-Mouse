@@ -40,7 +40,6 @@ sub ACTION_code {
     close($fh);
 
     unless ($self->pureperl_only) {
-        require ExtUtils::ParseXS;
         for my $xs (qw(
             xs-src/MouseAccessor.xs
             xs-src/MouseAttribute.xs
@@ -48,11 +47,8 @@ sub ACTION_code {
             xs-src/MouseUtil.xs
         )) {
             (my $c = $xs) =~ s/\.xs\z/.c/;
-            print "$xs => $c\n";
-            ExtUtils::ParseXS::process_file(
-                filename => $xs,
-                output   => $c,
-            );
+            next if $self->up_to_date($xs, $c);
+            $self->compile_xs($xs, outfile => $c);
         }
     }
 
