@@ -10,7 +10,7 @@
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "Mouse",
    "no_index" : {
@@ -27,10 +27,11 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Devel::PPPort" : "3.22",
+            "Devel::PPPort" : "3.33",
             "ExtUtils::ParseXS" : "3.22",
             "Module::Build" : "0.4005",
-            "Module::Build::XSUtil" : "0"
+            "Module::Build::XSUtil" : "0",
+            "version" : "0.9913"
          }
       },
       "develop" : {
@@ -85,10 +86,11 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.4.10",
+   "version" : "v2.5.0",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
+      "Bernhard M. Wiedemann <bwiedemann@suse.de>",
       "Boutros Lab User <blabuser@oicr.on.ca>",
       "Brett <orderthruchaos@gmail.com>",
       "Chris Prather <chris@prather.org>",
@@ -120,6 +122,8 @@
       "Sergiy Zuban <s.zuban@trackingsoft.com>",
       "Shawn M Moore <sartak@bestpractical.com>",
       "Shawn M Moore <sartak@gmail.com>",
+      "Shoichi Kaji <skaji@cpan.org>",
+      "Shoichi Kaji <skaji@outlook.com>",
       "Stanislaw Pusep <creaktive@gmail.com>",
       "Syohei YOSHIDA <syohex@gmail.com>",
       "Todd Rinaldo <toddr@cpan.org>",
@@ -135,5 +139,5 @@
       "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
       "大沢 和宏 <yappo@shibuya.pl>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27400"
+   "x_serialization_backend" : "JSON::PP version 2.97000"
 }

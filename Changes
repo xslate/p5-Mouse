@@ -2,6 +2,11 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.0 2017-11-26T18:38:18Z
+    - Fix build under perl 5.8 (wyoung #63, autarch #76, #79)
+    - Use version->declare() to declare $VERSION (neilb #55, #80)
+    - Make `prove -br t` work with dot-not-in-INC perls (#81)
+
 v2.4.10 2017-07-18T04:12:23Z
     - https://github.com/gfx/p5-Mouse/compare/v2.4.9...v2.4.10
 
