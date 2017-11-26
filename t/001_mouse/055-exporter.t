@@ -15,8 +15,6 @@ BEGIN{
 
     sub foo{ 100 }
 
-    $INC{'MyMouse.pm'}++;
-
     package MyMouseEx;
     use Mouse;
     Mouse::Exporter->setup_import_methods(
@@ -29,8 +27,6 @@ BEGIN{
     );
 
     sub bar{ 200 }
-
-    $INC{'MyMouseEx.pm'}++;
 }
 
 can_ok 'MyMouse',   qw(import unimport);
