@@ -6,19 +6,20 @@ use Test::More tests => 4;
     use Mouse;
     use Mouse::Util::TypeConstraints;
 
-    require t::lib::ClassType_Foo;
+    use lib "t/lib";
+    require ClassType_Foo;
 
     # XXX: This below API is different from that of Moose.
     # class_type() should be class_type 'ClassName';
     #    class_type 'Headers' => { class => 't::lib::ClassType_Foo' };
     # this should be subtype Headers => as 't::lib::ClassType_foo';
     subtype 'Headers'
-        => as 't::lib::ClassType_Foo'
+        => as 'ClassType_Foo'
     ;
         
     coerce 'Headers' =>
         from 'HashRef' => via {
-            t::lib::ClassType_Foo->new(%{ $_ });
+            ClassType_Foo->new(%{ $_ });
         },
     ;
 
@@ -30,8 +31,8 @@ use Test::More tests => 4;
 }
 
 my $res = Response->new(headers => { foo => 'bar' });
-isa_ok($res->headers, 't::lib::ClassType_Foo');
+isa_ok($res->headers, 'ClassType_Foo');
 is($res->headers->foo, 'bar');
 $res->headers({foo => 'yay'});
-isa_ok($res->headers, 't::lib::ClassType_Foo');
+isa_ok($res->headers, 'ClassType_Foo');
 is($res->headers->foo, 'yay');
