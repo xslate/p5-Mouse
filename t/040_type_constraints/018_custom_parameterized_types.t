@@ -47,8 +47,9 @@ lives_ok {
     ok($t->check({ one => 1, two => 2 }), '... validated it correctly');
     ok(!$t->check({ one1 => 1, two2 => 2 }), '... validated it correctly');
 
-    local $TODO = 'Mouse does not support equals()';
+    { local $TODO = 'Mouse does not support equals()';
     ok( $t->equals($t), "equals to self" );
+    }
     ok( !$t->equals($t->parent), "not equal to parent" );
 }
 
@@ -60,11 +61,13 @@ ok(!$hoi->check({ one => 'uno', two => 'dos' }), '... validated it correctly');
 ok(!$hoi->check({ one1 => 'un', two2 => 'deux' }), '... validated it correctly');
 { local $TODO = 'Mouse does not support equals()';
 ok( $hoi->equals($hoi), "equals to self" );
+}
 ok( !$hoi->equals($hoi->parent), "equals to self" );
 ok( !$hoi->equals(find_type_constraint('AlphaKeyHash')), "not equal to unparametrized self" );
+{ local $TODO = 'Mouse does not support equals()';
 ok( $hoi->equals( Mouse::Meta::TypeConstraint->new( name => "Blah", parent => find_type_constraint("AlphaKeyHash"), type_parameter => find_type_constraint("Int") ) ), "equal to clone" );
+}
 ok( !$hoi->equals( Mouse::Meta::TypeConstraint->new( name => "Oink", parent => find_type_constraint("AlphaKeyHash"), type_parameter => find_type_constraint("Str") ) ), "not equal to different parameter" );
-} # end TODO
 
 my $th = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('Trihash[Bool]');
 ok(!$th->check({ one => 1, two => 1 }), '... validated it correctly');

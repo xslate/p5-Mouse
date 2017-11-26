@@ -10,6 +10,7 @@ use Test::More;
 use Test::Exception;
 
 use Mouse::Util::TypeConstraints;
+use Mouse::Util;
 
 my $type = Mouse::Util::TypeConstraints::find_or_parse_type_constraint('Maybe[Int]');
 isa_ok($type, 'Mouse::Meta::TypeConstraint');
@@ -106,7 +107,7 @@ ok $Maybe_Int->check(1)
 ok $obj->Maybe_Int(1)
  => 'assigned (1)';
 {
-local $TODO = "considered miss design";
+local $TODO = "considered miss design" if Mouse::Util::MOUSE_XS();
 ok eval { $Maybe_Int->check() }
  => 'passed ()';
 }
