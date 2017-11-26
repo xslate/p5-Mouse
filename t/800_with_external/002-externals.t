@@ -9,6 +9,9 @@ use Test::Requires qw(Test::DependentModules);
 use Test::More;
 
 use Test::DependentModules qw(test_module);
+# To avoid circular dependencies, set recommends_policy = 0
+Test::DependentModules::_load_cpan();
+$CPAN::Config->{recommends_policy} = 0;
 
 use Cwd qw(abs_path);
 
