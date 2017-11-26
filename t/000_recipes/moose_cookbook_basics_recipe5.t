@@ -1,23 +1,11 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More 'no_plan';
+use Test::More;
 use Test::Exception;
 $| = 1;
 
-
-
-# =begin testing SETUP
-BEGIN {
-    eval 'use HTTP::Headers; use Params::Coerce; use URI;';
-    if ($@) {
-        diag 'HTTP::Headers, Params::Coerce & URI required for this test';
-        ok(1);
-        exit 0;
-    }
-}
-
-
+use Test::Requires qw(HTTP::Headers Params::Coerce URI);
 
 # =begin testing SETUP
 {
@@ -135,7 +123,4 @@ isa_ok( $r, 'Request' );
 }
 }
 
-
-
-
-1;
+done_testing;
