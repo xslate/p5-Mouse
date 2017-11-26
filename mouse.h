@@ -2,6 +2,8 @@
 #define MOUSE_H
 
 #define NEED_mg_findext
+#define NEED_gv_fetchpvn_flags
+#define NEED_SvRX
 #define PERL_EUPXS_ALWAYS_EXPORT
 
 #include "xshelper.h"
