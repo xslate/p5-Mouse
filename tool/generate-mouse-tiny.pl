@@ -40,6 +40,7 @@ find({
     },
     no_chdir => 1,
 }, 'lib');
+@files = sort @files;
 
 my $mouse_tiny = '';
 
@@ -49,7 +50,7 @@ for my $file (uniq
         'lib/Mouse/Util.pm',
         'lib/Mouse/Meta/TypeConstraint.pm',
         'lib/Mouse/Util/TypeConstraints.pm',
-            sort @files) {
+            @files) {
 
     my $contents = slurp $file;
 
