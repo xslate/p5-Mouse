@@ -59,6 +59,8 @@ EOT
 1;
 __END__
 
+=for stopwords destructors
+
 =head1 NAME
 
 Mouse::Meta::Method::Destructor - A Mouse method generator for destructors

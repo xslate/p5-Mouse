@@ -13,6 +13,8 @@ sub MooseVersion{ $MooseVersion }
 1;
 __END__
 
+=for stopwords metaclasses
+
 =head1 NAME
 
 Mouse::Spec - To what extent Mouse is compatible with Moose

@@ -14,6 +14,8 @@ use Filter::Simple sub { s/^/package $package;\nuse Mouse;\nuse Mouse::Util::Typ
 1;
 __END__
 
+=for stopwords ouse
+
 =head1 NAME
 
 ouse - syntactic sugar to make Mouse one-liners easier

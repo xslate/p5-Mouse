@@ -152,6 +152,8 @@ sub init_meta {
 1;
 __END__
 
+=for stopwords sartak MooseX MouseX aliasing codebase coderef deinitialization destructor invocant metaclass metaclass metaroles mro reftype reinitialize ro rw unimport wu-lee
+
 =head1 NAME
 
 Mouse - Moose minus the antlers

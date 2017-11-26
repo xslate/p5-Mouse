@@ -145,6 +145,8 @@ sub _make_new_class {
 1;
 __END__
 
+=for stopwords metaclasses reinitializes
+
 =head1 NAME
 
 Mouse::Util::MetaRole - Apply roles to any metaclass, as well as the object base class
