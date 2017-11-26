@@ -3,7 +3,7 @@ use 5.008_005;
 
 use Mouse::Exporter; # enables strict and warnings
 
-our $VERSION = 'v2.4.10';
+use version; our $VERSION = version->declare('v2.4.10');
 
 use Carp         ();
 use Scalar::Util ();

@@ -2,7 +2,7 @@ package Mouse::Spec;
 use strict;
 use warnings;
 
-our $VERSION = 'v2.4.10';
+use version; our $VERSION = version->declare('v2.4.10');
 
 our $MouseVersion = $VERSION;
 our $MooseVersion = '1.13';
