@@ -291,8 +291,7 @@ with plenty of code borrowed from [Class::MOP](https://metacpan.org/pod/Class::M
 # BUGS
 
 All complex software has bugs lurking in it, and this module is no exception.
-Please report any bugs to `bug-mouse at rt.cpan.org`, or through the web
-interface at [http://rt.cpan.org/Public/Dist/Display.html?Name=Mouse](http://rt.cpan.org/Public/Dist/Display.html?Name=Mouse)
+Please report any bugs to [https://github.com/gfx/p5-Mouse/issues](https://github.com/gfx/p5-Mouse/issues).
 
 # COPYRIGHT AND LICENSE
 

@@ -450,8 +450,7 @@ with plenty of code borrowed from L<Class::MOP> and L<Moose>
 =head1 BUGS
 
 All complex software has bugs lurking in it, and this module is no exception.
-Please report any bugs to C<bug-mouse at rt.cpan.org>, or through the web
-interface at L<http://rt.cpan.org/Public/Dist/Display.html?Name=Mouse>
+Please report any bugs to L<https://github.com/gfx/p5-Mouse/issues>.
 
 =head1 COPYRIGHT AND LICENSE
 
