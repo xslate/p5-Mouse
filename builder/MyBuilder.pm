@@ -56,27 +56,22 @@ sub ACTION_code {
 }
 
 sub ACTION_test {
-    my ($class) = @_;
+    my ($self) = @_;
 
     if ($ENV{COMPAT_TEST}) {
-        $class->depends_on('moose_compat_test');
+        $self->depends_on('moose_compat_test');
     }
 
-    if ($class->pureperl_only) {
-        print "pureperl only tests.\n";
-        $class->SUPER::ACTION_test();
-    } else {
-        {
-            print "xs tests.\n";
-            local $ENV{MOUSE_XS} = 1;
-            $class->SUPER::ACTION_test();
-        }
+    if (!$self->pureperl_only) {
+        local $ENV{MOUSE_XS} = 1;
+        $self->log_info("xs tests.\n");
+        $self->SUPER::ACTION_test();
+    }
 
-        {
-            print "pp tests.\n";
-            local $ENV{PERL_ONLY} = 1;
-            $class->SUPER::ACTION_test();
-        }
+    {
+        local $ENV{PERL_ONLY} = 1;
+        $self->log_info("pureperl tests.\n");
+        $self->SUPER::ACTION_test();
     }
 }
 
