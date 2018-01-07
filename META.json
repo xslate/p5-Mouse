@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.13, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -56,6 +56,11 @@
          }
       },
       "runtime" : {
+         "conflicts" : {
+            "Any::Moose" : "< 0.10",
+            "MouseX::AttributeHelpers" : "< 0.06",
+            "MouseX::NativeTraits" : "< 1.00"
+         },
          "requires" : {
             "Scalar::Util" : "1.14",
             "XSLoader" : "0.02",
@@ -86,7 +91,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.5.0",
+   "version" : "v2.5.1",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
@@ -139,5 +144,5 @@
       "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
       "大沢 和宏 <yappo@shibuya.pl>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.97000"
+   "x_serialization_backend" : "JSON::PP version 2.97001"
 }

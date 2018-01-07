@@ -2,6 +2,10 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.1 2018-01-07T14:34:19Z
+    - use PERL_UNUSED_RESULT (#83)
+    - Apply several minor patches, especially for packaging (#84)
+
 v2.5.0 2017-11-26T18:38:18Z
     - Fix build under perl 5.8 (wyoung #63, autarch #76, #79)
     - Use version->declare() to declare $VERSION (neilb #55, #80)
