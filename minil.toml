@@ -1,6 +1,6 @@
 name = "Mouse"
 badges = ["travis"]
-allow_pureperl=1
+allow_pureperl = 1
 module_maker = "ModuleBuild"
 
 [build]
@@ -12,3 +12,5 @@ directory = ["t", "xt", "tool", "author", "example", "benchmarks", "builder"]
 [ReleaseTest]
 MinimumVersion = false
 
+[FileGatherer]
+exclude_match = ["^Moose-t-failing", "^xt", "^author", "^TODO$"]
