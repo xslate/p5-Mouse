@@ -6,6 +6,10 @@ requires 'Scalar::Util', '1.14';
 
 requires 'XSLoader', '0.02';
 
+conflicts 'Any::Moose', '< 0.10';
+conflicts 'MouseX::AttributeHelpers', '< 0.06';
+conflicts 'MouseX::NativeTraits', '< 1.00';
+
 on configure => sub {
     requires 'Devel::PPPort', '3.33';
     requires 'ExtUtils::ParseXS', '3.22';
@@ -16,8 +20,6 @@ on configure => sub {
 
 on 'test' => sub {
     requires 'Test::More', '0.88';
-
-    # Comes from author/cpanm.requires
     requires 'Test::Exception';
     requires 'Test::Fatal';
     requires 'Test::LeakTrace';
@@ -27,11 +29,8 @@ on 'test' => sub {
 };
 
 on 'develop' => sub {
-    # author's tests
     requires 'Test::Pod::Coverage';
     requires 'Test::DependentModules';
-
-    # required by recipes and examples
     suggests 'Regexp::Common';
     suggests 'Locale::US';
     suggests 'HTTP::Headers';
@@ -41,5 +40,3 @@ on 'develop' => sub {
     suggests 'Test::Deep';
     suggests 'IO::String';
 };
-
-
