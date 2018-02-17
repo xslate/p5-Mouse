@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.2 2018-02-17T01:47:32Z
+    - Skip t/900_mouse_bugs/016_issue17_memleak.t under 5.10.0
+
 v2.5.1 2018-01-07T14:34:19Z
     - use PERL_UNUSED_RESULT (#83)
     - Apply several minor patches, especially for packaging (#84)
