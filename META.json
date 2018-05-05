@@ -27,7 +27,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Devel::PPPort" : "3.33",
+            "Devel::PPPort" : "3.42",
             "ExtUtils::ParseXS" : "3.22",
             "Module::Build" : "0.4005",
             "Module::Build::XSUtil" : "0",
@@ -91,7 +91,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.5.3",
+   "version" : "v2.5.4",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",

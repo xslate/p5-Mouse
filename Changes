@@ -2,8 +2,11 @@ Revision history for Mouse
 
 {{$NEXT}}
 
-v2.5.3 2018-05-05T03:35:45Z
+v2.5.4 2018-05-05T03:43:55Z
     - Follow Devel::PPPort 3.42 (#87)
+
+v2.5.3 2018-05-05T03:35:45Z
+    - Sorry, I made a mistake. Do not use this version.
 
 v2.5.2 2018-02-17T01:47:32Z
     - Skip t/900_mouse_bugs/016_issue17_memleak.t under 5.10.0
