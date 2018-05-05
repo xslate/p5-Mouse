@@ -274,7 +274,7 @@ Mouse::Meta::TypeConstraint - The Mouse Type Constraint metaclass
 
 =head1 VERSION
 
-This document describes Mouse version v2.5.2
+This document describes Mouse version v2.5.3
 
 =head1 DESCRIPTION
 

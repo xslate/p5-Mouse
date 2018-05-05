@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.17, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -91,7 +91,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.5.2",
+   "version" : "v2.5.3",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
