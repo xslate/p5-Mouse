@@ -1,4 +1,3 @@
-#define  NEED_newSVpvn_flags_GLOBAL
 #include "mouse.h"
 
 /* keywords for methods/keys */
