@@ -282,7 +282,7 @@ mouse_report_unknown_args(pTHX_ SV* const meta, AV* const attrs, HV* const args)
 
 
 static void
-mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const is_cloning) {
+mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const args, bool const is_cloning, bool const is_applying_role) {
     AV* const xc    = mouse_get_xc(aTHX_ meta);
     AV* const attrs = MOUSE_xc_attrall(xc);
     I32 const len   = AvFILLp(attrs) + 1;
@@ -308,7 +308,7 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
         SV* const init_arg = MOUSE_xa_init_arg(xa);
         HE* he;
 
-        if(SvOK(init_arg) && ( he = hv_fetch_ent(args, init_arg, FALSE, 0U) ) ){
+        if(SvOK(init_arg) && ((he = hv_fetch_ent(args, init_arg, FALSE, 0U)) || (is_applying_role && (he = hv_fetch_ent(args, slot, FALSE, 0U)))) ){
             SV* value = HeVAL(he);
             if(flags & MOUSEf_ATTR_HAS_TC){
                 value = mouse_xa_apply_type_constraint(aTHX_ xa, value, flags);
@@ -339,6 +339,9 @@ mouse_class_initialize_object(pTHX_ SV* const meta, SV* const object, HV* const 
             else if(is_cloning) {
                 if(flags & MOUSEf_ATTR_IS_WEAK_REF){
                     weaken_slot(object, slot);
+                }
+                if(is_applying_role && flags & MOUSEf_ATTR_IS_REQUIRED){
+                    mouse_throw_error(attr, NULL, "Attribute (%"SVf") is required", slot);
                 }
             }
             /* don't check "required" while cloning (or reblesseing) */
@@ -589,7 +592,7 @@ CODE:
     SV* object;
 
     object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
-    mouse_class_initialize_object(aTHX_ meta, object, args, FALSE);
+    mouse_class_initialize_object(aTHX_ meta, object, args, FALSE, FALSE);
     mouse_buildall(aTHX_ xc, object, sv_2mortal(newRV_inc((SV*)args)));
     ST(0) = object; /* because object is mortal, we should return it as is */
     XSRETURN(1);
@@ -610,16 +613,16 @@ CODE:
     }
 
     proto = mouse_instance_clone(aTHX_ object);
-    mouse_class_initialize_object(aTHX_ meta, proto, args, TRUE);
+    mouse_class_initialize_object(aTHX_ meta, proto, args, TRUE, FALSE);
     ST(0) = proto; /* because object is mortal, we should return it as is */
     XSRETURN(1);
 }
 
 void
-_initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE)
+_initialize_object(SV* meta, SV* object, HV* args, bool is_cloning = FALSE, bool is_applying_role = FALSE)
 CODE:
 {
-    mouse_class_initialize_object(aTHX_ meta, object, args, is_cloning);
+    mouse_class_initialize_object(aTHX_ meta, object, args, is_cloning, is_applying_role);
 }
 
 void
@@ -730,7 +733,7 @@ CODE:
 
     /* new_object */
     object = mouse_instance_create(aTHX_ MOUSE_xc_stash(xc));
-    mouse_class_initialize_object(aTHX_ meta, object, (HV*)SvRV(args), FALSE);
+    mouse_class_initialize_object(aTHX_ meta, object, (HV*)SvRV(args), FALSE, FALSE);
     /* BUILDALL */
     mouse_buildall(aTHX_ xc, object, args);
     ST(0) = object; /* because object is mortal, we should return it as is */

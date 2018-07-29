@@ -81,7 +81,7 @@ sub apply {
     if(defined $instance){ # Application::ToInstance
         # rebless instance
         bless $instance, $consumer->name;
-        $consumer->_initialize_object($instance, $instance, 1);
+        $consumer->_initialize_object($instance, $instance, 1, 1);
     }
 
     return;

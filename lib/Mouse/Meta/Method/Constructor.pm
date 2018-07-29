@@ -90,9 +90,9 @@ sub _generate_initialize_object {
 
         # build cde for an attribute
         if (defined $init_arg) {
-            my $value = "\$args->{q{$init_arg}}";
+            my $value = "\$is_applying_role ? \$args->{q{$key}} : \$args->{q{$init_arg}}";
 
-            $code .= "if (exists $value) {\n";
+            $code .= "if (exists \$args->{q{$init_arg}} or (\$is_applying_role and exists \$args->{q{$key}})) {\n";
 
             if($need_coercion){
                 $value = "$constraint_var->coerce($value)";
@@ -142,7 +142,7 @@ sub _generate_initialize_object {
         }
         elsif ($attr->is_required) {
             $code .= "\$meta->throw_error('Attribute ($key) is required')";
-            $code .= "    unless \$is_cloning;\n";
+            $code .= "    if (not \$is_cloning or \$is_applying_role);\n";
         }
 
         $code .= "}\n" if defined $init_arg;
@@ -173,7 +173,7 @@ sub _generate_initialize_object {
 #line 1 "%s"
     package %s;
     sub {
-        my($meta, $instance, $args, $is_cloning) = @_;
+        my($meta, $instance, $args, $is_cloning, $is_applying_role) = @_;
         %s;
         return $instance;
     }

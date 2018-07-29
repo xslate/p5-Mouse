@@ -314,12 +314,12 @@ sub clone_object {
         || $class->throw_error("You must pass an instance of the metaclass (" . $class->name . "), not ($object)");
 
     my $cloned = bless { %$object }, ref $object;
-    $class->_initialize_object($cloned, $args, 1);
+    $class->_initialize_object($cloned, $args, 1, 0);
     return $cloned;
 }
 
 sub _initialize_object{
-    my($self, $object, $args, $is_cloning) = @_;
+    my($self, $object, $args, $is_cloning, $is_applying_role) = @_;
     # The initializer, which is used everywhere, must be clear
     # when an attribute is added. See Mouse::Meta::Class::add_attribute.
     my $initializer = $self->{_mouse_cache}{_initialize_object} ||=
