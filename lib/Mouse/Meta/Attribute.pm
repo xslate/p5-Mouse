@@ -257,11 +257,11 @@ sub install_accessors{
             my $code      = $accessor_class->$generator($attribute, $metaclass);
             my $name      = $attribute->{$type};
 # TODO: do something for compatibility
-#            if( $metaclass->name->can($name) ) {
-#                my $t = $metaclass->has_method($name) ? 'method' : 'function';
-#                Carp::cluck("You are overwriting a locally defined $t"
-#                    . " ($name) with an accessor");
-#            }
+            if( $metaclass->name->can($name) ) {
+                my $t = $metaclass->has_method($name) ? 'method' : 'function';
+                Carp::cluck("You are overwriting a locally defined $t"
+                    . " ($name) with an accessor");
+            }
             $metaclass->add_method($name => $code);
             $attribute->associate_method($name);
         }
