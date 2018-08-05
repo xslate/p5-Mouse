@@ -11,7 +11,6 @@ use Test::Requires {
 
 {
     package Foo;
-    use List::Util qw( sum );
     use Mouse;
 
     sub get_a   { }
@@ -56,11 +55,6 @@ stderr_is(
 stderr_like(
     sub { $foo_meta->add_attribute( has => ( is => 'rw' ) ) },
     qr/^You are overwriting a locally defined function \(has\) with an accessor/,
-    'function overriding gives proper warning'
-);
-stderr_like(
-    sub { $foo_meta->add_attribute( sum => ( is => 'rw' ) ) },
-    qr/^You are overwriting a locally defined function \(sum\) with an accessor/,
     'function overriding gives proper warning'
 );
 
