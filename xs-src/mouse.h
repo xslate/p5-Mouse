@@ -138,12 +138,14 @@ SV*  mouse_instance_get_slot   (pTHX_ SV* const instance, SV* const slot);
 SV*  mouse_instance_set_slot   (pTHX_ SV* const instance, SV* const slot, SV* const value);
 SV*  mouse_instance_delete_slot(pTHX_ SV* const instance, SV* const slot);
 void mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot);
+SV*  mouse_meta_get_slot       (pTHX_ SV* const instance, SV* const slot);
 
 #define has_slot(self, key)         mouse_instance_has_slot(aTHX_ self, key)
 #define get_slot(self, key)         mouse_instance_get_slot(aTHX_ self, key)
 #define set_slot(self, key, value)  mouse_instance_set_slot(aTHX_ self, key, value)
 #define delete_slot(self, key)      mouse_instance_delete_slot(aTHX_ self, key)
 #define weaken_slot(self, key)      mouse_instance_weaken_slot(aTHX_ self, key)
+#define get_meta_slot(self, key)    mouse_meta_get_slot(aTHX_ self, key)
 
 #define has_slots(self, key)        has_slot(self, sv_2mortal(newSVpvs_share(key)))
 #define get_slots(self, key)        get_slot(self, sv_2mortal(newSVpvs_share(key)))

@@ -50,7 +50,7 @@ static MGVTBL mouse_xc_vtbl; /* for identity */
 
 HV*
 mouse_get_namespace(pTHX_ SV* const meta) {
-    SV* const package = get_slot(meta, mouse_package);
+    SV* const package = get_meta_slot(meta, mouse_package);
     if(!(package && SvOK(package))){
         croak("No package name defined for metaclass");
     }
@@ -412,7 +412,7 @@ mouse_get_modifier_storage(pTHX_
 
     must_defined(name, "a method name");
 
-    table = get_slot(meta, key);
+    table = get_meta_slot(meta, key);
 
     if(!table){
         /* $meta->{$key} = {} */
@@ -492,8 +492,8 @@ void
 add_method(SV* self, SV* name, SV* code, ...)
 CODE:
 {
-    SV* const package = get_slot(self, mouse_package); /* $self->{package} */
-    SV* const methods = get_slot(self, mouse_methods); /* $self->{methods} */
+    SV* const package = get_meta_slot(self, mouse_package); /* $self->{package} */
+    SV* const methods = get_meta_slot(self, mouse_methods); /* $self->{methods} */
     GV* gv;
     SV* code_ref;
 
