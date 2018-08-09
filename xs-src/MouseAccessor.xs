@@ -50,8 +50,17 @@ mouse_instance_get_slot(pTHX_ SV* const instance, SV* const slot) {
     HE* he;
     assert(slot);
     CHECK_INSTANCE(instance);
+    // possible perl threading bug (accessing meta for the package name)
+    // hv_fetch_ent returns null
+    // hv_fetch works
     he = hv_fetch_ent((HV*)SvRV(instance), slot, FALSE, 0U);
-    return he ? HeVAL(he) : NULL;
+    if(!he) {
+        STRLEN klen;
+        char* key = SvPV(slot, klen);
+        SV** tmp = hv_fetch((HV*)SvRV(instance), key, (I32)klen, 0U);
+        return tmp ? *tmp : NULL;
+    }
+    return HeVAL(he);
 }
 
 SV*
