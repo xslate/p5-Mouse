@@ -456,14 +456,14 @@ PROTOTYPES: DISABLE
 
 BOOT:
 {
-    mouse_package   = newSVpvs_share("package");
-    mouse_namespace = newSVpvs_share("namespace");
-    mouse_methods   = newSVpvs_share("methods");
-    mouse_name      = newSVpvs_share("name");
-    mouse_coerce    = newSVpvs_share("coerce");
+    mouse_package   = newSVpvs("package");
+    mouse_namespace = newSVpvs("namespace");
+    mouse_methods   = newSVpvs("methods");
+    mouse_name      = newSVpvs("name");
+    mouse_coerce    = newSVpvs("coerce");
 
-    mouse_get_attribute      = newSVpvs_share("get_attribute");
-    mouse_get_attribute_list = newSVpvs_share("get_attribute_list");
+    mouse_get_attribute      = newSVpvs("get_attribute");
+    mouse_get_attribute_list = newSVpvs("get_attribute_list");
 
     CALL_BOOT(Mouse__Util);
     CALL_BOOT(Mouse__Util__TypeConstraints);
