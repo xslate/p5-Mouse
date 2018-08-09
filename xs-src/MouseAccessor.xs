@@ -90,6 +90,26 @@ mouse_instance_weaken_slot(pTHX_ SV* const instance, SV* const slot) {
     }
 }
 
+SV*
+mouse_meta_get_slot(pTHX_ SV* const instance, SV* const slot) {
+#ifndef MULTIPLICITY
+    HE* he;
+    assert(slot);
+    CHECK_INSTANCE(instance);
+    he = hv_fetch_ent((HV*)SvRV(instance), slot, FALSE, 0U);
+    return he ? HeVAL(he) : NULL;
+#else
+    STRLEN klen;
+    char* key;
+    SV** val;
+    assert(slot);
+    CHECK_INSTANCE(instance);
+    key = SvPV(slot, klen);
+    val = hv_fetch((HV*)SvRV(instance), key, (I32)klen, 0U);
+    return val ? *val : NULL;
+#endif
+}
+
 /* utilities */
 
 STATIC_INLINE SV*
@@ -469,7 +489,7 @@ XS(XS_Mouse_inheritable_class_accessor) {
                 if(!SvOK(meta)){
                     continue; /* skip non-Mouse classes */
                 }
-                value = get_slot(meta, slot);
+                value = get_meta_slot(meta, slot);
                 if(value) {
                     break;
                 }
