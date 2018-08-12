@@ -260,7 +260,9 @@ sub install_accessors{
                 no strict 'refs';
                 !defined &{ $metaclass->name . '::' . $name };
             };
-            if ( $metaclass->name->can($name) && !$is_stub ) {
+            if (    $metaclass->name->can($name)
+                && !$metaclass->find_attribute_by_name($name)
+                && !$is_stub ) {
                 my $t = $metaclass->has_method($name) ? 'method' : 'function';
                 Carp::cluck("You are overwriting a locally defined $t"
                     . " ($name) with an accessor");
