@@ -256,12 +256,15 @@ sub install_accessors{
             my $generator = '_generate_' . $type;
             my $code      = $accessor_class->$generator($attribute, $metaclass);
             my $name      = $attribute->{$type};
-# TODO: do something for compatibility
-#            if( $metaclass->name->can($name) ) {
-#                my $t = $metaclass->has_method($name) ? 'method' : 'function';
-#                Carp::cluck("You are overwriting a locally defined $t"
-#                    . " ($name) with an accessor");
-#            }
+            my $is_stub   = do {
+                no strict 'refs';
+                !defined &{ $metaclass->name . '::' . $name };
+            };
+            if ( $metaclass->name->can($name) && !$is_stub ) {
+                my $t = $metaclass->has_method($name) ? 'method' : 'function';
+                Carp::cluck("You are overwriting a locally defined $t"
+                    . " ($name) with an accessor");
+            }
             $metaclass->add_method($name => $code);
             $attribute->associate_method($name);
         }
