@@ -25,7 +25,6 @@ my @modules = qw(
     MouseX::Types::Path::Class
 
     MouseX::AttributeHelpers
-    MouseX::Getopt
     MouseX::ConfigFromFile
 );
 
