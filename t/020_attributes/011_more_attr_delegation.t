@@ -106,17 +106,13 @@ do not fail at compile time.
         );
     } "all_methods requires explicit isa";
 
-
     ::lives_ok {
-        my @warn;
-        local $SIG{__WARN__} = sub { push @warn, @_ };
         has child_a => (
             isa     => "ChildA",
             is      => "ro",
             default => sub { ChildA->new },
             handles => qr/.*/,
         );
-        ::note $_ for @warn;
     } "allow all_methods with explicit isa";
 
     ::lives_ok {
@@ -147,8 +143,6 @@ do not fail at compile time.
     } "can't create attr with generative handles parameter and no isa";
 
     ::lives_ok {
-        my @warn;
-        local $SIG{__WARN__} = sub { push @warn, @_ };
         has child_d => (
             isa     => "ChildD",
             is      => "ro",
@@ -158,7 +152,6 @@ do not fail at compile time.
                 return;
             }
         );
-        ::note $_ for @warn;
     } "can't create attr with generative handles parameter and no isa";
 
     ::lives_ok {
