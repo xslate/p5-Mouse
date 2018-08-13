@@ -2,6 +2,10 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.5 2018-08-13T15:41:32Z
+    - Warn if accessors overwrite methods/functions (ybrliiu #86, #90, #93)
+    - Fix for threads and XS; use newSVpvs instead of newSVpvs_share (sergeykolychev #92)
+
 v2.5.4 2018-05-05T03:43:55Z
     - Follow Devel::PPPort 3.42 (#87)
 

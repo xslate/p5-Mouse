@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.17, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -91,7 +91,7 @@
          "web" : "https://github.com/gfx/p5-Mouse"
       }
    },
-   "version" : "v2.5.4",
+   "version" : "v2.5.5",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
@@ -124,6 +124,7 @@
       "Reini Urban <rurban@cpan.org>",
       "Reini Urban <rurban@cpanel.net>",
       "Ricardo SIGNES <rjbs@cpan.org>",
+      "Sergey Kolychev <sergeykolychev.github@gmail.com>",
       "Sergiy Zuban <s.zuban@trackingsoft.com>",
       "Shawn M Moore <sartak@bestpractical.com>",
       "Shawn M Moore <sartak@gmail.com>",
@@ -139,10 +140,12 @@
       "Vincent Pit <perl@profvince.com>",
       "Yuval Kogman <nothingmuch@woobling.org>",
       "markstos <mark@stosberg.com>",
+      "mp0liiu <raian@reeshome.org>",
       "sunnavy <sunnavy@bestpractical.com>",
       "wu-lee <mouse.git.wu-lee@noodlefactory.co.uk>",
       "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
       "大沢 和宏 <yappo@shibuya.pl>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.97001"
+   "x_serialization_backend" : "JSON::PP version 2.97001",
+   "x_static_install" : 0
 }
