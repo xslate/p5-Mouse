@@ -256,17 +256,12 @@ sub install_accessors{
             my $generator = '_generate_' . $type;
             my $code      = $accessor_class->$generator($attribute, $metaclass);
             my $name      = $attribute->{$type};
-            my $is_stub   = do {
-                no strict 'refs';
-                !defined &{ $metaclass->name . '::' . $name };
-            };
-            if (    $metaclass->name->can($name)
-                && !$metaclass->find_attribute_by_name($name)
-                && !$is_stub ) {
-                my $t = $metaclass->has_method($name) ? 'method' : 'function';
-                Carp::cluck("You are overwriting a locally defined $t"
-                    . " ($name) with an accessor");
-            }
+# TODO: do something for compatibility
+#            if( $metaclass->name->can($name) ) {
+#                my $t = $metaclass->has_method($name) ? 'method' : 'function';
+#                Carp::cluck("You are overwriting a locally defined $t"
+#                    . " ($name) with an accessor");
+#            }
             $metaclass->add_method($name => $code);
             $attribute->associate_method($name);
         }
@@ -354,7 +349,7 @@ Mouse::Meta::Attribute - The Mouse attribute metaclass
 
 =head1 VERSION
 
-This document describes Mouse version v2.5.5
+This document describes Mouse version v2.5.4
 
 =head1 DESCRIPTION
 
