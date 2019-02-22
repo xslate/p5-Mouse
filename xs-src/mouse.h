@@ -38,6 +38,14 @@ AV* mouse_mro_get_linear_isa(pTHX_ HV* const stash);
 #endif
 #endif
 
+#ifndef PERL_UNUSED_RESULT
+#if defined(__GNUC__) && defined(HASATTRIBUTE_WARN_UNUSED_RESULT)
+#define PERL_UNUSED_RESULT(v) STMT_START { __typeof__(v) z = (v); (void)sizeof(z); } STMT_END
+#else
+#define PERL_UNUSED_RESULT(v) ((void)(v))
+#endif
+#endif
+
 extern SV* mouse_package;
 extern SV* mouse_methods;
 extern SV* mouse_name;
