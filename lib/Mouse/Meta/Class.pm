@@ -250,6 +250,56 @@ sub add_attribute {
     # install accessors first
     $attr->install_accessors();
 
+    foreach my $isa ($self->linearized_isa)
+    {
+        my $meta      = Mouse::Util::get_metaclass_by_name($isa);
+        my $modifiers = $meta->{modifiers};
+
+        my @targets;
+
+        # install accessors modifiers
+        foreach my $type (qw(accessor reader writer predicate clearer)) {
+            next unless (exists $attr->{$type}
+                        && exists $modifiers->{$attr->{$type}});
+
+            foreach my $mtype (qw(before around after)) {
+                foreach my $m ( @{ $modifiers->{$attr->{$type}}->{$mtype} } ) {
+                    push @targets, [$mtype, $attr->{$type}, $m];
+                }
+            }
+        }
+
+        # install handles modifiers
+        if (exists $attr->{handles})
+        {
+            my @handles;
+
+            if (ref $attr->{handles} eq 'HASH')
+            {
+                @handles = keys %{ $attr->{handles} }
+            }
+            elsif (ref $attr->{handles} eq 'ARRAY')
+            {
+                @handles = @{ $attr->{handles} };
+            }
+
+            foreach my $handle ( @handles ) {
+                next unless (exists $modifiers->{$handle});
+
+                foreach my $mtype (qw(before around after)) {
+                    foreach my $m ( @{ $modifiers->{$handle}->{$mtype} } ) {
+                        push @targets, [$mtype, $handle, $m];
+                    }
+                }
+            }
+        }
+
+        foreach my $mod (@targets) {
+            my ($mtype, $name, $subroutine) = @{ $mod };
+            $self->_install_modifier($mtype, $name, $subroutine);
+        }
+    }
+
     # then register the attribute to the metaclass
     $attr->{insertion_order}   = keys %{ $self->{attributes} };
     $self->{attributes}{$name} = $attr;
