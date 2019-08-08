@@ -40,7 +40,7 @@ There are some Mouse::XS specific features.
 
 =over
 
-=item Mutationg references to the return values of getters
+=item Mutating references to the return values of getters
 
 When you take a reference from Mouse getters, like C<< $ref = \$obj->foo >>,
 the C<$ref> refers C<< \$obj->{foo} >>. That is, mutating C<$$ref> also
