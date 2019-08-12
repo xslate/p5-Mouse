@@ -13,7 +13,7 @@ conflicts 'MouseX::NativeTraits', '< 1.00';
 on configure => sub {
     requires 'Devel::PPPort', '3.42';
     requires 'ExtUtils::ParseXS', '3.22';
-    requires 'Module::Build::XSUtil';
+    requires 'Module::Build::XSUtil', '0.19';
     # prevent "Mouse::Deprecated does not define $VERSION" error in test under perl 5.8
     requires 'version', '0.9913';
 };
