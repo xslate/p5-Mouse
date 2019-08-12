@@ -755,7 +755,7 @@ Mouse::PurePerl - A Mouse guts in pure Perl
 
 =head1 VERSION
 
-This document describes Mouse version v2.5.6
+This document describes Mouse version v2.5.7
 
 =head1 SEE ALSO
 

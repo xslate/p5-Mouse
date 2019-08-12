@@ -5,7 +5,7 @@ Mouse - Moose minus the antlers
 
 # VERSION
 
-This document describes Mouse version v2.5.6
+This document describes Mouse version v2.5.7
 
 # SYNOPSIS
 
