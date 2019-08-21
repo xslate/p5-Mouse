@@ -82,13 +82,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/gfx/p5-Mouse/issues"
+         "web" : "https://github.com/xslate/p5-Mouse/issues"
       },
-      "homepage" : "https://github.com/gfx/p5-Mouse",
+      "homepage" : "https://github.com/xslate/p5-Mouse",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/gfx/p5-Mouse.git",
-         "web" : "https://github.com/gfx/p5-Mouse"
+         "url" : "git://github.com/xslate/p5-Mouse.git",
+         "web" : "https://github.com/xslate/p5-Mouse"
       }
    },
    "version" : "v2.5.7",
