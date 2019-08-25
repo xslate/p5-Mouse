@@ -287,7 +287,7 @@ sub DESTROY{
     # clean up mortal anonymous class stuff
 
     # @ISA is a magical variable, so we must clear it manually.
-    @{$self->{superclasses}} = () if exists $self->{superclasses};
+    @{$self->{superclasses}} = () if exists $self->{superclasses} && scalar(@{$self->{superclasses}}) > 0;
 
     # Then, clear the symbol table hash
     %{$self->namespace} = ();
