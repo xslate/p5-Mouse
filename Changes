@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.8 2019-08-25T18:52:19Z
+    - Fix segmentation fault which occurs when using MouseX::Foreign and role->apply at the same time (ken39arg #100, #101)
+
 v2.5.7 2019-08-12T08:45:37Z
     - Bump Module::Build::XSUtil prereq (KnowZero #99)
     - Fix typo (michael-stevens #98)
