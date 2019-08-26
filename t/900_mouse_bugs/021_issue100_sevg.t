@@ -2,6 +2,10 @@ use strict;
 use warnings;
 
 use Test::More;
+BEGIN {
+    eval { require MouseX::Foreign };
+    plan skip_all => "Test requires module 'MouseX::Foreign' but it's not found" if $@;
+}
 
 {
     package SuperClass;
