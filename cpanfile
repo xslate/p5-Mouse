@@ -26,7 +26,6 @@ on 'test' => sub {
     requires 'Test::Output';
     requires 'Test::Requires';
     requires 'Try::Tiny';
-    requires 'MouseX::Foreign';
 };
 
 on 'develop' => sub {
