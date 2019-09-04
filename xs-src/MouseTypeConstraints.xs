@@ -172,11 +172,11 @@ mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
         int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);
         return num_type && !(num_type & IS_NUMBER_NOT_INT);
     }
-    else if(SvIOKp(sv)){
-        return TRUE;
-    }
     else if(SvNOKp(sv)) {
         return S_nv_is_integer(aTHX_ SvNVX(sv));
+    }
+    else if(SvIOKp(sv)){
+        return TRUE;
     }
     return FALSE;
 }
