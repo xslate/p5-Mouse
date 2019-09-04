@@ -35,4 +35,11 @@ subtest "Int from integer literal: my \$num = 3", sub {
     ok $Int->check($num), "\$num is still Int";
 };
 
+subtest "MAXUINT", sub {
+    my $maxuint = ~0;
+    ok $Int->check( $maxuint ), 'yes MAXUINT';
+    my $as_string = sprintf '%f', $maxuint;
+    ok $Int->check( $maxuint ), 'yes MAXUINT after use as float';
+};
+
 done_testing;

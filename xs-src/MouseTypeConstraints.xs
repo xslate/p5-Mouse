@@ -168,15 +168,15 @@ S_nv_is_integer(pTHX_ NV const nv) {
 int
 mouse_tc_Int(pTHX_ SV* const data PERL_UNUSED_DECL, SV* const sv) {
     assert(sv);
-    if(SvPOKp(sv)){
+    if(SvPOK(sv)){
         int const num_type = grok_number(SvPVX(sv), SvCUR(sv), NULL);
         return num_type && !(num_type & IS_NUMBER_NOT_INT);
     }
-    else if(SvNOKp(sv)) {
-        return S_nv_is_integer(aTHX_ SvNVX(sv));
-    }
-    else if(SvIOKp(sv)){
+    else if(SvIOK(sv)){
         return TRUE;
+    }
+    else if(SvNOK(sv)) {
+        return S_nv_is_integer(aTHX_ SvNVX(sv));
     }
     return FALSE;
 }
