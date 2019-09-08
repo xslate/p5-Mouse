@@ -2,10 +2,9 @@
 use strict;
 use warnings;
 use Test::More;
-use Devel::Peek qw<Dump>;
 use Mouse::Util::TypeConstraints;
 
-my $Int    = find_type_constraint 'Int';
+my $Int = find_type_constraint 'Int';
 
 subtest "Non-Int from numerical literal: my \$num = 3.14", sub {
     my $num = 3.14;
