@@ -42,12 +42,4 @@ subtest "MAXUINT", sub {
     ok $Int->check( $maxuint ), 'yes MAXUINT after use as float';
 };
 
-subtest "A value with number inside that would be computed as an integer in perl internal. \$str = \" 1 \"", sub {
-    my $str = " 1 ";
-    ok !$Int->check( $str ), 'Not Int';
-    { no warnings; int($str) };
-    ok !$Int->check( $str ), 'Still not Int';
-    ok $str == 1, "\$str == 1";
-};
-
 done_testing;
