@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.5.10 2020-03-28T13:15:57Z
+    - Do not use Fatal (#108)
+
 v2.5.9 2019-08-26T14:46:49Z
     - Fix circular dependencies between Mouse and MouseX::Foreign (pghmcfc #102)
 

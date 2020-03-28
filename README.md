@@ -5,7 +5,7 @@ Mouse - Moose minus the antlers
 
 # VERSION
 
-This document describes Mouse version v2.5.9
+This document describes Mouse version v2.5.10
 
 # SYNOPSIS
 
@@ -64,7 +64,7 @@ The Mouse code just runs its test suite 4x faster.
 
 The idea is that, if you need the extra power, you should be able to run
 `s/Mouse/Moose/g` on your codebase and have nothing break. To that end,
-we have written [Any::Moose](https://metacpan.org/pod/Any::Moose) which will act as Mouse unless Moose is loaded,
+we have written [Any::Moose](https://metacpan.org/pod/Any%3A%3AMoose) which will act as Mouse unless Moose is loaded,
 in which case it will act as Moose. Since Mouse is a little sloppier than
 Moose, if you run into weird errors, it would be worth running:
 
@@ -73,7 +73,7 @@ Moose, if you run into weird errors, it would be worth running:
 to see if the bug is caused by Mouse. Moose's diagnostics and validation are
 also better.
 
-See also [Mouse::Spec](https://metacpan.org/pod/Mouse::Spec) for compatibility and incompatibility with Moose.
+See also [Mouse::Spec](https://metacpan.org/pod/Mouse%3A%3ASpec) for compatibility and incompatibility with Moose.
 
 ## Mouse Extentions
 
@@ -131,7 +131,7 @@ this class. Options:
         Ref ScalarRef ArrayRef HashRef CodeRef RegexpRef GlobRef
         FileHandle Object
 
-    For more documentation on type constraints, see [Mouse::Util::TypeConstraints](https://metacpan.org/pod/Mouse::Util::TypeConstraints).
+    For more documentation on type constraints, see [Mouse::Util::TypeConstraints](https://metacpan.org/pod/Mouse%3A%3AUtil%3A%3ATypeConstraints).
 
 - `does => RoleName`
 
@@ -142,7 +142,7 @@ this class. Options:
 
     This will attempt to use coercion with the supplied type constraint to change
     the value passed into any accessors or constructors. You **must** have supplied
-    a type constraint in order for this to work. See [Moose::Cookbook::Basics::Recipe5](https://metacpan.org/pod/Moose::Cookbook::Basics::Recipe5)
+    a type constraint in order for this to work. See [Moose::Cookbook::Basics::Recipe5](https://metacpan.org/pod/Moose%3A%3ACookbook%3A%3ABasics%3A%3ARecipe5)
     for an example.
 
 - `required => Bool`
@@ -191,7 +191,7 @@ this class. Options:
 
     Lets you automatically weaken any reference stored in the attribute.
 
-    Use of this feature requires [Scalar::Util](https://metacpan.org/pod/Scalar::Util)!
+    Use of this feature requires [Scalar::Util](https://metacpan.org/pod/Scalar%3A%3AUtil)!
 
 - `trigger => CodeRef`
 
@@ -228,13 +228,13 @@ this class. Options:
 
 ## `blessed(value) -> ClassName | undef`
 
-["blessed" in Scalar::Util](https://metacpan.org/pod/Scalar::Util#blessed) for your convenience.
+["blessed" in Scalar::Util](https://metacpan.org/pod/Scalar%3A%3AUtil#blessed) for your convenience.
 
 # MISC
 
 ## import
 
-Importing Mouse will default your class' superclass list to [Mouse::Object](https://metacpan.org/pod/Mouse::Object).
+Importing Mouse will default your class' superclass list to [Mouse::Object](https://metacpan.org/pod/Mouse%3A%3AObject).
 You may use ["extends"](#extends) to replace the superclass list.
 
 ## unimport
@@ -258,17 +258,17 @@ so you should not edit them. Edit `minil.toml` and `lib/Mouse.pm` instead.
 
 # SEE ALSO
 
-[Mouse::Role](https://metacpan.org/pod/Mouse::Role)
+[Mouse::Role](https://metacpan.org/pod/Mouse%3A%3ARole)
 
-[Mouse::Spec](https://metacpan.org/pod/Mouse::Spec)
+[Mouse::Spec](https://metacpan.org/pod/Mouse%3A%3ASpec)
 
 [Moose](https://metacpan.org/pod/Moose)
 
-[Moose::Manual](https://metacpan.org/pod/Moose::Manual)
+[Moose::Manual](https://metacpan.org/pod/Moose%3A%3AManual)
 
-[Moose::Cookbook](https://metacpan.org/pod/Moose::Cookbook)
+[Moose::Cookbook](https://metacpan.org/pod/Moose%3A%3ACookbook)
 
-[Class::MOP](https://metacpan.org/pod/Class::MOP)
+[Class::MOP](https://metacpan.org/pod/Class%3A%3AMOP)
 
 [Moo](https://metacpan.org/pod/Moo)
 
@@ -286,7 +286,7 @@ wu-lee
 
 Goro Fuji (gfx) <gfuji@cpan.org>
 
-with plenty of code borrowed from [Class::MOP](https://metacpan.org/pod/Class::MOP) and [Moose](https://metacpan.org/pod/Moose)
+with plenty of code borrowed from [Class::MOP](https://metacpan.org/pod/Class%3A%3AMOP) and [Moose](https://metacpan.org/pod/Moose)
 
 # BUGS
 
