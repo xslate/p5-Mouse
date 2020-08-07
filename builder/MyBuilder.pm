@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use base qw(Module::Build::XSUtil);
 
+use Devel::PPPort 3.59;
+
 sub new {
     my ($class, %args) = @_;
     $class->SUPER::new(

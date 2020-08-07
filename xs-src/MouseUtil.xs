@@ -124,7 +124,7 @@ mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const cha
     }
 }
 
-#if (PERL_BCDVERSION < 0x5014000)
+#if PERL_VERSION_LT(5,14,0)
 /* workaround Perl-RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
@@ -135,7 +135,7 @@ mouse_call_sv_safe(pTHX_ SV* const sv, I32 const flags) {
     SAVEGENERICSV(ERRSV); /* local $@ */
     ERRSV = newSV(0);
 
-    count = Perl_call_sv(aTHX_ sv, flags | G_EVAL);
+    count = call_sv(aTHX_ sv, flags | G_EVAL);
 
     if(sv_true(ERRSV)){
         SV* const err = sv_mortalcopy(ERRSV);
