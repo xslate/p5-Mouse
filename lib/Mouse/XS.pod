@@ -52,7 +52,7 @@ See L<https://rt.cpan.org/Ticket/Display.html?id=82945> for details.
 
 =head1 DEPENDENCIES
 
-The XS implementation requires Perl 5.8.1 or later, and a C compiler.
+The XS implementation requires Perl 5.10.1 or later, and a C compiler.
 
 =head1 SEE ALSO
 

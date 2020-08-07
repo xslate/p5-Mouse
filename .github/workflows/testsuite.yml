@@ -65,9 +65,6 @@ jobs:
             "5.10",
           ]
 
-    # Test-DependentModules-0.27
-    #  Configuring MetaCPAN-Client-2.026000 ... Perl v5.10.0 required--this is only v5.8.9
-    #"5.8",
     container:
       image: perl:${{ matrix.perl-version }}
 
