@@ -1,10 +1,17 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#define NEED_mg_findext
+/* used by 'ppport.h' Devel-PPPort */
+#define NEED_croak_xs_usage
 #define NEED_gv_fetchpvn_flags
-#define NEED_SvRX
+#define NEED_mg_findext
 #define NEED_newSVpvn_flags
+#define NEED_newSVpvn_share
+#define NEED_SvRX
+#define NEED_warner
+#define NEED_grok_number
+#define NEED_grok_numeric_radix
+
 #define PERL_EUPXS_ALWAYS_EXPORT
 
 #include "xshelper.h"
@@ -47,7 +54,7 @@ void
 mouse_throw_error(SV* const metaobject, SV* const data /* not used */, const char* const fmt, ...)
     __attribute__format__(__printf__, 3, 4);
 
-#if (PERL_BCDVERSION < 0x5014000)
+#if PERL_VERSION_LT(5,14,0)
 /* workaround RT #69939 */
 I32
 mouse_call_sv_safe(pTHX_ SV*, I32);
