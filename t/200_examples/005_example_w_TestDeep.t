@@ -16,7 +16,8 @@ but it is not completely horrid either.
 =cut
 
 BEGIN {
-    eval "use Test::Deep;";
+    # Older version has a bug. See https://github.com/xslate/p5-Mouse/issues/117
+    eval "use Test::Deep 0.117;";
     plan skip_all => "Test::Deep is required for this test" if $@;
     plan tests => 5;
 }
