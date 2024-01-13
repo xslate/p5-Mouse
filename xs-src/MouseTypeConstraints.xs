@@ -147,9 +147,9 @@ S_nv_is_integer(pTHX_ NV const nv) {
         return TRUE;
     }
     else {
-        char buf[64];  /* Must fit sprintf/Gconvert of longest NV */
+        char buf[128];  /* Must fit sprintf/Gconvert of longest NV */
         const char* p;
-        PERL_UNUSED_RESULT(Gconvert(nv, NV_DIG, 0, buf));
+        PERL_UNUSED_RESULT(my_snprintf(buf, sizeof(buf), "%" NVgf, nv));
         p = &buf[0];
 
         /* -?[0-9]+ */

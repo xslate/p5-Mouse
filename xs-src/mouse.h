@@ -11,6 +11,7 @@
 #define NEED_warner
 #define NEED_grok_number
 #define NEED_grok_numeric_radix
+#define NEED_my_snprintf
 
 #define PERL_EUPXS_ALWAYS_EXPORT
 
