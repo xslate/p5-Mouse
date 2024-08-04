@@ -1,5 +1,4 @@
 name = "Mouse"
-badges = ["travis"]
 allow_pureperl = 1
 module_maker = "ModuleBuild"
 
