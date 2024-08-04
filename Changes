@@ -1,7 +1,10 @@
 Revision history for Mouse
 
 {{$NEXT}}
-    - Use Devel-PPPort 3.59
+
+v2.5.11 2024-08-04T11:38:02Z
+    - Use Devel-PPPort 3.59 (atoomic #113)
+    - Mark "builtin" as foreign (#123)
 
 v2.5.10 2020-03-28T13:15:57Z
     - Do not use Fatal (#108)

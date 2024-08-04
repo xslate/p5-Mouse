@@ -1,11 +1,10 @@
-[![Build Status](https://travis-ci.org/xslate/p5-Mouse.svg?branch=master)](https://travis-ci.org/xslate/p5-Mouse)
 # NAME
 
 Mouse - Moose minus the antlers
 
 # VERSION
 
-This document describes Mouse version v2.5.10
+This document describes Mouse version v2.5.11
 
 # SYNOPSIS
 

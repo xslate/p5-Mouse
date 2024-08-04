@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.9, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.24, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -87,11 +87,11 @@
       "homepage" : "https://github.com/xslate/p5-Mouse",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/xslate/p5-Mouse.git",
+         "url" : "https://github.com/xslate/p5-Mouse.git",
          "web" : "https://github.com/xslate/p5-Mouse"
       }
    },
-   "version" : "v2.5.10",
+   "version" : "v2.5.11",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
@@ -121,6 +121,7 @@
       "Michael G. Schwern <schwern@pobox.com>",
       "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
       "Nick Woolley <nick@noodlefactory.co.uk>",
+      "Nicolas R <nicolas@atoomic.org>",
       "Piotr Roszatycki <piotr.roszatycki@gmail.com>",
       "Reini Urban <rurban@cpan.org>",
       "Reini Urban <rurban@cpanel.net>",
@@ -129,10 +130,10 @@
       "Sergiy Zuban <s.zuban@trackingsoft.com>",
       "Shawn M Moore <sartak@bestpractical.com>",
       "Shawn M Moore <sartak@gmail.com>",
+      "Shohei YOSHIDA <syohex@gmail.com>",
       "Shoichi Kaji <skaji@cpan.org>",
       "Shoichi Kaji <skaji@outlook.com>",
       "Stanislaw Pusep <creaktive@gmail.com>",
-      "Syohei YOSHIDA <syohex@gmail.com>",
       "Todd Rinaldo <toddr@cpan.org>",
       "Todd Rinaldo <toddr@cpanel.net>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>",
@@ -147,6 +148,6 @@
       "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
       "大沢 和宏 <yappo@shibuya.pl>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.04",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 0
 }
