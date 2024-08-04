@@ -78,6 +78,7 @@ sub get_attribute_list{ keys   %{$_[0]->{attributes}} }
 my %foreign = map{ $_ => undef } qw(
     Mouse Mouse::Role Mouse::Util Mouse::Util::TypeConstraints
     Carp Scalar::Util List::Util
+    builtin
 );
 sub _get_method_body {
     my($self, $method_name) = @_;
