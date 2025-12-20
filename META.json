@@ -4,7 +4,7 @@
       "Shawn M Moore <sartak at gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.28, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.29, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -91,7 +91,7 @@
          "web" : "https://github.com/xslate/p5-Mouse"
       }
    },
-   "version" : "v2.6.0",
+   "version" : "v2.6.1",
    "x_contributors" : [
       "Aleksandr Matveev <a.matveev@corp.mail.ru>",
       "Alex Solovey <a.solovey@gmail.com>",
@@ -109,6 +109,7 @@
       "Fuji, Goro <fuji.goro@dena.jp>",
       "Fuji, Goro <g.psy.va@gmail.com>",
       "Fuji, Goro <goro-fuji@cookpad.com>",
+      "Graham Knop <haarg@haarg.org>",
       "Ingy dot Net <ingy@ingy.net>",
       "Jesse Vincent <jesse@bestpractical.com>",
       "Joel Bernstein <joel.bernstein@vidicom.co.uk>",

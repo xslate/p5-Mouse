@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.6.1 2025-12-20T02:20:14Z
+    - Provide empty import on Mouse::Deprecated for imported Moose test (haarg #120, jkeenan #127)
+
 v2.6.0 2025-10-30T05:25:55Z
     - Update minimum perl version from 5.8 => 5.10(#112)
 
