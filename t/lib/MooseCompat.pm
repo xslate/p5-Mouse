@@ -17,7 +17,11 @@ $INC{'Mouse/Deprecated.pm'}    = __FILE__;
     $thing->isa($role);
 } unless UNIVERSAL->can('DOES');
 
-$Mouse::Deprecated::deprecated = $Mouse::Deprecated::deprecated = undef; # -w
+package Mouse::Deprecated;
+
+sub import {}
+
+sub deprecated {}
 
 package Mouse::Util;
 
