@@ -147,9 +147,15 @@ S_nv_is_integer(pTHX_ NV const nv) {
         return TRUE;
     }
     else {
-        char buf[64];  /* Must fit sprintf/Gconvert of longest NV */
         const char* p;
+#if defined(USE_QUADMATH)
+        char buf[128];  /* Must fit __float128 */
+        // my_snprintf cannot handle ".*Q" modifier correctly, so hard-code NV_DIG as the field-width
+        PERL_UNUSED_RESULT(my_snprintf(buf, sizeof(buf), "%.33Qg", nv));
+#else
+        char buf[64];  /* Must fit sprintf/Gconvert of longest NV */
         PERL_UNUSED_RESULT(Gconvert(nv, NV_DIG, 0, buf));
+#endif
         p = &buf[0];
 
         /* -?[0-9]+ */
