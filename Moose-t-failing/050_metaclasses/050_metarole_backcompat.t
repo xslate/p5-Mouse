@@ -223,8 +223,8 @@ use Mouse::Util::MetaRole;
 
 {
     Mouse::Util::MetaRole::apply_base_class_roles(
-        for_class => 'My::Class',
-        roles     => ['Role::Foo'],
+        for   => 'My::Class',
+        roles => ['Role::Foo'],
     );
 
     ok( My::Class->meta()->does_role('Role::Foo'),

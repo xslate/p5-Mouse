@@ -104,11 +104,12 @@ sub _fixup_old_style_args {
     return;
 }
 
-
 sub apply_base_class_roles {
     my %options = @_;
 
-    my $for = $options{for_class};
+    _fixup_old_style_args(\%options);
+
+    my $for = $options{for};
 
     my $meta = Mouse::Util::class_of($for);
 
