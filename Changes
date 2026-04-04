@@ -2,6 +2,9 @@ Revision history for Mouse
 
 {{$NEXT}}
 
+v2.6.2 2026-04-04T01:03:21Z
+    - Fix the conversion from floating point number to string with quadmath Perl (#126)
+
 v2.6.1 2025-12-20T02:20:14Z
     - Provide empty import on Mouse::Deprecated for imported Moose test (haarg #120, jkeenan #127)
 
